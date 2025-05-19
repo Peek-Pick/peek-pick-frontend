@@ -4,6 +4,7 @@
 export interface NoticeRequestDto {
     title: string;
     content: string;
+    imgUrls: string[];  // ← 이 줄을 추가하세요
 }
 
 // 서버에서 응답받는 공지 DTO

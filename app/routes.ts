@@ -2,7 +2,7 @@ import { type RouteConfig, index, route } from "@react-router/dev/routes";
 
 export default [
     index("routes/home.tsx"),           // 협업 후 홈
-    //route("login", "routes/loginPage.tsx"),
+    // route("login", "routes/page/loginPage.tsx"),
     route("admin/notices/list",   "routes/admin/notices/listPage.tsx"),
     route("admin/notices/add",    "routes/admin/notices/addPage.tsx"),
     route("admin/notices/:id",    "routes/admin/notices/detailPage.tsx"),
