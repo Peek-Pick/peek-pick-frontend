@@ -3,6 +3,7 @@ import { type RouteConfig, index, route } from "@react-router/dev/routes";
 export default [
     route('/auth','layout/authLayout.tsx', [
         route('', 'routes/home.tsx'),
-        route('login', 'routes/member/loginPage.tsx')
-    ])
+        route('login', 'routes/auth/loginPage.tsx'),
+    ]),
+    route('/auth/login/google', 'routes/auth/googleRedirect.tsx')
 ] satisfies RouteConfig;

@@ -1,35 +1,30 @@
-import React, { useEffect } from 'react';
+import React, {type FormEvent, useEffect, useState} from 'react';
+import {setCookie} from "~/util/cookieUtil";
+import {getToken} from "~/api/authAPI";
+import {Link} from "react-router";
+import {getGoogleLoginLink} from "~/api/googleAPI";
 
-const GOOGLE_CLIENT_ID = '437911674528-fjjj26o3oe1o6m704rq97giu9u3mi01u.apps.googleusercontent.com';
-
-declare global {
-    interface Window {
-        google?: any;
-    }
-}
 
 const LoginComponent = () => {
-    useEffect(() => {
-        if (window.google?.accounts?.id) {
-            window.google.accounts.id.initialize({
-                client_id: GOOGLE_CLIENT_ID,
-                callback: handleCredentialResponse,
-            });
 
-            window.google.accounts.id.renderButton(
-                document.getElementById('googleSignInDiv'),
-                {
-                    theme: 'outline',
-                    size: 'large',
-                    width: '100%',
-                }
-            );
-        }
-    }, []);
+    const googleLink = getGoogleLoginLink();
 
-    const handleCredentialResponse = (response: any) => {
-        const token = response.credential;
-        console.log('Google 로그인 성공:', token);
+    const [mem, setMem] = useState("");
+    const [mpw, setMpw] = useState("");
+
+    const handleSubmit = (e:FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        console.log("EMAIL:", mem, "PW:", mpw);
+
+        getToken(mem, mpw).then((res) => {
+            const accessToken = res[0]
+            const refreshToken = res[1]
+
+            setCookie('access_token', accessToken,1)
+            setCookie('refresh_token', refreshToken, 7)
+
+        })
     };
 
     return (
@@ -37,8 +32,7 @@ const LoginComponent = () => {
             <div className="w-full max-w-sm bg-white shadow-lg rounded-2xl p-6 space-y-6">
                 <h2 className="text-2xl font-bold text-center text-gray-800">로그인</h2>
 
-                {/* 일반 로그인 폼 */}
-                <form className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                             이메일
@@ -46,8 +40,11 @@ const LoginComponent = () => {
                         <input
                             type="email"
                             id="email"
+                            value={mem}
+                            onChange={(e) => setMem(e.target.value)}
                             className="mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                             placeholder="you@example.com"
+                            required
                         />
                     </div>
 
@@ -58,8 +55,11 @@ const LoginComponent = () => {
                         <input
                             type="password"
                             id="password"
+                            value={mpw}
+                            onChange={(e) => setMpw(e.target.value)}
                             className="mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                             placeholder="••••••••"
+                            required
                         />
                     </div>
 
@@ -74,19 +74,20 @@ const LoginComponent = () => {
                 {/* 회원가입 링크 */}
                 <div className="text-center text-sm text-gray-600">
                     계정이 없으신가요?{' '}
-                    <a href="/signup" className="text-blue-500 hover:underline font-medium">
+                    <a href="/users/signup" className="text-blue-500 hover:underline font-medium">
                         회원가입
                     </a>
                 </div>
 
-                {/* 또는 SNS 로그인 */}
                 <div className="relative text-center text-sm text-gray-400">
-                    <span className="bg-white px-2 relative z-10">또는</span>
+                    <span className="bg-white px-2 relative z-10">간편로그인</span>
                     <div className="absolute top-1/2 left-0 w-full border-t border-gray-200 z-0" />
                 </div>
 
-                {/* Google 로그인 버튼 */}
+                {/* Google 로그인 버튼(임시) */}
                 <div id="googleSignInDiv" className="flex justify-center" />
+                <Link to={googleLink}>구글</Link>
+
             </div>
         </div>
     );
