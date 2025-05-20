@@ -12,7 +12,7 @@ export const getToken = async (mem:string, mpw:string) => {
         }
      }
  
-     const res = await axios.post(`${host}`, {uid:mem,upw:mpw}, header);
+     const res = await axios.post(`${host}`, {uem:mem,upw:mpw}, header);
 
      console.log(res.data)
 

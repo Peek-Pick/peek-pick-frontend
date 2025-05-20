@@ -24,6 +24,7 @@ const LoginComponent = () => {
             setCookie('access_token', accessToken,1)
             setCookie('refresh_token', refreshToken, 7)
 
+            return "http://localhost:5173/auth"
         })
     };
 

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useSearchParams } from 'react-router';
-import {getMemberWithAccessToken, sendGoogleAuthCodeToServer} from "~/api/googleAPI";
+import {sendAuthCodeToServer} from "~/api/googleAPI";
 
 function GoogleRedirect() {
 
@@ -10,10 +10,10 @@ function GoogleRedirect() {
 
     useEffect(() => {
         if(authCode) {
-            sendGoogleAuthCodeToServer(authCode).then(data => {
+            sendAuthCodeToServer(authCode).then(data => {
                 const accessToken = data
                 console.log("accessToken: ", accessToken)
-
+                //
                 // getMemberWithAccessToken(accessToken).then(loginResult => {
                 //     console.log(loginResult)
                 // })
