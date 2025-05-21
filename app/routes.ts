@@ -1,7 +1,10 @@
 import { type RouteConfig, index, route } from "@react-router/dev/routes";
 
 export default [
-  
+
+    //소연
+    route("/signup", "routes/users/signupPage.tsx"),
+
     // 근화
     route("/admin/points", "layout/points/pointLayout.tsx", [
         route("list", 'routes/admin/points/listPage.tsx'),

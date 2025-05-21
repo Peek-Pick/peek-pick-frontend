@@ -1,4 +1,4 @@
-import React, {type FormEvent, useEffect, useState} from 'react';
+import {type FormEvent, useEffect, useState} from 'react';
 import {setCookie} from "~/util/cookieUtil";
 import {getToken} from "~/api/authAPI";
 import {Link} from "react-router";
