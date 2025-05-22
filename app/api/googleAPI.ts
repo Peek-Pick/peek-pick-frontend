@@ -1,5 +1,7 @@
 import axios from "axios"
 
+const host = "http://localhost:8080/api/v1";
+
 export const getGoogleLoginLink = (): string => {
     const queryParams = new URLSearchParams({
         client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || '',
@@ -14,7 +16,7 @@ export const getGoogleLoginLink = (): string => {
 };
 
 export const sendAuthCodeToServer = async (authCode: string) => {
-    const res = await axios.post('http://localhost:8080/api/v1/auth/login/google', {
+    const res = await axios.post(`${host}/auth/login/google`, {
         code: authCode,
     });
 

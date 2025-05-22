@@ -17,15 +17,11 @@ const LoginComponent = () => {
 
         console.log("EMAIL:", mem, "PW:", mpw);
 
-        getToken(mem, mpw).then((res) => {
-            const accessToken = res[0]
-            const refreshToken = res[1]
-
-            setCookie('access_token', accessToken,1)
-            setCookie('refresh_token', refreshToken, 7)
-
-            return "http://localhost:5173/auth"
-        })
+        getToken(mem, mpw).then(({ accessToken, refreshToken }) => {
+            setCookie("access_token", accessToken, 1);
+            setCookie("refresh_token", refreshToken, 7);
+            window.location.href = "http://localhost:5173/auth";
+        });
     };
 
     return (

@@ -1,21 +1,29 @@
 import axios from "axios";
 
+const host = "http://localhost:8080/api/v1";
 
+export const getToken = async (mem: string, mpw: string): Promise<{ accessToken: string; refreshToken: string }> => {
+    const headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+    };
 
-const host = "http://localhost:8080/api/v1/auth/login";
+    const params = new URLSearchParams();
+    params.append("uem", mem);
+    params.append("upw", mpw);
 
-export const getToken = async (mem:string, mpw:string) => {
+    const res = await axios.post(`${host}/auth/login`, params, {
+        headers,
+        withCredentials: true, // 쿠키도 함께 전송
+    });
 
-    const header = {
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
-     }
- 
-     const res = await axios.post(`${host}`, {uem:mem,upw:mpw}, header);
+    // 서버 응답에서 accessToken, refreshToken을 추출
+    const { accessToken, refreshToken } = res.data;
 
-     console.log(res.data)
+    return { accessToken, refreshToken };
+};
 
-     return res.data
-
-}
+export const refreshAccessToken = async () => {
+    await axios.get(`${host}/auth/refresh`, {
+        withCredentials: true, // 쿠키 포함
+    });
+};

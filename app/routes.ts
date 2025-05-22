@@ -2,7 +2,7 @@ import { type RouteConfig, index, route } from "@react-router/dev/routes";
 
 export default [
 
-    //소연
+    // 소연
     route("/signup", "routes/users/signupPage.tsx"),
 
     // 근화
@@ -20,8 +20,8 @@ export default [
     route("admin/notices/:id/edit","routes/admin/notices/editPage.tsx"),
     
     // 강민
-    route('/auth','layout/authLayout.tsx', [
-        route('login', 'routes/auth/loginPage.tsx'),
+    route('/','layout/authLayout.tsx', [
+        route('auth/login', 'routes/auth/loginPage.tsx'),
     ]),
     route('/auth/login/google', 'routes/auth/googleRedirect.tsx'),
   
