@@ -12,16 +12,16 @@ const LoginComponent = () => {
     const [mem, setMem] = useState("");
     const [mpw, setMpw] = useState("");
 
-    const handleSubmit = (e:FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        console.log("EMAIL:", mem, "PW:", mpw);
-
-        getToken(mem, mpw).then(({ accessToken, refreshToken }) => {
-            setCookie("access_token", accessToken, 1);
-            setCookie("refresh_token", refreshToken, 7);
-            window.location.href = "http://localhost:5173/auth";
-        });
+        try {
+            await getToken(mem, mpw); // 쿠키는 백에서 설정
+            window.location.href = "/home"; // 로그인 성공 후 이동
+        } catch (error) {
+            console.error("로그인 실패", error);
+            alert("로그인에 실패했습니다. 이메일 또는 비밀번호를 확인하세요.");
+        }
     };
 
     return (

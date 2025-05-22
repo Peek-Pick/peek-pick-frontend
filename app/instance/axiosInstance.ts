@@ -25,7 +25,7 @@ axiosInstance.interceptors.response.use(
                 // 클라이언트 사이드에서만 리다이렉트 실행
                 if (typeof window !== "undefined") {
                     console.warn("🚪 로그아웃 처리, 로그인 페이지로 이동");
-                    window.location.href = "/auth/login";
+                    window.location.href = "/login";
                 }
 
                 return Promise.reject(refreshError);
