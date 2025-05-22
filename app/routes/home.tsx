@@ -1,11 +1,8 @@
-import React from 'react';
 
 function Home() {
     return (
         <div>
-            <div>
-                <h1>홈입니다.</h1>
-            </div>
+            <h1> HOME </h1>
         </div>
     );
 }

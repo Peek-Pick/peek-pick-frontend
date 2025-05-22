@@ -13,10 +13,7 @@ function GoogleRedirect() {
             sendAuthCodeToServer(authCode).then(data => {
                 const accessToken = data
                 console.log("accessToken: ", accessToken)
-                //
-                // getMemberWithAccessToken(accessToken).then(loginResult => {
-                //     console.log(loginResult)
-                // })
+
             })
         }
     }, [authCode])

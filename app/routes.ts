@@ -21,8 +21,9 @@ export default [
     
     // 강민
     route('/','layout/authLayout.tsx', [
-        route('auth/login', 'routes/auth/loginPage.tsx'),
+        route("home", "routes/home.tsx"),
+        route('login', 'routes/auth/loginPage.tsx'),
     ]),
-    route('/auth/login/google', 'routes/auth/googleRedirect.tsx'),
+    route('login/google', 'routes/auth/googleRedirect.tsx'),
   
 ] satisfies RouteConfig;
