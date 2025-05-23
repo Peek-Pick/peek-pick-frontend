@@ -1,3 +1,4 @@
+
 import LoginComponent from "~/components/auth/loginComponent";
 
 function LoginPage() {
