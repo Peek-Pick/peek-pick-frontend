@@ -1,4 +1,4 @@
-// app/components/admin/notices/listComponent.tsx
+// app/components/admin/notices/userListComponent.tsx
 import { Link } from "react-router-dom";
 import type { NoticeResponseDto } from "~/types/notice";
 

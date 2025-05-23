@@ -1,6 +1,12 @@
 import { type RouteConfig, index, route } from "@react-router/dev/routes";
 
 export default [
+    // 포빙빙
+    route("/reviews/product/:productId", "routes/reviews/productListPage.tsx"),
+    route("/reviews/user", "routes/reviews/userListPage.tsx"),
+    route("/reviews/add/:pid", "routes/reviews/addPage.tsx"),
+    route("/reviews/modify/:rid", "routes/reviews/modifyPage.tsx"),
+    route("/reviews/:rid", "routes/reviews/detailPage.tsx"),
 
     // 소연
     route("/signup", "routes/users/signupPage.tsx"),
