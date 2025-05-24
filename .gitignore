@@ -7,3 +7,5 @@
 
 # API KEY
 .env
+
+.idea

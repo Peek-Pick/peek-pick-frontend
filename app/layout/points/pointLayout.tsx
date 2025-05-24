@@ -9,42 +9,34 @@ export default function AdminPointsLayout() {
             <header className="bg-white shadow px-6 py-4 flex justify-between items-center">
                 <h1 className="text-2xl font-bold text-gray-800">👑 관리자 페이지</h1>
                 <nav className="space-x-4">
-                    <Link to="/" className="text-gray-600 hover:text-blue-500 transition">
-                        홈으로
-                    </Link>
-                    <Link to="/admin/points/add" className="text-gray-600 hover:text-blue-500 transition">
-                        상품 등록
-                    </Link>
+                    <Link to="/" className="text-gray-600 hover:text-blue-500">홈으로</Link>
+                    <Link to="/admin/points/add" className="text-gray-600 hover:text-blue-500">상품 등록</Link>
                 </nav>
             </header>
 
             {/* 콘텐츠 */}
             <div className="flex flex-1">
-                {/* 사이드바 */}
-                <aside className="w-64 bg-white p-6 border-r hidden md:block">
-                    <h2 className="text-xl font-semibold text-gray-700 mb-6">메뉴</h2>
-                    <nav className="flex flex-col space-y-3">
-                        <Link
-                            to="/admin/points/list"
-                            className={`px-4 py-2 rounded ${
-                                location.pathname.includes("/admin/points/list")
-                                    ? "bg-blue-100 text-blue-700 font-semibold"
-                                    : "hover:bg-gray-100 text-gray-700"
-                            }`}
-                        >
-                            📦 상품 목록
-                        </Link>
-                        <Link
-                            to="/admin/points/add"
-                            className={`px-4 py-2 rounded ${
-                                location.pathname.includes("/admin/points/add")
-                                    ? "bg-blue-100 text-blue-700 font-semibold"
-                                    : "hover:bg-gray-100 text-gray-700"
-                            }`}
-                        >
-                            ➕ 상품 등록
-                        </Link>
-                    </nav>
+                {/* 사이드 메뉴 */}
+                <aside className="w-64 bg-white p-4 border-r hidden md:block">
+                    <h2 className="text-lg font-semibold mb-4">메뉴</h2>
+                    <ul className="space-y-2">
+                        <li>
+                            <Link
+                                to="/admin/points/list"
+                                className="block px-3 py-2 rounded hover:bg-gray-100"
+                            >
+                                상품 목록
+                            </Link>
+                        </li>
+                        <li>
+                            <Link
+                                to="/admin/points/add"
+                                className="block px-3 py-2 rounded hover:bg-gray-100"
+                            >
+                                상품 등록
+                            </Link>
+                        </li>
+                    </ul>
                 </aside>
 
                 {/* 본문 */}
