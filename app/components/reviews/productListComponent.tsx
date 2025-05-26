@@ -70,9 +70,9 @@ export default function UserListComponent({reviewList, fetchNextPage, hasNextPag
                             <p className="text-gray-800 whitespace-pre-wrap">{review.comment}</p>
 
                             {/* 이미지 */}
-                            {review.img?.img_url && (
+                            {review.image?.img_url && (
                                 <img
-                                    src={`http://localhost:8080/images/s_${review.img.img_url}`}
+                                    src={`http://localhost:8080/images/s_${review.image.img_url}`}
                                     alt="리뷰 이미지"
                                     className="w-24 h-24 object-cover rounded"
                                 />

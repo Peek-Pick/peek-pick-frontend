@@ -55,7 +55,7 @@ export default function DetailComponent({review}: ReviewProps) {
         setIsReporting(true);
         try {
             const dto: ReviewReportDTO = {
-                reviewId: review.review_id,
+                review_id: review.review_id,
                 reason: selectedReason,
             };
             await reportReview(review.review_id, dto);
@@ -113,7 +113,7 @@ export default function DetailComponent({review}: ReviewProps) {
                         {review.images.map((img, idx) => (
                             <img
                                 key={idx}
-                                src={'/example.jpg'}
+                                src={`http://localhost/s_${img.img_url}`}
                                 alt={`리뷰 이미지 ${idx + 1}`}
                                 className="w-24 h-24 rounded-lg object-cover flex-shrink-0"
                             />
