@@ -7,6 +7,8 @@ const URLS_TO_CACHE = [
     '/favicon.ico',
     '/offline.html',    // 여기까지 필수 캐시
     '/login',
+    '/icons/icon-192.png',
+    '/icons/icon-512.png',
     // 필요시 이미지나 폰트 등도 추가
 ];
 
