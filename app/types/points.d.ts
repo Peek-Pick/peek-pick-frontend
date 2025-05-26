@@ -1,11 +1,4 @@
-
-export enum PointProductType {
-    CU = "CU",
-    GS25 = "GS25",
-    SEVEN_ELEVEN = "세븐일레븐",
-    EMART24 = "이마트24",
-    OTHERS = "기타",
-}
+// 타입 선언만
 
 export interface PointStoreDTO {
     pointstoreId: number;
@@ -23,16 +16,31 @@ export interface PointStoreListDTO {
     productType: PointProductType; // enum 사용
     imgUrl: string;
 }
-
 export interface PointStoreAddDTO {
     pointstoreId: number;
     item: string;
     price: number;
     description: string;
-    productType: PointProductType; // enum 사용
+    productType: PointProductType | ""; // enum 사용
     imgUrl: string;
-    imageFile: File;
+    imageFile: File | null;
 }
 
+export interface UserCouponDTO {
+    couponId: number;
+    itemName: string; // 상품 이름
+    status: CouponStatus;
+    couponImg:string;
+    usedAt: string;
+    expiredAt: string;
+}
+
+export interface PointLogsDTO {
+    pointLogId: number;
+    amount: number;
+    type: PointLogsType;
+    description: PointLogsDesc;
+    regDate: string;
+}
 
 
