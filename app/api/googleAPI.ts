@@ -14,12 +14,3 @@ export const getGoogleLoginLink = (): string => {
 
     return `https://accounts.google.com/o/oauth2/v2/auth?${queryParams.toString()}`;
 };
-
-export const sendAuthCodeToServer = async (authCode: string) => {
-    const res = await axios.post(`${host}/auth/login/google`, {
-        code: authCode,
-    });
-
-    console.log(res.data); // accessToken, refreshToken
-    return res.data;
-};

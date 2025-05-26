@@ -6,12 +6,13 @@ import type {
     NoticeResponseDto,
     NoticeRequestDto,
 } from "~/types/notice";
+import axiosInstance from "~/instance/axiosInstance";
 
 const BASE_URL = "http://localhost:8080/admin/notices";
 
 // 공지사항 목록(페이징) 조회
 export function fetchNotices() {
-    return axios.get<NoticePageDto>(BASE_URL);
+    return axiosInstance.get<NoticePageDto>(BASE_URL);
 }
 
 // 단일 공지 조회
