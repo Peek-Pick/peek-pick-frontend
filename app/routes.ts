@@ -16,6 +16,9 @@ export default [
         route("add", 'routes/admin/points/addPage.tsx'),
         route("edit/:id", 'routes/admin/points/editPage.tsx')
     ]),
+    route("points/store/list",   "routes/points/storelistPage.tsx"), //포인트 상점
+    route("/user/mypage/points/history", "routes/users/pointLogsPage.tsx"), // 포인트 내역
+    route("/user/mypage/coupons", "routes/users/userCouponPage.tsx"), // 쿠폰함
       
     // 동훈
     route("admin/notices/list",   "routes/admin/notices/listPage.tsx"),
