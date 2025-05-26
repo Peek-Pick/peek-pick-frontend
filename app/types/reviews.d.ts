@@ -32,11 +32,12 @@ interface ReviewDetailDTO {
 }
 
 interface ReviewImgDTO {
+    img_id: number;
     review_id: number;
     img_url: string;
 }
 
 interface ReviewReportDTO {
-    reviewId: number;
+    review_id: number;
     reason: ReportReason;
 }

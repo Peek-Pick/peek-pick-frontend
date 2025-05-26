@@ -30,5 +30,13 @@ export const toggleReview = async (reviewId: number) => {
 };
 
 export const reportReview = async (reviewId: number, dto: ReviewReportDTO) => {
-    return await axiosInstance.post<void>(`${host}/${reviewId}/report`, dto, { headers: { "Content-Type": "application/json" } });
+    return await axiosInstance.post(`${host}/${reviewId}/report`, dto, { headers: { "Content-Type": "application/json" } });
+};
+
+export const modifyReview = async (reviewId: number, formData: FormData) => {
+    return await axiosInstance.put(`${host}/${reviewId}`, formData );
+};
+
+export const deleteReview = async (reviewId: number) => {
+    return await axiosInstance.delete(`${host}/${reviewId}`);
 };

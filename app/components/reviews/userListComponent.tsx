@@ -85,7 +85,8 @@ export default function UserListComponent({reviewList, fetchNextPage, hasNextPag
 
                         {/* 리뷰 관리 버튼 */}
                         <div className="flex gap-2 pt-2">
-                            <button className="flex-1 text-center px-3 py-1.5 text-xs border rounded hover:bg-gray-100">
+                            <button className="flex-1 text-center px-3 py-1.5 text-xs border rounded hover:bg-gray-100"
+                                onClick={() => navigate(`/reviews/modify/${review?.review_id}`)}>
                                 리뷰 수정
                             </button>
                             <button className="flex-1 text-center px-3 py-1.5 text-xs border rounded hover:bg-gray-100"
