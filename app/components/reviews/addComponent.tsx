@@ -64,7 +64,7 @@ export default function AddComponent() {
 
     return (
         <div className="w-full min-h-screen bg-gray-50 p-4">
-            <div className="max-w-md w-full mx-auto bg-white shadow rounded-lg space-y-6 p-4">
+            <div className="max-w-md w-full mx-auto bg-white shadow rounded-lg space-y-6 p-6">
                 {/* 상품 이미지 + 정보 */}
                 <div className="flex flex-col items-center">
                     <img
@@ -145,9 +145,9 @@ export default function AddComponent() {
                         {/* 이미지 업로드 */}
                         <div>
                             <p className="font-medium text-gray-700 mb-1">사진 추가</p>
-                            <div className="flex flex-wrap gap-2">
+                            <div className="flex items-center space-x-2 overflow-x-auto scrollbar-hide">
                                 {/* 업로드 버튼 */}
-                                <label className="w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center border border-dashed rounded-md text-gray-400 cursor-pointer flex-shrink-0">
+                                <label className="w-22 h-22 flex-shrink-0 flex items-center justify-center border border-dashed rounded-md text-gray-400 cursor-pointer">
                                     <span className="text-2xl">+</span>
                                     <input
                                         type="file"
@@ -162,7 +162,7 @@ export default function AddComponent() {
                                 {images.map((img, idx) => (
                                     <div
                                         key={idx}
-                                        className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-md overflow-hidden border flex-shrink-0"
+                                        className="relative w-22 h-22 rounded-md overflow-hidden border flex-shrink-0"
                                     >
                                         <img
                                             src={URL.createObjectURL(img)}
