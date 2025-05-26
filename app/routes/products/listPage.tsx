@@ -1,59 +1,48 @@
 // src/routes/products/listPage.tsx
 
-import { useState } from "react";
-import { useQuery, keepPreviousData, type UseQueryOptions } from "@tanstack/react-query";
-import type { PageResponse, ProductListDTO } from "~/types/products";
-import { listProducts } from "~/api/productsAPI";
-import ListComponent from "~/components/products/listComponent";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import ProductLayout from "~/layout/productLayout";
-
-type ProductsQueryKey = readonly [
-    "productsRanking",
-    number, // page
-    number, // size
-    string  // sort
-];
+import ListComponent from "~/components/products/listComponent";
+import { listProducts } from "~/api/productsAPI";
+import type { PageResponse, ProductListDTO } from "~/types/products";
 
 export default function ListPage() {
-    const [page, setPage] = useState(0);
     const size = 10;
     const sort = "likeCount,DESC";
 
-    const queryKey: ProductsQueryKey = ["productsRanking", page, size, sort];
+    const {
+        data,            // InfiniteData<PageResponse<ProductListDTO>> 로 추론됨
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+        isLoading,
+        isError,
+        error,
+    } = useInfiniteQuery({
+        queryKey: ["productsRanking", size, sort] as const,
+        queryFn: ({ pageParam = 0 }) =>
+            listProducts(pageParam, size, sort),
+        getNextPageParam: (lastPage) =>
+            lastPage.number + 1 < lastPage.total_pages
+                ? lastPage.number + 1
+                : undefined,
+        initialPageParam: 0,           // 필수
+        staleTime: 5 * 60 * 1000,      // 5분
+    });
 
-    const queryOptions: UseQueryOptions<
-        PageResponse<ProductListDTO>, // TQueryFnData
-        Error,                       // TError
-        PageResponse<ProductListDTO>,// TData
-        ProductsQueryKey             // TQueryKey
-    > = {
-        queryKey,
-        queryFn: () => listProducts(page, size, sort),
-        placeholderData: keepPreviousData,
-        staleTime: 5 * 60 * 1000,    // 5분
-    };
+    if (isLoading) return <div>불러오는 중…</div>;
+    if (isError) return <div>에러: {error.message}</div>;
 
-    const { data, isLoading, isError, error } = useQuery(queryOptions);
-
-    if (isLoading) {
-        return <div className="p-4 text-gray-600">불러오는 중…</div>;
-    }
-    if (isError || !data) {
-        return (
-            <div className="p-4 text-red-500">
-                에러 발생{error ? `: ${error.message}` : ""}
-            </div>
-        );
-    }
+    // ★ data.pages 를 안전하게 사용 가능
+    const products = data?.pages.flatMap((pg) => pg.content) ?? [];
 
     return (
         <ProductLayout>
             <ListComponent
-                products={data.content}
-                page={data.number}
-                size={data.size}
-                totalElements={data.total_elements}
-                setPage={setPage}
+                products={products}
+                fetchNextPage={fetchNextPage}
+                hasNextPage={hasNextPage}
+                isFetchingNextPage={isFetchingNextPage}
             />
         </ProductLayout>
     );
