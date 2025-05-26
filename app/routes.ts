@@ -30,10 +30,9 @@ export default [
     route("admin/notices/:id/edit","routes/admin/notices/editPage.tsx"),
     
     // 강민
-    route('/','layout/authLayout.tsx', [
-        route("home", "routes/home.tsx"),
-        route('login', 'routes/auth/loginPage.tsx'),
+    route('','layout/authLayout.tsx', [
+        route("/home", "routes/home.tsx"),
+        route('/login', 'routes/auth/loginPage.tsx'),
     ]),
-    route('login/google', 'routes/auth/googleRedirect.tsx'),
   
 ] satisfies RouteConfig;
