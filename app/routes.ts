@@ -28,7 +28,8 @@ export default [
     route("admin/notices/add",    "routes/admin/notices/addPage.tsx"),
     route("admin/notices/:id",    "routes/admin/notices/detailPage.tsx"),
     route("admin/notices/:id/edit","routes/admin/notices/editPage.tsx"),
-    
+    route("products/ranking","routes/products/listPage.tsx"),
+
     // 강민
     route('/','layout/authLayout.tsx', [
         route("home", "routes/home.tsx"),
