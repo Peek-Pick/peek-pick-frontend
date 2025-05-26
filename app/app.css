@@ -1,4 +1,8 @@
-@import "tailwindcss";
+@import "tailwindcss";/*
+@import 'flowbite';
+@import "tailwindcss/preflight";*/
+@tailwind utilities;
+
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
