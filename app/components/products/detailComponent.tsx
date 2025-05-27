@@ -40,6 +40,10 @@ export default function DetailComponent({ product }: Props) {
                         <p>{product.barcode}</p>
                     </div>
                     <div>
+                        <p className="font-medium">상세 설명</p>
+                        <p>{product.description ?? "-"}</p>
+                    </div>
+                    <div>
                         <p className="font-medium">카테고리</p>
                         <p>{product.category ?? "-"}</p>
                     </div>
