@@ -31,16 +31,20 @@ export default [
 
       
     // 동훈
-    route("admin/notices/list",   "routes/admin/notices/listPage.tsx"),
-    route("admin/notices/add",    "routes/admin/notices/addPage.tsx"),
-    route("admin/notices/:id",    "routes/admin/notices/detailPage.tsx"),
-    route("admin/notices/:id/edit","routes/admin/notices/editPage.tsx"),
-    
-    // 강민
-    route('/','layout/authLayout.tsx', [
-        route("home", "routes/home.tsx"),
-        route('login', 'routes/auth/loginPage.tsx'),
+    route("/admin/notices", "layout/noticeLayout.tsx", [
+        route("list",   "routes/admin/notices/listPage.tsx"),
+        route("add",    "routes/admin/notices/addPage.tsx"),
+        route(":id",    "routes/admin/notices/detailPage.tsx"),   // <-- useParams().id
+        route(":id/edit","routes/admin/notices/editPage.tsx"),
     ]),
-    route('login/google', 'routes/auth/googleRedirect.tsx'),
+    route("products/ranking", "routes/products/listPage.tsx"),
+    route("products/:barcode", "routes/products/detailPage.tsx"),
+
+
+    // 강민
+    route('','layout/authLayout.tsx', [
+        route("/home", "routes/home.tsx"),
+        route('/login', 'routes/auth/loginPage.tsx'),
+    ]),
   
 ] satisfies RouteConfig;
