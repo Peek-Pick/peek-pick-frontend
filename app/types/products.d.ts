@@ -31,6 +31,8 @@ export interface ProductDetailDTO {
     name: string;
     /** 카테고리 */
     category?: string | null;
+    /** 상품 설명 (세부정보) */
+    description?: string | null;    // ← 추가
     /** 용량 */
     volume?: string | null;
     /** 이미지 URL */
