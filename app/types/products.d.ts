@@ -2,16 +2,16 @@
  * 상품 목록 조회 시 반환되는 DTO
  */
 export interface ProductListDTO {
+    barcode: string;
     product_id: number;
     name: string;
     category?: string | null;
     img_url?: string | null;
-    like_count?: number;
+    like_count?: number | null;
 }
 
 /**
  * 페이지네이션 응답 공통 타입
- * Spring Data JPA의 Page 객체가 반환하는 snake_case 필드에 맞춰 정의합니다.
  */
 export interface PageResponse<T> {
     content: T[];
@@ -19,4 +19,28 @@ export interface PageResponse<T> {
     total_pages: number;
     size: number;
     number: number;
+}
+
+/**
+ * 상품 상세 조회 시 반환되는 DTO
+ */
+export interface ProductDetailDTO {
+    /** 바코드 */
+    barcode: string;
+    /** 상품명 */
+    name: string;
+    /** 카테고리 */
+    category?: string | null;
+    /** 용량 */
+    volume?: string | null;
+    /** 이미지 URL */
+    img_url?: string | null;
+    /** 원재료 */
+    ingredients?: string | null;
+    /** 알레르기 정보 */
+    allergens?: string | null;
+    /** 영양 성분 */
+    nutrition?: string | null;
+    /** 좋아요 수 */
+    like_count?: number | null;
 }
