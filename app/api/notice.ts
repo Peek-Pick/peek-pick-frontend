@@ -8,7 +8,7 @@ import type {
 } from "~/types/notice";
 import axiosInstance from "~/instance/axiosInstance";
 
-const BASE_URL = "http://localhost:8080/admin/notices";
+const BASE_URL = "http://localhost:8080/api/v1/admin/notices";
 
 // 공지사항 목록(페이징) 조회
 export function fetchNotices() {
@@ -17,29 +17,29 @@ export function fetchNotices() {
 
 // 단일 공지 조회
 export function fetchNotice(id: number) {
-    return axios.get<NoticeResponseDto>(`${BASE_URL}/${id}`);
+    return axiosInstance.get<NoticeResponseDto>(`${BASE_URL}/${id}`);
 }
 
 // 공지사항 생성
 export function createNotice(data: NoticeRequestDto) {
-    return axios.post<NoticeResponseDto>(BASE_URL, data);
+    return axiosInstance.post<NoticeResponseDto>(BASE_URL, data);
 }
 
 // 공지사항 수정
 export function updateNotice(id: number, data: NoticeRequestDto) {
-    return axios.put<NoticeResponseDto>(`${BASE_URL}/${id}`, data);
+    return axiosInstance.put<NoticeResponseDto>(`${BASE_URL}/${id}`, data);
 }
 
 // 공지사항 삭제
 export function deleteNotice(id: number) {
-    return axios.delete<void>(`${BASE_URL}/${id}`);
+    return axiosInstance.delete<void>(`${BASE_URL}/${id}`);
 }
 
 // 공지사항 이미지 업로드
 export function uploadImages(id: number, files: FileList) {
     const formData = new FormData();
     Array.from(files).forEach((file) => formData.append("files", file));
-    return axios.post<void>(`${BASE_URL}/${id}/images`, formData, {
+    return axiosInstance.post<void>(`${BASE_URL}/${id}/images`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
     });
 }

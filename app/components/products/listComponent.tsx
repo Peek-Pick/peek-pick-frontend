@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";              // ← 추가
 import type { ProductListDTO } from "~/types/products";
 
 interface Props {
@@ -16,7 +17,7 @@ export default function ListComponent({
                                           isFetchingNextPage,
                                       }: Props) {
     const bottomRef = useRef<HTMLDivElement>(null);
-
+    const navigate = useNavigate();//상세 페이지에 필요함
     useEffect(() => {
         const el = bottomRef.current;
         if (!el) return;
@@ -45,8 +46,9 @@ export default function ListComponent({
         <div className="p-4 grid grid-cols-2 gap-4">
             {products.map((p) => (
                 <div
-                    key={p.product_id}
+                    key={p.barcode}
                     className="border rounded-lg overflow-hidden"
+                    onClick={() => navigate(`/products/${p.barcode}`)}
                 >
                     {p.img_url && (
                         <img
