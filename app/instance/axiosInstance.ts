@@ -1,39 +1,44 @@
-import axios, { AxiosError, type AxiosRequestConfig } from "axios";
+import axios, { type AxiosRequestConfig, type AxiosError } from "axios";
 import { refreshAccessToken } from "~/api/authAPI";
 
-const axiosInstance = axios.create({
+const instance = axios.create({
     baseURL: "http://localhost:8080/api/v1",
     withCredentials: true,
 });
 
-// 응답 인터셉터
-axiosInstance.interceptors.response.use(
-    (response) => response,
+let isRefreshing = false;
+let requestQueue: ((config: AxiosRequestConfig) => void)[] = [];
+
+instance.interceptors.response.use(
+    res => res,
     async (error: AxiosError) => {
-        const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
+        const original = error.config as AxiosRequestConfig & { _retry?: boolean };
 
-        if (error.response?.status === 401 && !originalRequest._retry) {
-            console.warn("💥 401 발생, access_token 만료 의심. refresh 시도 중...");
-            originalRequest._retry = true;
+        if (error.response?.status === 401 && !original._retry) {
+            original._retry = true;
 
-            try {
-                await refreshAccessToken();
-                return axiosInstance(originalRequest); // 갱신 후 원래 요청 재시도
-            } catch (refreshError) {
-                console.error("자동 토큰 갱신 실패", refreshError);
-
-                // 클라이언트 사이드에서만 리다이렉트 실행
-                if (typeof window !== "undefined") {
-                    console.warn("🚪 로그아웃 처리, 로그인 페이지로 이동");
-                    window.location.href = "/login";
+            if (!isRefreshing) {
+                isRefreshing = true;
+                try {
+                    await refreshAccessToken();
+                    isRefreshing = false;
+                    // 대기 중인 요청들 재시도
+                    requestQueue.forEach(cb => cb(original));
+                    requestQueue = [];
+                } catch {
+                    // refresh 실패 시 로그아웃 로직
+                    if (typeof window !== "undefined") window.location.href = "/login";
                 }
-
-                return Promise.reject(refreshError);
             }
+
+            // 새로고침 중에는 요청을 큐에 추가
+            return new Promise(resolve => {
+                requestQueue.push((cfg) => resolve(instance(cfg)));
+            });
         }
 
         return Promise.reject(error);
     }
 );
 
-export default axiosInstance;
+export default instance;
