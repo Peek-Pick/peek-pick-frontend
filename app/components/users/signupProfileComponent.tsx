@@ -1,15 +1,27 @@
 import { useSignupContext } from "~/contexts/signupContext";
 import { useNavigate } from "react-router-dom";
+import {useEffect} from "react";
+import {useLocation} from "react-router";
 
 export default function SignupProfileComponent() {
     const {
         nickname, setNickname,
         birthDate, setBirthDate,
         gender, setGender,
-        nationality, setNationality
+        nationality, setNationality,
+        setEmail, setPassword
     } = useSignupContext();
 
+    const location = useLocation();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const emailFromState = location.state?.email;
+        if (emailFromState) {
+            setEmail(emailFromState);
+            setPassword(null);
+        }
+    }, [location.state, setEmail]);
 
     const moveToTagPage = (e: React.FormEvent) => {
         e.preventDefault();
