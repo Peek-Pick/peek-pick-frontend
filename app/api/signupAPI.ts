@@ -19,6 +19,7 @@ export async function SignupForm(data: SignupRequest): Promise<ActionResult<numb
     await new Promise(resolve => setTimeout(resolve, 1500));
 
     const res = await axios.post<ActionResult<number>>(`${host}/signup`, data, {
+        withCredentials: true,
         headers: {
             "Content-Type": "application/json",
         },
