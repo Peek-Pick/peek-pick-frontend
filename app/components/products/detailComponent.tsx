@@ -65,11 +65,6 @@ export default function DetailComponent({ product }: Props) {
                     </div>
                 </div>
             </div>
-
-            {/* 3. 리뷰 화면 자리 표시용 */}
-            <div className="border rounded-lg p-4 bg-gray-50 text-center text-gray-500">
-                리뷰 화면
-            </div>
         </div>
     );
 }

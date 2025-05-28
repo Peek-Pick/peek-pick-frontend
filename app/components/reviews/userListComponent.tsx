@@ -37,12 +37,15 @@ export default function UserListComponent({reviewList, fetchNextPage, hasNextPag
         return () => observer.disconnect();
     }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-    if (isLoading) return <p className="text-center p-4">로딩 중입니다</p>;
-    if (isError) return <p className="text-center p-4 text-red-500">리뷰를 불러오지 못했습니다</p>;
+    if (isLoading)
+        return <p className="text-center p-4 text-base sm:text-lg">로딩 중입니다</p>;
+    if (isError)
+        return
+            <p className="text-center p-4 text-red-500 text-base sm:text-lg">리뷰를 불러오지 못했습니다</p>;
 
     return (
-        <div className="w-full min-h-screen bg-gray-50 p-4">
-            <div className="max-w-md w-full mx-auto bg-white shadow rounded-lg space-y-2">
+        <div className="w-full min-h-screen bg-gray-50 flex justify-center p-4">
+            <div className="w-full max-w-md sm:max-w-xl md:max-w-3xl space-y-4">
                 {reviewList.map((review) => (
                     <div
                         key={`review-${review.review_id}`}
@@ -51,18 +54,19 @@ export default function UserListComponent({reviewList, fetchNextPage, hasNextPag
                         {/* 상품 정보 */}
                         <div className="flex items-center space-x-3">
                             <img
-                                src={'/example.jpg'}
-                                alt="상품 이미지"
-                                className="w-16 h-16 rounded-lg object-cover"
+                                src={review.image_url || "/example.jpg"}
+                                alt={review.name}
+                                className="w-24 h-24 sm:w-24 sm:h-24 md:w-24 md:h-24 rounded-lg object-cover"
                             />
                             <div>
-                                <h2 className="text-sm font-semibold text-gray-900">바나나킥</h2>
-                                <p className="text-sm text-gray-500">농심</p>
+                                <h2 className="text-base sm:text-lg font-semibold text-gray-900">
+                                    {review.name}
+                                </h2>
                             </div>
                         </div>
 
                         {/* 리뷰 별점 + 작성일 */}
-                        <div className="flex justify-between items-center text-xs text-gray-500">
+                        <div className="flex justify-between items-center text-xs sm:text-sm text-gray-500">
                             <div className="flex items-center space-x-1">
                                 {Array.from({ length: 5 }).map((_, i) => (
                                     <span
@@ -79,25 +83,31 @@ export default function UserListComponent({reviewList, fetchNextPage, hasNextPag
                         </div>
 
                         {/* 리뷰 텍스트 */}
-                        <p className="whitespace-pre-wrap text-gray-800 text-sm">
+                        <p className="whitespace-pre-wrap text-gray-800 text-sm sm:text-base line-clamp-2">
                             {review.comment}
                         </p>
 
                         {/* 리뷰 관리 버튼 */}
                         <div className="flex gap-2 pt-2">
-                            <button className="flex-1 text-center px-3 py-1.5 text-xs border rounded hover:bg-gray-100"
-                                onClick={() => navigate(`/reviews/modify/${review?.review_id}`)}>
+                            <button
+                                className="flex-1 text-center px-3 py-1.5 text-xs sm:text-sm border rounded hover:bg-gray-100 transition"
+                                onClick={() =>
+                                    navigate(`/reviews/modify/${review.review_id}`)
+                                }
+                            >
                                 리뷰 수정
                             </button>
-                            <button className="flex-1 text-center px-3 py-1.5 text-xs border rounded hover:bg-gray-100"
-                                onClick={() => navigate(`/reviews/${review?.review_id}`)}>
+                            <button
+                                className="flex-1 text-center px-3 py-1.5 text-xs sm:text-sm border rounded hover:bg-gray-100 transition"
+                                onClick={() => navigate(`/reviews/${review.review_id}`)}
+                            >
                                 리뷰 보기
                             </button>
                         </div>
                     </div>
                 ))}
 
-                {/* 무한 스크롤 */}
+                {/* 무한 스크롤 디텍터 */}
                 {hasNextPage && <div ref={bottomRef} className="h-1" />}
                 {isFetchingNextPage && (
                     <p className="text-center py-2 text-sm text-gray-600">
