@@ -1,6 +1,4 @@
-@import "tailwindcss";/*
-@import 'flowbite';
-@import "tailwindcss/preflight";*/
+@import "tailwindcss";
 @tailwind utilities;
 
 

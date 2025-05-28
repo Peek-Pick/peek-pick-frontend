@@ -1,136 +1,174 @@
-import {Link, Outlet} from "react-router";
-
+import { NavLink, Outlet } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+    faHome,
+    faBox,
+    faUsers,
+    faStar,
+    faQuestionCircle,
+    faFlag,
+    faBullhorn,
+    faCartShopping,
+    faChevronRight,
+    faChevronLeft,
+    faBell,
+    faUserCircle,
+} from '@fortawesome/free-solid-svg-icons'
 
 export default function AdminLayout() {
+    const [collapsed, setCollapsed] = useState(false);
 
+    //실시간 시간 처리
+    const [currentTime, setCurrentTime] = useState(
+        new Date().toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true,
+        })
+    );
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentTime(
+                new Date().toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true,
+                })
+            );
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, []);
+
+    const menuItems = [
+        { to: "/admin/dashboard", icon: faHome, label: "대시보드" },
+        { to: "/admin/products/list", icon: faBox, label: "상품" },
+        { to: "/admin/users/list", icon: faUsers, label: "사용자" },
+        { to: "/admin/reviews/list", icon: faStar, label: "리뷰" },
+        { to: "/admin/inquiries/list", icon: faQuestionCircle, label: "문의" },
+        { to: "/admin/reports/list", icon: faFlag, label: "신고" },
+        { to: "/admin/notices/list", icon: faBullhorn, label: "공지" },
+        { to: "/admin/points/list", icon: faCartShopping, label: "포인트 상점" },
+    ];
 
     return (
-        <div className="wrapper min-h-screen flex">
+        <div className="flex min-h-screen">
             {/* 사이드바 */}
-            <aside className="sidebar w-64 bg-white text-gray-800 shadow-md" data-color="white" data-active-color="danger">
-                <div className="logo p-4 border-b border-gray-200">
-                    <a href="https://www.creative-tim.com" className="simple-text logo-mini">
-                        <div className="logo-image-small">
-                            <img src="../../assets/img/logo-small.png" alt="logo" />
-                        </div>
-                    </a>
-                    <a href="https://www.creative-tim.com" className="simple-text logo-normal font-bold text-lg">
-                        Peek&amp;Pick
-                    </a>
+            <aside
+                className={`flex flex-col bg-gradient-to-br from-[#1a1c2e] to-[#16181f] text-white transition-all duration-300 fixed top-0 left-0 h-screen z-20 ${
+                    collapsed ? "w-20" : "w-72"
+                }`}
+            >
+                {/* 토글 버튼 */}
+                <button
+                    onClick={() => setCollapsed(!collapsed)}
+                    className="absolute -right-3 top-6 bg-white text-black rounded-full w-8 h-8 shadow-md z-30 flex items-center justify-center"
+                >
+                    <FontAwesomeIcon icon={collapsed ? faChevronRight : faChevronLeft} />
+                </button>
+
+                {/* 로고 영역 */}
+                <div className="p-4">
+                    <p
+                        className={`text-sm text-gray-400 mt-1 transition-opacity duration-300 ${
+                            collapsed ? "opacity-0" : ""
+                        }`}
+                    >
+                        Dashboard
+                    </p>
                 </div>
-                <nav className="sidebar-wrapper p-4">
-                    <ul className="nav space-y-2">
-                        <li className="active">
-                            <Link to="/admin/dashboard" className="flex items-center space-x-2 text-red-500">
-                                <i className="nc-icon nc-bank" />
-                                <p>대시보드</p>
-                            </Link>
-                        </li>
-                        <li>
-                            <Link to="/admin/points/list" className="flex items-center space-x-2 hover:text-red-500">
-                                <i className="nc-icon nc-basket" />
-                                <p>상품</p>
-                            </Link>
-                        </li>
-                        <li>
-                            <Link to="/admin/points/list" className="flex items-center space-x-2 hover:text-red-500">
-                                <i className="nc-icon nc-badge" />
-                                <p>사용자</p>
-                            </Link>
-                        </li>
-                        <li>
-                            <Link to="/admin/points/list" className="flex items-center space-x-2 hover:text-red-500">
-                                <i className="nc-icon nc-bell-55" />
-                                <p>리뷰</p>
-                            </Link>
-                        </li>
-                        <li>
-                            <Link to="/admin/points/list" className="flex items-center space-x-2 hover:text-red-500">
-                                <i className="nc-icon nc-chat-33" />
-                                <p>문의</p>
-                            </Link>
-                        </li>
-                        <li>
-                            <Link to="/admin/points/list" className="flex items-center space-x-2 hover:text-red-500">
-                                <i className="nc-icon nc-bell-55" />
-                                <p>신고</p>
-                            </Link>
-                        </li>
-                        <li>
-                            <Link to="/admin/notices/list" className="flex items-center space-x-2 hover:text-red-500">
-                                <i className="nc-icon nc-paper" />
-                                <p>공지</p>
-                            </Link>
-                        </li>
-                        <li className="active-pro">
-                            <Link to="/admin/points/list" className="flex items-center space-x-2 text-yellow-500">
-                                <i className="nc-icon nc-cart-simple" />
-                                <p>포인트 상점</p>
-                            </Link>
-                        </li>
-                    </ul>
+
+                {/* 메뉴 영역 */}
+                <nav className="flex flex-col mt-2 space-y-1 px-2">
+                    {menuItems.map(({ to, icon, label }) => (
+                        <NavLink
+                            key={to}
+                            to={to}
+                            className={({ isActive }) =>
+                                `flex items-center gap-3 px-4 py-2 rounded transition-all duration-200 ${
+                                    isActive
+                                        ? "bg-white/10 text-white font-semibold"
+                                        : "text-gray-400 hover:text-white hover:translate-x-1"
+                                } ${collapsed ? "justify-center px-2" : ""}`
+                            }
+                        >
+                            <FontAwesomeIcon icon={icon} />
+                            {!collapsed && <span>{label}</span>}
+                        </NavLink>
+                    ))}
                 </nav>
+
+                {/* 프로필 */}
+                <div className="mt-auto p-4 border-t border-white/10">
+                    <div className="flex items-center">
+                        <img
+                            src="https://randomuser.me/api/portraits/women/70.jpg"
+                            alt="Profile"
+                            className="h-10 w-10 rounded-full"
+                        />
+                        {!collapsed && (
+                            <div className="ml-3">
+                                <h6 className="text-white mb-0 text-sm">이근황</h6>
+                                <small className="text-gray-400">Admin</small>
+                            </div>
+                        )}
+                    </div>
+                </div>
             </aside>
 
-            {/* 메인 패널 */}
-            <main className="main-panel flex-1 bg-gray-100 ml-64">
-                {/* 네비게이션 바 */}
-                <nav className="navbar sticky top-0 bg-white shadow z-10">
-                    <div className="container mx-auto flex items-center justify-between p-4">
-                        <div className="navbar-wrapper flex items-center">
-                            <button type="button" className="navbar-toggler">
-                                <span className="navbar-toggler-bar bar1"></span>
-                                <span className="navbar-toggler-bar bar2"></span>
-                                <span className="navbar-toggler-bar bar3"></span>
-                            </button>
-                            <a className="navbar-brand ml-4 text-lg font-bold" href="#">
-                                Dashboard
-                            </a>
-                        </div>
-
-                        <div className="flex items-center space-x-4">
-                            <form className="relative">
-                                <input
-                                    type="text"
-                                    className="form-control px-4 py-2 rounded border border-gray-300"
-                                    placeholder="Search..."
-                                />
-                                <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
-                                    <i className="nc-icon nc-zoom-split"></i>
-                                </div>
-                            </form>
-                            <a className="nav-link" href="#">
-                                <i className="nc-icon nc-layout-11"></i>
-                            </a>
-                            <div className="relative group">
-                                <button className="nav-link">
-                                    <i className="nc-icon nc-bell-55"></i>
-                                </button>
-                                <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg hidden group-hover:block">
-                                    <a className="block px-4 py-2 hover:bg-gray-100" href="#">
-                                        Action
-                                    </a>
-                                    <a className="block px-4 py-2 hover:bg-gray-100" href="#">
-                                        Another action
-                                    </a>
-                                    <a className="block px-4 py-2 hover:bg-gray-100" href="#">
-                                        Something else here
-                                    </a>
-                                </div>
-                            </div>
-                            <a className="nav-link" href="#">
-                                <i className="nc-icon nc-settings-gear-65"></i>
-                            </a>
-                        </div>
+            {/* 메인 영역 */}
+            <div
+                className={`flex-1 min-h-screen transition-all duration-300 ${
+                    collapsed ? "ml-20" : "ml-72"
+                }`}
+            >
+                {/* 상단바 */}
+                <header
+                    className="bg-white shadow fixed top-0 z-30 right-0 transition-all duration-300 flex items-center justify-between px-6 py-3"
+                    style={{
+                        left: collapsed ? "5rem" : "18rem",
+                        width: collapsed ? "calc(100% - 5rem)" : "calc(100% - 18rem)",
+                    }}
+                >
+                    {/* 좌측 타이틀 */}
+                    <div className="flex items-center gap-3">
+                        <span className="text-xl font-bold text-gray-800">My Admin</span>
                     </div>
-                </nav>
 
-                {/* 여기서 자식 컴포넌트 렌더링 */}
-                <section className="p-6">
+                    {/* 우측 메뉴: 시간, 알림, 계정 */}
+                    <div className="flex items-center gap-6">
+                        {/* 시간 */}
+                        <span>{currentTime}</span>
+
+                        {/* 알림 버튼 */}
+                        <button
+                            className="relative text-gray-600 hover:text-blue-600 focus:outline-none"
+                            aria-label="Notifications"
+                        >
+                            <FontAwesomeIcon icon={faBell} size="lg" />
+                            {/* 알림 뱃지 예시 */}
+                            <span className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full text-xs w-4 h-4 flex items-center justify-center">
+                                3
+                            </span>
+                        </button>
+
+                        {/* 관리자 계정 버튼 */}
+                        <button
+                            className="text-gray-600 hover:text-blue-600 focus:outline-none flex items-center gap-1"
+                            aria-label="Account settings"
+                        >
+                            <FontAwesomeIcon icon={faUserCircle} size="lg" />
+                            <span className="hidden sm:inline text-gray-800 font-medium">Admin</span>
+                        </button>
+                    </div>
+                </header>
+
+                {/* 콘텐츠 */}
+                <main className="pt-20 p-6">
                     <Outlet />
-                </section>
-
-            </main>
+                </main>
+            </div>
         </div>
     );
 }

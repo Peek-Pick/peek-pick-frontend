@@ -1,5 +1,7 @@
 import { useNavigate } from "react-router";
 import type { PointStoreListDTO } from "~/types/points";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCartShopping } from '@fortawesome/free-solid-svg-icons'
 
 interface Props {
     products: PointStoreListDTO[];
@@ -28,79 +30,167 @@ export default function ListComponent({ products, page, size, totalElements, set
 
     return (
         <div>
-            <h4 className="text-xl font-bold mb-4 flex items-center gap-2">
-                <i className="nc-icon nc-basket" /> 상품 목록
-            </h4>
-
-            <div className="overflow-x-auto bg-white shadow rounded-lg">
-                <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                    <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">이미지</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">상품명</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">가격</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">타입</th>
-                    </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                    {products.length === 0 ? (
-                        <tr>
-                            <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
-                                등록된 상품이 없습니다.
-                            </td>
-                        </tr>
-                    ) : (
-                        products.map((product) => (
-                            <tr
-                                key={product.pointstoreId}
-                                className="hover:bg-gray-100 cursor-pointer"
-                                onClick={() => goDetail(product.pointstoreId)}
-                            >
-                                <td className="px-6 py-4 whitespace-nowrap">{product.pointstoreId}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <img
-                                        src={`http://localhost:8080/uploads/${product.imgUrl}`}
-                                        alt={product.item}
-                                        className="w-16 h-16 object-cover rounded"
-                                    />
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">{product.item}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">{product.price.toLocaleString()}P</td>
-                                <td className="px-6 py-4 whitespace-nowrap">{product.productType}</td>
-                            </tr>
-                        ))
-                    )}
-                    </tbody>
-                </table>
+            <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                <FontAwesomeIcon icon={faCartShopping} /> 포인트 상품 관리
+            </h3>
+            {/* 상품 추가 버튼 */}
+            <div className="max-w-7xl mx-auto px-4 mb-4 flex justify-end">
+                <button
+                    onClick={() => navigate("/admin/points/add")}
+                    className="flex items-center gap-1 rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-100 hover:text-gray-800 transition"
+                >
+                    <svg
+                        className="w-4 h-4"
+                        viewBox="0 0 18 18"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <path
+                            fillRule="evenodd"
+                            clipRule="evenodd"
+                            d="M15.0911 2.78206C14.2125 1.90338 12.7878 1.90338 11.9092 2.78206L4.57524 10.116C4.26682 10.4244 4.0547 10.8158 3.96468 11.2426L3.31231 14.3352C3.25997 14.5833 3.33653 14.841 3.51583 15.0203C3.69512 15.1996 3.95286 15.2761 4.20096 15.2238L7.29355 14.5714C7.72031 14.4814 8.11172 14.2693 8.42013 13.9609L15.7541 6.62695C16.6327 5.74827 16.6327 4.32365 15.7541 3.44497L15.0911 2.78206ZM12.9698 3.84272C13.2627 3.54982 13.7376 3.54982 14.0305 3.84272L14.6934 4.50563C14.9863 4.79852 14.9863 5.2734 14.6934 5.56629L14.044 6.21573L12.3204 4.49215L12.9698 3.84272ZM11.2597 5.55281L5.6359 11.1766C5.53309 11.2794 5.46238 11.4099 5.43238 11.5522L5.01758 13.5185L6.98394 13.1037C7.1262 13.0737 7.25666 13.003 7.35947 12.9002L12.9833 7.27639L11.2597 5.55281Z"
+                            fill="currentColor"
+                        />
+                    </svg>
+                    상품 추가
+                </button>
             </div>
 
-            <nav className="flex justify-center space-x-1 mt-4">
-                <button
-                    disabled={page === 0}
-                    onClick={() => onPageChange(page - 1)}
-                    className="px-3 py-1 border rounded disabled:opacity-50 hover:bg-gray-200"
-                >
-                    이전
-                </button>
-                {[...Array(totalPages)].map((_, i) => (
-                    <button
-                        key={i}
-                        onClick={() => onPageChange(i)}
-                        className={`px-3 py-1 border rounded ${
-                            i === page ? "bg-indigo-600 text-white" : "hover:bg-gray-200"
-                        }`}
-                    >
-                        {i + 1}
-                    </button>
-                ))}
-                <button
-                    disabled={page >= totalPages - 1}
-                    onClick={() => onPageChange(page + 1)}
-                    className="px-3 py-1 border rounded disabled:opacity-50 hover:bg-gray-200"
-                >
-                    다음
-                </button>
+            <div className="overflow-x-auto bg-white shadow rounded-lg">
+                <div className="overflow-x-auto bg-white shadow rounded-lg">
+                    <table className="min-w-full text-sm divide-y divide-gray-200"> {/* 글자 크기 줄이기 */}
+                        <thead className="bg-gray-50">
+                        <tr>
+                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">이미지</th>
+                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">상품명</th>
+                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">가격</th>
+                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">타입</th>
+                        </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                        {products.length === 0 ? (
+                            <tr>
+                                <td colSpan={5} className="px-4 py-3 text-center text-gray-500">
+                                    등록된 상품이 없습니다.
+                                </td>
+                            </tr>
+                        ) : (
+                            products.map((product) => (
+                                <tr
+                                    key={product.pointstoreId}
+                                    className="hover:bg-gray-100 cursor-pointer text-sm"
+                                    onClick={() => goDetail(product.pointstoreId)}
+                                >
+                                    <td className="px-6 py-4">{product.pointstoreId}</td>
+                                    <td className="px-6 py-4">
+                                        <img
+                                            src={`http://localhost:8080/uploads/${product.imgUrl}`}
+                                            alt={product.item}
+                                            className="w-12 h-12 object-cover rounded"
+                                        />
+                                    </td>
+                                    <td className="px-4 py-2">{product.item}</td>
+                                    <td className="px-4 py-2">{product.price.toLocaleString()}P</td>
+                                    <td className="px-4 py-2">{product.productType}</td>
+                                </tr>
+                            ))
+                        )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {/*페이지네이션*/}
+            <nav aria-label="Page navigation" className="mt-8">
+                <ul className="flex justify-center space-x-3">
+                    {/* 이전 버튼 */}
+                    <li>
+                        <button
+                            type="button"
+                            onClick={() => onPageChange(page - 1)}
+                            disabled={page === 0}
+                            className={`
+w-9 h-9 flex items-center justify-center
+font-medium text-gray-500 transition-colors duration-200 relative
+${page === 0 ? "cursor-not-allowed opacity-50" : "hover:text-blue-600"}
+focus:outline-none
+`}
+                            aria-disabled={page === 0}
+                            aria-label="Previous page"
+                        >
+                            {/* 왼쪽 화살표 SVG */}
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-5 w-5"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                strokeWidth={2}
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <path d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </button>
+                    </li>
+
+                    {/* 페이지 번호 */}
+                    {[...Array(totalPages)].map((_, i) => {
+                        const isActive = i === page;
+                        return (
+                            <li key={i}>
+                                <button
+                                    type="button"
+                                    onClick={() => onPageChange(i)}
+                                    aria-current={isActive ? "page" : undefined}
+                                    className={`
+px-4 py-2 font-medium relative transition-colors duration-200
+${
+                                        isActive
+                                            ? "text-blue-600 after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-blue-600"
+                                            : "text-gray-500 hover:text-blue-600"
+                                    }
+focus:outline-none
+`}
+                                >
+                                    {i + 1}
+                                </button>
+                            </li>
+                        );
+                    })}
+
+                    {/* 다음 버튼 */}
+                    <li>
+                        <button
+                            type="button"
+                            onClick={() => onPageChange(page + 1)}
+                            disabled={page === totalPages - 1}
+                            className={`
+w-9 h-9 flex items-center justify-center
+font-medium text-gray-500 transition-colors duration-200 relative
+${page === totalPages - 1 ? "cursor-not-allowed opacity-50" : "hover:text-blue-600"}
+focus:outline-none
+`}
+                            aria-disabled={page === totalPages - 1}
+                            aria-label="Next page"
+                        >
+                            {/* 오른쪽 화살표 SVG */}
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-5 w-5"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                strokeWidth={2}
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <path d="M9 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                    </li>
+                </ul>
             </nav>
         </div>
     );

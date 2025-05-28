@@ -9,6 +9,7 @@ import { Outlet } from "react-router-dom";
 import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./app.css";
+/*import "../public/assets/css/paper-dashboard.css"; //템플릿 설정*/
 
 const queryClient = new QueryClient();
 

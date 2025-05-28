@@ -1,107 +1,65 @@
-import { useNavigate } from "react-router";
-import type { PointStoreListDTO } from "~/types/points";
+import { useEffect, useState } from "react";
+import { useParams, Link } from "react-router";
+import type { PointStoreDTO } from "~/types/points";
 
 interface Props {
-    products: PointStoreListDTO[];
-    page: number;
-    size: number;
-    totalElements: number;
-    setPage: (page: number) => void;
+    data: PointStoreDTO;
 }
-
-export default function ListComponent({ products, page, size, totalElements, setPage }: Props) {
-    const totalPages = Math.ceil(
-        (Number.isFinite(totalElements) && totalElements >= 0 ? totalElements : 0) /
-        (Number.isFinite(size) && size > 0 ? size : 1)
-    );
-
-    const navigate = useNavigate();
-
-    const onPageChange = (newPage: number) => {
-        if (newPage < 0 || newPage >= totalPages) return;
-        setPage(newPage);
-    };
-
-    const goDetail = (id: number) => {
-        navigate(`/admin/points/read/${id}`);
-    };
+export default function ReadComponent({ data }: Props) {
+    console.log(data);
 
     return (
-        <div>
-            <h4 className="text-xl font-bold mb-4 flex items-center gap-2">
-                <i className="nc-icon nc-basket" /> 상품 목록
-            </h4>
+        <div className="bg-white shadow-md rounded-lg p-6 text-gray-800 max-w-4xl mx-auto">
+            <h2 className="text-xl font-bold mb-6 border-b pb-2">상품 상세 정보</h2>
 
-            <div className="overflow-x-auto bg-white shadow rounded-lg">
-                <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                    <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">이미지</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">상품명</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">가격</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">타입</th>
-                    </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                    {products.length === 0 ? (
-                        <tr>
-                            <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
-                                등록된 상품이 없습니다.
-                            </td>
-                        </tr>
-                    ) : (
-                        products.map((product) => (
-                            <tr
-                                key={product.pointstoreId}
-                                className="hover:bg-gray-100 cursor-pointer"
-                                onClick={() => goDetail(product.pointstoreId)}
+            <div className="flex flex-col md:flex-row gap-8">
+                <div className="w-full md:w-1/3 flex justify-center items-center">
+                    <img
+                        src={`http://localhost:8080/uploads/${data.imgUrl}`}
+                        alt={data.item}
+                        className="w-full max-h-64 object-contain rounded-md border border-gray-200 shadow-sm"
+                    />
+                </div>
+
+                <div className="w-full md:w-2/3 space-y-6">
+                    {[
+                        { label: "상품명", value: data.item },
+                        { label: "가격", value: `${data.price.toLocaleString()}P` },
+                        { label: "설명", value: data.description, isDescription: true },
+                        { label: "타입", value: data.productType },
+                    ].map(({ label, value, isDescription }, i) => (
+                        <div
+                            key={i}
+                            className="bg-white rounded-lg p-5 shadow-sm border border-gray-100"
+                            style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.08)' }}
+                        >
+                            <h3 className="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wide">{label}</h3>
+                            <p
+                                className={`text-gray-900 ${isDescription ? "whitespace-pre-line leading-relaxed" : "font-medium"}`}
+                                style={{ fontSize: isDescription ? "0.9rem" : "1rem" }}
                             >
-                                <td className="px-6 py-4 whitespace-nowrap">{product.pointstoreId}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <img
-                                        src={`http://localhost:8080/uploads/${product.imgUrl}`}
-                                        alt={product.item}
-                                        className="w-16 h-16 object-cover rounded"
-                                    />
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">{product.item}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">{product.price.toLocaleString()}P</td>
-                                <td className="px-6 py-4 whitespace-nowrap">{product.productType}</td>
-                            </tr>
-                        ))
-                    )}
-                    </tbody>
-                </table>
+                                {value}
+                            </p>
+                        </div>
+                    ))}
+                </div>
+
             </div>
 
-            <nav className="flex justify-center space-x-1 mt-4">
-                <button
-                    disabled={page === 0}
-                    onClick={() => onPageChange(page - 1)}
-                    className="px-3 py-1 border rounded disabled:opacity-50 hover:bg-gray-200"
+            <div className="mt-8 flex gap-3 justify-end">
+                <Link
+                    to={`/admin/points/edit/${data.pointstoreId}`}
+                    className="flex items-center gap-1 rounded-md border border-blue-600 bg-white px-4 py-2 text-sm font-medium text-blue-600 shadow-sm hover:bg-blue-100 hover:text-blue-800 transition"
                 >
-                    이전
-                </button>
-                {[...Array(totalPages)].map((_, i) => (
-                    <button
-                        key={i}
-                        onClick={() => onPageChange(i)}
-                        className={`px-3 py-1 border rounded ${
-                            i === page ? "bg-indigo-600 text-white" : "hover:bg-gray-200"
-                        }`}
-                    >
-                        {i + 1}
-                    </button>
-                ))}
-                <button
-                    disabled={page >= totalPages - 1}
-                    onClick={() => onPageChange(page + 1)}
-                    className="px-3 py-1 border rounded disabled:opacity-50 hover:bg-gray-200"
+                    수정
+                </Link>
+                <Link
+                    to="/admin/points/list"
+                    className="flex items-center gap-1 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-100 hover:text-gray-800 transition"
                 >
-                    다음
-                </button>
-            </nav>
+                    목록으로
+                </Link>
+            </div>
         </div>
     );
 }
