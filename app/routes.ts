@@ -18,6 +18,7 @@ export default [
         route("tag", "routes/users/signupTagPage.tsx"),
         route("google", "routes/auth/googleCallbackPage.tsx"),
     ]),
+    route("/mypage", "routes/users/myPagePage.tsx"),
 
     // 근화
     route("/admin/points", "layout/points/pointLayout.tsx", [

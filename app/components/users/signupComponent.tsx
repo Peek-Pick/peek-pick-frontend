@@ -16,7 +16,7 @@ export default function SignUpPage() {
     }
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-teal-400 to-blue-500 px-4">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-yellow-200 to-green-300 px-4">
 
             {/* Welcome Text */}
             <div className="flex flex-col text-center justify-center items-center mt-12 sm:mt-20 mb-4 sm:mb-6">
