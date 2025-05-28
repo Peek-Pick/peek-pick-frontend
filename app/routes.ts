@@ -1,6 +1,9 @@
 import { type RouteConfig, index, route } from "@react-router/dev/routes";
 
 export default [
+
+    index("routes/index.tsx"),
+
     // 포빙빙
     route("/reviews/product/:productId", "routes/reviews/productListPage.tsx"),
     route("/reviews/user", "routes/reviews/userListPage.tsx"),
@@ -13,6 +16,7 @@ export default [
         index("routes/users/signupPage.tsx"),
         route("profile", "routes/users/signupProfilePage.tsx"),
         route("tag", "routes/users/signupTagPage.tsx"),
+        route("google", "routes/auth/googleCallbackPage.tsx"),
     ]),
 
     // 근화
@@ -38,5 +42,6 @@ export default [
         route("/home", "routes/home.tsx"),
         route('/login', 'routes/auth/loginPage.tsx'),
     ]),
+
   
 ] satisfies RouteConfig;
