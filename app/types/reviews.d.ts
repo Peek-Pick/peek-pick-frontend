@@ -1,11 +1,14 @@
 interface ReviewAddDTO {
+    productId: number;
     score: number;
     comment: string;
+    tagIdList: number[];
 }
 
 interface ReviewSimpleDTO {
     review_id: number;
     user_id: number;
+    product_id: number;
     score: number;
     recommend_cnt: number;
     comment: string;
@@ -15,11 +18,14 @@ interface ReviewSimpleDTO {
     image: ReviewImgDTO;
     nickname: string;
     is_liked: boolean;
+    name: string;
+    image_url: string;
 }
 
 interface ReviewDetailDTO {
     review_id: number;
     user_id: number;
+    product_id: number;
     score: number;
     recommend_cnt: number;
     comment: string;
@@ -29,6 +35,9 @@ interface ReviewDetailDTO {
     images: ReviewImgDTO[];
     nickname: string;
     is_liked: boolean;
+    tag_list: TagDTO[];
+    name: string;
+    image_url: string;
 }
 
 interface ReviewImgDTO {

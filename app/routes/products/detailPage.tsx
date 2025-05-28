@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import ProductLayout from "~/layout/productLayout";
 import DetailComponent from "~/components/products/detailComponent";
 import { getProductDetail } from "~/api/productsAPI";
+import PreviewComponent from "~/components/reviews/previewComponent"
 import type { ProductDetailDTO } from "~/types/products";
 
 export default function DetailPage() {
@@ -14,6 +15,7 @@ export default function DetailPage() {
     // ───────────────────────────────────────────────────────────────
     // useQuery를 object syntax로 호출
     // ───────────────────────────────────────────────────────────────
+
     const {
         data,         // ProductDetailDTO | undefined
         isLoading,
@@ -42,6 +44,7 @@ export default function DetailPage() {
     return (
         <ProductLayout>
             <DetailComponent product={data} />
+            <PreviewComponent barcode={barcode!}></PreviewComponent>
         </ProductLayout>
     );
 }
