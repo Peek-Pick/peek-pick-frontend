@@ -21,15 +21,19 @@ export default [
     route("/mypage", "routes/users/myPagePage.tsx"),
 
     // 근화
-    route("/admin/points", "layout/points/pointLayout.tsx", [
-        route("list", 'routes/admin/points/listPage.tsx'),
-        route("read/:id", 'routes/admin/points/readPage.tsx'),
-        route("add", 'routes/admin/points/addPage.tsx'),
-        route("edit/:id", 'routes/admin/points/editPage.tsx')
+    route("/admin", "layout/adminLayout.tsx", [
+        route("dashboard", "routes/admin/dashboardPage.tsx"), //관리자 대시보드
+
+        route("points/list", 'routes/admin/points/listPage.tsx'),
+        route("points/read/:id", 'routes/admin/points/readPage.tsx'),
+        route("points/add", 'routes/admin/points/addPage.tsx'),
+        route("points/edit/:id", 'routes/admin/points/editPage.tsx')
     ]),
     route("points/store/list",   "routes/points/storelistPage.tsx"), //포인트 상점
     route("/user/mypage/points/history", "routes/users/pointLogsPage.tsx"), // 포인트 내역
     route("/user/mypage/coupons", "routes/users/userCouponPage.tsx"), // 쿠폰함
+
+
       
     // 동훈
     route("/admin/notices", "layout/noticeLayout.tsx", [
