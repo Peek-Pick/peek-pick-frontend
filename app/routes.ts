@@ -51,6 +51,7 @@ export default [
         route("/home", "routes/home.tsx"),
         route('/login', 'routes/auth/loginPage.tsx'),
     ]),
+    route("barcode/scan", "routes/barcode/scanPage.tsx"),
 
   
 ] satisfies RouteConfig;
