@@ -16,7 +16,7 @@ export interface MyPageResponse {
     quickStats: QuickStats;
 }
 
-export const fetchUserProfile = async (): Promise<MyPageResponse> => {
+export const getMyPage = async (): Promise<MyPageResponse> => {
     const response = await axiosInstance.get(`${host}/mypage`, { withCredentials: true });
     return response.data;
 };
