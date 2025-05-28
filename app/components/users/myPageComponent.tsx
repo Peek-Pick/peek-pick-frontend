@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import axiosInstance from "~/instance/axiosInstance";
 import {
     FaStore, FaUserCog, FaCoins, FaAngleRight,
     FaHeart, FaPen, FaTicketAlt, FaBarcode,
     FaQuestionCircle, FaBell, FaUserShield, FaFileContract, FaIdBadge, FaUserAltSlash
 } from 'react-icons/fa';
 import { IoLanguage, IoLogOutOutline } from "react-icons/io5";
+import { getMyPage } from "~/api/myPageAPI";
 
 // 타입 정의
 interface MypageData {
@@ -18,12 +18,33 @@ interface MypageData {
     barcodeHistoryCount: number;
 }
 
+
+
 export default function ProfileHeader() {
-    const [myData, setMyData] = useState<MypageData | null>(null);
+
+    const initState:MypageData = {
+        profileImgUrl: '',
+        nickname: '',
+        point: 0,
+        wishlistedCount: 0,
+        reviewCount: 0,
+        couponCount: 0,
+        barcodeHistoryCount: 0
+    }
+
+    const [myData, setMyData] = useState<MypageData>(initState);
 
     useEffect(() => {
-        axiosInstance.get("/api/v1/users/mypage", { withCredentials: true })
-            .then((res) => setMyData(res.data))
+        getMyPage()
+            .then(result => {
+                const transformed = {
+                    profileImgUrl: result.profileImgUrl,
+                    nickname: result.nickname,
+                    point: result.point,
+                    ...result.quickStats, // quickStats 내부 값 펼쳐서 넣어야 함
+                };
+                setMyData(transformed);
+            })
             .catch((err) => console.error("프로필 불러오기 실패", err));
     }, []);
 
