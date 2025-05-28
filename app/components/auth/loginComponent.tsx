@@ -71,7 +71,7 @@ const LoginComponent = () => {
                 {/* 회원가입 링크 */}
                 <div className="text-center text-sm text-gray-600">
                     계정이 없으신가요?{' '}
-                    <a href="/users/signup" className="text-blue-500 hover:underline font-medium">
+                    <a href="/signup" className="text-blue-500 hover:underline font-medium">
                         회원가입
                     </a>
                 </div>

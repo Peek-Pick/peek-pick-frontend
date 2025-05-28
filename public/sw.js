@@ -1,7 +1,7 @@
 const CACHE_NAME = 'peek-and-pick-cache-v1';
 const URLS_TO_CACHE = [
-    '/',
-    '/home',
+    '/',                // 첫 시작화면 ( 홈화면 대체? ) 추후 없앨지 회의
+    '/home',            // 홈화면 만들어야함
     '/app/app.css',
     '/manifest.json',
     '/favicon.ico',

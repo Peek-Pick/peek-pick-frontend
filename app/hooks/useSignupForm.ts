@@ -4,7 +4,7 @@ export function useSignupForm() {
 
     // signup1
     const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
+    const [password, setPassword] = useState<string | null>(""); // null 허용
 
     // signup2
     const [birthDate, setBirthDate] = useState('')
@@ -17,7 +17,7 @@ export function useSignupForm() {
 
     const resetForm = () => {
         setEmail('')
-        setPassword('')
+        setPassword(null)
         setBirthDate('')
         setGender('')
         setNationality('')
