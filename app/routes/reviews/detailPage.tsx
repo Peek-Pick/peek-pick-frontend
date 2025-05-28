@@ -8,8 +8,7 @@ function DetailPage() {
 
     const { data } = useQuery({
         queryKey: ["review", rid],
-        queryFn: () => getReview(Number(rid)),
-        staleTime: 5 * 60 * 1000,
+        queryFn: () => getReview(Number(rid))
     });
 
     console.log(data?.data)

@@ -1,16 +1,11 @@
-import {type FetchNextPageOptions, type InfiniteQueryObserverResult, useMutation, useQueryClient} from "@tanstack/react-query";
-import { useEffect, useRef } from "react";
-import { toggleReview, reportReview } from "~/api/reviews/reviewAPI";
-import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getProductPreviews, toggleReview, reportReview } from "~/api/reviews/reviewAPI";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { getProductIdByBarcode} from "~/api/reviews/reviewAPI"
 
-export interface ReviewListComponentProps {
-    productId: number;
-    reviewList: ReviewDetailDTO[];
-    fetchNextPage: (options?: FetchNextPageOptions) => Promise<InfiniteQueryObserverResult<any, Error>>;
-    hasNextPage: boolean | undefined;
-    isFetchingNextPage: boolean;
-    isLoading: boolean;
-    isError: boolean;
+interface PreviewProps {
+    barcode: string;
 }
 
 enum ReportReason {
@@ -27,57 +22,54 @@ const ReportReasonDescriptions: Record<ReportReason, string> = {
     [ReportReason.PROFANITY]: "욕설",
 };
 
-export default function ProductListComponent({productId, reviewList, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError}
-                                          : ReviewListComponentProps) {
-    const bottomRef = useRef<HTMLDivElement | null>(null);
+export default function PreviewComponent({ barcode }: PreviewProps) {
+    // barcode로 productId 받아오기
+    const [productId, setProductId] = useState<number | null>(null);
 
     useEffect(() => {
-        if (!bottomRef.current || !hasNextPage) return;
+        if (!barcode) return;
 
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                if (entry.isIntersecting && !isFetchingNextPage) {
-                    fetchNextPage();
-                }
-            },
-            {
-                rootMargin: "100px",
-                threshold: 1.0,
-            }
-        );
+        getProductIdByBarcode(barcode)
+            .then((response) => {
+                setProductId(Number(response.data));
+                console.log(response.data)})
+    }, [barcode]);
 
-        observer.observe(bottomRef.current);
-
-        return () => observer.disconnect();
-    }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+    const { data, isLoading, isError } = useQuery<ReviewDetailDTO[]>({
+        queryKey: ["previews", productId],
+        queryFn: () => getProductPreviews(productId!),
+        enabled: Boolean(productId)
+    });
 
     if (isLoading)
         return <p className="text-center p-4 text-base sm:text-lg">로딩 중입니다</p>;
     if (isError)
         return<p className="text-center p-4 text-red-500 text-base sm:text-lg">리뷰를 불러오지 못했습니다</p>
-
+    if (!data || data.length === 0)
+        return <p className="text-center p-4 text-gray-500 text-base sm:text-lg">아직 작성된 리뷰가 없습니다.</p>;
 
     return (
         <div className="w-full min-h-screen bg-gray-50 p-4 flex flex-col items-center">
-            {/* 리뷰 리스트 */}
-            <div className="w-full max-w-md sm:max-w-xl md:max-w-3xl space-y-2">
-                {reviewList.map((review) => (
-                    <ReviewItem key={review.review_id} review={review} productId={productId} />
-                ))}
+            {/* 헤더: 타이틀 + 링크 */}
+            <div className="flex justify-between items-center mb-4">
+                <Link
+                    to={`/reviews/product/${barcode}`}
+                    className="text-sm text-blue-500 hover:underline"
+                >
+                    리뷰 전체보기
+                </Link>
             </div>
 
-            {/* 무한 스크롤 디텍터 */}
-            {hasNextPage && <div ref={bottomRef} className="h-1" />}
-
-            {isFetchingNextPage && (
-                <p className="text-center py-2">리뷰를 불러오는 중입니다</p>
-            )}
-            {!hasNextPage && (
-                <p className="text-center py-2 text-gray-400">마지막 리뷰입니다</p>
-            )}
+            {/* 리뷰 목록 */}
+            <div className="w-full max-w-md sm:max-w-xl md:max-w-3xl space-y-2">
+                {data.map((review) => (
+                    <ReviewItem key={review.review_id} review={review} productId={productId!} />
+                ))}
+            </div>
         </div>
     );
 }
+
 interface ReviewItemProps {
     review: ReviewDetailDTO;
     productId: number;
@@ -99,20 +91,20 @@ function ReviewItem({ review, productId }: ReviewItemProps) {
         },
         onError: () => {
             alert("이미 신고한 리뷰입니다.");
+            closeReport();
         },
     });
 
     const toggleLikeMutation = useMutation({
-        mutationFn: (reviewId: number) => toggleReview(reviewId),
+        mutationFn: (id: number) => toggleReview(id),
         onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["previews", productId] });
             queryClient.invalidateQueries({ queryKey: ["productReviews", productId] });
-            queryClient.invalidateQueries({ queryKey: ["Previews", productId] });
         },
         onError: () => {
             alert("좋아요 처리 중 오류가 발생했습니다");
         },
     });
-
 
     const openReport = () => setIsReportOpen(true);
 

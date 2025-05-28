@@ -1,6 +1,6 @@
 import { useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
-import { getReview } from "~/api/reviews/reviewAPI";
+import { getReview, getTags } from "~/api/reviews/reviewAPI";
 import ModifyComponent from "~/components/reviews/modifyComponent";
 
 function ModifyPage() {
@@ -8,15 +8,20 @@ function ModifyPage() {
 
     const { data } = useQuery({
         queryKey: ["review", rid],
-        queryFn: () => getReview(Number(rid)),
-        staleTime: 5 * 60 * 1000,
+        queryFn: () => getReview(Number(rid))
     });
-
     console.log(data?.data)
+
+    const { data: tagData } = useQuery({
+        queryKey: ["tags"],
+        queryFn: getTags,
+        staleTime: 10 * 60 * 1000,
+    });
+    console.log(tagData?.data)
 
     return (
         <div>
-            <ModifyComponent review={data?.data}></ModifyComponent>
+            <ModifyComponent tags={tagData?.data} review={data?.data}></ModifyComponent>
         </div>
     );
 }

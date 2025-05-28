@@ -5,9 +5,9 @@ export default [
     index("routes/index.tsx"),
 
     // 포빙빙
-    route("/reviews/product/:productId", "routes/reviews/productListPage.tsx"),
+    route("/reviews/product/:barcode", "routes/reviews/productListPage.tsx"),
     route("/reviews/user", "routes/reviews/userListPage.tsx"),
-    route("/reviews/add/:pid", "routes/reviews/addPage.tsx"),
+    route("/reviews/add/:barcode", "routes/reviews/addPage.tsx"),
     route("/reviews/modify/:rid", "routes/reviews/modifyPage.tsx"),
     route("/reviews/:rid", "routes/reviews/detailPage.tsx"),
 
@@ -18,6 +18,7 @@ export default [
         route("tag", "routes/users/signupTagPage.tsx"),
         route("google", "routes/auth/googleCallbackPage.tsx"),
     ]),
+    route("/mypage", "routes/users/myPagePage.tsx"),
 
     // 근화
     route("/admin", "layout/adminLayout.tsx", [

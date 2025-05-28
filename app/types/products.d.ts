@@ -25,6 +25,8 @@ export interface PageResponse<T> {
  * 상품 상세 조회 시 반환되는 DTO
  */
 export interface ProductDetailDTO {
+    /** 상품 id */
+    product_id: number;
     /** 바코드 */
     barcode: string;
     /** 상품명 */

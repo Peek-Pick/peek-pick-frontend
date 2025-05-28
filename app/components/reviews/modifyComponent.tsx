@@ -1,21 +1,41 @@
-import { useRef, useState, useEffect, type FormEvent, type ChangeEvent } from "react";
+import { useRef, useState, useEffect, useMemo, type FormEvent, type ChangeEvent } from "react";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {deleteReview, modifyReview} from "~/api/reviews/reviewAPI";
 import { useNavigate } from "react-router-dom";
+import type { TagDTO } from "~/types/tag";
 
 interface ModifyProps {
     review?: ReviewDetailDTO;
 }
 
-const tagOptions = ["친절해요", "깨끗해요", "추천해요", "불친절해요"];
+interface TagProps {
+    tags?: TagDTO[];
+}
 
-export default function ModifyComponent({ review }: ModifyProps) {
+export default function ModifyComponent({ review, tags }: ModifyProps & TagProps) {
+    // tags를 category별로 그룹핑 (useMemo)
+    const groupedTags = useMemo(() => {
+        if (!tags) return {};
+        return tags.reduce((acc, tag) => {
+            if (!acc[tag.category]) acc[tag.category] = [];
+            acc[tag.category].push(tag);
+            return acc;
+        }, {} as Record<string, TagDTO[]>);
+    }, [tags]);
+
+    // 초기 태그 ID 배열
+    const initialTagIds = useMemo(
+        () => review?.tag_list?.map(t => t.tag_id) || [],
+        [review]
+    );
+
     const formRef = useRef<HTMLFormElement>(null);
     const navigate = useNavigate();
 
     const [score, setScore] = useState(review?.score ?? 0);
     const [comment, setComment] = useState(review?.comment ?? '');
-    const [tags, setTags] = useState<string[]>([]);
+
+    const [selectedTags, setSelectedTags] = useState<number[]>(initialTagIds);
 
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
     const [previewFiles, setPreviewFiles] = useState<string[]>([]);
@@ -24,23 +44,31 @@ export default function ModifyComponent({ review }: ModifyProps) {
 
     const queryClient = useQueryClient();
 
+    // 태그 추가 및 삭제 계산
+    const { deleteTagIds, newTagIds } = useMemo(() => {
+        const initSet = new Set(initialTagIds);
+        const selSet = new Set(selectedTags);
+
+        const deleteTagIds = initialTagIds.filter(id => !selSet.has(id));
+        const newTagIds = selectedTags.filter(id => !initSet.has(id));
+
+        console.log("deleteTaIds: {}, newTagIds: {}", deleteTagIds, newTagIds)
+        return { deleteTagIds, newTagIds };
+    }, [initialTagIds, selectedTags]);
+
     useEffect(() => {
         if (review) {
             setScore(review.score);
             setComment(review.comment ?? '');
             setExistingImages(review.images || []);
+            setSelectedTags(review.tag_list?.map(tag => tag.tag_id) || []);
         }
     }, [review]);
 
     const updateMutation = useMutation({
         mutationFn: (formData: FormData) => modifyReview(review!.review_id, formData),
-        onSuccess: async () => {
-            await Promise.all([
-                queryClient.invalidateQueries({queryKey: ["review", review!.review_id.toString()]}),
-                queryClient.invalidateQueries({queryKey: ["userReviewCount"]}),
-                queryClient.invalidateQueries({queryKey: ["userReviews"]}),
-            ]);
-            navigate(`/reviews/${review!.review_id}`);
+        onSuccess: () => {
+            navigate(`/reviews/user`);
         },
         onError: (error) => {
             alert("리뷰 수정 중 오류가 발생했습니다.");
@@ -55,7 +83,16 @@ export default function ModifyComponent({ review }: ModifyProps) {
         const confirmDelete = window.confirm("리뷰를 수정하시겠습니까?");
         if (!confirmDelete) return;
 
-        const payload = { reviewId: review.review_id, score, comment, deleteImgIds };
+        const payload = {
+            reviewId: review.review_id,
+            score,
+            comment,
+            deleteImgIds,
+            deleteTagIds,
+            newTagIds
+        };
+        console.log(payload)
+
         const formData = new FormData();
         formData.append('review', new Blob([JSON.stringify(payload)], { type: 'application/json' }));
 
@@ -73,12 +110,6 @@ export default function ModifyComponent({ review }: ModifyProps) {
         try {
             await deleteReview(review.review_id);
 
-            await Promise.all([
-                queryClient.invalidateQueries({ queryKey: ["review", review.review_id.toString()] }),
-                queryClient.invalidateQueries({ queryKey: ["userReviews"] }),
-                queryClient.invalidateQueries({ queryKey: ["userReviewCount"] }),
-            ]);
-
             navigate(`/reviews/user`);
         } catch (error) {
             alert("리뷰 삭제 중 오류가 발생했습니다.");
@@ -86,9 +117,9 @@ export default function ModifyComponent({ review }: ModifyProps) {
         }
     };
 
-    const toggleTag = (tag: string) =>
-        setTags(prev =>
-            prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
+    const toggleTag = (tagId: number) =>
+        setSelectedTags(prev =>
+            prev.includes(tagId) ? prev.filter(id => id !== tagId) : [...prev, tagId]
         );
 
     const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -111,24 +142,31 @@ export default function ModifyComponent({ review }: ModifyProps) {
     if (!review) return <p className="text-center text-gray-500">리뷰 정보를 불러오는 중입니다...</p>;
 
     return (
-        <div className="w-full min-h-screen bg-gray-50 p-4">
-            <div className="max-w-md mx-auto bg-white shadow-lg rounded-xl p-6 space-y-6">
+        <div className="w-full min-h-screen bg-gray-50 p-4 flex flex-col items-center">
+            <div className="w-full max-w-md sm:max-w-xl md:max-w-3xl bg-white shadow-md rounded-lg space-y-6 p-10">
                 {/* 상품 정보 */}
-                <div className="flex flex-col items-center space-y-2">
-                    <img src="/example.jpg" alt="상품 이미지" className="w-24 h-24 rounded-lg object-cover" />
-                    <div className="text-center">
-                        <p className="font-semibold text-gray-900">바나나킥</p>
-                        <p className="text-sm text-gray-500">농심</p>
+                <div className="flex flex-col items-center">
+                    <img
+                        src={review.image_url || "/example.jpg"}
+                        alt={review.name}
+                        className="w-24 h-24 sm:w-24 sm:h-24 md:w-24 md:h-24 rounded-lg object-cover"
+                    />
+                    <div>
+                        <h2 className="text-base sm:text-lg font-semibold text-gray-900">
+                            {review.name}
+                        </h2>
                     </div>
                 </div>
 
                 {/* 별점 */}
                 <div className="text-center">
-                    <p className="font-medium text-gray-700 mb-1">상품은 어떠셨나요?</p>
-                    <div className="flex justify-center space-x-2">
+                    <p className="font-medium text-gray-700 mb-2 text-sm sm:text-base">
+                        상품은 어떠셨나요?
+                    </p>
+                    <div className="flex justify-center space-x-1">
                         {[1,2,3,4,5].map(i => (
                             <button key={i} type="button" onClick={() => setScore(i)}
-                                    className={`text-3xl transition-colors ${i <= score ? 'text-yellow-400' : 'text-gray-300'}`}
+                                    className={`text-2xl sm:text-3xl md:text-4xl transition-colors ${i <= score ? 'text-yellow-400' : 'text-gray-300'}`}
                                     aria-label={`${i}점`}
                             >★</button>
                         ))}
@@ -142,32 +180,49 @@ export default function ModifyComponent({ review }: ModifyProps) {
                         value={comment}
                         onChange={e => setComment(e.target.value)}
                         placeholder="솔직한 상품 리뷰를 남겨주세요"
-                        className="w-full border border-gray-300 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                        className="w-full border border-gray-300 rounded-md p-3 text-base sm:text-lg resize-none focus:outline-none focus:ring-2 focus:ring-gray-300"
                     />
 
-                    {/* 태그 선택 */}
+                    {/* ----- 카테고리별 태그 ----- */}
                     <div>
-                        <p className="font-medium text-gray-700 mb-1">태그 선택</p>
-                        <div className="flex flex-wrap gap-2">
-                            {tagOptions.map(tag => (
-                                <button key={tag} type="button" onClick={() => toggleTag(tag)}
-                                        className={`px-3 py-1 rounded-full text-sm border transition-colors ${
-                                            tags.includes(tag)
-                                                ? "bg-green-100 text-green-700 border-green-400"
-                                                : "text-gray-600 border-gray-300"
-                                        }`}
-                                >{tag}</button>
-                            ))}
-                        </div>
+                        <p className="font-medium text-gray-700 mb-2 text-sm sm:text-base">태그 선택</p>
+                        {Object.entries(groupedTags).map(([category, tagList]) => (
+                            <div key={category} className="mb-4">
+                                <p className="text-sm sm:text-base font-semibold text-gray-600 mb-3">
+                                    {category}
+                                </p>
+                                <div
+                                    className="flex space-x-2 overflow-x-auto px-1"
+                                    style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+                                >
+                                    {tagList.map(tag => (
+                                        <button
+                                            key={tag.tag_id}
+                                            type="button"
+                                            onClick={() => toggleTag(tag.tag_id)}
+                                            className={`px-3 py-1 rounded-full text-sm sm:text-base border transition-colors ${
+                                                selectedTags.includes(tag.tag_id)
+                                                    ? "bg-gray-200 text-gray-700 border-gray-400"
+                                                    : "bg-white text-gray-600 border-gray-300"
+                                            }`}
+                                        >
+                                            {tag.tag_name}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
                     </div>
 
                     {/* 이미지 관리 */}
                     <div>
-                        <p className="font-medium text-gray-700 mb-1">사진 수정</p>
-                        <div className="flex flex-nowrap gap-2 overflow-x-auto">
+                        <p className="font-medium text-gray-700 mb-2 text-sm sm:text-base">
+                            사진 수정
+                        </p>
+                        <div className="flex items-center space-x-2 overflow-x-auto no-scrollbar">
                             {/* 파일 업로드 버튼 */}
-                            <label className="w-22 h-22 sm:w-22 sm:h-22 flex items-center justify-center border border-dashed rounded-md text-gray-400 cursor-pointer flex-shrink-0">
-                                <span className="text-2xl">+</span>
+                            <label className="w-24 h-24 sm:w-24 sm:h-24 md:w-24 md:h-24 flex-shrink-0 flex items-center justify-center border-2 border-dashed rounded-md text-gray-400 cursor-pointer">
+                                <span className="text-2xl ">+</span>
                                 <input
                                     type="file"
                                     name="files"
@@ -182,7 +237,7 @@ export default function ModifyComponent({ review }: ModifyProps) {
                             {existingImages.map(img => (
                                 <div
                                     key={img.img_id}
-                                    className="relative w-22 h-22 sm:w-22 sm:h-22 rounded-md overflow-hidden border flex-shrink-0"
+                                    className="relative w-24 h-24 sm:w-24 sm:h-24 md:w-24 md:h-24 rounded-md overflow-hidden border flex-shrink-0"
                                 >
                                     <img
                                         src={`http://localhost/s_${img.img_url}`}
@@ -194,7 +249,7 @@ export default function ModifyComponent({ review }: ModifyProps) {
                                         onClick={() => handleDeleteExistingImage(img.img_id)}
                                         className="absolute top-1 right-1 bg-black/50 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
                                     >
-                                        ✕
+                                        ×
                                     </button>
                                 </div>
                             ))}
@@ -203,7 +258,7 @@ export default function ModifyComponent({ review }: ModifyProps) {
                             {previewFiles.map((src, idx) => (
                                 <div
                                     key={idx}
-                                    className="relative w-22 h-22 sm:w-22 sm:h-22 rounded-md overflow-hidden border flex-shrink-0"
+                                    className="relative w-24 h-24 sm:w-24 sm:h-24 md:w-24 md:h-24 rounded-md overflow-hidden border flex-shrink-0"
                                 >
                                     <img src={src} alt="추가 이미지" className="w-full h-full object-cover" />
                                     <button
@@ -211,7 +266,7 @@ export default function ModifyComponent({ review }: ModifyProps) {
                                         onClick={() => handleDeleteNewImage(idx)}
                                         className="absolute top-1 right-1 bg-black/50 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
                                     >
-                                        ✕
+                                        ×
                                     </button>
                                 </div>
                             ))}
