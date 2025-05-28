@@ -72,7 +72,7 @@ export default function SignUpPage() {
                                 required
                                 placeholder="Your password"
                                 className="w-full px-4 py-3 mt-1 rounded-[15px] border border-gray-300 text-sm"
-                                value={password}
+                                value={password ?? ""}
                                 onChange={(e) => setPassword(e.target.value)}
                             />
                         </div>

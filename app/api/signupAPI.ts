@@ -3,7 +3,7 @@ import type {ActionResult} from "~/types/common";
 
 type SignupRequest = {
     email: string;
-    password: string;
+    password: string | null;
     nickname: string;
     gender: string;
     nationality: string;
