@@ -10,6 +10,7 @@ export const SignupProvider = ({ children }: {children: React.ReactNode}) => {
 
 export const useSignupContext = () => {
     const context = useContext(SignupContext)
+    console.log("SignupContext value:", context);
     if (!context) throw new Error('SignupContext must be used within a SignupProvider');
     return context;
 };

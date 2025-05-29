@@ -2,12 +2,14 @@
  * 상품 목록 조회 시 반환되는 DTO
  */
 export interface ProductListDTO {
+    productId: number;
     barcode: string;
-    product_id: number;
     name: string;
     category?: string | null;
     img_url?: string | null;
     like_count?: number | null;
+    review_count?: number | null;
+    score?: number | null;
 }
 
 /**
@@ -47,4 +49,8 @@ export interface ProductDetailDTO {
     nutrition?: string | null;
     /** 좋아요 수 */
     like_count?: number | null;
+    /** 리뷰 수 */
+    review_count?: number | null;
+    /** 별점 */
+    score?: number | null;
 }

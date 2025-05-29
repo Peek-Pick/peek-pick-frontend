@@ -37,13 +37,15 @@ export default [
       
     // 동훈
     route("/admin/notices", "layout/noticeLayout.tsx", [
-        route("list",   "routes/admin/notices/listPage.tsx"),
-        route("add",    "routes/admin/notices/addPage.tsx"),
-        route(":id",    "routes/admin/notices/detailPage.tsx"),   // <-- useParams().id
-        route(":id/edit","routes/admin/notices/editPage.tsx"),
+        route("list",       "routes/admin/notices/listPage.tsx"),
+        route("add",        "routes/admin/notices/addPage.tsx"),
+        route(":id",        "routes/admin/notices/detailPage.tsx"),   // <-- useParams().id
+        route(":id/edit",   "routes/admin/notices/editPage.tsx"),
     ]),
-    route("products/ranking", "routes/products/listPage.tsx"),
-    route("products/:barcode", "routes/products/detailPage.tsx"),
+    route("/products",      "layout/productLayout.tsx", [
+        route("ranking",    "routes/products/listPage.tsx"),
+        route(":barcode",   "routes/products/detailPage.tsx"),
+    ]),
 
 
     // 강민

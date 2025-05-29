@@ -42,9 +42,9 @@ export default function DetailPage() {
 
     // data가 ProductDetailDTO로 정확히 인식되므로 TS2739 에러 없음
     return (
-        <ProductLayout>
+        <>
             <DetailComponent product={data} />
             <PreviewComponent barcode={barcode!}></PreviewComponent>
-        </ProductLayout>
+        </>
     );
 }
