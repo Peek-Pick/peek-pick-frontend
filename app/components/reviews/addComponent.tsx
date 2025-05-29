@@ -1,33 +1,23 @@
-import { useRef, useState, useMemo, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { addReview } from "~/api/reviews/reviewAPI";
 import { useNavigate } from "react-router-dom";
-import type { TagDTO } from "~/types/tag";
 import type { ProductDetailDTO } from "~/types/products";
+import { useTagSelector } from "~/hooks/useTagSelector";
 
 interface AddProps {
-    tags?: TagDTO[];
     product?: ProductDetailDTO;
     isLoading: boolean;
     isError: boolean;
 }
 
-export default function AddComponent({ tags, product, isLoading, isError }: AddProps) {
+export default function AddComponent({ product, isLoading, isError }: AddProps) {
     const formRef = useRef<HTMLFormElement>(null);
     const [score, setScore] = useState(0);
-    const [selectedTags, setSelectedTags] = useState<number[]>([]);
     const [images, setImages] = useState<File[]>([]);
     const navigate = useNavigate();
 
-    // tags를 category별로 그룹핑 (useMemo)
-    const groupedTags = useMemo(() => {
-        if (!tags) return {};
-        return tags.reduce((acc, tag) => {
-            if (!acc[tag.category]) acc[tag.category] = [];
-            acc[tag.category].push(tag);
-            return acc;
-        }, {} as Record<string, TagDTO[]>);
-    }, [tags]);
+    const { selectedTags, toggleTag, groupedTags } = useTagSelector();
 
     const addMutation = useMutation({
         mutationFn: (formData: FormData) => addReview(formData),
@@ -45,13 +35,8 @@ export default function AddComponent({ tags, product, isLoading, isError }: AddP
     };
 
     const removeImage = (idx: number) =>
-        setImages(prev => prev.filter((_, i) => i !== idx));
-
-    const toggleTag = (tagId: number) =>
-        setSelectedTags(prev =>
-            prev.includes(tagId) ? prev.filter(id => id !== tagId) : [...prev, tagId]
-        );
-
+        setImages(prev => prev.filter((_, i) => i !== idx));   
+    
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
 
