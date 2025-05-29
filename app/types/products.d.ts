@@ -53,4 +53,6 @@ export interface ProductDetailDTO {
     review_count?: number | null;
     /** 별점 */
     score?: number | null;
+    /** 로그인 사용자 좋아요 여부 */
+    is_liked?: boolean | null;
 }
