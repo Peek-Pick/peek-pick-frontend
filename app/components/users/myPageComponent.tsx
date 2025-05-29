@@ -5,31 +5,34 @@ import {
     FaQuestionCircle, FaBell, FaUserShield, FaFileContract, FaIdBadge, FaUserAltSlash
 } from 'react-icons/fa';
 import { IoLanguage, IoLogOutOutline } from "react-icons/io5";
+import { useNavigate } from "react-router";
 import { getMyPage } from "~/api/myPageAPI";
 
 // 타입 정의
 interface MypageData {
-    profileImgUrl: string;
+    profile_img_url: string;
     nickname: string;
     point: number;
-    wishlistedCount: number;
-    reviewCount: number;
-    couponCount: number;
-    barcodeHistoryCount: number;
+    wishlisted_count: number;
+    review_count: number;
+    coupon_count: number;
+    barcode_history_count: number;
 }
 
 
 
-export default function ProfileHeader() {
+export default function myPageComponent() {
+
+    const navigate = useNavigate();
 
     const initState:MypageData = {
-        profileImgUrl: '',
+        profile_img_url: '',
         nickname: '',
         point: 0,
-        wishlistedCount: 0,
-        reviewCount: 0,
-        couponCount: 0,
-        barcodeHistoryCount: 0
+        wishlisted_count: 0,
+        review_count: 0,
+        coupon_count: 0,
+        barcode_history_count: 0
     }
 
     const [myData, setMyData] = useState<MypageData>(initState);
@@ -38,12 +41,13 @@ export default function ProfileHeader() {
         getMyPage()
             .then(result => {
                 const transformed = {
-                    profileImgUrl: result.profileImgUrl,
+                    profile_img_url: result.profile_img_url,
                     nickname: result.nickname,
                     point: result.point,
-                    ...result.quickStats, // quickStats 내부 값 펼쳐서 넣어야 함
+                    ...result.quick_stats, // quickStats 내부 값 펼쳐서 넣어야 함
                 };
                 setMyData(transformed);
+                console.log(result)
             })
             .catch((err) => console.error("프로필 불러오기 실패", err));
     }, []);
@@ -52,12 +56,12 @@ export default function ProfileHeader() {
 
     // 동적 quickStats
     const quickStats = [
-        { icon: <FaHeart className="text-pink-500 text-2xl mb-2" />, label: 'Wishlisted Items', value: myData.wishlistedCount },
-        { icon: <FaPen className="text-blue-500 text-2xl mb-2" />, label: 'My Reviews', value: myData.reviewCount },
-        { icon: <FaTicketAlt className="text-yellow-500 text-2xl mb-2" />, label: 'Coupons', value: myData.couponCount },
-        { icon: <FaBarcode className="text-green-500 text-2xl mb-2" />, label: 'Barcode History', value: myData.barcodeHistoryCount },
+        { icon: <FaHeart className="text-pink-500 text-2xl mb-2" />, label: 'Wishlisted Items', value: 9999 }, // 실제 값 연결하면 value: myData.wishlisted_count 이런식으로 수정해야함
+        { icon: <FaPen className="text-blue-500 text-2xl mb-2" />, label: 'My Reviews', value: 9999 },
+        { icon: <FaTicketAlt className="text-yellow-500 text-2xl mb-2" />, label: 'Coupons', value: 9999 },
+        { icon: <FaBarcode className="text-green-500 text-2xl mb-2" />, label: 'Barcode History', value: 9999 },
     ];
-
+    
     const buttons: [string, React.ComponentType<React.SVGProps<SVGSVGElement>>][] = [
         ['Language Settings', IoLanguage],
         ['Support', FaQuestionCircle],
@@ -77,7 +81,7 @@ export default function ProfileHeader() {
                 <div className="text-center">
                     <div className="relative inline-block -mt-16">
                         <img
-                            src={myData.profileImgUrl || "/default.jpg"}
+                            src={`${myData.profile_img_url}`}
                             alt="Profile"
                             className="w-28 h-28 rounded-full border-4 border-white bg-white object-cover"
                         />
@@ -94,7 +98,10 @@ export default function ProfileHeader() {
                         <button className="border border-amber-300 text-amber-300 px-4 py-1 flex items-center hover:bg-gray-100">
                             <FaStore className="mr-2" /> Point Store
                         </button>
-                        <button className="bg-amber-300 hover:bg-amber-400 active:bg-amber-200 text-white px-4 py-1 rounded flex items-center">
+                        <button 
+                            className="bg-amber-300 hover:bg-amber-400 active:bg-amber-200 text-white px-4 py-1 rounded flex items-center"
+                            onClick={()=> navigate('/mypage/edit')}
+                        >
                             <FaUserCog className="mr-2" /> Edit Profile
                         </button>
                     </div>
@@ -121,6 +128,8 @@ export default function ProfileHeader() {
                     </button>
                 ))}
             </div>
+
+
         </>
     );
 }
