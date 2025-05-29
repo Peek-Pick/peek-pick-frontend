@@ -1,5 +1,7 @@
-import type {PointStoreListDTO} from "~/types/points";
+import type { PointStoreListDTO } from "~/types/points";
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faShoppingBag } from '@fortawesome/free-solid-svg-icons'
 
 interface Props {
     products: PointStoreListDTO[];
@@ -7,11 +9,17 @@ interface Props {
     size: number;
     totalElements: number;
     setPage: (page: number) => void;
-    onProductClick: (product: PointStoreListDTO) => void; // 상품 클릭 시 부모에 알림
+    onProductClick: (product: PointStoreListDTO) => void;
 }
 
-export default function StoreListComponent ({products, page, size, totalElements, setPage, onProductClick}: Props) {
-
+export default function StoreListComponent({
+                                               products,
+                                               page,
+                                               size,
+                                               totalElements,
+                                               setPage,
+                                               onProductClick,
+                                           }: Props) {
     const totalPages = Math.ceil(
         (Number.isFinite(totalElements) && totalElements >= 0 ? totalElements : 0) /
         (Number.isFinite(size) && size > 0 ? size : 1)
@@ -23,57 +31,129 @@ export default function StoreListComponent ({products, page, size, totalElements
     };
 
     return (
-        <div className="p-4 max-w-5xl mx-auto">
-            <h1 className="text-2xl font-bold mb-4">포인트 상점</h1>
+        <div className="container mx-auto py-5 px-4">
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {products.map((product) => (
                     <div
                         key={product.pointstoreId}
-                        className="border rounded p-4 flex flex-col cursor-pointer hover:shadow-md transition"
-                        onClick={() => onProductClick(product)} // ✅ 클릭 시 이벤트
+                        className="cursor-pointer bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 relative"
                     >
-                        <img
-                            src={`http://localhost:8080/uploads/${product.imgUrl}`}
-                            alt={product.item}
-                            className="w-full h-40 object-cover mb-2 rounded"
-                        />
-                        <h2 className="font-semibold text-lg">{product.item}</h2>
-                        <p className="text-gray-600">가격: {product.price} 포인트</p>
-                        <p className="text-gray-500 text-sm">{product.productType}</p>
+                        <div className="relative">
+                            <img
+                                src={`http://localhost:8080/uploads/${product.imgUrl}`}
+                                alt={product.item}
+                                className="w-full h-28 object-cover rounded-t-lg"
+                            />
+                            {/* 구매 버튼 */}
+                            <button
+                                onClick={() => onProductClick(product)}
+                                className="absolute top-2 right-2 bg-white bg-opacity-90 rounded-full p-1.5 shadow hover:bg-blue-100 transition"
+                            >
+                                <FontAwesomeIcon icon={faShoppingBag} style={{ color: '#6b7280' }} />
+                            </button>
+                        </div>
+                        <div className="p-3 flex flex-col">
+                            <span className="inline-block mb-1 px-2 py-0.5 rounded-full bg-gray-200 text-gray-700 text-xs font-medium">
+                                {product.productType}
+                            </span>
+                            <h6 className="text-sm font-medium mb-1 truncate">{product.item}</h6>
+                            <p className="text-yellow-500 font-semibold text-sm">{product.price} points</p>
+                        </div>
                     </div>
                 ))}
             </div>
 
-            {/* 페이징 UI */}
-            <nav className="flex justify-center mt-4 space-x-2">
-                <button
-                    disabled={page === 0}
-                    onClick={() => onPageChange(page - 1)}
-                    className="px-3 py-1 rounded border disabled:opacity-50"
-                >
-                    이전
-                </button>
+            {/*페이지네이션*/}
+            <nav aria-label="Page navigation" className="mt-8">
+                <ul className="flex justify-center space-x-3">
+                    {/* 이전 버튼 */}
+                    <li>
+                        <button
+                            type="button"
+                            onClick={() => onPageChange(page - 1)}
+                            disabled={page === 0}
+                            className={`
+                                w-9 h-9 flex items-center justify-center
+                                font-medium text-gray-500 transition-colors duration-200 relative
+                                ${page === 0 ? "cursor-not-allowed opacity-50" : "hover:text-blue-600"}
+                                focus:outline-none
+                            `}
+                            aria-disabled={page === 0}
+                            aria-label="Previous page"
+                        >
+                            {/* 왼쪽 화살표 SVG */}
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-5 w-5"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                strokeWidth={2}
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <path d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </button>
+                    </li>
 
-                {[...Array(totalPages)].map((_, i) => (
-                    <button
-                        key={i}
-                        onClick={() => onPageChange(i)}
-                        className={`px-3 py-1 rounded border ${
-                            i === page ? "bg-blue-600 text-white" : "hover:bg-gray-200"
-                        }`}
-                    >
-                        {i + 1}
-                    </button>
-                ))}
+                    {/* 페이지 번호 */}
+                    {[...Array(totalPages)].map((_, i) => {
+                        const isActive = i === page;
+                        return (
+                            <li key={i}>
+                                <button
+                                    type="button"
+                                    onClick={() => onPageChange(i)}
+                                    aria-current={isActive ? "page" : undefined}
+                                    className={`
+                                        px-4 py-2 font-medium relative transition-colors duration-200
+                                        ${
+                                        isActive
+                                            ? "text-gray-600 after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-yellow-400"
+                                            : "text-gray-500 hover:text-gray-600"
+                                    }
+                                        focus:outline-none
+                                    `}
+                                >
+                                    {i + 1}
+                                </button>
+                            </li>
+                        );
+                    })}
 
-                <button
-                    disabled={page >= totalPages - 1}
-                    onClick={() => onPageChange(page + 1)}
-                    className="px-3 py-1 rounded border disabled:opacity-50"
-                >
-                    다음
-                </button>
+                    {/* 다음 버튼 */}
+                    <li>
+                        <button
+                            type="button"
+                            onClick={() => onPageChange(page + 1)}
+                            disabled={page === totalPages - 1}
+                            className={`
+                                w-9 h-9 flex items-center justify-center
+                                font-medium text-gray-500 transition-colors duration-200 relative
+                                ${page === totalPages - 1 ? "cursor-not-allowed opacity-50" : "hover:text-blue-600"}
+                                focus:outline-none
+                            `}
+                            aria-disabled={page === totalPages - 1}
+                            aria-label="Next page"
+                        >
+                            {/* 오른쪽 화살표 SVG */}
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-5 w-5"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                strokeWidth={2}
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <path d="M9 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                    </li>
+                </ul>
             </nav>
         </div>
     );

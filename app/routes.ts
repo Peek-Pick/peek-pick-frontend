@@ -31,8 +31,8 @@ export default [
         route("points/edit/:id", 'routes/admin/points/editPage.tsx')
     ]),
     route("points/store/list",   "routes/points/storelistPage.tsx"), //포인트 상점
-    route("/user/mypage/points/history", "routes/users/pointLogsPage.tsx"), // 포인트 내역
-    route("/user/mypage/coupons", "routes/users/userCouponPage.tsx"), // 쿠폰함
+    route("/mypage/points/history", "routes/users/pointLogsPage.tsx"), // 포인트 내역
+    route("/mypage/coupons", "routes/users/userCouponPage.tsx"), // 쿠폰함
 
 
       
