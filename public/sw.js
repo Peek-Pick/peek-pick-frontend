@@ -9,6 +9,7 @@ const URLS_TO_CACHE = [
     '/login',
     '/icons/icon-192.png',
     '/icons/icon-512.png',
+    '/barcode/scan'
     // 필요시 이미지나 폰트 등도 추가
 ];
 
