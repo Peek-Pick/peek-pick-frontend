@@ -19,6 +19,7 @@ export default [
         route("google", "routes/auth/googleCallbackPage.tsx"),
     ]),
     route("/mypage", "routes/users/myPagePage.tsx"),
+    route("/mypage/edit", "routes/users/myPageEditPage.tsx"),
 
     // 근화
     route("/admin", "layout/adminLayout.tsx", [
