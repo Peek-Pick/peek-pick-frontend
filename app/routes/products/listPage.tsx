@@ -1,19 +1,16 @@
-// src/routes/products/listPage.tsx
-
+// src/routes/products/ListPage.tsx  (혹은 index.tsx로 이름 변경)
 import { useState } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import ProductLayout from "~/layout/productLayout";
 import ListComponent from "~/components/products/listComponent";
 import { listProducts } from "~/api/productsAPI";
 import type { PageResponse, ProductListDTO } from "~/types/products";
 
-export default function ListPage() {
+export default function ProductListPage() {
     const size = 10;
-    const defaultSortParam = "likeCount,DESC"; // 실제 API 호출에 사용할 기본 정렬
+    const defaultSortParam = "likeCount,DESC";
 
-    // 디자인용 상태: 카테고리와 정렬 레이블만 관리
     const [categoryLabel, setCategoryLabel] = useState("전체");
-    const [sortLabel, setSortLabel] = useState("❤️ 좋아요 순");
+    const [sortLabel, setSortLabel]       = useState("❤️ 좋아요 순");
     const [showSortMenu, setShowSortMenu] = useState(false);
 
     const {
@@ -48,18 +45,12 @@ export default function ListPage() {
     }
 
     const products = data?.pages.flatMap((pg) => pg.content) ?? [];
-
-    const sortOptions = [
-        "❤️ 좋아요 순",
-        "★ 별점 순",
-        "📝 리뷰 순",
-    ] as const;
-
-    const categories = ["전체", "과자", "음료"] as const;
+    const sortOptions = ["❤️ 좋아요 순", "★ 별점 순", "📝 리뷰 순"] as const;
+    const categories  = ["전체", "과자", "음료"] as const;
 
     return (
-        <ProductLayout>
-            {/* ——— 디자인: 카테고리 탭 ——— */}
+        <>
+            {/* ——— 카테고리 탭 ——— */}
             <div className="flex space-x-2 p-4">
                 {categories.map((cat) => (
                     <button
@@ -77,7 +68,7 @@ export default function ListPage() {
                 ))}
             </div>
 
-            {/* ——— 디자인: 정렬 드롭다운 ——— */}
+            {/* ——— 정렬 드롭다운 ——— */}
             <div className="flex justify-end px-4 mb-2">
                 <div className="relative inline-block text-left">
                     <button
@@ -109,13 +100,13 @@ export default function ListPage() {
                 </div>
             </div>
 
-            {/* ——— 상품 리스트 (무한 스크롤) ——— */}
+            {/* ——— 무한 스크롤 리스트 ——— */}
             <ListComponent
                 products={products}
                 fetchNextPage={fetchNextPage}
                 hasNextPage={hasNextPage}
                 isFetchingNextPage={isFetchingNextPage}
             />
-        </ProductLayout>
+        </>
     );
 }
