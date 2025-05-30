@@ -1,4 +1,4 @@
-import { FaFacebook, FaApple, FaGoogle } from "react-icons/fa";
+import { FaGoogle } from "react-icons/fa";
 import {useNavigate} from "react-router-dom";
 import {useSignupContext} from "~/contexts/signupContext";
 import {Link} from "react-router";
