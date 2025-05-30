@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { addReview } from "~/api/reviews/reviewAPI";
 import { useNavigate } from "react-router-dom";
 import type { ProductDetailDTO } from "~/types/products";
-import { useTagSelector } from "~/hooks/useTagSelector";
+import { useTagSelector } from "~/hooks/tags/useTagSelector";
 
 interface AddProps {
     product?: ProductDetailDTO;
