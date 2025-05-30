@@ -7,7 +7,7 @@ import {
 import { IoLanguage, IoLogOutOutline } from "react-icons/io5";
 import { useNavigate } from "react-router";
 import { getMyPage } from "~/api/myPageAPI";
-import { useNavigate } from 'react-router';
+
 
 // 타입 정의
 interface MypageData {
@@ -21,8 +21,6 @@ interface MypageData {
 }
 
 export default function myPageComponent() {
-
-    const navigate = useNavigate();
 
     const navigate = useNavigate();
 
@@ -57,10 +55,13 @@ export default function myPageComponent() {
 
     // 동적 quickStats
     const quickStats = [
-        { icon: <FaHeart className="text-pink-500 text-2xl mb-2" />, label: 'Wishlisted Items', value: 9999 }, // 실제 값 연결하면 value: myData.wishlisted_count 이런식으로 수정해야함
-        { icon: <FaPen className="text-blue-500 text-2xl mb-2" />, label: 'My Reviews', value: 9999 },
+        { icon: <FaHeart className="text-pink-500 text-2xl mb-2" />, label: 'Wishlisted Items', value: 9999,
+            to:'' }, // 실제 값 연결하면 value: myData.wishlisted_count 이런식으로 수정해야함
+        { icon: <FaPen className="text-blue-500 text-2xl mb-2" />, label: 'My Reviews', value: 9999,
+            to:'' },
         { icon: <FaTicketAlt className="text-yellow-500 text-2xl mb-2" />, label: 'Coupons', value: 9999, to:'coupons'},
-        { icon: <FaBarcode className="text-green-500 text-2xl mb-2" />, label: 'Barcode History', value: 9999 },
+        { icon: <FaBarcode className="text-green-500 text-2xl mb-2" />, label: 'Barcode History', value: 9999,
+            to:'' },
 
 //         { icon: <FaHeart className="text-pink-500 text-2xl mb-2" />, label: 'Wishlisted Items', value: myData.wishlistedCount,
 //             to:'' },
@@ -71,7 +72,7 @@ export default function myPageComponent() {
 //         { icon: <FaBarcode className="text-green-500 text-2xl mb-2" />, label: 'Barcode History', value: myData.barcodeHistoryCount,
 //             to:'' },
     ];
-    
+
     const buttons: [string, React.ComponentType<React.SVGProps<SVGSVGElement>>][] = [
         ['Language Settings', IoLanguage],
         ['Support', FaQuestionCircle],
@@ -112,7 +113,7 @@ export default function myPageComponent() {
                             className="border border-amber-300 text-amber-300 px-4 py-1 flex items-center hover:bg-gray-100">
                             <FaStore className="mr-2" /> Point Store
                         </button>
-                        <button 
+                        <button
                             className="bg-amber-300 hover:bg-amber-400 active:bg-amber-200 text-white px-4 py-1 rounded flex items-center"
                             onClick={()=> navigate('/mypage/edit')}
                         >
