@@ -12,12 +12,13 @@ interface Props {
 }
 
 export default function ListComponent({ products, page, size, totalElements, setPage }: Props) {
+
+    const navigate = useNavigate();
+    
     const totalPages = Math.ceil(
         (Number.isFinite(totalElements) && totalElements >= 0 ? totalElements : 0) /
         (Number.isFinite(size) && size > 0 ? size : 1)
     );
-
-    const navigate = useNavigate();
 
     const onPageChange = (newPage: number) => {
         if (newPage < 0 || newPage >= totalPages) return;

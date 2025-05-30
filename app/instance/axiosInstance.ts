@@ -1,4 +1,4 @@
-import axios, { type AxiosRequestConfig, type AxiosError } from "axios";
+import axios, { AxiosError, type AxiosRequestConfig } from "axios";
 import { refreshAccessToken } from "~/api/authAPI";
 
 const instance = axios.create({
@@ -7,33 +7,50 @@ const instance = axios.create({
 });
 
 let isRefreshing = false;
-let requestQueue: ((config: AxiosRequestConfig) => void)[] = [];
+let failedQueue: {
+    resolve: (value?: unknown) => void;
+    reject: (error: unknown) => void;
+    config: AxiosRequestConfig;
+}[] = [];
+
+const processQueue = (error: AxiosError | null) => {
+    failedQueue.forEach(({ resolve, reject, config }) => {
+        if (error) {
+            reject(error);
+        } else {
+            resolve(instance(config));
+        }
+    });
+    failedQueue = [];
+};
 
 instance.interceptors.response.use(
     res => res,
     async (error: AxiosError) => {
-        const original = error.config as AxiosRequestConfig & { _retry?: boolean };
+        const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
 
-        if (error.response?.status === 401 && !original._retry) {
-            original._retry = true;
+        if (error.response?.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true;
 
-            if (!isRefreshing) {
-                isRefreshing = true;
-                try {
-                    await refreshAccessToken();
-                    isRefreshing = false;
-                    // 대기 중인 요청들 재시도
-                    requestQueue.forEach(cb => cb(original));
-                    requestQueue = [];
-                } catch {
-                    // refresh 실패 시 로그아웃 로직
-                    if (typeof window !== "undefined") window.location.href = "/login";
+            return new Promise((resolve, reject) => {
+                failedQueue.push({ resolve, reject, config: originalRequest });
+
+                if (!isRefreshing) {
+                    isRefreshing = true;
+
+                    refreshAccessToken()
+                        .then(() => {
+                            isRefreshing = false;
+                            processQueue(null); // 모든 요청 다시 시도
+                        })
+                        .catch(err => {
+                            isRefreshing = false;
+                            processQueue(err); // 모든 요청 실패 처리
+                            if (typeof window !== "undefined") {
+                                window.location.href = "/login";
+                            }
+                        });
                 }
-            }
-
-            // 새로고침 중에는 요청을 큐에 추가
-            return new Promise(resolve => {
-                requestQueue.push((cfg) => resolve(instance(cfg)));
             });
         }
 

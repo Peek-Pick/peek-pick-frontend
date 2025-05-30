@@ -7,6 +7,7 @@ import {
 import { IoLanguage, IoLogOutOutline } from "react-icons/io5";
 import { useNavigate } from "react-router";
 import { getMyPage } from "~/api/myPageAPI";
+import { useNavigate } from 'react-router';
 
 // 타입 정의
 interface MypageData {
@@ -20,6 +21,8 @@ interface MypageData {
 }
 
 export default function myPageComponent() {
+
+    const navigate = useNavigate();
 
     const navigate = useNavigate();
 
@@ -56,8 +59,17 @@ export default function myPageComponent() {
     const quickStats = [
         { icon: <FaHeart className="text-pink-500 text-2xl mb-2" />, label: 'Wishlisted Items', value: 9999 }, // 실제 값 연결하면 value: myData.wishlisted_count 이런식으로 수정해야함
         { icon: <FaPen className="text-blue-500 text-2xl mb-2" />, label: 'My Reviews', value: 9999 },
-        { icon: <FaTicketAlt className="text-yellow-500 text-2xl mb-2" />, label: 'Coupons', value: 9999 },
+        { icon: <FaTicketAlt className="text-yellow-500 text-2xl mb-2" />, label: 'Coupons', value: 9999, to:'coupons'},
         { icon: <FaBarcode className="text-green-500 text-2xl mb-2" />, label: 'Barcode History', value: 9999 },
+
+//         { icon: <FaHeart className="text-pink-500 text-2xl mb-2" />, label: 'Wishlisted Items', value: myData.wishlistedCount,
+//             to:'' },
+//         { icon: <FaPen className="text-blue-500 text-2xl mb-2" />, label: 'My Reviews', value: myData.reviewCount,
+//             to:'' },
+//         { icon: <FaTicketAlt className="text-yellow-500 text-2xl mb-2" />, label: 'Coupons', value: myData.couponCount,
+//             to:'coupons' },
+//         { icon: <FaBarcode className="text-green-500 text-2xl mb-2" />, label: 'Barcode History', value: myData.barcodeHistoryCount,
+//             to:'' },
     ];
     
     const buttons: [string, React.ComponentType<React.SVGProps<SVGSVGElement>>][] = [
@@ -86,14 +98,18 @@ export default function myPageComponent() {
                     </div>
                     <h3 className="mt-4 mb-1 text-xl font-semibold">{myData.nickname}</h3>
                     <div className="flex justify-center mb-2">
-                        <button className="rounded flex items-center justify-center space-x-2 px-4 py-2 hover:bg-gray-100">
+                        <button
+                            onClick={() => navigate('points/history')}
+                            className="rounded flex items-center justify-center space-x-2 px-4 py-2 hover:bg-gray-100">
                             <FaCoins className="text-indigo-500 text-xl" />
                             <p className="text-gray-500">{myData.point.toLocaleString()} Beeplet</p>
                             <FaAngleRight className="text-gray-500 text-xl" />
                         </button>
                     </div>
                     <div className="flex justify-center gap-2">
-                        <button className="border border-amber-300 text-amber-300 px-4 py-1 flex items-center hover:bg-gray-100">
+                        <button
+                            onClick={() => navigate('/points/store/list')}
+                            className="border border-amber-300 text-amber-300 px-4 py-1 flex items-center hover:bg-gray-100">
                             <FaStore className="mr-2" /> Point Store
                         </button>
                         <button 
@@ -109,7 +125,9 @@ export default function myPageComponent() {
             {/* 퀵 통계 */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-4 mb-6">
                 {quickStats.map((item, index) => (
-                    <button key={index} className="bg-white shadow hover:shadow-md transition rounded-xl p-4 flex flex-col items-center text-center w-full">
+                    <button key={index}
+                            onClick={() => navigate(item.to)}
+                            className="bg-white shadow hover:shadow-md transition rounded-xl p-4 flex flex-col items-center text-center w-full">
                         {item.icon}
                         <span className="text-lg font-semibold text-gray-800">{item.value}</span>
                         <p className="text-sm font-medium text-gray-600 mb-1">{item.label}</p>

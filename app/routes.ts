@@ -31,20 +31,22 @@ export default [
         route("points/edit/:id", 'routes/admin/points/editPage.tsx')
     ]),
     route("points/store/list",   "routes/points/storelistPage.tsx"), //포인트 상점
-    route("/user/mypage/points/history", "routes/users/pointLogsPage.tsx"), // 포인트 내역
-    route("/user/mypage/coupons", "routes/users/userCouponPage.tsx"), // 쿠폰함
+    route("/mypage/points/history", "routes/users/pointLogsPage.tsx"), // 포인트 내역
+    route("/mypage/coupons", "routes/users/userCouponPage.tsx"), // 쿠폰함
 
 
       
     // 동훈
     route("/admin/notices", "layout/noticeLayout.tsx", [
-        route("list",   "routes/admin/notices/listPage.tsx"),
-        route("add",    "routes/admin/notices/addPage.tsx"),
-        route(":id",    "routes/admin/notices/detailPage.tsx"),   // <-- useParams().id
-        route(":id/edit","routes/admin/notices/editPage.tsx"),
+        route("list",       "routes/admin/notices/listPage.tsx"),
+        route("add",        "routes/admin/notices/addPage.tsx"),
+        route(":id",        "routes/admin/notices/detailPage.tsx"),   // <-- useParams().id
+        route(":id/edit",   "routes/admin/notices/editPage.tsx"),
     ]),
-    route("products/ranking", "routes/products/listPage.tsx"),
-    route("products/:barcode", "routes/products/detailPage.tsx"),
+    route("/products",      "layout/productLayout.tsx", [
+        route("ranking",    "routes/products/listPage.tsx"),
+        route(":barcode",   "routes/products/detailPage.tsx"),
+    ]),
 
 
     // 강민
