@@ -19,8 +19,6 @@ interface MypageData {
     barcode_history_count: number;
 }
 
-
-
 export default function myPageComponent() {
 
     const navigate = useNavigate();
@@ -81,7 +79,7 @@ export default function myPageComponent() {
                 <div className="text-center">
                     <div className="relative inline-block -mt-16">
                         <img
-                            src={`${myData.profile_img_url}`}
+                            src={`/${myData.profile_img_url}`}
                             alt="Profile"
                             className="w-28 h-28 rounded-full border-4 border-white bg-white object-cover"
                         />

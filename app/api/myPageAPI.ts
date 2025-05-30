@@ -1,14 +1,16 @@
 import axiosInstance from "~/instance/axiosInstance";
-import type {MyPageEditDTO, MyPageResponseDTO } from "~/types/users";
+import type {ProfileReadDTO, MyPageResponseDTO } from "~/types/users";
 
 const host = "http://localhost:8080/api/v1/users";
 
+// myPage 조회
 export const getMyPage = async (): Promise<MyPageResponseDTO> => {
     const response = await axiosInstance.get(`${host}/mypage`, { withCredentials: true });
     return response.data;
 };
 
-export const getMyPageEdit = async (): Promise<MyPageEditDTO> => {
+// myPage Edit 조회
+export const getMyPageEdit = async (): Promise<ProfileReadDTO> => {
     const response = await axiosInstance.get(`${host}/mypage/edit`, { withCredentials: true });
     return response.data;
 };
