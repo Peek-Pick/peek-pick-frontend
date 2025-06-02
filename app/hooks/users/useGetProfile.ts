@@ -38,6 +38,5 @@ export const useGetProfile = () => {
 
         fetchData()
     }, []);
-    console.log("훅에서 보냄", data)
     return { data, loading, error };
 }

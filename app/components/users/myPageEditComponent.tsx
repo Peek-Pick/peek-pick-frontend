@@ -13,9 +13,7 @@ export default function MyPageEditComponent() {
     if (loading) return <p>로딩 중...</p>;
     if (error) return <p>에러 발생: {error}</p>;
     if (!profile) return null;
-
-    console.log("프로필 데이터 불러오기 : ", profile)
-
+    
     return (
         <div className="relative mb-8 max-w-2xl mx-auto">
             {/* 배경 헤더 */}

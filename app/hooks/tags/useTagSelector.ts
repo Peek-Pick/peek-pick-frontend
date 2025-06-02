@@ -31,7 +31,6 @@ export function useTagSelector(initSelected: number[] = []) {
         }, {} as Record<string, TagDTO[]>);
     }, [allTags]);
 
-    console.log("선택된 태그 훅", selectedTags)
     return {
         selectedTags,          // 선택된 tag_id 배열
         toggleTag,             // 토글 함수
