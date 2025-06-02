@@ -2,26 +2,28 @@ import { useRef, useState, useEffect, useMemo, type FormEvent, type ChangeEvent 
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {deleteReview, modifyReview} from "~/api/reviews/reviewAPI";
 import { useNavigate } from "react-router-dom";
-import type { TagDTO } from "~/types/tag";
+import { useTagSelector } from "~/hooks/tags/useTagSelector";
+import { Rating } from "~/components/reviews/rating/rating"
+import Swal from "sweetalert2"
+import '~/util/customSwal.css'
 
 interface ModifyProps {
     review?: ReviewDetailDTO;
 }
 
-interface TagProps {
-    tags?: TagDTO[];
-}
+export default function ModifyComponent({ review }: ModifyProps ) {
+    const formRef = useRef<HTMLFormElement>(null);
+    const navigate = useNavigate();
 
-export default function ModifyComponent({ review, tags }: ModifyProps & TagProps) {
-    // tags를 category별로 그룹핑 (useMemo)
-    const groupedTags = useMemo(() => {
-        if (!tags) return {};
-        return tags.reduce((acc, tag) => {
-            if (!acc[tag.category]) acc[tag.category] = [];
-            acc[tag.category].push(tag);
-            return acc;
-        }, {} as Record<string, TagDTO[]>);
-    }, [tags]);
+    // 별점, 커멘트 상태관리
+    const [score, setScore] = useState(review?.score ?? 0);
+    const [comment, setComment] = useState(review?.comment ?? '');
+
+    // 이미지 파일 상태관리
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+    const [previewFiles, setPreviewFiles] = useState<string[]>([]);
+    const [deleteImgIds, setDeleteImgIds] = useState<number[]>([]);
+    const [existingImages, setExistingImages] = useState(review?.images || []);
 
     // 초기 태그 ID 배열
     const initialTagIds = useMemo(
@@ -29,20 +31,8 @@ export default function ModifyComponent({ review, tags }: ModifyProps & TagProps
         [review]
     );
 
-    const formRef = useRef<HTMLFormElement>(null);
-    const navigate = useNavigate();
-
-    const [score, setScore] = useState(review?.score ?? 0);
-    const [comment, setComment] = useState(review?.comment ?? '');
-
-    const [selectedTags, setSelectedTags] = useState<number[]>(initialTagIds);
-
-    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-    const [previewFiles, setPreviewFiles] = useState<string[]>([]);
-    const [deleteImgIds, setDeleteImgIds] = useState<number[]>([]);
-    const [existingImages, setExistingImages] = useState(review?.images || []);
-
-    const queryClient = useQueryClient();
+    // 태그 관리 hook
+    const {selectedTags, toggleTag, setSelectedTags, groupedTags } = useTagSelector(initialTagIds);
 
     // 태그 추가 및 삭제 계산
     const { deleteTagIds, newTagIds } = useMemo(() => {
@@ -56,6 +46,7 @@ export default function ModifyComponent({ review, tags }: ModifyProps & TagProps
         return { deleteTagIds, newTagIds };
     }, [initialTagIds, selectedTags]);
 
+    // 수정 리뷰 상태 관리
     useEffect(() => {
         if (review) {
             setScore(review.score);
@@ -65,23 +56,63 @@ export default function ModifyComponent({ review, tags }: ModifyProps & TagProps
         }
     }, [review]);
 
+    // 새로운 이미지 추가
+    const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files) return;
+        const files = Array.from(e.target.files);
+        setSelectedFiles(prev => [...prev, ...files]);
+        setPreviewFiles(prev => [...prev, ...files.map(file => URL.createObjectURL(file))]);
+    };
+
+    // 기존 이미지 삭제
+    const handleDeleteExistingImage = (id: number) => {
+        setDeleteImgIds(prev => [...prev, id]);
+        setExistingImages(prev => prev.filter(img => img.img_id !== id));
+    };
+
+    // 새로운 이미지 삭제
+    const handleDeleteNewImage = (idx: number) => {
+        setSelectedFiles(prev => prev.filter((_, i) => i !== idx));
+        setPreviewFiles(prev => prev.filter((_, i) => i !== idx));
+    };
+
+    // 리뷰 수정 뮤테이션
     const updateMutation = useMutation({
         mutationFn: (formData: FormData) => modifyReview(review!.review_id, formData),
         onSuccess: () => {
-            navigate(`/reviews/user`);
+            Swal.fire({
+                title: "수정이 완료되었습니다",
+                icon: "success",
+                confirmButtonText: "확인",
+                customClass: {
+                    popup: 'custom-popup',
+                    title: 'custom-title',
+                    actions: 'custom-actions',
+                    confirmButton: 'custom-confirm-button',
+                },
+            }),
+                navigate(`/reviews/user`);
         },
         onError: (error) => {
-            alert("리뷰 수정 중 오류가 발생했습니다.");
-            console.error(error);
-        }
+            console.log(error)
+            Swal.fire({
+                title: "수정중 오료가 발생했습니다",
+                icon: "warning",
+                confirmButtonText: "확인",
+                customClass: {
+                    popup: 'custom-popup',
+                    title: 'custom-title',
+                    actions: 'custom-actions',
+                    confirmButton: 'custom-confirm-button',
+                },
+            })
+        },
     });
 
+    // 수정된 리뷰 제출하기
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
         if (!review) return;
-
-        const confirmDelete = window.confirm("리뷰를 수정하시겠습니까?");
-        if (!confirmDelete) return;
 
         const payload = {
             reviewId: review.review_id,
@@ -101,76 +132,80 @@ export default function ModifyComponent({ review, tags }: ModifyProps & TagProps
         updateMutation.mutate(formData);
     };
 
+    // 리뷰 삭제하기
     const handleDelete = async () => {
         if (!review) return;
 
-        const confirmDelete = window.confirm("리뷰를 삭제하시겠습니까?");
-        if (!confirmDelete) return;
-
         try {
             await deleteReview(review.review_id);
-
+            Swal.fire({
+                title: "삭제가 완료되었습니다",
+                icon: "success",
+                confirmButtonText: "확인",
+                customClass: {
+                    popup: 'custom-popup',
+                    title: 'custom-title',
+                    actions: 'custom-actions',
+                    confirmButton: 'custom-confirm-button',
+                },
+            }),
             navigate(`/reviews/user`);
         } catch (error) {
-            alert("리뷰 삭제 중 오류가 발생했습니다.");
-            console.error(error);
+            console.log(error)
+            Swal.fire({
+                title: "삭제중 오류가 발생했습니다",
+                icon: "warning",
+                confirmButtonText: "확인",
+                customClass: {
+                    popup: 'custom-popup',
+                    title: 'custom-title',
+                    actions: 'custom-actions',
+                    confirmButton: 'custom-confirm-button',
+                },
+            })
         }
-    };
-
-    const toggleTag = (tagId: number) =>
-        setSelectedTags(prev =>
-            prev.includes(tagId) ? prev.filter(id => id !== tagId) : [...prev, tagId]
-        );
-
-    const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-        if (!e.target.files) return;
-        const files = Array.from(e.target.files);
-        setSelectedFiles(prev => [...prev, ...files]);
-        setPreviewFiles(prev => [...prev, ...files.map(file => URL.createObjectURL(file))]);
-    };
-
-    const handleDeleteExistingImage = (id: number) => {
-        setDeleteImgIds(prev => [...prev, id]);
-        setExistingImages(prev => prev.filter(img => img.img_id !== id));
-    };
-
-    const handleDeleteNewImage = (idx: number) => {
-        setSelectedFiles(prev => prev.filter((_, i) => i !== idx));
-        setPreviewFiles(prev => prev.filter((_, i) => i !== idx));
     };
 
     if (!review) return <p className="text-center text-gray-500">리뷰 정보를 불러오는 중입니다...</p>;
 
     return (
-        <div className="w-full min-h-screen bg-gray-50 p-4 flex flex-col items-center">
-            <div className="w-full max-w-md sm:max-w-xl md:max-w-3xl bg-white shadow-md rounded-lg space-y-6 p-10">
-                {/* 상품 정보 */}
-                <div className="flex flex-col items-center">
+        <section className="py-12">
+            <div className="max-w-3xl mx-auto px-4 sm:px-6 md:px-8">
+                {/* 제목 */}
+                <h2 className="font-manrope font-bold text-4xl sm:text-4xl md:text-4xl text-center text-gray-900 mb-6">
+                    Modify Review
+                </h2>
+
+                {/* 상품 이미지 + 정보 */}
+                <div className="flex flex-col items-center mb-8">
                     <img
-                        src={review.image_url || "/example.jpg"}
-                        alt={review.name}
-                        className="w-24 h-24 sm:w-24 sm:h-24 md:w-24 md:h-24 rounded-lg object-cover"
+                        src={review?.image_url || "/example.jpg"}
+                        alt={review?.name || "상품 이미지"}
+                        className="w-40 h-40 sm:w-40 sm:h-40 md:w-40 md:h-40 rounded-lg object-cover mb-"
                     />
-                    <div>
-                        <h2 className="text-base sm:text-lg font-semibold text-gray-900">
-                            {review.name}
-                        </h2>
-                    </div>
+                    <p className="text-base sm:text-base md:text-md font-semibold text-gray-800 text-center">
+                        {review?.name}
+                    </p>
                 </div>
 
-                {/* 별점 */}
-                <div className="text-center">
-                    <p className="font-medium text-gray-700 mb-2 text-sm sm:text-base">
+                {/* 별점 선택 */}
+                <div className="text-center mb-8">
+                    <h3 className="font-manrope font-bold text-lg sm:text-xl text-gray-800 mb-4">
                         상품은 어떠셨나요?
-                    </p>
-                    <div className="flex justify-center space-x-1">
-                        {[1,2,3,4,5].map(i => (
-                            <button key={i} type="button" onClick={() => setScore(i)}
-                                    className={`text-2xl sm:text-3xl md:text-4xl transition-colors ${i <= score ? 'text-yellow-400' : 'text-gray-300'}`}
-                                    aria-label={`${i}점`}
-                            >★</button>
+                    </h3>
+                    <div className="flex justify-center space-x-2">
+                        {[1, 2, 3, 4, 5].map(i => (
+                            <button
+                                key={i}
+                                onClick={() => setScore(i)}
+                                className="transform transition hover:scale-110 focus:outline-none"
+                                aria-label={`${i}점`}
+                            >
+                                <Rating filled={i <= score} />
+                            </button>
                         ))}
-                    </div></div>
+                    </div>
+                </div>
 
                 <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
                     {/* 코멘트 */}
@@ -180,49 +215,54 @@ export default function ModifyComponent({ review, tags }: ModifyProps & TagProps
                         value={comment}
                         onChange={e => setComment(e.target.value)}
                         placeholder="솔직한 상품 리뷰를 남겨주세요"
-                        className="w-full border border-gray-300 rounded-md p-3 text-base sm:text-lg resize-none focus:outline-none focus:ring-2 focus:ring-gray-300"
+                        className="w-full border border-gray-300 rounded-md p-3 text-base sm:text-base focus:outline-none focus:ring-2 focus:ring-gray-300"
                     />
 
                     {/* ----- 카테고리별 태그 ----- */}
                     <div>
-                        <p className="font-medium text-gray-700 mb-2 text-sm sm:text-base">태그 선택</p>
-                        {Object.entries(groupedTags).map(([category, tagList]) => (
-                            <div key={category} className="mb-4">
-                                <p className="text-sm sm:text-base font-semibold text-gray-600 mb-3">
-                                    {category}
-                                </p>
-                                <div
-                                    className="flex space-x-2 overflow-x-auto px-1"
-                                    style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-                                >
-                                    {tagList.map(tag => (
-                                        <button
-                                            key={tag.tag_id}
-                                            type="button"
-                                            onClick={() => toggleTag(tag.tag_id)}
-                                            className={`px-3 py-1 rounded-full text-sm sm:text-base border transition-colors ${
-                                                selectedTags.includes(tag.tag_id)
-                                                    ? "bg-gray-200 text-gray-700 border-gray-400"
-                                                    : "bg-white text-gray-600 border-gray-300"
-                                            }`}
-                                        >
-                                            {tag.tag_name}
-                                        </button>
-                                    ))}
+                        <p className="font-medium text-gray-700 mb-2 text-base sm:text-base">
+                            태그 선택
+                        </p>
+                        <div className="space-y-4">
+                            {Object.entries(groupedTags).map(([category, tagList]) => (
+                                <div key={category} className="w-full">
+                                    {/* 카테고리 제목 */}
+                                    <p className="text-sm sm:text-base font-semibold text-gray-600 mb-2">
+                                        {category}
+                                    </p>
+                                    {/* 태그 버튼 리스트 */}
+                                    <div className="flex overflow-x-auto no-scrollbar space-x-2 px-1 pb-1 -mx-1"
+                                         style={{scrollbarWidth: "none", msOverflowStyle: "none"}}>
+                                        {tagList.map(tag => (
+                                            <button
+                                                key={tag.tag_id}
+                                                type="button"
+                                                onClick={() => toggleTag(tag.tag_id)}
+                                                className={`whitespace-nowrap px-4 py-2 text-sm font-semibold rounded-full border transition-colors
+                                                    ${selectedTags.includes(tag.tag_id)
+                                                    ? "bg-emerald-100 text-emerald-700 border-emerald-300"
+                                                    : "bg-gray-50 text-gray-600 border-gray-400"
+                                                }`}
+                                            >
+                                                {tag.tag_name}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
 
                     {/* 이미지 관리 */}
                     <div>
-                        <p className="font-medium text-gray-700 mb-2 text-sm sm:text-base">
+                        <p className="text-base sm:text-base text-gray-700 mb-2">
                             사진 수정
                         </p>
-                        <div className="flex items-center space-x-2 overflow-x-auto no-scrollbar">
-                            {/* 파일 업로드 버튼 */}
-                            <label className="w-24 h-24 sm:w-24 sm:h-24 md:w-24 md:h-24 flex-shrink-0 flex items-center justify-center border-2 border-dashed rounded-md text-gray-400 cursor-pointer">
-                                <span className="text-2xl ">+</span>
+
+                        {/* 파일 업로드 버튼 */}
+                        <div className="w-full overflow-x-auto no-scrollbar flex space-x-2">
+                            <label className="w-25 h-25 sm:w-25 sm:h-25 flex-shrink-0 flex items-center justify-center border-2 border-dashed rounded-md text-gray-400 cursor-pointer">
+                                <span className="text-2xl">＋</span>
                                 <input
                                     type="file"
                                     name="files"
@@ -237,7 +277,7 @@ export default function ModifyComponent({ review, tags }: ModifyProps & TagProps
                             {existingImages.map(img => (
                                 <div
                                     key={img.img_id}
-                                    className="relative w-24 h-24 sm:w-24 sm:h-24 md:w-24 md:h-24 rounded-md overflow-hidden border flex-shrink-0"
+                                    className="relative w-25 h-25 sm:w-25 sm:h-25 flex-shrink-0 rounded-md overflow-hidden border"
                                 >
                                     <img
                                         src={`http://localhost/s_${img.img_url}`}
@@ -258,7 +298,7 @@ export default function ModifyComponent({ review, tags }: ModifyProps & TagProps
                             {previewFiles.map((src, idx) => (
                                 <div
                                     key={idx}
-                                    className="relative w-24 h-24 sm:w-24 sm:h-24 md:w-24 md:h-24 rounded-md overflow-hidden border flex-shrink-0"
+                                    className="relative w-25 h-25 sm:w-25 sm:h-25 flex-shrink-0 rounded-md overflow-hidden border"
                                 >
                                     <img src={src} alt="추가 이미지" className="w-full h-full object-cover" />
                                     <button
@@ -273,24 +313,25 @@ export default function ModifyComponent({ review, tags }: ModifyProps & TagProps
                         </div>
                     </div>
 
+                    {/* 삭제 수정 버튼 */}
                     <div className="flex space-x-2">
                         <button
                             type="button"
                             onClick={handleDelete}
-                            className="w-1/2 py-3 bg-red-500 text-white font-semibold rounded-md transition-colors hover:bg-red-600"
+                            className="w-full py-3 font-semibold rounded-md text-base sm:text-base transition-colors bg-gray-400 text-white cursor-not-allowed"
                         >
                             삭제하기
                         </button>
                         <button
                             type="submit"
                             disabled={updateMutation.isPending}
-                            className="w-1/2 py-3 bg-black text-white font-semibold rounded-md transition-colors hover:bg-gray-800"
+                            className="w-full py-3 font-semibold rounded-md text-base sm:text-base transition-colors bg-emerald-400 text-white hover:bg-emerald-600"
                         >
-                            {updateMutation.isPending ? '수정 중...' : '리뷰 수정하기'}
+                            리뷰 수정하기
                         </button>
                     </div>
                 </form>
             </div>
-        </div>
+        </section>
     );
 }

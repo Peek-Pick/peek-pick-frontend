@@ -25,8 +25,8 @@ function PointLogPage() {
         queryFn: () => userPointLogs(page, size, sort),
     });
 
-    if (isLoading) return <div className="p-4 text-gray-600">불러오는 중...</div>;
-    if (isError || !data) return <div className="p-4 text-red-500">에러 발생</div>;
+    if (isLoading) return <div className="p-4 text-gray-600">Loading...</div>;
+    if (isError || !data) return <div className="p-4 text-red-500">An error occurred</div>;
 
     console.log("포인트 내역 데이터", data);
 

@@ -18,27 +18,39 @@ export default [
         route("tag", "routes/users/signupTagPage.tsx"),
         route("google", "routes/auth/googleCallbackPage.tsx"),
     ]),
+    route("/mypage", "routes/users/myPagePage.tsx"),
+    // route("/mypage/edit", "routes/users/myPageEditPage.tsx"),
+
+    route("/app", "layout/applayout.tsx", [
+       route("main", "routes/appMainPage.tsx")
+    ]),
 
     // 근화
-    route("/admin/points", "layout/points/pointLayout.tsx", [
-        route("list", 'routes/admin/points/listPage.tsx'),
-        route("read/:id", 'routes/admin/points/readPage.tsx'),
-        route("add", 'routes/admin/points/addPage.tsx'),
-        route("edit/:id", 'routes/admin/points/editPage.tsx')
+    route("/admin", "layout/adminLayout.tsx", [
+        route("dashboard", "routes/admin/dashboardPage.tsx"), //관리자 대시보드
+
+        route("points/list", 'routes/admin/points/listPage.tsx'),
+        route("points/read/:id", 'routes/admin/points/readPage.tsx'),
+        route("points/add", 'routes/admin/points/addPage.tsx'),
+        route("points/edit/:id", 'routes/admin/points/editPage.tsx')
     ]),
     route("points/store/list",   "routes/points/storelistPage.tsx"), //포인트 상점
-    route("/user/mypage/points/history", "routes/users/pointLogsPage.tsx"), // 포인트 내역
-    route("/user/mypage/coupons", "routes/users/userCouponPage.tsx"), // 쿠폰함
+    route("/mypage/points/history", "routes/users/pointLogsPage.tsx"), // 포인트 내역
+    route("/mypage/coupons", "routes/users/userCouponPage.tsx"), // 쿠폰함
+
+
       
     // 동훈
     route("/admin/notices", "layout/noticeLayout.tsx", [
-        route("list",   "routes/admin/notices/listPage.tsx"),
-        route("add",    "routes/admin/notices/addPage.tsx"),
-        route(":id",    "routes/admin/notices/detailPage.tsx"),   // <-- useParams().id
-        route(":id/edit","routes/admin/notices/editPage.tsx"),
+        route("list",       "routes/admin/notices/listPage.tsx"),
+        route("add",        "routes/admin/notices/addPage.tsx"),
+        route(":id",        "routes/admin/notices/detailPage.tsx"),   // <-- useParams().id
+        route(":id/edit",   "routes/admin/notices/editPage.tsx"),
     ]),
-    route("products/ranking", "routes/products/listPage.tsx"),
-    route("products/:barcode", "routes/products/detailPage.tsx"),
+    route("/products",      "layout/productLayout.tsx", [
+        route("ranking",    "routes/products/listPage.tsx"),
+        route(":barcode",   "routes/products/detailPage.tsx"),
+    ]),
 
 
     // 강민
@@ -46,6 +58,7 @@ export default [
         route("/home", "routes/home.tsx"),
         route('/login', 'routes/auth/loginPage.tsx'),
     ]),
+    route("barcode/scan", "routes/barcode/scanPage.tsx"),
 
   
 ] satisfies RouteConfig;

@@ -2,7 +2,6 @@
 
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import ProductLayout from "~/layout/productLayout";
 import DetailComponent from "~/components/products/detailComponent";
 import { getProductDetail } from "~/api/productsAPI";
 import PreviewComponent from "~/components/reviews/previewComponent"
@@ -42,9 +41,9 @@ export default function DetailPage() {
 
     // data가 ProductDetailDTO로 정확히 인식되므로 TS2739 에러 없음
     return (
-        <ProductLayout>
+        <>
             <DetailComponent product={data} />
-            <PreviewComponent barcode={barcode!}></PreviewComponent>
-        </ProductLayout>
+            <PreviewComponent barcode={barcode!} reviewNum={data.review_count!}></PreviewComponent>
+        </>
     );
 }

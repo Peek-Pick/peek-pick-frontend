@@ -5,10 +5,16 @@ import type {ProductListDTO, PageResponse, ProductDetailDTO} from "~/types/produ
 const host = "http://localhost:8080/api/v1/products";
 
 
-export async function listProducts(page: number, size: number, sort: string = "likeCount,DESC")
+export async function listProducts(page: number, size: number, sort: string = "likeCount,DESC",category?: string, keyword?: string)
     : Promise<PageResponse<ProductListDTO>> {
     const res = await axiosInstance.get<PageResponse<ProductListDTO>>(
-        `${host}/ranking`, {params: { page, size, sort },});
+        `${host}/ranking`,
+        {params:
+            {
+            page, size, sort, ...(category && { category }), ...(keyword && { keyword }),
+            },
+        }
+    );
     return res.data;
 }
 
