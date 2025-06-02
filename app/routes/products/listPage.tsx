@@ -44,7 +44,7 @@ export default function ProductListPage() {
     const [sortParam, setSortParam] = useState<SortParamType>("likeCount,DESC");
     const [showSortMenu, setShowSortMenu] = useState(false);
 
-    // 스크롤 감지
+    // 스크롤 감지 (필터 영역 보였다 숨기기)
     const [showFilters, setShowFilters] = useState(true);
     const lastScrollY = useRef(0);
     useEffect(() => {
@@ -102,56 +102,18 @@ export default function ProductListPage() {
 
     return (
         <>
-            {/* 제목 + 검색 */}
-            <div className="sticky top-0 bg-white z-50 border-b">
-                <div className="flex justify-between items-center px-4 py-4">
-                    <h1 className="text-2xl font-bold">상품 랭킹</h1>
-                    <button
-                        onClick={() => setShowSearchInput((v) => !v)}
-                        className="p-2 rounded hover:bg-gray-100"
-                    >
-                        <Icon icon="ri:search-line" className="w-6 h-6 text-gray-600" />
-                    </button>
-                </div>
-
-                {showSearchInput && (
-                    <div className="absolute top-full right-4 mt-2 bg-white border rounded shadow p-2 flex items-center">
-                        {/* 1) input + X 버튼을 감싸는 relative 컨테이너 */}
-                        <div className="relative flex-1">
-                            <input
-                                type="text"
-                                placeholder="상품명 검색"
-                                className="w-full border rounded px-3 py-1 pr-8"
-                                value={inputValue}
-                                onChange={(e) => setInputValue(e.target.value)}
-                                onKeyDown={(e) => { if (e.key === "Enter") handleSearch(); }}
-                            />
-                            {inputValue && (
-                                <button
-                                    onClick={() => setInputValue("")}
-                                    className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1"
-                                >
-                                    <Icon icon="ri:close-line" className="w-4 h-4 text-gray-600" />
-                                </button>
-                            )}
-                        </div>
-                        {/* 2) 검색 실행 버튼 */}
-                        <button
-                            onClick={handleSearch}
-                            className="ml-2 p-2 rounded hover:bg-gray-100"
-                        >
-                            <Icon icon="ri:search-line" className="w-5 h-5 text-gray-600" />
-                        </button>
-                    </div>
-                )}
+            {/* 제목은 일반 텍스트로만 표시 */}
+            <div className="px-4 py-4">
+                <h1 className="text-2xl font-bold">상품 랭킹</h1>
             </div>
 
-
-            {/* 필터 영역 */}
+            {/* 필터 영역 (카테고리, 정렬, 검색 버튼) */}
             <div
-                className={`sticky top-16 bg-white z-40 border-b transform transition-transform duration-200 ${
-                    showFilters ? "translate-y-0" : "-translate-y-full"
-                }`}
+                className={`
+          sticky top-12 bg-white z-40 border-b 
+          transform transition-transform duration-200 
+          ${showFilters ? "translate-y-0" : "-translate-y-full"}
+        `}
             >
                 <div className="flex items-center px-4 py-2 space-x-4">
                     {/* 카테고리 드롭다운 */}
@@ -160,7 +122,9 @@ export default function ProductListPage() {
                             onClick={() => setShowCategoryMenu((v) => !v)}
                             className="flex items-center px-4 py-2 rounded-full border hover:bg-gray-100 text-sm"
                         >
-                            <span className="mr-2">{categories.find(c => c.label === categoryLabel)?.emoji} {categoryLabel}</span>
+              <span className="mr-2">
+                {categories.find((c) => c.label === categoryLabel)?.emoji} {categoryLabel}
+              </span>
                             <Icon icon="ri:arrow-down-s-line" className="w-4 h-4" />
                         </button>
                         {showCategoryMenu && (
@@ -168,8 +132,13 @@ export default function ProductListPage() {
                                 {categories.map(({ label, emoji }) => (
                                     <li key={label}>
                                         <button
-                                            onClick={() => { setCategoryLabel(label); setShowCategoryMenu(false); }}
-                                            className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${categoryLabel === label ? 'font-bold' : ''}`}
+                                            onClick={() => {
+                                                setCategoryLabel(label);
+                                                setShowCategoryMenu(false);
+                                            }}
+                                            className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
+                                                categoryLabel === label ? "font-bold" : ""
+                                            }`}
                                         >
                                             {emoji} {label}
                                         </button>
@@ -187,8 +156,9 @@ export default function ProductListPage() {
                         >
               <span className="mr-2">
                 <Icon
-                    icon={sortOptions.find(s => s.label === sortLabel)!.icon}
-                    className={`w-5 h-5 ${sortOptions.find(s => s.label === sortLabel)!.color}`} />
+                    icon={sortOptions.find((s) => s.label === sortLabel)!.icon}
+                    className={`w-5 h-5 ${sortOptions.find((s) => s.label === sortLabel)!.color}`}
+                />
               </span>
                             <span>{sortLabel}</span>
                         </button>
@@ -197,8 +167,14 @@ export default function ProductListPage() {
                                 {sortOptions.map(({ label, icon, param, color }) => (
                                     <li key={label}>
                                         <button
-                                            onClick={() => { setSortLabel(label); setSortParam(param); setShowSortMenu(false); }}
-                                            className={`flex items-center w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${sortLabel === label ? 'font-bold' : ''}`}
+                                            onClick={() => {
+                                                setSortLabel(label);
+                                                setSortParam(param);
+                                                setShowSortMenu(false);
+                                            }}
+                                            className={`flex items-center w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
+                                                sortLabel === label ? "font-bold" : ""
+                                            }`}
                                         >
                                             <Icon icon={icon} className={`w-4 h-4 mr-2 ${color}`} />
                                             <span>{label}</span>
@@ -206,6 +182,48 @@ export default function ProductListPage() {
                                     </li>
                                 ))}
                             </ul>
+                        )}
+                    </div>
+
+                    {/* 검색 버튼 + 입력창 (필터 영역 내부) */}
+                    <div className="relative inline-block text-left">
+                        <button
+                            onClick={() => setShowSearchInput((v) => !v)}
+                            className="p-2 rounded hover:bg-gray-100"
+                        >
+                            <Icon icon="ri:search-line" className="w-6 h-6 text-gray-600" />
+                        </button>
+                        {showSearchInput && (
+                            <div className="absolute right-0 mt-2 bg-white border rounded shadow p-2 flex items-center">
+                                {/* 1) 입력창 영역 */}
+                                <div className="relative flex-1">
+                                    <input
+                                        type="text"
+                                        placeholder="상품명 검색"
+                                        className="w-full border rounded px-3 py-1 pr-8"
+                                        value={inputValue}
+                                        onChange={(e) => setInputValue(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter") handleSearch();
+                                        }}
+                                    />
+                                    {inputValue && (
+                                        <button
+                                            onClick={() => setInputValue("")}
+                                            className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1"
+                                        >
+                                            <Icon icon="ri:close-line" className="w-4 h-4 text-gray-600" />
+                                        </button>
+                                    )}
+                                </div>
+                                {/* 2) 검색 실행 버튼 */}
+                                <button
+                                    onClick={handleSearch}
+                                    className="ml-2 p-2 rounded hover:bg-gray-100"
+                                >
+                                    <Icon icon="ri:search-line" className="w-5 h-5 text-gray-600" />
+                                </button>
+                            </div>
                         )}
                     </div>
                 </div>

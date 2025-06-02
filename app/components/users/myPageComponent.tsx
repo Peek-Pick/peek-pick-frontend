@@ -5,33 +5,31 @@ import {
     FaQuestionCircle, FaBell, FaUserShield, FaFileContract, FaIdBadge, FaUserAltSlash
 } from 'react-icons/fa';
 import { IoLanguage, IoLogOutOutline } from "react-icons/io5";
-import { useNavigate } from "react-router";
 import { getMyPage } from "~/api/myPageAPI";
-
 
 // 타입 정의
 interface MypageData {
-    profile_img_url: string;
+    profileImgUrl: string;
     nickname: string;
     point: number;
-    wishlisted_count: number;
-    review_count: number;
-    coupon_count: number;
-    barcode_history_count: number;
+    wishlistedCount: number;
+    reviewCount: number;
+    couponCount: number;
+    barcodeHistoryCount: number;
 }
 
-export default function myPageComponent() {
 
-    const navigate = useNavigate();
+
+export default function ProfileHeader() {
 
     const initState:MypageData = {
-        profile_img_url: '',
+        profileImgUrl: '',
         nickname: '',
         point: 0,
-        wishlisted_count: 0,
-        review_count: 0,
-        coupon_count: 0,
-        barcode_history_count: 0
+        wishlistedCount: 0,
+        reviewCount: 0,
+        couponCount: 0,
+        barcodeHistoryCount: 0
     }
 
     const [myData, setMyData] = useState<MypageData>(initState);
@@ -40,13 +38,12 @@ export default function myPageComponent() {
         getMyPage()
             .then(result => {
                 const transformed = {
-                    profile_img_url: result.profile_img_url,
+                    profileImgUrl: result.profileImgUrl,
                     nickname: result.nickname,
                     point: result.point,
-                    ...result.quick_stats, // quickStats 내부 값 펼쳐서 넣어야 함
+                    ...result.quickStats, // quickStats 내부 값 펼쳐서 넣어야 함
                 };
                 setMyData(transformed);
-                console.log(result)
             })
             .catch((err) => console.error("프로필 불러오기 실패", err));
     }, []);
@@ -55,22 +52,10 @@ export default function myPageComponent() {
 
     // 동적 quickStats
     const quickStats = [
-        { icon: <FaHeart className="text-pink-500 text-2xl mb-2" />, label: 'Wishlisted Items', value: 9999,
-            to:'' }, // 실제 값 연결하면 value: myData.wishlisted_count 이런식으로 수정해야함
-        { icon: <FaPen className="text-blue-500 text-2xl mb-2" />, label: 'My Reviews', value: 9999,
-            to:'' },
-        { icon: <FaTicketAlt className="text-yellow-500 text-2xl mb-2" />, label: 'Coupons', value: 9999, to:'coupons'},
-        { icon: <FaBarcode className="text-green-500 text-2xl mb-2" />, label: 'Barcode History', value: 9999,
-            to:'' },
-
-//         { icon: <FaHeart className="text-pink-500 text-2xl mb-2" />, label: 'Wishlisted Items', value: myData.wishlistedCount,
-//             to:'' },
-//         { icon: <FaPen className="text-blue-500 text-2xl mb-2" />, label: 'My Reviews', value: myData.reviewCount,
-//             to:'' },
-//         { icon: <FaTicketAlt className="text-yellow-500 text-2xl mb-2" />, label: 'Coupons', value: myData.couponCount,
-//             to:'coupons' },
-//         { icon: <FaBarcode className="text-green-500 text-2xl mb-2" />, label: 'Barcode History', value: myData.barcodeHistoryCount,
-//             to:'' },
+        { icon: <FaHeart className="text-pink-500 text-2xl mb-2" />, label: 'Wishlisted Items', value: myData.wishlistedCount },
+        { icon: <FaPen className="text-blue-500 text-2xl mb-2" />, label: 'My Reviews', value: myData.reviewCount },
+        { icon: <FaTicketAlt className="text-yellow-500 text-2xl mb-2" />, label: 'Coupons', value: myData.couponCount },
+        { icon: <FaBarcode className="text-green-500 text-2xl mb-2" />, label: 'Barcode History', value: myData.barcodeHistoryCount },
     ];
 
     const buttons: [string, React.ComponentType<React.SVGProps<SVGSVGElement>>][] = [
@@ -92,31 +77,24 @@ export default function myPageComponent() {
                 <div className="text-center">
                     <div className="relative inline-block -mt-16">
                         <img
-                            src={`/${myData.profile_img_url}`}
+                            src={myData.profileImgUrl || "/default.jpg"}
                             alt="Profile"
                             className="w-28 h-28 rounded-full border-4 border-white bg-white object-cover"
                         />
                     </div>
                     <h3 className="mt-4 mb-1 text-xl font-semibold">{myData.nickname}</h3>
                     <div className="flex justify-center mb-2">
-                        <button
-                            onClick={() => navigate('points/history')}
-                            className="rounded flex items-center justify-center space-x-2 px-4 py-2 hover:bg-gray-100">
+                        <button className="rounded flex items-center justify-center space-x-2 px-4 py-2 hover:bg-gray-100">
                             <FaCoins className="text-indigo-500 text-xl" />
                             <p className="text-gray-500">{myData.point.toLocaleString()} Beeplet</p>
                             <FaAngleRight className="text-gray-500 text-xl" />
                         </button>
                     </div>
                     <div className="flex justify-center gap-2">
-                        <button
-                            onClick={() => navigate('/points/store/list')}
-                            className="border border-amber-300 text-amber-300 px-4 py-1 flex items-center hover:bg-gray-100">
+                        <button className="border border-amber-300 text-amber-300 px-4 py-1 flex items-center hover:bg-gray-100">
                             <FaStore className="mr-2" /> Point Store
                         </button>
-                        <button
-                            className="bg-amber-300 hover:bg-amber-400 active:bg-amber-200 text-white px-4 py-1 rounded flex items-center"
-                            onClick={()=> navigate('/mypage/edit')}
-                        >
+                        <button className="bg-amber-300 hover:bg-amber-400 active:bg-amber-200 text-white px-4 py-1 rounded flex items-center">
                             <FaUserCog className="mr-2" /> Edit Profile
                         </button>
                     </div>
@@ -126,9 +104,7 @@ export default function myPageComponent() {
             {/* 퀵 통계 */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-4 mb-6">
                 {quickStats.map((item, index) => (
-                    <button key={index}
-                            onClick={() => navigate(item.to)}
-                            className="bg-white shadow hover:shadow-md transition rounded-xl p-4 flex flex-col items-center text-center w-full">
+                    <button key={index} className="bg-white shadow hover:shadow-md transition rounded-xl p-4 flex flex-col items-center text-center w-full">
                         {item.icon}
                         <span className="text-lg font-semibold text-gray-800">{item.value}</span>
                         <p className="text-sm font-medium text-gray-600 mb-1">{item.label}</p>
@@ -145,8 +121,6 @@ export default function myPageComponent() {
                     </button>
                 ))}
             </div>
-
-
         </>
     );
 }

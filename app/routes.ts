@@ -30,10 +30,12 @@ export default [
         route("points/store/list",   "routes/points/storelistPage.tsx"), //포인트 상점
         route("/mypage/points/history", "routes/users/pointLogsPage.tsx"), // 포인트 내역
         route("/mypage/coupons", "routes/users/userCouponPage.tsx"), // 쿠폰함
-
+        route("/mypage/favorites", "routes/users/favoritesPage.tsx"), // 즐겨찾기 상품 목록
+        route("/mypage/views",   "routes/users/viewsPage.tsx"), // 상품 조회 내역
         // 상품
         route("products/ranking",    "routes/products/listPage.tsx"),
         route("products/:barcode",   "routes/products/detailPage.tsx"),
+        route("products/recommended",   "routes/products/recommendedPage.tsx"), // 상품 추천
 
         // 리뷰
         route("/reviews/product/:barcode", "routes/reviews/productListPage.tsx"),
