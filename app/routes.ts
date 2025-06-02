@@ -67,6 +67,9 @@ export default [
 
     // admin
     route("/admin", "layout/adminLayout.tsx", [
+        // 로그인
+        route('/login', 'routes/auth/loginPage.tsx'),
+        
         //관리자 대시보드
         route("dashboard", "routes/admin/dashboardPage.tsx"),
 
@@ -91,6 +94,22 @@ export default [
         // 신고
         // route("reports/list",       "routes/admin/reports/listPage.tsx"),    // 리뷰 신고 목록
         // route("reports/:id",       "routes/admin/reports/detailPage.tsx"),    // 신고 상세
+
+        // 어드민 상품
+        // route("products/list",       "routes/admin/inquiries/listPage.tsx"),     // 상품 목록
+        // route("products/add",        "routes/admin/inquiries/addPage.tsx"),      // 상품 등록
+        // route("products/:id",        "routes/admin/inquiries/detailPage.tsx"),   // 상품 상세
+        // route("products/:id/edit",   "routes/admin/inquiries/editPage.tsx"),     // 수정
+
+        // 어드민 유저
+        // route("users/list",       "routes/admin/users/listPage.tsx"), // 목록
+        // route("users/:id",        "routes/admin/users/detailPage.tsx"), // 상세
+
+        // 어드민 리뷰
+        // route("reviews/list",       "routes/admin/reviews/listPage.tsx"), // 목록
+        // route("reviews/:id",        "routes/admin/reviews/detailPage.tsx"), // 상세
+
+
     ])
   
 ] satisfies RouteConfig;
