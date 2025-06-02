@@ -7,6 +7,7 @@ import DetailComponent from "~/components/products/detailComponent";
 import { getProductDetail } from "~/api/productsAPI";
 import PreviewComponent from "~/components/reviews/previewComponent"
 import type { ProductDetailDTO } from "~/types/products";
+import BottomNavComponent from "~/components/main/bottomNavComponent";
 
 export default function DetailPage() {
     // URL 파라미터에서 barcode 읽기
@@ -45,6 +46,8 @@ export default function DetailPage() {
         <>
             <DetailComponent product={data} />
             <PreviewComponent barcode={barcode!} reviewNum={data.review_count!}></PreviewComponent>
+
+            <BottomNavComponent/>
         </>
     );
 }
