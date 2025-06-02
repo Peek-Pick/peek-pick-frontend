@@ -58,7 +58,7 @@ export default [
         // route("map",   "routes/map/kakaoMapPage.tsx"),
 
         // 검색
-        // route("search", "routes/map/kakaoMapPage.tsx"),
+        // route("search", "routes/search/searchPage.tsx"),
 
 
     ]),
