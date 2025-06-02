@@ -24,7 +24,7 @@ export default [
 
         // 마이페이지
         route("/mypage", "routes/users/myPagePage.tsx"),
-        // route("/mypage/edit", "routes/users/myPageEditPage.tsx"),
+        route("/mypage/edit", "routes/users/myPageEditPage.tsx"),
 
         // 포인트
         route("points/store/list",   "routes/points/storelistPage.tsx"), //포인트 상점

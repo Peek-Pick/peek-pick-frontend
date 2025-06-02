@@ -1,4 +1,4 @@
-import {useMemo, useState } from "react";
+import {useEffect, useMemo, useState } from "react";
 import { useGetAllTags } from "./useGetAllTags";
 import type { TagDTO } from "~/types/tag";
 
@@ -6,6 +6,11 @@ export function useTagSelector(initSelected: number[] = []) {
 
     const [selectedTags, setSelectedTags] = useState<number[]>(initSelected)
     const {allTags, loading} = useGetAllTags();
+
+    // initSelected가 바뀌면 selectedTags 업데이트
+    useEffect(() => {
+        setSelectedTags(initSelected);
+    }, [initSelected]);
 
     // 토글 함수
     const toggleTag = (tagId: number)=> {

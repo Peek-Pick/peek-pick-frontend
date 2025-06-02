@@ -27,3 +27,11 @@ export async function getProductDetail(
     return res.data;
 }
 
+/**
+ * 상품 좋아요 토글 요청
+ * @param barcode 좋아요를 누를 상품의 바코드
+ * @returns 서버에서 반환하는 응답 데이터 (필요 시 타입 정의 후 리턴)
+ */
+export async function toggleProductLike(barcode: string): Promise<void> {
+    await axiosInstance.post(`${host}/${barcode}/like`);
+}

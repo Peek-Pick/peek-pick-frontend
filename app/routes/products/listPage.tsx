@@ -5,6 +5,7 @@ import { Icon } from "@iconify/react";
 import ListComponent from "~/components/products/listComponent";
 import { listProducts } from "~/api/productsAPI";
 import type { PageResponse, ProductListDTO } from "~/types/products";
+import BottomNavComponent from "~/components/main/bottomNavComponent";
 
 export default function ProductListPage() {
     const size = 10;
@@ -102,15 +103,11 @@ export default function ProductListPage() {
 
     return (
         <>
-            {/* 제목은 일반 텍스트로만 표시 */}
-            <div className="px-4 py-4">
-                <h1 className="text-2xl font-bold">상품 랭킹</h1>
-            </div>
-
             {/* 필터 영역 (카테고리, 정렬, 검색 버튼) */}
+            {/* ↓ 아래에 `-mt-4`를 추가하여, AppLayout의 main(p-4) 상단 padding(1rem)을 상쇄 */}
             <div
                 className={`
-          sticky top-12 bg-white z-40 border-b 
+          -mt-4 sticky top-16 bg-white z-40 border-b 
           transform transition-transform duration-200 
           ${showFilters ? "translate-y-0" : "-translate-y-full"}
         `}
@@ -119,7 +116,11 @@ export default function ProductListPage() {
                     {/* 카테고리 드롭다운 */}
                     <div className="relative inline-block text-left">
                         <button
-                            onClick={() => setShowCategoryMenu((v) => !v)}
+                            onClick={() => {
+                                setShowCategoryMenu((v) => !v);
+                                setShowSortMenu(false);
+                                setShowSearchInput(false);
+                            }}
                             className="flex items-center px-4 py-2 rounded-full border hover:bg-gray-100 text-sm"
                         >
               <span className="mr-2">
@@ -128,7 +129,7 @@ export default function ProductListPage() {
                             <Icon icon="ri:arrow-down-s-line" className="w-4 h-4" />
                         </button>
                         {showCategoryMenu && (
-                            <ul className="absolute left-0 mt-2 w-36 bg-white border rounded shadow-lg z-10 max-h-60 overflow-auto">
+                            <ul className="absolute left-0 mt-2 w-44 bg-white border rounded shadow-lg z-10 max-h-60 overflow-auto">
                                 {categories.map(({ label, emoji }) => (
                                     <li key={label}>
                                         <button
@@ -151,7 +152,11 @@ export default function ProductListPage() {
                     {/* 정렬 드롭다운 */}
                     <div className="relative inline-block text-left">
                         <button
-                            onClick={() => setShowSortMenu((v) => !v)}
+                            onClick={() => {
+                                setShowSortMenu((v) => !v);
+                                setShowCategoryMenu(false);
+                                setShowSearchInput(false);
+                            }}
                             className="flex items-center px-4 py-2 rounded-full border hover:bg-gray-100 text-sm"
                         >
               <span className="mr-2">
@@ -163,7 +168,7 @@ export default function ProductListPage() {
                             <span>{sortLabel}</span>
                         </button>
                         {showSortMenu && (
-                            <ul className="absolute left-0 mt-2 w-32 bg-white border rounded shadow-lg z-10">
+                            <ul className="absolute left-0 mt-2 w-40 bg-white border rounded shadow-lg z-10">
                                 {sortOptions.map(({ label, icon, param, color }) => (
                                     <li key={label}>
                                         <button
@@ -188,13 +193,17 @@ export default function ProductListPage() {
                     {/* 검색 버튼 + 입력창 (필터 영역 내부) */}
                     <div className="relative inline-block text-left">
                         <button
-                            onClick={() => setShowSearchInput((v) => !v)}
+                            onClick={() => {
+                                setShowSearchInput((v) => !v);
+                                setShowCategoryMenu(false);
+                                setShowSortMenu(false);
+                            }}
                             className="p-2 rounded hover:bg-gray-100"
                         >
                             <Icon icon="ri:search-line" className="w-6 h-6 text-gray-600" />
                         </button>
                         {showSearchInput && (
-                            <div className="absolute right-0 mt-2 bg-white border rounded shadow p-2 flex items-center">
+                            <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg p-2 flex items-center">
                                 {/* 1) 입력창 영역 */}
                                 <div className="relative flex-1">
                                     <input
@@ -236,6 +245,8 @@ export default function ProductListPage() {
                 hasNextPage={hasNextPage}
                 isFetchingNextPage={isFetchingNextPage}
             />
+
+            <BottomNavComponent/>
         </>
     );
 }
