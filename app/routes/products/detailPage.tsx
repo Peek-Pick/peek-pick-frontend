@@ -2,6 +2,7 @@
 
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import ProductLayout from "~/layout/productLayout";
 import DetailComponent from "~/components/products/detailComponent";
 import { getProductDetail } from "~/api/productsAPI";
 import PreviewComponent from "~/components/reviews/previewComponent"
@@ -43,7 +44,7 @@ export default function DetailPage() {
     return (
         <>
             <DetailComponent product={data} />
-            <PreviewComponent barcode={barcode!} reviewNum={data.review_count!}></PreviewComponent>
+            <PreviewComponent barcode={barcode!}></PreviewComponent>
         </>
     );
 }

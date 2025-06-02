@@ -4,6 +4,7 @@
 export interface ProductListDTO {
     productId: number;
     barcode: string;
+    product_id: number;
     name: string;
     category?: string | null;
     img_url?: string | null;
@@ -55,8 +56,4 @@ export interface ProductDetailDTO {
     score?: number | null;
     /** 로그인 사용자 좋아요 여부 */
     is_liked?: boolean | null;
-    /** 리뷰 수 */
-    review_count?: number | null;
-    /** 평균 점수 */
-    score?: number | null;
 }
