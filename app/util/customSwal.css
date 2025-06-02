@@ -1,0 +1,96 @@
+/* 팝업의 기본 스타일을 수정 */
+.custom-popup {
+    background-color: #fff;
+    border-radius: 20px;
+    padding: 15px;
+    max-width: 400px;
+    width: 90%;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* 제목 스타일 */
+.custom-title {
+    font-size: 1.4rem;
+    color: #333;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+/* 버튼 컨테이너 */
+.custom-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+/* 확인 버튼 스타일 (삭제 버튼과 동일한 색상) */
+.custom-confirm-button {
+    background-color: #34D399;
+    /* gray-700 */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.custom-confirm-button:hover {
+    background-color: #34D399;
+    /* gray-800 */
+}
+
+/* 취소 버튼 스타일 (취소 버튼과 동일한 색상) */
+.custom-cancel-button {
+    background-color: #374151;
+    /* pink-500 */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.custom-cancel-button:hover {
+    background-color: #374151;
+    /* pink-600 */
+}
+
+/* SweetAlert2 라디오 버튼 커스텀 스타일 */
+.swal2-radio {
+    display: flex;
+    flex-direction: row;
+    margin-top: 20px;
+    padding: 15px;
+    white-space: nowrap;
+}
+
+/* 라디오 버튼 커스텀 */
+.swal2-radio input[type="radio"] {
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+    accent-color: #374151; /* 원하는 색상으로 변경 가능 */
+}
+
+/* 라디오 라벨 스타일 */
+.swal2-radio label {
+    font-size: 1.2rem;  /* 폰트 크기 키우기 */
+    color: #333;
+    cursor: pointer;
+    user-select: none;
+    line-height: 20px;
+    display: flex;
+    align-items: center;
+}
+
+/* 라디오 버튼 + 라벨을 한 줄로 정렬 */
+.swal2-radio input[type="radio"] + label {
+    display: inline-flex;
+    align-items: center;
+}

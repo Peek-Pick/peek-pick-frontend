@@ -4,6 +4,7 @@
 export interface ProductListDTO {
     productId: number;
     barcode: string;
+    product_id: number;
     name: string;
     category?: string | null;
     img_url?: string | null;

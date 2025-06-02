@@ -1,31 +1,22 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getProductPreviews, toggleReview, reportReview } from "~/api/reviews/reviewAPI";
+import { getProductPreviews, toggleReview } from "~/api/reviews/reviewAPI";
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { getProductIdByBarcode} from "~/api/reviews/reviewAPI"
+import { useReviewReport } from "~/hooks/useReviewReport";
+import { Rating } from "~/components/reviews/rating/rating"
+import { useNavigate } from "react-router-dom";
 
 interface PreviewProps {
     barcode: string;
+    reviewNum: number;
 }
 
-enum ReportReason {
-    POLITICS = "POLITICS",
-    HATE = "HATE",
-    DEFAMATION = "DEFAMATION",
-    PROFANITY = "PROFANITY",
-}
+export default function PreviewComponent({ barcode, reviewNum }: PreviewProps) {
+    const navigate = useNavigate()
 
-const ReportReasonDescriptions: Record<ReportReason, string> = {
-    [ReportReason.POLITICS]: "정치",
-    [ReportReason.HATE]: "혐오",
-    [ReportReason.DEFAMATION]: "비방",
-    [ReportReason.PROFANITY]: "욕설",
-};
-
-export default function PreviewComponent({ barcode }: PreviewProps) {
-    // barcode로 productId 받아오기
     const [productId, setProductId] = useState<number | null>(null);
 
+    // barcode로 productId 받아오기
     useEffect(() => {
         if (!barcode) return;
 
@@ -35,6 +26,7 @@ export default function PreviewComponent({ barcode }: PreviewProps) {
                 console.log(response.data)})
     }, [barcode]);
 
+    // 상품별 리뷰 3개 받아오기
     const { data, isLoading, isError } = useQuery<ReviewDetailDTO[]>({
         queryKey: ["previews", productId],
         queryFn: () => getProductPreviews(productId!),
@@ -49,23 +41,30 @@ export default function PreviewComponent({ barcode }: PreviewProps) {
         return <p className="text-center p-4 text-gray-500 text-base sm:text-lg">아직 작성된 리뷰가 없습니다.</p>;
 
     return (
-        <div className="w-full min-h-screen bg-gray-50 p-4 flex flex-col items-center">
-            {/* 헤더: 타이틀 + 링크 */}
-            <div className="flex justify-between items-center mb-4">
-                <Link
-                    to={`/reviews/product/${barcode}`}
-                    className="text-sm text-blue-500 hover:underline"
-                >
-                    리뷰 전체보기
-                </Link>
-            </div>
+        <div>
+            <section className="py-24 relative">
+                <div className="w-full max-w-7xl px-4 md:px-5 lg-6 mx-auto">
+                    <div className="w-full">
+                        {/* 헤더: 타이틀 + 링크 */}
+                        <div className="flex justify-between items-center border-t border-b border-gray-200 py-4 mb-2">
+                           <span>
+                                누적 리뷰 <span className="text-red-500 font-semibold">{reviewNum}</span>건
+                            </span>
+                            <button
+                                onClick={() => navigate(`/reviews/product/${barcode}`)}
+                                className="text-md text-gray-500 hover:text-gray-700 hover:font-semibold transition"
+                            >
+                                전체보기 &gt;
+                            </button>
+                        </div>
 
-            {/* 리뷰 목록 */}
-            <div className="w-full max-w-md sm:max-w-xl md:max-w-3xl space-y-2">
-                {data.map((review) => (
-                    <ReviewItem key={review.review_id} review={review} productId={productId!} />
-                ))}
-            </div>
+                        {/* 리뷰 카드 */}
+                        {data.map((review) => (
+                            <ReviewItem key={review.review_id} review={review} productId={productId!} />
+                        ))}
+                    </div>
+                </div>
+            </section>
         </div>
     );
 }
@@ -78,152 +77,96 @@ interface ReviewItemProps {
 function ReviewItem({ review, productId }: ReviewItemProps) {
     const queryClient = useQueryClient();
 
-    const [isReportOpen, setIsReportOpen] = useState(false);
-    const [selectedReason, setSelectedReason] = useState<ReportReason | "">("");
-    const [isReporting, setIsReporting] = useState(false);
+    // 리뷰 신고 모달
+    const { openReportModal } = useReviewReport(review.review_id);
 
-    const reportMutation = useMutation({
-        mutationFn: () =>
-            reportReview(review.review_id, { review_id: review.review_id, reason: selectedReason as ReportReason }),
-        onSuccess: () => {
-            alert("신고가 접수되었습니다.");
-            closeReport();
-        },
-        onError: () => {
-            alert("이미 신고한 리뷰입니다.");
-            closeReport();
-        },
-    });
-
+    // 리뷰 좋아요
     const toggleLikeMutation = useMutation({
-        mutationFn: (id: number) => toggleReview(id),
+        mutationFn: (reviewId: number) => toggleReview(reviewId),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["previews", productId] });
-            queryClient.invalidateQueries({ queryKey: ["productReviews", productId] });
+            queryClient.invalidateQueries({queryKey: ["previews", productId]});
         },
-        onError: () => {
-            alert("좋아요 처리 중 오류가 발생했습니다");
+        onError: (error) => {
+            console.error("toggleLikeMutation failed: ", error);
         },
     });
-
-    const openReport = () => setIsReportOpen(true);
-
-    const closeReport = () => {
-        setIsReportOpen(false);
-        setSelectedReason("");
-        setIsReporting(false);
-    };
-
-    const handleReport = () => {
-        if (!selectedReason) return;
-
-        setIsReporting(true);
-        reportMutation.mutate();
-    };
 
     return (
-        <div className="w-full max-w-md sm:max-w-xl md:max-w-3xl mx-auto bg-white shadow-md rounded-lg space-y-3 p-4">
-            {/* 작성자 정보 */}
-            <div className="flex items-center space-x-3 mb-2">
-                <img src="/default.jpg" alt="프로필" className="w-10 h-10 rounded-full" />
-                <p className="font-semibold text-gray-800 text-sm sm:text-base">
-                    {review.nickname ?? "사용자"}
-                </p>
+        <div className="bg-white rounded-md p-6 shadow-md mb-2">
+            {/* 작성자 정보와 작성일*/}
+            <div className="flex sm:items-center flex-col min-[400px]:flex-row justify-between gap-5 mb-3">
+                <div className="flex items-center gap-3">
+                    <img src="/default.png" alt="profile image"
+                         className="w-14 h-14 rounded-full object-cover"/>
+                    <h6 className="font-semibold text-lg leading-8 text-gray-600">{review.nickname ?? "테스트"}</h6>
+                </div>
+                <p className="font-normal text-lg leading-8 text-gray-400">{new Date(review.reg_date).toLocaleDateString()}</p>
             </div>
 
-            {/* 별점과 작성일 */}
-            <div className="flex justify-between items-center mb-4 text-xs sm:text-sm">
-                <div className="flex space-x-1">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                        <span key={i} className={`text-lg ${i < review.score ? 'text-yellow-400' : 'text-gray-300'}`}>★</span>
-                    ))}
-                </div>
-                <p className="text-gray-500">
-                    작성일: {new Date(review.reg_date).toLocaleDateString()}
-                </p>
+            {/* 별점 */}
+            <div className="flex items-center gap-2 mb-4">
+                {Array.from({length: 5}).map((_, i) => (
+                    <Rating key={i} filled={i < review.score}/>
+                ))}
             </div>
+
+            {/* 리뷰 텍스트 */}
+            <p className="font-normal text-lg leading-7.5 text-gray-500 max-xl:text-justify mb-3">{review.comment}</p>
 
             {/* 이미지 */}
-            {review.images?.length && (
+            {review.images?.length > 0 && (
                 <div
-                    className="flex space-x-2 mb-4 overflow-x-auto no-scrollbar"
-                    style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+                    className="flex flex-nowrap space-x-2 mb-4 overflow-x-auto no-scrollbar"
+                    style={{scrollbarWidth: "none", msOverflowStyle: "none"}}
                 >
                     {review.images.map((img) => (
-                        <img key={img.img_id} src={`http://localhost/s_${img.img_url}`}
-                             alt="리뷰이미지" className="w-24 h-24 sm:w-24 sm:h-24 rounded-lg object-cover flex-shrink-0"/>
+                        <img
+                            key={img.img_id}
+                            src={`http://localhost/s_${img.img_url}`}
+                            alt="리뷰이미지"
+                            className="w-25 h-25 sm:w-25 sm:h-25 rounded-lg object-cover flex-shrink-0 border-1 border-gray-100 "
+                        />
                     ))}
                 </div>
             )}
 
-            {/* 리뷰 텍스트 */}
-            <p className="text-gray-800 whitespace-pre-wrap mb-4 text-base sm:text-lg">{review.comment}</p>
-
             {/* 태그 */}
             {review.tag_list?.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-4">
+                <div className="flex flex-wrap gap-2 mb-3">
                     {review.tag_list.map((tag) => (
                         <span
                             key={tag.tag_id}
-                            className="px-3 py-1 bg-white border border-gray-200 rounded-md text-sm text-gray-800 shadow-sm hover:shadow-md transition duration-200"
+                            className="bg-emerald-50 text-emerald-500 border border-emerald-200 text-sm sm:text-base font-semibold px-3 py-1 rounded-full"
                         >
-                            #{tag.tag_name}
-                        </span>
+                        #{tag.tag_name}
+                    </span>
                     ))}
                 </div>
             )}
 
             {/* 좋아요 & 신고 */}
-            <div className="flex justify-between items-center text-sm sm:text-base">
+            <div className="flex justify-between items-center text-sm sm:text-base mt-3">
+                {/* 좋아요 버튼 */}
                 <button
                     onClick={() => toggleLikeMutation.mutate(review.review_id)}
                     disabled={toggleLikeMutation.isPending}
-                    className={`transition-colors duration-200 ${review.is_liked ? "text-red-500" : "text-gray-600"
-                    }`}
+                    className={`flex items-center gap-1 px-2 py-1 rounded-full border font-semibold
+                ${review.is_liked
+                        ? "bg-red-50 text-red-500 border-red-200"
+                        : "bg-gray-100 text-gray-500 border-gray-200"} 
+                hover:shadow-sm transition-colors duration-200`}
                 >
-                    리뷰 좋아요 {review.is_liked ? '❤️' : '🤍'} {review.recommend_cnt}
+                    {review.is_liked ? '❤️' : '🤍'} 좋아요 {review.recommend_cnt}
                 </button>
-                <button onClick={openReport} className="text-red-500 hover:underline">신고하기</button>
-            </div>
 
-            {/* 신고 모달 */}
-            {isReportOpen && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white p-6 rounded shadow w-full max-w-xs sm:max-w-sm">
-                        <h3 className="font-semibold mb-4 text-base sm:text-lg">신고 사유 선택</h3>
-                        <div className="space-y-2 mb-4 max-h-48 overflow-y-auto">
-                            {Object.entries(ReportReasonDescriptions).map(([key, desc]) => (
-                                <label key={key} className="flex items-center cursor-pointer">
-                                    <input
-                                        type="radio"
-                                        name="reportReason"
-                                        value={key}
-                                        checked={selectedReason === key}
-                                        onChange={() => setSelectedReason(key as ReportReason)}
-                                        className="mr-2"
-                                    />
-                                    <span className="text-sm sm:text-base">{desc}</span>
-                                </label>
-                            ))}
-                        </div>
-                        <div className="flex justify-end gap-2">
-                            <button
-                                onClick={closeReport}
-                                className="px-3 py-1 border rounded text-sm sm:text-base"
-                            >
-                                취소
-                            </button>
-                            <button
-                                onClick={handleReport}
-                                disabled={!selectedReason || reportMutation.isPending}
-                                className="px-3 py-1 bg-red-500 text-white rounded disabled:opacity-50 text-sm sm:text-base"
-                            >
-                                {isReporting ? "신고중..." : "신고하기"}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+                {/* 신고하기 버튼 */}
+                <button
+                    onClick={openReportModal}
+                    className="text-red-500 hover:font-semibold hover:text-red-600 transition duration-200"
+                >
+                    신고하기
+                </button>
+            </div>
         </div>
     );
 }
