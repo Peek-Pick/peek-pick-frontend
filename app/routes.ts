@@ -30,10 +30,12 @@ export default [
         route("points/store/list",   "routes/points/storelistPage.tsx"), //포인트 상점
         route("/mypage/points/history", "routes/users/pointLogsPage.tsx"), // 포인트 내역
         route("/mypage/coupons", "routes/users/userCouponPage.tsx"), // 쿠폰함
-
+        route("/mypage/favorites", "routes/users/favoritesPage.tsx"), // 즐겨찾기 상품 목록
+        route("/mypage/views",   "routes/users/viewsPage.tsx"), // 상품 조회 내역
         // 상품
         route("products/ranking",    "routes/products/listPage.tsx"),
         route("products/:barcode",   "routes/products/detailPage.tsx"),
+        route("products/recommended",   "routes/products/recommendedPage.tsx"), // 상품 추천
 
         // 리뷰
         route("/reviews/product/:barcode", "routes/reviews/productListPage.tsx"),
@@ -55,7 +57,7 @@ export default [
         // route("inquiries/:id/edit",   "routes/inquiries/editPage.tsx"),
 
         // 지도
-        route("map", "routes/map/kakaoMapPage.tsx"),
+        // route("map",   "routes/map/kakaoMapPage.tsx"),
 
         // 검색
         // route("search", "routes/search/searchPage.tsx"),
@@ -65,7 +67,10 @@ export default [
 
     // admin
     route("/admin", "layout/adminLayout.tsx", [
-        // 관리자 대시보드
+        // 로그인
+        route('/login', 'routes/auth/loginPage.tsx'),
+        
+        //관리자 대시보드
         route("dashboard", "routes/admin/dashboardPage.tsx"),
 
         // 포인트
@@ -81,10 +86,30 @@ export default [
         route("notices/:id/edit",   "routes/admin/notices/editPage.tsx"),
 
         // 문의사항
-        // route("inquiries/list",       "routes/admin/inquiries/listPage.tsx"),
-        // route("inquiries/add",        "routes/admin/inquiries/addPage.tsx"),
-        // route("inquiries/:id",        "routes/admin/inquiries/detailPage.tsx"),   // <-- useParams().id
+        // route("inquiries/list",       "routes/admin/inquiries/listPage.tsx"),    // 사용자 문의목록
+        // route("inquiries/add",        "routes/admin/inquiries/addPage.tsx"),     // 답변 등록
+        // route("inquiries/:id",        "routes/admin/inquiries/detailPage.tsx"),  // 문의 상세보기
         // route("inquiries/:id/edit",   "routes/admin/inquiries/editPage.tsx"),
+
+        // 신고
+        // route("reports/list",       "routes/admin/reports/listPage.tsx"),    // 리뷰 신고 목록
+        // route("reports/:id",       "routes/admin/reports/detailPage.tsx"),    // 신고 상세
+
+        // 어드민 상품
+        // route("products/list",       "routes/admin/inquiries/listPage.tsx"),     // 상품 목록
+        // route("products/add",        "routes/admin/inquiries/addPage.tsx"),      // 상품 등록
+        // route("products/:id",        "routes/admin/inquiries/detailPage.tsx"),   // 상품 상세
+        // route("products/:id/edit",   "routes/admin/inquiries/editPage.tsx"),     // 수정
+
+        // 어드민 유저
+        // route("users/list",       "routes/admin/users/listPage.tsx"), // 목록
+        // route("users/:id",        "routes/admin/users/detailPage.tsx"), // 상세
+
+        // 어드민 리뷰
+        // route("reviews/list",       "routes/admin/reviews/listPage.tsx"), // 목록
+        // route("reviews/:id",        "routes/admin/reviews/detailPage.tsx"), // 상세
+
+
     ])
   
 ] satisfies RouteConfig;

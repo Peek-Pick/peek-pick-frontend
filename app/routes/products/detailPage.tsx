@@ -1,5 +1,5 @@
 // app/routes/products/detailPage.tsx
-
+//
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import ProductLayout from "~/layout/productLayout";
@@ -44,7 +44,7 @@ export default function DetailPage() {
     return (
         <>
             <DetailComponent product={data} />
-            <PreviewComponent barcode={barcode!}></PreviewComponent>
+            <PreviewComponent barcode={barcode!} reviewNum={data.review_count!}></PreviewComponent>
         </>
     );
 }
