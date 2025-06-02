@@ -30,11 +30,12 @@ export default function ConfirmModalComponent({
           position: relative;
         }
         .modal-message {
-          font-weight: 600;
-          color: #2d3748;
-          line-height: 1.6;
-          font-size: 1.125rem;
-        }
+         font-weight: 600;
+         color: #2d3748;
+         line-height: 1.6;
+         font-size: 1.125rem;
+         white-space: pre-line; /* \\n을 줄바꿈으로 처리 */
+       }
         .modal-buttons {
           margin-top: 1.5rem;
           display: flex;
@@ -66,15 +67,15 @@ export default function ConfirmModalComponent({
         }
         @media (orientation: portrait) {
           .modal-content {
-            max-width: 90vw;
-            padding: 3rem 2rem;
+            max-width: 95vw;
+            padding: 1.5rem 1rem;
           }
           .modal-message {
-            font-size: 1.5rem;
+            font-size: 0.9rem;
           }
           .modal-button {
-            font-size: 1.125rem;
-            padding: 1rem 0;
+            font-size: 0.875rem;
+            padding: 0.5rem 0;
           }
         }
       `}</style>
