@@ -42,7 +42,7 @@ export default function ListComponent({
     }
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4">
             {products.map((p, idx) => (
                 <div
                     key={`${p.barcode}-${idx}`}  // barcode + index 조합으로 고유 key 부여
@@ -68,7 +68,7 @@ export default function ListComponent({
                     </figure>
 
                     {/* 2. 상품명 */}
-                    <h3 className="text-[18px] leading-[25px] font-semibold text-[#333] mb-1">
+                    <h3 className="text-[14px] leading-[25px] font-semibold text-[#333] mb-1">
                         {p.name}
                     </h3>
 
