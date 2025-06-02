@@ -1,22 +1,16 @@
 import axiosInstance from "~/instance/axiosInstance";
+import type {ProfileReadDTO, MyPageResponseDTO } from "~/types/users";
 
 const host = "http://localhost:8080/api/v1/users";
 
-export interface QuickStats {
-    wishlistedCount: number;
-    reviewCount: number;
-    couponCount: number;
-    barcodeHistoryCount: number;
-}
-
-export interface MyPageResponse {
-    profileImgUrl: string;
-    nickname: string;
-    point: number;
-    quickStats: QuickStats;
-}
-
-export const getMyPage = async (): Promise<MyPageResponse> => {
+// myPage 조회
+export const getMyPage = async (): Promise<MyPageResponseDTO> => {
     const response = await axiosInstance.get(`${host}/mypage`, { withCredentials: true });
+    return response.data;
+};
+
+// myPage Edit 조회
+export const getMyPageEdit = async (): Promise<ProfileReadDTO> => {
+    const response = await axiosInstance.get(`${host}/mypage/edit`, { withCredentials: true });
     return response.data;
 };

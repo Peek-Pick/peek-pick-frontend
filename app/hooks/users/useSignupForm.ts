@@ -13,7 +13,7 @@ export function useSignupForm() {
     const [nationality, setNationality] = useState('')
 
     // signup3
-    const [tags, setTags] = useState<string[]>([])
+    const [tags, setTags] = useState<number[]>([])
 
     const resetForm = () => {
         setEmail('')

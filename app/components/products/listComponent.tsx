@@ -47,22 +47,24 @@ export default function ListComponent({
                 <div
                     key={`${p.barcode}-${idx}`}  // barcode + index 조합으로 고유 key 부여
                     className="
-            p-[16px] bg-white border border-[#FBFBFB]
-            shadow-[0px_5px_22px_rgba(0,0,0,0.04)] rounded-[16px]
-            transition-shadow duration-300 hover:shadow-[0px_21px_44px_rgba(0,0,0,0.08)]
-            cursor-pointer
-          "
+                        p-[16px] bg-white border border-[#FBFBFB]
+                        shadow-[0px_5px_22px_rgba(0,0,0,0.04)] rounded-[16px]
+                        transition-shadow duration-300 hover:shadow-[0px_21px_44px_rgba(0,0,0,0.08)]
+                        cursor-pointer
+                    "
                     onClick={() => navigate(`/products/${p.barcode}`)}
                 >
-                    {/* 1. 이미지 */}
-                    <figure className="bg-[#F9F9F9] rounded-[12px] p-2 mb-4 text-center">
-                        {p.img_url && (
-                            <img
-                                src={p.img_url}
-                                alt={p.name}
-                                className="max-h-[210px] h-auto mx-auto"
-                            />
-                        )}
+                    {/* 1. 이미지: 정사각형 컨테이너 + object-contain */}
+                    <figure className="bg-[#F9F9F9] rounded-[12px] p-2 mb-4 overflow-hidden">
+                        <div className="relative w-full" style={{ paddingBottom: "100%" }}>
+                            {p.img_url && (
+                                <img
+                                    src={p.img_url}
+                                    alt={p.name}
+                                    className="absolute top-0 left-0 w-full h-full object-contain object-center"
+                                />
+                            )}
+                        </div>
                     </figure>
 
                     {/* 2. 상품명 */}
@@ -72,27 +74,27 @@ export default function ListComponent({
 
                     {/* 3. 좋아요 · 별점(리뷰 수) */}
                     <div className="flex items-center text-[13px] text-[#222] mb-1 space-x-4">
-            <span className="flex items-center">
-              <Icon
-                  icon="ri:heart-fill"
-                  className="w-4 h-4 text-red-500 mr-1"
-              />
-                {p.like_count ?? 0}
-            </span>
                         <span className="flex items-center">
-              <Icon
-                  icon="ri:star-fill"
-                  className="w-4 h-4 text-[#FFC43F] mr-1"
-              />
+                            <Icon
+                                icon="ri:heart-fill"
+                                className="w-4 h-4 text-red-500 mr-1"
+                            />
+                            {p.like_count ?? 0}
+                        </span>
+                        <span className="flex items-center">
+                            <Icon
+                                icon="ri:star-fill"
+                                className="w-4 h-4 text-[#FFC43F] mr-1"
+                            />
                             {p.score?.toFixed(1) ?? "0.0"} ({p.review_count ?? 0})
-            </span>
+                        </span>
                     </div>
 
                     {/* 4. 카테고리 */}
                     {p.category && (
                         <span className="text-[13px] text-[#9D9D9D] uppercase">
-              {p.category}
-            </span>
+                            {p.category}
+                        </span>
                     )}
                 </div>
             ))}
