@@ -78,7 +78,7 @@ export default function ProfileHeader() {
                 <div className="text-center">
                     <div className="relative inline-block -mt-16">
                         <img
-                            src={`${myData.profile_img_url}`}
+                            src={`/${myData.profile_img_url}`}
                             alt="Profile"
                             className="w-28 h-28 rounded-full border-4 border-white bg-white object-cover"
                         />
