@@ -1,5 +1,5 @@
 // app/routes/products/detailPage.tsx
-
+//
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import ProductLayout from "~/layout/productLayout";
