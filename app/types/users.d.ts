@@ -14,7 +14,6 @@ export interface MyPageResponseDTO {
 
 export interface ProfileReadDTO {
     email: string;
-    password: string;
     isSocial: boolean;
 
     nickname: string;
@@ -23,5 +22,12 @@ export interface ProfileReadDTO {
     birthDate: string;
     profileImgUrl: string;
 
+    tagIdList: number[];
+}
+
+export interface ProfileEditDTO {
+    nickname: string;
+    password?: string;
+    profileImgUrl: string;
     tagIdList: number[];
 }

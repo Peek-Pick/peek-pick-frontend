@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { FaCamera } from 'react-icons/fa';
 import { useTagSelector } from '~/hooks/tags/useTagSelector';
 import { useGetProfile } from '~/hooks/users/useGetProfile';
+import { useProfileImageUpload } from '~/hooks/users/useProfileImageUpload';
 
 export default function MyPageEditComponent() {
 
@@ -9,6 +10,8 @@ export default function MyPageEditComponent() {
     const { selectedTags, toggleTag, groupedTags } = useTagSelector(profile.tagIdList);
     const [showAllTags, setShowAllTags] = useState(false);
     const isSocial = profile.isSocial; // API에서 받아올 값
+
+    const { file, handleFileChange, previewUrl} = useProfileImageUpload(`/${profile.profileImgUrl}`);
 
     if (loading) return <p>로딩 중...</p>;
     if (error) return <p>에러 발생: {error}</p>;
@@ -23,13 +26,14 @@ export default function MyPageEditComponent() {
             <div className="text-center">
                 <div className="relative inline-block -mt-16">
                     <img
-                        src={`/${profile.profileImgUrl}`}
+                        src={previewUrl}
                         alt="Profile"
                         className="w-28 h-28 rounded-full border-4 border-white bg-white"
                     />
-                    <button className="absolute bottom-0 right-0 bg-emerald-400 text-white p-2 rounded-full">
+                    <label className="absolute bottom-0 right-0 bg-emerald-400 text-white p-2 rounded-full cursor-pointer">
                         <FaCamera />
-                    </button>
+                        <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
+                    </label>
                 </div>
                 <h3 className="mt-4 mb-1 text-xl font-semibold">{profile.nickname}</h3>
                 <p className="text-gray-500 mb-3">{profile.email}</p>
