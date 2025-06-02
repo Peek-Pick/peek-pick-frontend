@@ -6,7 +6,6 @@ export const useGetProfile = () => {
     
     const initData:ProfileReadDTO = {
         email: '',
-        password: '',
         isSocial: false,
 
         nickname: '',
