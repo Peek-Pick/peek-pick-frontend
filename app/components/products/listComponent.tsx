@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
 import type { ProductListDTO } from "~/types/products";
-//
+
 interface Props {
     products: ProductListDTO[];
     fetchNextPage: () => void | Promise<unknown>;
