@@ -42,10 +42,17 @@ export const getProductPreviews = async(productId: number) => {
     return response.data.content;
 }
 
-export const getProductReviews = async (productId: number, page: number) => {
-    const params = new URLSearchParams({productId: String(productId), page: String(page)});
-    return await axiosInstance.get(`${host}?${params.toString()}`);;
-}
+export const getProductReviews = async (productId: number, page: number, sortBy: string) => {
+    const params = new URLSearchParams({
+        productId: String(productId),
+        page: String(page),
+    });
+    params.append("sort", `${sortBy},desc`);
+    params.append("sort", "regDate,desc");
+
+    console.log(params.toString())
+    return await axiosInstance.get(`${host}?${params.toString()}`);
+};
 
 export const getProductReviewsCount = async (productId: number): Promise<number> => {
     const response = await axiosInstance.get(`${host}/count/${productId}`);

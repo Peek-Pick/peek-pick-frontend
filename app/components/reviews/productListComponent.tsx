@@ -1,7 +1,6 @@
 import {type FetchNextPageOptions, type InfiniteQueryObserverResult, useMutation, useQueryClient} from "@tanstack/react-query";
-import { useEffect, useRef } from "react";
+import {useEffect, useRef, useState} from "react";
 import { toggleReview } from "~/api/reviews/reviewAPI";
-import { useState } from "react";
 import type {ProductDetailDTO} from "~/types/products";
 import { useReviewReport } from "~/hooks/useReviewReport";
 import AverageRating from "~/components/reviews/rating/averageRating";
@@ -16,15 +15,16 @@ export interface ReviewListComponentProps {
     isFetchingNextPage: boolean;
     isLoading: boolean;
     isError: boolean;
+    sortType: "latest" | "likes";
+    setSortType: React.Dispatch<React.SetStateAction<"latest" | "likes">>;
 }
 
-export default function ProductListComponent({productDetail, productId, reviewList, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError}
-                                          : ReviewListComponentProps) {
+export default function ProductListComponent({productDetail, productId, reviewList, fetchNextPage, hasNextPage, isFetchingNextPage,
+                                                 isLoading, isError, sortType, setSortType}: ReviewListComponentProps) {
+    const queryClient = useQueryClient();
+
     // 무한 스크롤 감지 요소
     const bottomRef = useRef<HTMLDivElement | null>(null);
-
-    // 리뷰 정렬 기준
-    const [sortType, setSortType] = useState("latest");
 
     // 무한 스크롤 다음 페이지 호출
     useEffect(() => {
@@ -46,6 +46,13 @@ export default function ProductListComponent({productDetail, productId, reviewLi
 
         return () => observer.disconnect();
     }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+    const handleSortChange = (newSortType) => {
+        if (sortType !== newSortType) {
+            queryClient.removeQueries({ queryKey: ['productReviews', productId, sortType] });
+            setSortType(newSortType);
+        }
+    };
 
     if (isLoading)
         return <p className="text-center p-4 text-base sm:text-lg">로딩 중입니다</p>;
@@ -71,27 +78,41 @@ export default function ProductListComponent({productDetail, productId, reviewLi
                         </div>
 
                         {/* 정렬 탭 */}
-                        <div className="flex justify-between items-center border-t border-b border-gray-200 py-2 mb-2">
-                            <nav className="tabs tabs-bordered" aria-label="정렬 탭" role="tablist" aria-orientation="horizontal">
-                                <button type="button" className={`tab px-2 py-2 rounded-md hover:font-semibold transition-all duration-200 ${
+                        <div className="flex justify-between items-center border-t border-b border-gray-200 py-2 mb-4">
+                            <nav
+                                className="tabs tabs-bordered"
+                                aria-label="정렬 탭"
+                                role="tablist"
+                                aria-orientation="horizontal"
+                            >
+                                <button
+                                    type="button"
+                                    className={`tab px-2 py-2 rounded-md hover:font-semibold transition-all duration-200 ${
                                         sortType === "latest" ? "tab-active text-indigo-600 font-bold" : ""
-                                    }`} onClick={() => setSortType("latest")} role="tab" aria-selected={sortType === "latest"}
+                                    }`}
+                                    onClick={() => handleSortChange("latest")}
+                                    role="tab"
+                                    aria-selected={sortType === "latest"}
                                 >
                                     최신순
                                 </button>
-                                <button type="button" className={`tab px-2 py-2 rounded-md hover:font-semibold transition-all duration-200 ${
+                                <button
+                                    type="button"
+                                    className={`tab px-2 py-2 rounded-md hover:font-semibold transition-all duration-200 ${
                                         sortType === "likes" ? "tab-active text-indigo-600 font-bold" : ""
-                                    }`} onClick={() => setSortType("likes")} role="tab" aria-selected={sortType === "likes"}
+                                    }`}
+                                    onClick={() => handleSortChange("likes")}
+                                    role="tab"
+                                    aria-selected={sortType === "likes"}
                                 >
                                     좋아요순
                                 </button>
                             </nav>
                         </div>
 
-
                         {/* 리뷰 카드 */}
                         {reviewList.map((review) => (
-                            <ReviewItem key={review.review_id} review={review} productId={productId}/>
+                            <ReviewItem key={`${sortType}-${review.review_id}`} review={review} productId={productId} />
                         ))}
                     </div>
                 </div>
@@ -114,6 +135,9 @@ interface ReviewItemProps {
 function ReviewItem({review, productId}: ReviewItemProps) {
     const queryClient = useQueryClient();
 
+    // 숨김 리뷰 is_hidden
+    const [showHidden, setShowHidden] = useState(false);
+
     // 리뷰 신고 모달
     const { openReportModal } = useReviewReport(review.review_id);
 
@@ -129,6 +153,7 @@ function ReviewItem({review, productId}: ReviewItemProps) {
     });
 
     return (
+        <div className="relative">
         <div className="bg-white rounded-md p-6 shadow-md mb-2">
             {/* 작성자 정보와 작성일*/}
             <div className="flex sm:items-center flex-col min-[400px]:flex-row justify-between gap-5 mb-3">
@@ -204,6 +229,23 @@ function ReviewItem({review, productId}: ReviewItemProps) {
                     신고하기
                 </button>
             </div>
+        </div>
+            {/* 리뷰 볼래 말래 */}
+            {review.is_hidden && !showHidden && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center rounded-md z-10">
+                    <div className="absolute inset-0 bg-yellow-100/50 backdrop-blur-md rounded-md border border-yellow-300 shadow-inner"></div>
+                    <div className="relative flex flex-col items-center text-center px-4">
+                        <span className="text-3xl mb-2">🙈</span>
+                        <p className="mb-3 text-yellow-800 font-semibold">이 리뷰는 숨겨졌어요!</p>
+                        <button
+                            onClick={() => setShowHidden(true)}
+                            className="px-4 py-2 font-semibold bg-yellow-400 text-white rounded-full hover:bg-yellow-500 transition-all shadow-md"
+                        >
+                            살짝 보기 👀
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

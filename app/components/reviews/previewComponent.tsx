@@ -80,6 +80,9 @@ function ReviewItem({ review, productId }: ReviewItemProps) {
     // 리뷰 신고 모달
     const { openReportModal } = useReviewReport(review.review_id);
 
+    // 숨김 리뷰 오버레이
+    const [showHidden, setShowHidden] = useState(false);
+
     // 리뷰 좋아요
     const toggleLikeMutation = useMutation({
         mutationFn: (reviewId: number) => toggleReview(reviewId),
@@ -92,11 +95,16 @@ function ReviewItem({ review, productId }: ReviewItemProps) {
     });
 
     return (
-        <div className="bg-white rounded-md p-6 shadow-md mb-2">
+        <div className="relative">
+        <div
+            className={`bg-white rounded-md p-6 shadow-md mb-2 transition-opacity duration-200 ${
+                review.is_hidden && !showHidden ? "opacity-50" : "opacity-100"
+            }`}
+        >
             {/* 작성자 정보와 작성일*/}
             <div className="flex sm:items-center flex-col min-[400px]:flex-row justify-between gap-5 mb-3">
                 <div className="flex items-center gap-3">
-                    <img src="/default.png" alt="profile image"
+                    <img src={review.profile_image_url || "/default.png"} alt="profile image"
                          className="w-14 h-14 rounded-full object-cover"/>
                     <h6 className="font-semibold text-lg leading-8 text-gray-600">{review.nickname ?? "테스트"}</h6>
                 </div>
@@ -167,6 +175,22 @@ function ReviewItem({ review, productId }: ReviewItemProps) {
                     신고하기
                 </button>
             </div>
+        </div>
+            {review.is_hidden && !showHidden && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center rounded-md z-10">
+                    {/* 반투명 + 블러 효과 */}
+                    <div className="absolute inset-0 bg-black/20 backdrop-blur-sm rounded-md"></div>
+                    <div className="relative flex flex-col items-center">
+                        <p className="mb-3 text-gray-100 font-medium">신고된 리뷰입니다.</p>
+                        <button
+                            onClick={() => setShowHidden(true)}
+                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+                        >
+                            열람하기
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
