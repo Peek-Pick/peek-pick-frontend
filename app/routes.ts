@@ -7,7 +7,7 @@ export default [
     route("barcode/scan", "routes/barcode/scanPage.tsx"),
 
     // app
-    route("", "layout/applayout.tsx", [
+    route("", "layout/appLayout.tsx", [
         //메인
         route("main", "routes/appMainPage.tsx"),
 
@@ -24,7 +24,7 @@ export default [
 
         // 마이페이지
         route("/mypage", "routes/users/myPagePage.tsx"),
-        // route("/mypage/edit", "routes/users/myPageEditPage.tsx"),
+        route("/mypage/edit", "routes/users/myPageEditPage.tsx"),
 
         // 포인트
         route("points/store/list",   "routes/points/storelistPage.tsx"), //포인트 상점
@@ -68,7 +68,7 @@ export default [
     // admin
     route("/admin", "layout/adminLayout.tsx", [
         // 로그인
-        route('/login', 'routes/auth/loginPage.tsx'),
+        // route('/login', 'routes/auth/loginPage.tsx'),
         
         //관리자 대시보드
         route("dashboard", "routes/admin/dashboardPage.tsx"),

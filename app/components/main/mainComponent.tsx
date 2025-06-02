@@ -4,7 +4,6 @@ function MainComponent() {
     return (
         <div>
             <CarouselComponent/>
-            <CarouselComponent/>
 
         </div>
     );
