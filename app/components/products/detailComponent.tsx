@@ -1,8 +1,11 @@
-// app/components/products/detailComponent.tsx
+// src/components/products/DetailComponent.tsx
 
 import { useState } from "react";
 import { Icon } from "@iconify/react";
 import type { ProductDetailDTO } from "~/types/products";
+
+// ① 방금 추가한 API 함수를 import
+import { toggleProductLike } from "~/api/productsAPI";
 
 interface Props {
     product: ProductDetailDTO;
@@ -17,18 +20,16 @@ export default function DetailComponent({ product }: Props) {
         // Optimistic update
         const newLiked = !liked;
         setLiked(newLiked);
-        setCount(prev => newLiked ? prev + 1 : prev - 1);
+        setCount((prev) => (newLiked ? prev + 1 : prev - 1));
 
         try {
-            await fetch(`/api/v1/products/${product.barcode}/like`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-            });
-            // 추가적인 리턴 값이 있으면 처리
+            // ② fetch 대신, API 레이어에 정의한 toggleProductLike 호출
+            await toggleProductLike(product.barcode);
+            // → 내부적으로 axiosInstance.post("http://localhost:8080/api/v1/products/{barcode}/like") 호출됨
         } catch (error) {
             // 실패 시 롤백
             setLiked(liked);
-            setCount(prev => newLiked ? prev - 1 : prev + 1);
+            setCount((prev) => (newLiked ? prev - 1 : prev + 1));
             console.error("좋아요 요청 실패", error);
         }
     };
@@ -48,35 +49,39 @@ export default function DetailComponent({ product }: Props) {
 
             {/* 2~4. 상품명 + 좋아요·별점 박스 */}
             <div className="border rounded-lg p-4 bg-white shadow-sm">
-                <div className="flex justify-between items-center">
-                    {/* 왼쪽: 상품명 */}
-                    <h1 className="text-2xl font-bold">{product.name}</h1>
+                {/* 상품명 (한 단계 작게: text-2xl → text-xl) */}
+                <h1 className="text-xl font-bold">{product.name}</h1>
 
-                    {/* 오른쪽: 좋아요 · 별점 + 리뷰 개수 */}
-                    <div className="flex items-center space-x-8 text-2xl">
-                        <button
-                            type="button"
-                            className="flex items-center focus:outline-none"
-                            onClick={handleToggleLike}
-                        >
-                            <Icon
-                                icon="ri:heart-fill"
-                                className={`w-7 h-7 ${liked ? "text-red-500" : "text-gray-400"}`}
-                            />
-                            <span className="ml-2 font-semibold">{count}</span>
-                        </button>
+                {/* 좋아요 · 별점 영역 (아래로 위치) */}
+                <div className="mt-3 flex items-center space-x-6 text-xl">
+                    {/* 좋아요 버튼 + 숫자 */}
+                    <button
+                        type="button"
+                        className="flex items-center focus:outline-none"
+                        onClick={handleToggleLike}
+                    >
+                        {/* 이모지도 한 단계 작게: w-7 h-7 → w-6 h-6 */}
+                        <Icon
+                            icon="ri:heart-fill"
+                            className={`w-6 h-6 ${liked ? "text-red-500" : "text-gray-400"}`}
+                        />
+                        {/* 숫자 폰트 크기도 한 단계 작게: font-semibold (text-xl 상태 그대로) */}
+                        <span className="ml-2 font-semibold">{count}</span>
+                    </button>
 
-                        <div className="flex items-center">
-                            <Icon icon="ri:star-fill" className="w-7 h-7 text-yellow-400" />
-                            <span className="ml-2 font-semibold">
-                {product.score?.toFixed(1) ?? "0.0"} ({product.review_count ?? 0})
-              </span>
-                        </div>
+                    {/* 별점 이모지 + 리뷰 개수 */}
+                    <div className="flex items-center">
+                        {/* 이모지도 한 단계 작게: w-7 h-7 → w-6 h-6 */}
+                        <Icon icon="ri:star-fill" className="w-6 h-6 text-yellow-400" />
+                        {/* 점수·리뷰 숫자를 한 단계 작게 표현(text-xl 상태 그대로) */}
+                        <span className="ml-2 font-semibold">
+              {product.score?.toFixed(1) ?? "0.0"} ({product.review_count ?? 0})
+            </span>
                     </div>
                 </div>
             </div>
 
-            {/* 5. 상품 정보 박스 */}
+            {/* 5. 상품 정보 박스 (변경 없음) */}
             <div className="border rounded-lg p-4 space-y-4 bg-white shadow-sm">
                 <h2 className="text-lg font-semibold">상품 정보</h2>
                 <div className="space-y-3 text-gray-700">
