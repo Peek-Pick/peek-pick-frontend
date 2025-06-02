@@ -81,10 +81,14 @@ export default [
         route("notices/:id/edit",   "routes/admin/notices/editPage.tsx"),
 
         // 문의사항
-        // route("inquiries/list",       "routes/admin/inquiries/listPage.tsx"),
-        // route("inquiries/add",        "routes/admin/inquiries/addPage.tsx"),
-        // route("inquiries/:id",        "routes/admin/inquiries/detailPage.tsx"),   // <-- useParams().id
+        // route("inquiries/list",       "routes/admin/inquiries/listPage.tsx"),    // 사용자 문의목록
+        // route("inquiries/add",        "routes/admin/inquiries/addPage.tsx"),     // 답변 등록
+        // route("inquiries/:id",        "routes/admin/inquiries/detailPage.tsx"),  // 문의 상세보기
         // route("inquiries/:id/edit",   "routes/admin/inquiries/editPage.tsx"),
+
+        // 신고
+        // route("reports/list",       "routes/admin/reports/listPage.tsx"),    // 리뷰 신고 목록
+        // route("reports/:id",       "routes/admin/reports/detailPage.tsx"),    // 신고 상세
     ])
   
 ] satisfies RouteConfig;
