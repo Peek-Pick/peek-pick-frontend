@@ -1,4 +1,4 @@
-import {useMemo, useState } from "react";
+import {useEffect, useMemo, useState } from "react";
 import { useGetAllTags } from "./useGetAllTags";
 import type { TagDTO } from "~/types/tag";
 
@@ -6,6 +6,11 @@ export function useTagSelector(initSelected: number[] = []) {
 
     const [selectedTags, setSelectedTags] = useState<number[]>(initSelected)
     const {allTags, loading} = useGetAllTags();
+
+    // initSelected가 바뀌면 selectedTags 업데이트
+    useEffect(() => {
+        setSelectedTags(initSelected);
+    }, [initSelected]);
 
     // 토글 함수
     const toggleTag = (tagId: number)=> {
@@ -26,6 +31,7 @@ export function useTagSelector(initSelected: number[] = []) {
         }, {} as Record<string, TagDTO[]>);
     }, [allTags]);
 
+    console.log("선택된 태그 훅", selectedTags)
     return {
         selectedTags,          // 선택된 tag_id 배열
         toggleTag,             // 토글 함수

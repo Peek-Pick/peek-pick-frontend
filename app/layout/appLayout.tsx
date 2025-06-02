@@ -8,7 +8,7 @@ export default function AppLayout() {
 
     // 페이지 이름 매핑 (간단히 예시)
     const pageTitleMap: { [key: string]: string } = {
-        "/app/main": "Peek & Pick",
+        "/main": "Peek & Pick",
         "/mypage": "마이페이지",
     };
 
