@@ -5,6 +5,7 @@ import { Icon } from "@iconify/react";
 import ListComponent from "~/components/products/listComponent";
 import { listProducts } from "~/api/productsAPI";
 import type { PageResponse, ProductListDTO } from "~/types/products";
+import BottomNavComponent from "~/components/main/bottomNavComponent";
 
 export default function ProductListPage() {
     const size = 10;
@@ -244,6 +245,8 @@ export default function ProductListPage() {
                 hasNextPage={hasNextPage}
                 isFetchingNextPage={isFetchingNextPage}
             />
+
+            <BottomNavComponent/>
         </>
     );
 }
