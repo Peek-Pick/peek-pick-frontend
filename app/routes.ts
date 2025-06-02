@@ -7,7 +7,7 @@ export default [
     route("barcode/scan", "routes/barcode/scanPage.tsx"),
 
     // app
-    route("", "layout/applayout.tsx", [
+    route("", "layout/appLayout.tsx", [
         //메인
         route("main", "routes/appMainPage.tsx"),
 
@@ -57,7 +57,7 @@ export default [
         // route("inquiries/:id/edit",   "routes/inquiries/editPage.tsx"),
 
         // 지도
-        // route("map",   "routes/map/kakaoMapPage.tsx"),
+        route("map",   "routes/map/kakaoMapPage.tsx"),
 
         // 검색
         // route("search", "routes/search/searchPage.tsx"),
@@ -68,7 +68,7 @@ export default [
     // admin
     route("/admin", "layout/adminLayout.tsx", [
         // 로그인
-        route('/login', 'routes/auth/loginPage.tsx'),
+        //route('/login', 'routes/auth/loginPage.tsx'),
         
         //관리자 대시보드
         route("dashboard", "routes/admin/dashboardPage.tsx"),
