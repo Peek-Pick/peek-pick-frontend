@@ -1,4 +1,4 @@
-// app/components/admin/notices/listComponent.tsx
+// src/app/components/admin/notices/listComponent.tsx
 import { Link } from "react-router-dom";
 import type { NoticeResponseDto } from "~/types/notice";
 
@@ -16,14 +16,30 @@ export default function ListComponent({ items, onEdit, onDelete }: Props) {
 
     return (
         <ul className="space-y-2">
-            {items.map(n => (
-                <li key={n.noticeId} className="flex justify-between p-2 border rounded">
-                    <Link to={`/admin/notices/${n.noticeId}`}>
-                        <h3 className="font-semibold">{n.title}</h3>
+            {items.map((n) => (
+                <li
+                    key={n.noticeId}                        // ← 고유한 key 추가
+                    className="flex justify-between p-2 border rounded hover:bg-gray-50"
+                >
+                    <Link
+                        to={`/admin/notices/${n.noticeId}`}
+                        className="flex-1 font-semibold hover:underline"
+                    >
+                        {n.title}
                     </Link>
                     <div className="space-x-2">
-                        <button onClick={() => onEdit(n.noticeId)}>수정</button>
-                        <button onClick={() => onDelete(n.noticeId)}>삭제</button>
+                        <button
+                            onClick={() => onEdit(n.noticeId)}
+                            className="px-2 py-1 text-sm bg-blue-500 text-white rounded"
+                        >
+                            수정
+                        </button>
+                        <button
+                            onClick={() => onDelete(n.noticeId)}
+                            className="px-2 py-1 text-sm bg-red-500 text-white rounded"
+                        >
+                            삭제
+                        </button>
                     </div>
                 </li>
             ))}

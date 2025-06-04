@@ -8,7 +8,7 @@ import type {
 } from "~/types/notice";
 import axiosInstance from "~/instance/axiosInstance";
 
-const BASE_URL = "http://localhost:8080/admin/notices";
+const BASE_URL = "http://localhost:8080/api/v1/admin/notices";
 
 // 공지사항 목록(페이징) 조회
 export function fetchNotices() {
