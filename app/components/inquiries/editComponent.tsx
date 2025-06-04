@@ -3,6 +3,9 @@ import type { InquiryResponseDTO, InquiryRequestDTO } from "~/types/inquiries";
 import type { InquiryType } from "~/types/inquiries";
 import { useNavigate } from "react-router-dom";
 
+const API_URL =
+    import.meta.env.VITE_API_URL?.replace("/api/v1", "") ?? "http://localhost:8080";
+
 interface Props {
     initialData: InquiryResponseDTO;
     onSubmit: (dto: InquiryRequestDTO, files: FileList | null) => Promise<void>;
@@ -17,7 +20,7 @@ const INQUIRY_TYPES: { value: InquiryType; label: string }[] = [
     { value: "ETC", label: "기타 문의" },
 ];
 
-export default function EditComponent({ initialData, onSubmit }: Props) {
+function EditComponent({ initialData, onSubmit }: Props) {
     const navigate = useNavigate();
     const [title, setTitle] = useState(initialData.title);
     const [content, setContent] = useState(initialData.content);
@@ -34,7 +37,7 @@ export default function EditComponent({ initialData, onSubmit }: Props) {
             title,
             content,
             type,
-            imgUrls: initialData.imgUrls, // 기존에 저장된 URL 목록 그대로 전달
+            imgUrls: initialData.imgUrls, // 기존 이미지 유지
         };
 
         await onSubmit(dto, files);
@@ -73,25 +76,27 @@ export default function EditComponent({ initialData, onSubmit }: Props) {
                 required
             />
 
-            {/* 기존에 저장된 이미지 미리보기 */}
+            {/* 기존 이미지 미리보기 */}
             {initialData.imgUrls.length > 0 && (
                 <div className="flex flex-wrap gap-2">
-                    {initialData.imgUrls.map((url) => {
-                        const imgSrc = url.startsWith("http")
-                            ? url
-                            : `${import.meta.env.VITE_API_URL}${url}`;
-                        return (
-                            <img
-                                key={url}
-                                src={imgSrc}
-                                className="w-24 h-24 object-cover rounded border"
-                                alt="기존 첨부 이미지"
-                                onError={(e) => {
-                                    e.currentTarget.src = "";
-                                }}
-                            />
-                        );
-                    })}
+                    {initialData.imgUrls
+                        .filter((url): url is string => typeof url === "string" && url.trim() !== "")
+                        .map((url) => {
+                            const imgSrc = url.startsWith("http")
+                                ? url
+                                : `${API_URL}${url}`;
+                            return (
+                                <img
+                                    key={url}
+                                    src={imgSrc}
+                                    className="w-24 h-24 object-cover rounded border"
+                                    alt="기존 첨부 이미지"
+                                    onError={(e) => {
+                                        e.currentTarget.src = "";
+                                    }}
+                                />
+                            );
+                        })}
                 </div>
             )}
 
@@ -115,3 +120,5 @@ export default function EditComponent({ initialData, onSubmit }: Props) {
         </form>
     );
 }
+
+export default EditComponent;
