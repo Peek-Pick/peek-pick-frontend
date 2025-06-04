@@ -51,10 +51,10 @@ export default [
         // route("notices/:id/edit",   "routes/notices/editPage.tsx"),
 
         // 문의사항
-        // route("inquiries/list",       "routes/inquiries/listPage.tsx"),
-        // route("inquiries/add",        "routes/inquiries/addPage.tsx"),
-        // route("inquiries/:id",        "routes/inquiries/detailPage.tsx"),   // <-- useParams().id
-        // route("inquiries/:id/edit",   "routes/inquiries/editPage.tsx"),
+        route("inquiries/list",       "routes/inquiries/listPage.tsx"),
+        route("inquiries/add",        "routes/inquiries/addPage.tsx"),
+        route("inquiries/:id",        "routes/inquiries/detailPage.tsx"),   // <-- useParams().id
+        route("inquiries/:id/edit",   "routes/inquiries/editPage.tsx"),
 
         // 지도
         // route("map",   "routes/map/kakaoMapPage.tsx"),
