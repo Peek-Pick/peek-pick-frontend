@@ -1,6 +1,26 @@
 import axios, { AxiosError, type AxiosRequestConfig } from "axios";
 import { refreshAccessToken } from "~/api/authAPI";
 
+// snake_case → camelCase 유틸
+const toCamel = (s: string) =>
+    s.replace(/([-_][a-z])/g, group => group.toUpperCase().replace('-', '').replace('_', ''));
+
+const isObject = (obj: any) => obj === Object(obj) && !Array.isArray(obj) && typeof obj !== "function";
+
+const keysToCamel = (obj: any): any => {
+    if (isObject(obj)) {
+        const n: any = {};
+        Object.keys(obj).forEach(k => {
+            n[toCamel(k)] = keysToCamel(obj[k]);
+        });
+        return n;
+    } else if (Array.isArray(obj)) {
+        return obj.map(i => keysToCamel(i));
+    }
+    return obj;
+};
+
+// axios 인스턴스 생성
 const instance = axios.create({
     baseURL: "http://localhost:8080/api/v1",
     withCredentials: true,
@@ -24,8 +44,14 @@ const processQueue = (error: AxiosError | null) => {
     failedQueue = [];
 };
 
+// 응답 인터셉터 추가
 instance.interceptors.response.use(
-    res => res,
+    response => {
+        if (response.data) {
+            response.data = keysToCamel(response.data);
+        }
+        return response;
+    },
     async (error: AxiosError) => {
         const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
 
@@ -41,11 +67,11 @@ instance.interceptors.response.use(
                     refreshAccessToken()
                         .then(() => {
                             isRefreshing = false;
-                            processQueue(null); // 모든 요청 다시 시도
+                            processQueue(null);
                         })
                         .catch(err => {
                             isRefreshing = false;
-                            processQueue(err); // 모든 요청 실패 처리
+                            processQueue(err);
                             if (typeof window !== "undefined") {
                                 window.location.href = "/login";
                             }
