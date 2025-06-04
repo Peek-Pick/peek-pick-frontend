@@ -54,7 +54,7 @@ export default function ProfileHeader() {
     // 동적 quickStats
     const quickStats = [
         { icon: <FaHeart className="text-pink-500 text-2xl mb-2" />, label: 'Wishlisted Items', value: myData.wishlisted_count, to:'' },
-        { icon: <FaPen className="text-blue-500 text-2xl mb-2" />, label: 'My Reviews', value: myData.review_count, to:'' },
+        { icon: <FaPen className="text-blue-500 text-2xl mb-2" />, label: 'My Reviews', value: myData.review_count, to:'/reviews/user' },
         { icon: <FaTicketAlt className="text-yellow-500 text-2xl mb-2" />, label: 'Coupons', value: myData.coupon_count, to:'/mypoints/coupons' },
         { icon: <FaBarcode className="text-green-500 text-2xl mb-2" />, label: 'Barcode History', value: myData.barcode_history_count, to:'' },
     ];

@@ -49,12 +49,9 @@ export default function UserListComponent({reviewCount, reviewList, fetchNextPag
 
     return (
         <div>
-            <section className="py-24 relative">
+            <section className="relative">
                 <div className="w-full max-w-7xl px-4 md:px-5 lg-6 mx-auto">
                     <div className="w-full">
-                        {/* 제목 */}
-                        <h2 className="font-manrope font-bold text-4xl text-black mb-8 text-center">My Reviews</h2>
-
                         {/* 정렬 탭 */}
                         <div className="flex justify-between items-center border-t border-b border-gray-200 py-4 mb-2">
                            <span>

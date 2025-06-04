@@ -34,6 +34,7 @@ interface ReviewDetailDTO {
     mod_date: string;
     images: ReviewImgDTO[];
     nickname: string;
+    profile_image_url: string;
     is_liked: boolean;
     tag_list: TagDTO[];
     name: string;

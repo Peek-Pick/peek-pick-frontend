@@ -29,7 +29,7 @@ export default function DetailComponent({review}: ReviewProps) {
 
     return (
         <div>
-            <section className="py-24 relative">
+            <section className="relative">
                 <div className="w-full max-w-7xl px-4 md:px-5 lg-6 mx-auto">
                     <div className="w-full">
                         <div className="bg-white rounded-md p-6 shadow-md mb-2">

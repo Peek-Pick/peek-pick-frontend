@@ -1,8 +1,8 @@
 import ProductListComponent from "~/components/reviews/productListComponent";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import {useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { getProductDetail } from "~/api/productsAPI"
-import { getProductReviews, getProductIdByBarcode, getProductReviewsCount } from "~/api/reviews/reviewAPI";
+import { getProductReviews, getProductIdByBarcode } from "~/api/reviews/reviewAPI";
 import { useState, useEffect } from "react";
 
 function ProductListPage() {
@@ -10,6 +10,9 @@ function ProductListPage() {
 
     // barcode로 productId 받아오기
     const [productId, setProductId] = useState<number | null>(null);
+
+    // 정렬 기준 - 최신순 / 좋아요순
+    const [sortType, setSortType] = useState<"latest" | "likes">("latest");
 
     useEffect(() => {
         if (!barcode) return;
@@ -30,8 +33,14 @@ function ProductListPage() {
         isLoading,
         isError,
     } = useInfiniteQuery({
-        queryKey: ["productReviews", Number(productId)],
-        queryFn: ({pageParam}) => getProductReviews(Number(productId), pageParam),
+        queryKey: ["productReviews", productId, sortType],
+        queryFn: ({ pageParam = 0 }) => {
+            if (sortType === "latest") {
+                return getProductReviews(productId, pageParam, "regDate");
+            } else {
+                return getProductReviews(productId, pageParam, "recommendCnt");
+            }
+        },
         initialPageParam: 0,
         enabled: productId !== null,
         getNextPageParam: (lastPage) => {
@@ -62,10 +71,11 @@ function ProductListPage() {
                 isFetchingNextPage={isFetchingNextPage}
                 isLoading={isLoading}
                 isError={isError}
+                sortType={sortType}
+                setSortType={setSortType}
             />
         </div>
     );
 }
-
 
 export default ProductListPage;
