@@ -20,8 +20,7 @@ export const getMyPageEdit = async (): Promise<ProfileReadDTO> => {
 
 //myPage Edit 수정
 export const updateMyPage = async (formData: FormData)=> {
-    console.log("api put : ", formData.get("file"))
-    return axiosInstance.post(`${host}/mypage/edit`, formData)
+    return axiosInstance.put(`${host}/mypage/edit`, formData)
 }
 
 /**
