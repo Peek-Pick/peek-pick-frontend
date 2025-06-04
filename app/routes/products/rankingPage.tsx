@@ -122,7 +122,7 @@ export default function RankingPage() {
                 categoryParam || undefined
             ),
         getNextPageParam: (lastPage: PageResponse<ProductListDTO>) =>
-            lastPage.number + 1 < lastPage.total_pages
+            lastPage.number + 1 < lastPage.totalPages
                 ? lastPage.number + 1
                 : undefined,
         initialPageParam: 0,

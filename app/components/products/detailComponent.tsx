@@ -13,8 +13,8 @@ interface Props {
 
 export default function DetailComponent({ product }: Props) {
     // 로컬 상태로 좋아요 여부·카운트 관리
-    const [liked, setLiked] = useState(product.is_liked);
-    const [count, setCount] = useState(product.like_count ?? 0);
+    const [liked, setLiked] = useState(product.isLiked);
+    const [count, setCount] = useState(product.likeCount ?? 0);
 
     const handleToggleLike = async () => {
         // Optimistic update
@@ -38,9 +38,9 @@ export default function DetailComponent({ product }: Props) {
         <div className="max-w-3xl mx-auto p-4 space-y-6">
             {/* 1. 이미지 + 테두리 */}
             <div className="flex justify-center">
-                {product.img_url && (
+                {product.imgUrl && (
                     <img
-                        src={product.img_url}
+                        src={product.imgUrl}
                         alt={product.name}
                         className="w-full max-w-sm h-auto object-cover rounded-lg border border-gray-200"
                     />
@@ -75,7 +75,7 @@ export default function DetailComponent({ product }: Props) {
                         <Icon icon="ri:star-fill" className="w-6 h-6 text-yellow-400" />
                         {/* 점수·리뷰 숫자를 한 단계 작게 표현(text-xl 상태 그대로) */}
                         <span className="ml-2 font-semibold">
-              {product.score?.toFixed(1) ?? "0.0"} ({product.review_count ?? 0})
+              {product.score?.toFixed(1) ?? "0.0"} ({product.reviewCount ?? 0})
             </span>
                     </div>
                 </div>
