@@ -57,9 +57,9 @@ export default function ListComponent({
                     {/* 1. 이미지: 정사각형 컨테이너 + object-contain */}
                     <figure className="bg-[#F9F9F9] rounded-[12px] p-2 mb-4 overflow-hidden">
                         <div className="relative w-full" style={{ paddingBottom: "100%" }}>
-                            {p.img_url && (
+                            {p.imgUrl && (
                                 <img
-                                    src={p.img_url}
+                                    src={p.imgUrl}
                                     alt={p.name}
                                     className="absolute top-0 left-0 w-full h-full object-contain object-center"
                                 />
@@ -79,14 +79,14 @@ export default function ListComponent({
                                 icon="ri:heart-fill"
                                 className="w-4 h-4 text-red-500 mr-1"
                             />
-                            {p.like_count ?? 0}
+                            {p.likeCount ?? 0}
                         </span>
                         <span className="flex items-center">
                             <Icon
                                 icon="ri:star-fill"
                                 className="w-4 h-4 text-[#FFC43F] mr-1"
                             />
-                            {p.score?.toFixed(1) ?? "0.0"} ({p.review_count ?? 0})
+                            {p.score?.toFixed(1) ?? "0.0"} ({p.reviewCount ?? 0})
                         </span>
                     </div>
 

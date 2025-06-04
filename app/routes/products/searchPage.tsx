@@ -126,7 +126,7 @@ export default function SearchPage() {
             ),
         enabled: searchKeyword.trim() !== "",
         getNextPageParam: (lastPage: PageResponse<ProductListDTO>) =>
-            lastPage.number + 1 < lastPage.total_pages ? lastPage.number + 1 : undefined,
+            lastPage.number + 1 < lastPage.totalPages ? lastPage.number + 1 : undefined,
         initialPageParam: 0,
         staleTime: 5 * 60 * 1000,
     });
