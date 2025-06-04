@@ -25,9 +25,9 @@ export interface ProfileReadDTO {
     tagIdList: number[];
 }
 
-export interface ProfileEditDTO {
-    nickname: string;
-    password?: string;
-    profileImgUrl: string;
-    tagIdList: number[];
-}
+// export interface ProfileEditDTO {
+//     nickname: string;
+//     password?: string;
+//     profileImgUrl: string;
+//     tagIdList: number[];
+// }

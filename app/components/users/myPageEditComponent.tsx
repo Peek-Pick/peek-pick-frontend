@@ -2,21 +2,31 @@ import { useState } from 'react';
 import { FaCamera } from 'react-icons/fa';
 import { useTagSelector } from '~/hooks/tags/useTagSelector';
 import { useGetProfile } from '~/hooks/users/useGetProfile';
+import { usePasswordChange } from '~/hooks/users/usePasswordChange';
 import { useProfileImageUpload } from '~/hooks/users/useProfileImageUpload';
+import { PasswordChangeSection } from '~/components/users/passwordChangeSection'
+import { useNicknameChange } from '~/hooks/users/useNicknameChange';
+import { useMyPageEdit } from '~/hooks/users/useMyPageEdit';
 
 export default function MyPageEditComponent() {
 
     const { data: profile, loading, error } = useGetProfile()
     const { selectedTags, toggleTag, groupedTags } = useTagSelector(profile.tagIdList);
+    const passwordChange = usePasswordChange();
+    const {newNickname, setNewNickname, nicknameError, nicknameStatus, checkNickname,} = useNicknameChange();
+    const {handleSubmit: save} = useMyPageEdit();
+
     const [showAllTags, setShowAllTags] = useState(false);
+    const [showPasswordChange, setShowPasswordChange] = useState(false);
     const isSocial = profile.isSocial; // API에서 받아올 값
 
     const { file, handleFileChange, previewUrl} = useProfileImageUpload(`/${profile.profileImgUrl}`);
 
-    if (loading) return <p>로딩 중...</p>;
+    if (loading) return <p>로딩 중...!</p>;
     if (error) return <p>에러 발생: {error}</p>;
     if (!profile) return null;
-    
+
+
     return (
         <div className="relative mb-8 max-w-2xl mx-auto">
             {/* 배경 헤더 */}
@@ -26,7 +36,8 @@ export default function MyPageEditComponent() {
             <div className="text-center">
                 <div className="relative inline-block -mt-16">
                     <img
-                        src={previewUrl}
+                        src={previewUrl.startsWith('blob:') ? 
+                                previewUrl : `http://localhost/${previewUrl}`}
                         alt="Profile"
                         className="w-28 h-28 rounded-full border-4 border-white bg-white"
                     />
@@ -57,37 +68,15 @@ export default function MyPageEditComponent() {
                             />
                         </div>
 
-                        {!isSocial && (
-                            <>
-                                <div>
-                                    <label className="text-sm font-medium text-gray-600">Current Password</label>
-                                    <input
-                                        type="password"
-                                        placeholder="Enter current password"
-                                        className="w-full border rounded px-4 py-2"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="text-sm font-medium text-gray-600">New Password</label>
-                                    <input
-                                        type="password"
-                                        placeholder="Enter new password"
-                                        className="w-full border rounded px-4 py-2"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="text-sm font-medium text-gray-600">Confirm New Password</label>
-                                    <input
-                                        type="password"
-                                        placeholder="Re-enter new password"
-                                        className="w-full border rounded px-4 py-2"
-                                    />
-                                </div>
-                            </>
-                        )}
-
-                        {isSocial && (
-                            <p className="text-sm text-gray-500">Password changes are not available for social accounts.</p>
+                        {!showPasswordChange ? (
+                            <button
+                                onClick={() => setShowPasswordChange(true)}
+                                className="text-sm text-emerald-600 hover:underline"
+                            >
+                                Change Your Password &gt;
+                            </button>
+                        ) : (
+                            < PasswordChangeSection {...passwordChange} isSocial={isSocial} />
                         )}
                     </div>
                 </div>
@@ -102,10 +91,27 @@ export default function MyPageEditComponent() {
                             <label className="text-sm font-medium text-gray-600">Nickname</label>
                             <input
                                 type="text"
-                                defaultValue={profile.nickname}
+                                defaultValue={newNickname || profile.nickname}
                                 className="w-full border rounded px-4 py-2"
+                                onChange={(e) => setNewNickname(e.target.value)}
                             />
+                            <div className="mt-3 flex items-center gap-2">
+                                <button
+                                    onClick={checkNickname}
+                                    className="text-sm text-emerald-600 hover:underline"
+                                >
+                                    Check &gt;
+                                </button>
+                                
+                                {nicknameStatus === 'success' && (
+                                    <p className="text-sm text-emerald-600">Nickname is available.</p>
+                                )}
+                                {nicknameStatus === 'fail' && (
+                                    <p className="text-sm text-red-500">{nicknameError}</p>
+                                )}
+                            </div>
                         </div>
+
                         <div>
                             <label className="text-sm font-medium text-gray-600">Gender</label>
                             <input
@@ -200,16 +206,21 @@ export default function MyPageEditComponent() {
                     </div>
                 </div>
 
-
-
-
                 {/* 저장 버튼 */}
                 <div className="pt-4">
-                    <button className="w-full bg-emerald-400 text-white py-2 rounded-lg hover:bg-emerald-500">
+                    <button
+                        onClick={() => save(
+                            passwordChange.newPassword,
+                            newNickname || profile.nickname,
+                            selectedTags,
+                            file
+                            )}
+                        className="w-full bg-emerald-400 text-white py-2 rounded-lg hover:bg-emerald-500">
                         SAVE
                     </button>
                 </div>
             </div>
         </div>
+
     );
 }

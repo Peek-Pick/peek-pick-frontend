@@ -1,5 +1,5 @@
 import axiosInstance from "~/instance/axiosInstance";
-import type {ProfileReadDTO, MyPageResponseDTO, ProfileEditDTO } from "~/types/users";
+import type {ProfileReadDTO, MyPageResponseDTO } from "~/types/users";
 import type {ProductListDTO, PageResponse} from "~/types/products";
 
 
@@ -20,11 +20,8 @@ export const getMyPageEdit = async (): Promise<ProfileReadDTO> => {
 
 //myPage Edit 수정
 export const updateMyPage = async (formData: FormData)=> {
-    return axiosInstance.put('/mypage/edit', formData, {
-        headers: {
-            'Content-Type': 'multipart/form-data',
-        }
-    })
+    console.log("api put : ", formData.get("file"))
+    return axiosInstance.post(`${host}/mypage/edit`, formData)
 }
 
 /**
