@@ -17,7 +17,7 @@ export default function AppLayout() {
     // 페이지 이름 매핑 (정적 경로에 대한 매핑)
     const pageTitleMap: { [key: string]: string } = {
         "/main": "Peek & Pick",
-        "/mypage": "마이페이지",
+        "/mypage": "My Page",
         "/mypage/favorites": "찜한 상품",
         "/products/ranking": "상품 랭킹",
         // 다른 정적 경로가 필요하다면 여기에 추가

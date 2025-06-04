@@ -1,67 +1,65 @@
 import { useState } from "react";
 import axiosInstance from "~/instance/axiosInstance";
 
-interface UsePasswordChangeReturn {
-    currentPassword: string;
-    newPassword: string;
-    confirmPassword: string;
-    setCurrentPassword: (v: string) => void;
-    setNewPassword: (v: string) => void;
-    setConfirmPassword: (v: string) => void;
-    errorMessage: string | null;
-    loading: boolean;
-    validateAndSubmit: (submitFn: (password: string) => Promise<void>) => Promise<boolean>;
-}
+export const usePasswordChange = () => {
 
-export const usePasswordChange = (): UsePasswordChangeReturn => {
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
-    const [loading, setLoading] = useState(false);
 
-    const validateAndSubmit = async (submitFn: (password: string) => Promise<void>): Promise<boolean> => {
-        setErrorMessage(null);
+    const [error, setError] = useState<string | null>(null);
+    const [checkStatus, setCheckStatus] = useState<"idle" | "checking" | "success" | "fail">("idle");
 
-        if (!currentPassword || !newPassword || !confirmPassword) {
-            setErrorMessage("All fields are required.");
+    // 현재 비밀번호 확인
+    const checkCurrentPassword = async (): Promise<boolean> => {
+
+        // 현재 비밀번호를 입력했나요?
+        if (!currentPassword) {
+            setError("Please enter your current password")
             return false;
+        }
+
+        // 입력한 현재 비밀번호와 저장되어있는 비밀번호 비교
+        try {
+            setCheckStatus("checking")
+            setError(null);
+            await axiosInstance.post("/users/check-password",{
+                password: currentPassword
+            });
+            setCheckStatus("success")
+            return true;
+        } catch (e:any) {
+            const msg = e.response?.data?.message || "Current password is incorrect."
+            setError(msg)
+            setCheckStatus("fail")
+            return false;
+        }
+    }
+
+    const checkNewPassword = (): boolean => {
+        if (!newPassword || !confirmPassword) {
+            setError("Please enter and confirm your new password.")
+            return false
         }
 
         if (newPassword !== confirmPassword) {
-            setErrorMessage("New password and confirmation do not match.");
-            return false;
+            setError("New password and confirmation do not match.")
+            return false
         }
 
-        try {
-            setLoading(true);
-            // 현재 비밀번호 서버에 검증 요청
-            await axiosInstance.post("/mypage/password/check", { password: currentPassword });
-
-            // 검증 통과 → submitFn 실행
-            await submitFn(newPassword);
-            return true;
-        } catch (error: any) {
-            if (error.response?.status === 401 || error.response?.status === 400) {
-                setErrorMessage("Current password is incorrect.");
-            } else {
-                setErrorMessage("An error occurred while validating password.");
-            }
-            return false;
-        } finally {
-            setLoading(false);
-        }
-    };
+        return true;
+    }
 
     return {
         currentPassword,
         newPassword,
         confirmPassword,
+        checkStatus,
         setCurrentPassword,
         setNewPassword,
         setConfirmPassword,
-        errorMessage,
-        loading,
-        validateAndSubmit
-    };
+        error,
+        checkCurrentPassword,
+        checkNewPassword
+    }
 };
