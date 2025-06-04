@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -18,6 +18,8 @@ import {
 
 export default function AdminLayout() {
     const [collapsed, setCollapsed] = useState(false);
+    const location = useLocation();
+
 
     //실시간 시간 처리
     const [currentTime, setCurrentTime] = useState(
@@ -52,6 +54,34 @@ export default function AdminLayout() {
         { to: "/admin/points/list", icon: faCartShopping, label: "포인트 상점" },
     ];
 
+    // 페이지 이름 매핑 (정적 경로에 대한 매핑)
+    const pageTitleMap: { [key: string]: string } = {
+        "/admin/dashboard": "DashBoard",
+        "/admin/products/list": "Products List",
+        "/admin/users/list": "Users List",
+        "/admin/reviews/list": "Reviews List",
+        "/admin/inquiries/list": "Inquiries List",
+        "/admin/reports/list": "Reports List",
+        "/admin/notices/list": "Notice List"
+        // 다른 정적 경로가 필요하다면 여기에 추가
+    };
+    // ② 상품명을 담을 로컬 상태
+    const [dynamicTitle, setDynamicTitle] = useState<string>("");
+
+    // ③ location.pathname이 변경될 때마다 실행
+    useEffect(() => {
+        // 우선 정적 매핑 가능한 경로인지 확인
+        if (pageTitleMap[location.pathname]) {
+            // 정적 매핑이 있으면 dynamicTitle을 비워두고(또는 초기화) 종료
+            setDynamicTitle("");
+            return;
+        }
+    }, [location.pathname]);
+    // dynamicTitle이 있으면 그것을, 아니면 정적 맵핑을 사용
+   
+    const pageTitle =
+        dynamicTitle || pageTitleMap[location.pathname] || "";
+    
     return (
         <div className="flex min-h-screen">
             {/* 사이드바 */}
@@ -133,7 +163,7 @@ export default function AdminLayout() {
                 >
                     {/* 좌측 타이틀 */}
                     <div className="flex items-center gap-3">
-                        <span className="text-xl font-bold text-gray-800">My Admin</span>
+                        <span className="text-xl font-bold text-gray-800">{pageTitle}</span>
                     </div>
 
                     {/* 우측 메뉴: 시간, 알림, 계정 */}
