@@ -35,3 +35,24 @@ export async function getProductDetail(
 export async function toggleProductLike(barcode: string): Promise<void> {
     await axiosInstance.post(`${host}/${barcode}/like`);
 }
+
+
+export async function searchProducts(
+    page: number,
+    size: number,
+    sort: string = "likeCount,DESC",
+    category?: string,
+    keyword?: string
+): Promise<PageResponse<ProductListDTO>> {
+    const params: Record<string, any> = { page, size, sort };
+
+    // 검색은 keyword가 필수이므로, keyword가 없으면 빈 문자열("")이라도 넘겨주도록 합니다.
+    if (category) params.category = category;
+    if (keyword) params.keyword = keyword;
+
+    const res = await axiosInstance.get<PageResponse<ProductListDTO>>(
+        `${host}/search`,
+        { params }
+    );
+    return res.data;
+}
