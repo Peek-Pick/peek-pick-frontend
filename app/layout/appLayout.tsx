@@ -20,6 +20,7 @@ export default function AppLayout() {
         "/mypage": "My Page",
         "/mypage/favorites": "찜한 상품",
         "/products/ranking": "상품 랭킹",
+        "/reviews/user": "User Review",
         // 다른 정적 경로가 필요하다면 여기에 추가
     };
 
