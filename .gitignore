@@ -1,6 +1,8 @@
 .DS_Store
 /node_modules/
 /.idea/
+/package.json/
+/package-lock.json/
 
 # React Router
 /.react-router/
