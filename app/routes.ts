@@ -63,6 +63,8 @@ export default [
         // 검색
         // route("search", "routes/search/searchPage.tsx"),
 
+        // 내역
+        route("barcode/history", "routes/barcode/barcodeHistoryPage.tsx"),
 
     ]),
 

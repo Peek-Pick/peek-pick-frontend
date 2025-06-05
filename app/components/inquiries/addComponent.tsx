@@ -10,7 +10,6 @@ interface Props {
 // 문의 유형 목록 (InquiryType에 맞추기)
 const INQUIRY_TYPES: { value: InquiryType; label: string }[] = [
     { value: "ACCOUNT", label: "계정/로그인" },
-    { value: "PRODUCT_ADD", label: "상품 추가" },
     { value: "POINT_REVIEW", label: "포인트/리뷰" },
     { value: "HOW_TO_USE", label: "사용 방법" },
     { value: "BUG", label: "오류/버그" },
@@ -51,7 +50,7 @@ function AddComponent({ onSubmit }: Props) {
     }
 
     if (loading) {
-        return <LoadingComponent isLoading={true} />; // 변경: 로딩 컴포넌트 사용
+        return <LoadingComponent isLoading={true} />;
     }
 
     return (

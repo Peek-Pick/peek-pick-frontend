@@ -73,7 +73,10 @@ export default function AppLayout() {
                 {/* 오른쪽: 아이콘들 */}
                 <div className="flex items-center gap-1">
                     {/* 영수증 버튼 */}
-                    <button className="w-10 h-10 flex items-center justify-center rounded hover:bg-gray-100">
+                    <button
+                        onClick={() => navigate("/barcode/history")}
+                        className="w-10 h-10 flex items-center justify-center rounded hover:bg-gray-100"
+                    >
                         <ReceiptText className="w-6 h-6 text-gray-500" />
                     </button>
 
