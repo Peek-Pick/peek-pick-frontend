@@ -1,12 +1,11 @@
-// src/frontend/src/api/notice.ts
+// src/api/noticeAPI.ts
 
-import axios from "axios";
+import axiosInstance from "~/instance/axiosInstance";
 import type {
     NoticePageDto,
     NoticeResponseDto,
     NoticeRequestDto,
 } from "~/types/notice";
-import axiosInstance from "~/instance/axiosInstance";
 
 const BASE_URL = "http://localhost:8080/api/v1/admin/notices";
 
