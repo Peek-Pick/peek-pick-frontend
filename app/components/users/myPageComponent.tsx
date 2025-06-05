@@ -52,10 +52,10 @@ export default function ProfileHeader() {
 
     // 동적 quickStats
     const quickStats = [
-        { icon: <FaHeart className="text-pink-500 text-2xl mb-2" />, label: 'Wishlisted Items', value: myData.wishlisted_count, to:'' },
-        { icon: <FaPen className="text-blue-500 text-2xl mb-2" />, label: 'My Reviews', value: myData.review_count, to:'/reviews/user' },
-        { icon: <FaTicketAlt className="text-yellow-500 text-2xl mb-2" />, label: 'Coupons', value: myData.coupon_count, to:'/mypage/coupons' },
-        { icon: <FaBarcode className="text-green-500 text-2xl mb-2" />, label: 'Barcode History', value: myData.barcode_history_count, to:'' },
+        { icon: <FaHeart className="text-pink-500 text-2xl mb-2" />, label: 'Wishlisted Items', value: myData.wishlistedCount, to:'' },
+        { icon: <FaPen className="text-blue-500 text-2xl mb-2" />, label: 'My Reviews', value: myData.reviewCount, to:'/reviews/user' },
+        { icon: <FaTicketAlt className="text-yellow-500 text-2xl mb-2" />, label: 'Coupons', value: myData.couponCount, to:'/mypage/coupons' },
+        { icon: <FaBarcode className="text-green-500 text-2xl mb-2" />, label: 'Barcode History', value: myData.barcodeHistoryCount, to:'' },
     ];
 
     const buttons: [string, React.ComponentType<React.SVGProps<SVGSVGElement>>][] = [
@@ -94,7 +94,7 @@ export default function ProfileHeader() {
                         </button>
                     </div>
                     <div className="flex justify-center gap-2">
-                        <button 
+                        <button
                             onClick={ ()=> navigate('/points/store/list')}
                             className="border border-amber-300 text-amber-300 px-4 py-1 flex items-center hover:bg-gray-100">
                             <FaStore className="mr-2" /> Point Store
