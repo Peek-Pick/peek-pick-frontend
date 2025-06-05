@@ -40,7 +40,7 @@ export default function FavoritesPage() {
                 allPages: PageResponse<ProductListDTO>[]
             ) => {
                 // 마지막 페이지 번호가 아직 전체 페이지 수보다 작으면 다음 페이지 번호 리턴
-                return lastPage.number + 1 < lastPage.total_pages
+                return lastPage.number + 1 < lastPage.totalPages
                     ? lastPage.number + 1
                     : undefined;
             },

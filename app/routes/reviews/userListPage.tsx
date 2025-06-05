@@ -22,7 +22,7 @@ function UserListPage() {
         queryFn: ({ pageParam}) => getUserReviews(pageParam),
         initialPageParam: 0,
         getNextPageParam: (lastPage) => {
-            const currentPage = lastPage.data.pageable.page_number;
+            const currentPage = lastPage.data.pageable.pageNumber;
             const isLast = lastPage.data.last;
             return isLast ? undefined : currentPage + 1;
         }

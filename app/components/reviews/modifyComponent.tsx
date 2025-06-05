@@ -1,9 +1,10 @@
 import { useRef, useState, useEffect, useMemo, type FormEvent, type ChangeEvent } from "react";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {deleteReview, modifyReview} from "~/api/reviews/reviewAPI";
+import { useMutation } from "@tanstack/react-query";
+import { deleteReview, modifyReview } from "~/api/reviews/reviewAPI";
 import { useNavigate } from "react-router-dom";
 import { useTagSelector } from "~/hooks/tags/useTagSelector";
 import { Rating } from "~/components/reviews/rating/rating"
+import TextareaAutosize from 'react-textarea-autosize';
 import Swal from "sweetalert2"
 import '~/util/customSwal.css'
 
@@ -27,7 +28,7 @@ export default function ModifyComponent({ review }: ModifyProps ) {
 
     // 초기 태그 ID 배열
     const initialTagIds = useMemo(
-        () => review?.tag_list?.map(t => t.tag_id) || [],
+        () => review?.tagList?.map(t => t.tagId) || [],
         [review]
     );
 
@@ -52,7 +53,7 @@ export default function ModifyComponent({ review }: ModifyProps ) {
             setScore(review.score);
             setComment(review.comment ?? '');
             setExistingImages(review.images || []);
-            setSelectedTags(review.tag_list?.map(tag => tag.tag_id) || []);
+            setSelectedTags(review.tagList?.map(tag => tag.tagId) || []);
         }
     }, [review]);
 
@@ -67,7 +68,7 @@ export default function ModifyComponent({ review }: ModifyProps ) {
     // 기존 이미지 삭제
     const handleDeleteExistingImage = (id: number) => {
         setDeleteImgIds(prev => [...prev, id]);
-        setExistingImages(prev => prev.filter(img => img.img_id !== id));
+        setExistingImages(prev => prev.filter(img => img.imgId !== id));
     };
 
     // 새로운 이미지 삭제
@@ -78,7 +79,7 @@ export default function ModifyComponent({ review }: ModifyProps ) {
 
     // 리뷰 수정 뮤테이션
     const updateMutation = useMutation({
-        mutationFn: (formData: FormData) => modifyReview(review!.review_id, formData),
+        mutationFn: (formData: FormData) => modifyReview(review!.reviewId, formData),
         onSuccess: () => {
             Swal.fire({
                 title: "수정이 완료되었습니다",
@@ -115,7 +116,7 @@ export default function ModifyComponent({ review }: ModifyProps ) {
         if (!review) return;
 
         const payload = {
-            reviewId: review.review_id,
+            reviewId: review.reviewId,
             score,
             comment,
             deleteImgIds,
@@ -137,7 +138,7 @@ export default function ModifyComponent({ review }: ModifyProps ) {
         if (!review) return;
 
         try {
-            await deleteReview(review.review_id);
+            await deleteReview(review.reviewId);
             Swal.fire({
                 title: "삭제가 완료되었습니다",
                 icon: "success",
@@ -149,7 +150,7 @@ export default function ModifyComponent({ review }: ModifyProps ) {
                     confirmButton: 'custom-confirm-button',
                 },
             }),
-            navigate(`/reviews/user`);
+                navigate(`/reviews/user`);
         } catch (error) {
             console.log(error)
             Swal.fire({
@@ -171,15 +172,10 @@ export default function ModifyComponent({ review }: ModifyProps ) {
     return (
         <section className="py-12">
             <div className="max-w-3xl mx-auto px-4 sm:px-6 md:px-8">
-                {/* 제목 */}
-                <h2 className="font-manrope font-bold text-4xl sm:text-4xl md:text-4xl text-center text-gray-900 mb-6">
-                    Modify Review
-                </h2>
-
                 {/* 상품 이미지 + 정보 */}
                 <div className="flex flex-col items-center mb-8">
                     <img
-                        src={review?.image_url || "/example.jpg"}
+                        src={review?.imageUrl || "/example.jpg"}
                         alt={review?.name || "상품 이미지"}
                         className="w-40 h-40 sm:w-40 sm:h-40 md:w-40 md:h-40 rounded-lg object-cover mb-"
                     />
@@ -190,7 +186,7 @@ export default function ModifyComponent({ review }: ModifyProps ) {
 
                 {/* 별점 선택 */}
                 <div className="text-center mb-8">
-                    <h3 className="font-manrope font-bold text-lg sm:text-xl text-gray-800 mb-4">
+                    <h3 className="font-manrope font-bold text-lg sm:text-xl text-gray-700 mb-4">
                         상품은 어떠셨나요?
                     </h3>
                     <div className="flex justify-center space-x-2">
@@ -209,13 +205,14 @@ export default function ModifyComponent({ review }: ModifyProps ) {
 
                 <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
                     {/* 코멘트 */}
-                    <textarea
+                    <TextareaAutosize
                         name="comment"
-                        rows={6}
+                        minRows={6}
+                        maxRows={15}
                         value={comment}
                         onChange={e => setComment(e.target.value)}
                         placeholder="솔직한 상품 리뷰를 남겨주세요"
-                        className="w-full border border-gray-300 rounded-md p-3 text-base sm:text-base focus:outline-none focus:ring-2 focus:ring-gray-300"
+                        className="w-full border text-gray-600 border-gray-300 rounded-md p-3 text-base sm:text-base focus:outline-none focus:ring-2 focus:ring-gray-300"
                     />
 
                     {/* ----- 카테고리별 태그 ----- */}
@@ -235,16 +232,16 @@ export default function ModifyComponent({ review }: ModifyProps ) {
                                          style={{scrollbarWidth: "none", msOverflowStyle: "none"}}>
                                         {tagList.map(tag => (
                                             <button
-                                                key={tag.tag_id}
+                                                key={tag.tagId}
                                                 type="button"
-                                                onClick={() => toggleTag(tag.tag_id)}
-                                                className={`whitespace-nowrap px-4 py-2 text-sm font-semibold rounded-full border transition-colors
-                                                    ${selectedTags.includes(tag.tag_id)
-                                                    ? "bg-emerald-100 text-emerald-700 border-emerald-300"
-                                                    : "bg-gray-50 text-gray-600 border-gray-400"
+                                                onClick={() => toggleTag(tag.tagId)}
+                                                className={`whitespace-nowrap px-3 py-1 text-sm sm:text-sm rounded-full border transition-colors
+                                                    ${selectedTags.includes(tag.tagId)
+                                                    ? "bg-emerald-50 text-emerald-500 border-emerald-200"
+                                                    : "bg-gray-100 text-gray-500 border-gray-400"
                                                 }`}
                                             >
-                                                {tag.tag_name}
+                                                {tag.tagName}
                                             </button>
                                         ))}
                                     </div>
@@ -276,17 +273,17 @@ export default function ModifyComponent({ review }: ModifyProps ) {
                             {/* 기존 이미지 */}
                             {existingImages.map(img => (
                                 <div
-                                    key={img.img_id}
+                                    key={img.imgId}
                                     className="relative w-25 h-25 sm:w-25 sm:h-25 flex-shrink-0 rounded-md overflow-hidden border"
                                 >
                                     <img
-                                        src={`http://localhost/s_${img.img_url}`}
+                                        src={`http://localhost/s_${img.imgUrl}`}
                                         alt="기존 이미지"
                                         className="w-full h-full object-cover"
                                     />
                                     <button
                                         type="button"
-                                        onClick={() => handleDeleteExistingImage(img.img_id)}
+                                        onClick={() => handleDeleteExistingImage(img.imgId)}
                                         className="absolute top-1 right-1 bg-black/50 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
                                     >
                                         ×
@@ -318,14 +315,14 @@ export default function ModifyComponent({ review }: ModifyProps ) {
                         <button
                             type="button"
                             onClick={handleDelete}
-                            className="w-full py-3 font-semibold rounded-md text-base sm:text-base transition-colors bg-gray-400 text-white cursor-not-allowed"
+                            className="w-full px-4 py-2 font-medium rounded-md text-sm sm:text-sm transition-colors bg-gray-400 text-white cursor-not-allowed"
                         >
                             삭제하기
                         </button>
                         <button
                             type="submit"
                             disabled={updateMutation.isPending}
-                            className="w-full py-3 font-semibold rounded-md text-base sm:text-base transition-colors bg-emerald-400 text-white hover:bg-emerald-600"
+                            className="w-full px-4 py-2 font-medium rounded-md text-sm sm:text-sm transition-colors bg-emerald-400 text-white hover:bg-emerald-600"
                         >
                             리뷰 수정하기
                         </button>

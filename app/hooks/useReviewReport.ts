@@ -24,7 +24,7 @@ export function useReviewReport(reviewId: number) {
     // 신고 뮤테이션
     const reportMutation = useMutation({
         mutationFn: () =>
-            reportReview(reviewId, {review_id: reviewId, reason: selectedReason as ReportReason}),
+            reportReview(reviewId, {reviewId: reviewId, reason: selectedReason as ReportReason}),
         onSuccess: () => {
             Swal.fire({
                 title: "신고가 완료되었습니다",
