@@ -52,10 +52,10 @@ export default function ProfileHeader() {
 
     // 동적 quickStats
     const quickStats = [
-        { icon: <FaHeart className="text-pink-500 text-2xl mb-2" />, label: 'Wishlisted Items', value: myData.wishlistedCount, to:'' },
-        { icon: <FaPen className="text-blue-500 text-2xl mb-2" />, label: 'My Reviews', value: myData.reviewCount, to:'/reviews/user' },
-        { icon: <FaTicketAlt className="text-yellow-500 text-2xl mb-2" />, label: 'Coupons', value: myData.couponCount, to:'/mypoints/coupons' },
-        { icon: <FaBarcode className="text-green-500 text-2xl mb-2" />, label: 'Barcode History', value: myData.barcodeHistoryCount, to:'' },
+        { icon: <FaHeart className="text-pink-500 text-2xl mb-2" />, label: 'Wishlisted Items', value: myData.wishlisted_count, to:'' },
+        { icon: <FaPen className="text-blue-500 text-2xl mb-2" />, label: 'My Reviews', value: myData.review_count, to:'/reviews/user' },
+        { icon: <FaTicketAlt className="text-yellow-500 text-2xl mb-2" />, label: 'Coupons', value: myData.coupon_count, to:'/mypage/coupons' },
+        { icon: <FaBarcode className="text-green-500 text-2xl mb-2" />, label: 'Barcode History', value: myData.barcode_history_count, to:'' },
     ];
 
     const buttons: [string, React.ComponentType<React.SVGProps<SVGSVGElement>>][] = [
@@ -86,7 +86,7 @@ export default function ProfileHeader() {
                     <h3 className="mt-4 mb-1 text-xl font-semibold">{myData.nickname}</h3>
                     <div className="flex justify-center mb-2">
                         <button
-                            onClick={ ()=> navigate('/mypoints/points/history')}
+                            onClick={ ()=> navigate('/mypage/points/history')}
                             className="rounded flex items-center justify-center space-x-2 px-4 py-2 hover:bg-gray-100">
                             <FaCoins className="text-indigo-500 text-xl" />
                             <p className="text-gray-500">{myData.point.toLocaleString()} Beeplet</p>
