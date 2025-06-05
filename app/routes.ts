@@ -58,7 +58,7 @@ export default [
         route("inquiries/:id/edit",   "routes/inquiries/editPage.tsx"),
 
         // 지도
-        route("map",   "routes/map/kakaoMapPage.tsx"),
+        route("map", "routes/map/mapPage.tsx"),
 
         // 검색
         // route("search", "routes/search/searchPage.tsx"),

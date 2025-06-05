@@ -6,17 +6,7 @@ import type {PointStoreDTO} from "~/types/points";
 // 쿠폰 단건 조회
 export async function readCoupon(pointstoreId: number | null): Promise<PointStoreDTO> {
     const response = await axiosInstance.get(`/admin/points/${pointstoreId}`);
-    const result = response.data;
-
-    // 카멜케이스 변환
-    return {
-        pointstoreId: result.pointstore_id,
-        item: result.item,
-        price: result.price,
-        productType: result.product_type,
-        imgUrl: result.img_url,
-        description: result.description,
-    };
+    return response.data;
 }
 
 // 쿠폰 목록 조회 (관리자용)
@@ -28,19 +18,7 @@ export async function listCoupon(page: number, size: number, sort:string, type?:
 
     const response = await axiosInstance.get(`/admin/points`, { params });
 
-    const result = response.data;
-    return { // 카멜로 변환..
-        ...result,
-        content: result.content.map((item: any) => ({
-            pointstoreId: item.pointstore_id,
-            item: item.item,
-            price: item.price,
-            productType: item.product_type,
-            imgUrl: item.img_url,
-        })),
-        totalElements: result.total_elements,
-        totalPages: result.total_pages,
-    };
+    return response.data;
 }
 
 
@@ -81,20 +59,7 @@ export async function userCouponList(page: number, size: number, sort: string, s
     }
     const response = await axiosInstance.get(`/users/mypage/coupons`, { params });
 
-    const result = response.data;
-    return {
-        ...result,
-        content: result.content.map((item: any) => ({
-            couponId: item.coupon_id,
-            itemName: item.item_name,
-            status: item.status,
-            couponImg: item.coupon_img,
-            usedAt: item.used_at,
-            expiredAt: item.expired_at,
-        })),
-        totalElements: result.total_elements,
-        totalPages: result.total_pages,
-    };
+    return response.data;
 }
 
 
@@ -104,19 +69,7 @@ export async function userPointLogs(page: number, size: number, sort:string) {
     const response = await axiosInstance.get(`/users/mypage/points/history`, {
         params: { page, size, sort },
     });
-
-    const result = response.data;
-    return { // 카멜로 변환..
-        ...result,
-        content: result.content.map((item: any) => ({
-            pointLogId: item.point_log_id,
-            amount: item.amount,
-            type: item.type,
-            description: item.description,
-            regDate: item.reg_date,
-        })),
-        totalElements: result.total_elements,
-        totalPages: result.total_pages,
-    };
+    
+    return response.data;
 }
 
