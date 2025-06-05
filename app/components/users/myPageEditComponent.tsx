@@ -153,7 +153,7 @@ export default function MyPageEditComponent() {
                         <div className="flex flex-wrap gap-2 mb-4">
                             {selectedTags.length > 0 ? (
                                 selectedTags.map(tagId => {
-                                    const tag = Object.values(groupedTags).flat().find(t => t.tag_id === tagId);
+                                    const tag = Object.values(groupedTags).flat().find(t => t.tagId === tagId);
                                     if (!tag) return null;
                                     return (
                                         <button
@@ -161,7 +161,7 @@ export default function MyPageEditComponent() {
                                             onClick={() => toggleTag(tagId)}
                                             className="px-3 py-1 rounded-full text-sm bg-emerald-100 text-emerald-700 border border-emerald-300"
                                         >
-                                            {tag.tag_name} &times;
+                                            {tag.tagName} &times;
                                         </button>
                                     );
                                 })
@@ -187,15 +187,15 @@ export default function MyPageEditComponent() {
                                         <div className="flex flex-wrap gap-2">
                                             {tagList.map(tag => (
                                                 <button
-                                                    key={tag.tag_id}
-                                                    onClick={() => toggleTag(tag.tag_id)}
+                                                    key={tag.tagId}
+                                                    onClick={() => toggleTag(tag.tagId)}
                                                     className={`px-3 py-1 rounded-full text-sm border transition-colors ${
-                                                        selectedTags.includes(tag.tag_id)
+                                                        selectedTags.includes(tag.tagId)
                                                             ? "bg-gray-200 text-gray-700 border-gray-400"
                                                             : "bg-white text-gray-600 border-gray-300"
                                                     }`}
                                                 >
-                                                    {tag.tag_name}
+                                                    {tag.tagName}
                                                 </button>
                                             ))}
                                         </div>

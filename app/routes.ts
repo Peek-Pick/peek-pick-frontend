@@ -107,8 +107,8 @@ export default [
         // route("users/:id",        "routes/admin/users/detailPage.tsx"), // 상세
 
         // 어드민 리뷰
-        // route("reviews/list",       "routes/admin/reviews/listPage.tsx"), // 목록
-        // route("reviews/:id",        "routes/admin/reviews/detailPage.tsx"), // 상세
+        route("reviews/list",       "routes/admin/reviews/listPage.tsx"), // 목록
+        route("reviews/:rid",        "routes/admin/reviews/readPage.tsx"), // 상세
 
     ])
   

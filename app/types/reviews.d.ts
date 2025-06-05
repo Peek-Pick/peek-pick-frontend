@@ -6,48 +6,75 @@ interface ReviewAddDTO {
 }
 
 interface ReviewSimpleDTO {
-    review_id: number;
-    user_id: number;
-    product_id: number;
+    reviewId: number;
+    userId: number;
+    productId: number;
     score: number;
-    recommend_cnt: number;
+    recommendCnt: number;
     comment: string;
-    is_hidden: boolean;
-    reg_date: string;
-    mod_date: string;
+    isHidden: boolean;
+    regDate: string;
+    modDate: string;
     image: ReviewImgDTO;
     nickname: string;
-    is_liked: boolean;
+    isLiked: boolean;
     name: string;
-    image_url: string;
+    imageUrl: string;
 }
 
 interface ReviewDetailDTO {
-    review_id: number;
-    user_id: number;
-    product_id: number;
+    reviewId: number;
+    userId: number;
+    productId: number;
     score: number;
-    recommend_cnt: number;
+    recommendCnt: number;
     comment: string;
-    is_hidden: boolean;
-    reg_date: string;
-    mod_date: string;
+    isHidden: boolean;
+    regDate: string;
+    modDate: string;
     images: ReviewImgDTO[];
     nickname: string;
-    profile_image_url: string;
-    is_liked: boolean;
-    tag_list: TagDTO[];
+    profileImageUrl: string;
+    isLiked: boolean;
+    tagList: TagDTO[];
     name: string;
-    image_url: string;
+    imageUrl: string;
 }
 
 interface ReviewImgDTO {
-    img_id: number;
-    review_id: number;
-    img_url: string;
+    imgId: number;
+    reviewId: number;
+    imgUrl: string;
 }
 
 interface ReviewReportDTO {
-    review_id: number;
+    reviewId: number;
     reason: ReportReason;
+}
+
+interface AdminReviewSimpleDTO {
+    reviewId: number;
+    userId: number;
+    productId: number;
+    regDate: string;
+    modDate: string;
+    nickname: string;
+    name: stinrg;
+}
+
+interface AdminReviewDetailDTO {
+    reviewId: number;
+    userId: number;
+    productId: number;
+    score: number;
+    comment: string;
+    images: ReviewImgDTO[];
+    tagList: TagDTO[];
+    regDate: string;
+    modDate: string;
+    nickname: string;
+    profileImageUrl: string;
+    recommendCnt: number;
+    isHidden: boolean;
+    name: stinrg;
 }
