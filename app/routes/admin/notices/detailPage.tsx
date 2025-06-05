@@ -1,74 +1,46 @@
-// src/app/routes/admin/notices/detailPage.tsx
-import { useEffect, useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
-import { fetchNotice, deleteNotice } from "~/api/notice";
-import type { NoticeResponseDto } from "~/types/notice";
+// src/pages/admin/notices/detailPage.tsx
 
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8080";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import type { NoticeResponseDto } from "~/types/notice";
+import { fetchNotice } from "~/api/noticeAPI";
+import DetailComponent from "~/components/admin/notices/detailComponent";
 
 export default function DetailPage() {
-    // ① useParams 키 이름(id)이 라우트 정의와 일치해야 합니다.
     const { id } = useParams<{ id: string }>();
-    const nav = useNavigate();
+    const navigate = useNavigate();
+
     const [notice, setNotice] = useState<NoticeResponseDto | null>(null);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
+    const loadNotice = async () => {
         if (!id) return;
-        const parsed = parseInt(id, 10);
-        if (Number.isNaN(parsed)) return;
-        fetchNotice(parsed)
-            .then((res) => setNotice(res.data))
-            .catch(console.error);
-    }, [id]);
-
-    if (!notice) {
-        return <div className="p-4">로딩 중…</div>;
-    }
-
-    const onDelete = async () => {
-        if (!confirm("정말 삭제하시겠습니까?")) return;
-        await deleteNotice(notice.noticeId);
-        nav("/admin/notices/list");
+        setLoading(true);
+        setError(null);
+        try {
+            const res = await fetchNotice(Number(id));
+            setNotice(res.data);
+        } catch (e) {
+            console.error(e);
+            setError("공지사항 정보를 불러오는 중 오류가 발생했습니다.");
+        } finally {
+            setLoading(false);
+        }
     };
 
+    useEffect(() => {
+        loadNotice();
+        // eslint-disable-next-line
+    }, [id]);
+
+    if (loading) return <p>로딩 중...</p>;
+    if (error) return <p className="text-red-500">{error}</p>;
+    if (!notice) return <p>존재하지 않는 공지사항입니다.</p>;
+
     return (
-        <div className="p-4 space-y-4">
-            <h1 className="text-2xl font-bold">{notice.title}</h1>
-            <p className="text-sm text-gray-600">
-                등록: {new Date(notice.regDate).toLocaleString()}
-            </p>
-            <div>{notice.content}</div>
-
-            <div className="flex space-x-2">
-                {/* ② map 시 고유값(key) 사용 */}
-                {notice.imgUrls.map((url) => (
-                    <img
-                        key={url}
-                        src={`${API_URL}${url}`}
-                        className="w-24 h-24 object-cover rounded"
-                        alt={url}
-                    />
-                ))}
-            </div>
-
-            <div className="space-x-2">
-                <button
-                    onClick={() => nav(`/admin/notices/${notice.noticeId}/edit`)}
-                    className="px-4 py-2 bg-blue-600 text-white rounded"
-                >
-                    수정
-                </button>
-                <button
-                    onClick={onDelete}
-                    className="px-4 py-2 bg-red-600 text-white rounded"
-                >
-                    삭제
-                </button>
-            </div>
-
-            <Link to="/admin/notices/list" className="text-gray-600">
-                ← 목록으로
-            </Link>
+        <div className="p-6">
+            <DetailComponent notice={notice} navigate={navigate} />
         </div>
     );
 }
