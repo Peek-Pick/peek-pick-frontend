@@ -104,7 +104,7 @@ export default [
 
         // 어드민 유저
         route("users/list",       "routes/admin/users/adminUsersListPage.tsx"), // 목록
-        // route("users/:id",        "routes/admin/users/detailPage.tsx"), // 상세
+        route("users/detail",        "routes/admin/users/auDetailPage.tsx"), // 상세
 
         // 어드민 리뷰
         route("reviews/list",       "routes/admin/reviews/listPage.tsx"), // 목록
