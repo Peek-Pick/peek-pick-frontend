@@ -2,6 +2,7 @@ import { useSignupContext } from "~/contexts/signupContext";
 import { useNavigate } from "react-router-dom";
 import {useEffect} from "react";
 import {useLocation} from "react-router";
+import {countryCodeMap} from "~/util/countryUtils";
 
 export default function SignupProfileComponent() {
     const {
@@ -79,15 +80,9 @@ export default function SignupProfileComponent() {
                             className="w-full px-4 py-2 border rounded-md"
                             required
                         >
-                            <option value="">Select</option>
-                            <option value="KR">대한민국</option>
-                            <option value="JP">일본</option>
-                            <option value="CN">중국</option>
-                            <option value="US">미국</option>
-                            <option value="ES">스페인</option>
-                            <option value="VN">베트남</option>
-                            <option value="TH">태국</option>
-                            <option value="PH">필리핀</option>
+                            {Object.entries(countryCodeMap).map(([code, name]) => (
+                                <option key={code} value={code}>{name}</option>
+                            ))}
                         </select>
                     </div>
 
