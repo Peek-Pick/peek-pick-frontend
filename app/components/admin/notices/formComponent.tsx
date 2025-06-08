@@ -1,182 +1,265 @@
-// src/components/notice/NoticeFormComponent.tsx
+// src/components/admin/notices/NoticeFormComponent.tsx
 
-import { useEffect, useRef, useState, type ChangeEvent } from "react";
-
+import {
+    useEffect,
+    useRef,
+    useState,
+    type ChangeEvent,
+    type FormEvent,
+    type ReactNode,
+} from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faImage } from "@fortawesome/free-solid-svg-icons";
 import type {
-    NoticeRequestDto,
     NoticeResponseDto,
+    NoticeRequestDto,
 } from "~/types/notice";
-import { uploadImages } from "~/api/noticeAPI";
+
+// nginx 서빙 호스트
+const rawApi =
+    import.meta.env.VITE_API_URL ?? "http://localhost:8080/api/v1";
+const API_HOST = rawApi
+    .replace("http://localhost:8080/api/v1", "http://localhost")
+    .replace("https://localhost:8080/api/v1", "https://localhost");
 
 interface Props {
     initialData?: NoticeResponseDto | null;
-    onSubmit: (dto: NoticeRequestDto) => void;
+    onSubmit: (
+        dto: NoticeRequestDto,
+        files?: FileList | null
+    ) => void;
     submitLabel: string;
+    extraActions?: ReactNode;
 }
 
-/**
- * 공지사항 작성/수정용 폼 컴포넌트
- *
- * - initialData: 수정 시 미리 채워줄 데이터(제목, 내용, imgUrls)
- * - onSubmit: 폼을 제출할 때 호출할 함수 (NoticeRequestDto 형태)
- * - submitLabel: 제출 버튼 텍스트 ("저장" / "수정" 등)
- */
-export default function FormComponent({
+export default function NoticeFormComponent({
                                                 initialData = null,
                                                 onSubmit,
                                                 submitLabel,
+                                                extraActions,
                                             }: Props) {
-    // 제목/내용/이미지 URL 상태
-    const [title, setTitle] = useState<string>(initialData?.title || "");
-    const [content, setContent] = useState<string>(initialData?.content || "");
-    const [imgUrls, setImgUrls] = useState<string[]>(initialData?.imgUrls || []);
+    const [title, setTitle] = useState(
+        initialData?.title || ""
+    );
+    const [content, setContent] = useState(
+        initialData?.content || ""
+    );
+    // 기존 URL 목록
+    const [existingUrls, setExistingUrls] =
+        useState<string[]>(initialData?.imgUrls || []);
+    // 새로 고른 파일들
+    const [newFiles, setNewFiles] = useState<File[]>([]);
+    const fileInputRef =
+        useRef<HTMLInputElement>(null);
 
-    // 이미지 업로드 중 로딩 상태
-    const [uploading, setUploading] = useState<boolean>(false);
-
-    // input[type="file"]에 대한 ref
-    const fileInputRef = useRef<HTMLInputElement>(null);
-
-    // initialData가 바뀌면 상태 업데이트 (Edit 모드에서 서버 데이터를 받아올 때)
+    // 초기 데이터 로드시 상태 세팅
     useEffect(() => {
         if (initialData) {
             setTitle(initialData.title);
             setContent(initialData.content);
-            setImgUrls(initialData.imgUrls);
+            setExistingUrls(initialData.imgUrls);
         }
     }, [initialData]);
 
-    // 파일 선택 시 업로드 처리
-    const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
-        const files = e.target.files;
-        if (!files || files.length === 0 || !initialData) {
-            // Add 모드에서 initialData가 없으면, 아직 공지가 생성되지 않았거나 ID가 없으므로 업로드 불가
-            // 백엔드 구현상 이미지 업로드 엔드포인트가 /notices/{id}/images 이므로,
-            // 공지를 먼저 생성한 뒤에 Edit 페이지에서 이미지를 추가해야 함.
-            alert("이미지를 업로드하려면 먼저 공지를 저장한 후, 수정 화면에서 이미지를 추가해주세요.");
-            return;
-        }
-
-        setUploading(true);
-        try {
-            // 백엔드 uploadImages(id, files) 호출
-            await uploadImages(initialData.noticeId, files);
-            // 업로드 후, 서버에서 NoticeEntity에 연결된 imgUrls가 갱신되었을 텐데
-            // 편의상 클라이언트 쪽에서 다시 fetch하지 않고, 바로 화면에서 미리 보려면
-            // 새로 업로드된 이미지를 서버가 어떤 URL로 저장했는지 알려줘야 함.
-            // 여기서는 “수정(Edit) 후 상세로 돌아가 재조회”하는 방식으로 해결하는 것을 권장합니다.
-            alert("이미지 업로드가 완료되었습니다. 상세 페이지로 돌아가 새로고침해주세요.");
-            // 파일 input 초기화
-            if (fileInputRef.current) fileInputRef.current.value = "";
-        } catch (e) {
-            console.error(e);
-            alert("이미지 업로드 중 오류가 발생했습니다.");
-        } finally {
-            setUploading(false);
+    // 파일 선택 이벤트: 누적 추가
+    const handleFileChange = (
+        e: ChangeEvent<HTMLInputElement>
+    ) => {
+        const picked = e.target.files
+            ? Array.from(e.target.files)
+            : [];
+        setNewFiles((prev) => [...prev, ...picked]);
+        // input value 초기화해서 같은 파일 재선택 허용
+        if (fileInputRef.current) {
+            fileInputRef.current.value = "";
         }
     };
 
-    // 이미지 URL 미리보기 삭제
-    const handleRemoveImage = (url: string) => {
-        setImgUrls((prev) => prev.filter((u) => u !== url));
+    // 기존 URL 삭제
+    const removeExisting = (url: string) => {
+        setExistingUrls((prev) =>
+            prev.filter((u) => u !== url)
+        );
     };
 
-    // 폼 제출 핸들러
-    const handleSubmit = (e: React.FormEvent) => {
+    // 새 파일 삭제
+    const removeNewFile = (file: File) => {
+        setNewFiles((prev) =>
+            prev.filter((f) => f !== file)
+        );
+    };
+
+    // 제출 핸들러
+    const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
-        if (title.trim() === "" || content.trim() === "") {
-            alert("제목과 내용을 모두 입력해주세요.");
+        if (!title.trim() || !content.trim()) {
+            alert("제목과 내용을 모두 입력해주세요");
             return;
         }
+
+        // dto 에 기존 URL 배열을 포함
         const dto: NoticeRequestDto = {
-            title,
-            content,
-            imgUrls,
+            title: title.trim(),
+            content: content.trim(),
+            imgUrls: existingUrls,
         };
-        onSubmit(dto);
+
+        // FileList 로 변환
+        const dt = new DataTransfer();
+        newFiles.forEach((f) => dt.items.add(f));
+        const fileList = dt.files.length
+            ? dt.files
+            : undefined;
+
+        onSubmit(dto, fileList ?? null);
     };
+
+    // 전체 선택된 개수
+    const totalCount =
+        existingUrls.length + newFiles.length;
+    const cntLabel =
+        totalCount > 0
+            ? `${totalCount}개 선택됨`
+            : "선택된 파일 없음";
+
+    // 버튼 스타일
+    const submitBtnClass =
+        submitLabel === "수정"
+            ? "flex items-center gap-1 rounded-md border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-medium text-blue-600 shadow-sm hover:bg-blue-100 transition"
+            : "flex items-center gap-1 rounded-md bg-purple-100 px-4 py-2 text-sm font-medium text-purple-700 shadow-sm hover:bg-purple-200 transition";
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6 p-6">
+        <form
+            onSubmit={handleSubmit}
+            className="bg-white shadow-md rounded-lg p-6 text-gray-800 max-w-2xl mx-auto space-y-6"
+        >
             {/* 제목 */}
             <div>
-                <label className="block mb-1 font-semibold">제목</label>
+                <label className="block text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wide">
+                    제목
+                </label>
                 <input
                     type="text"
-                    className="w-full border rounded px-3 py-2"
+                    className="w-full border border-gray-200 rounded-md px-3 py-2 text-gray-900 shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                     value={title}
-                    onChange={(e) => setTitle(e.target.value)}
+                    onChange={(e) =>
+                        setTitle(e.target.value)
+                    }
                     placeholder="제목을 입력하세요"
                 />
             </div>
 
             {/* 내용 */}
             <div>
-                <label className="block mb-1 font-semibold">내용</label>
+                <label className="block text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wide">
+                    내용
+                </label>
                 <textarea
-                    className="w-full border rounded px-3 py-2 h-40"
+                    rows={6}
+                    className="w-full border border-gray-200 rounded-md px-3 py-2 text-gray-900 shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 whitespace-pre-line leading-relaxed"
                     value={content}
-                    onChange={(e) => setContent(e.target.value)}
+                    onChange={(e) =>
+                        setContent(e.target.value)
+                    }
                     placeholder="내용을 입력하세요"
                 />
             </div>
 
-            {/* 이미지 미리보기 영역 */}
-            <div>
-                <label className="block mb-1 font-semibold">첨부된 이미지</label>
-                <div className="flex space-x-2 mb-2">
-                    {imgUrls.map((url) => (
-                        <div key={url} className="relative">
+            {/* 이미지 미리보기(기존 + 새로 고른) */}
+            {(existingUrls.length > 0 || newFiles.length > 0) && (
+                <div className="flex flex-wrap gap-3">
+                    {/* 기존 URL */}
+                    {existingUrls.map((url) => {
+                        const full = url.startsWith("http")
+                            ? url
+                            : `${API_HOST}${url}`;
+                        return (
+                            <div
+                                key={url}
+                                className="relative w-24 h-24 border rounded overflow-hidden"
+                            >
+                                <img
+                                    src={full}
+                                    alt="공지 이미지"
+                                    className="w-full h-full object-cover"
+                                    onError={(e) =>
+                                        (e.currentTarget.src = "")
+                                    }
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        removeExisting(url)
+                                    }
+                                    className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs shadow"
+                                >
+                                    ×
+                                </button>
+                            </div>
+                        );
+                    })}
+
+                    {/* 새로 고른 File */}
+                    {newFiles.map((file, idx) => (
+                        <div
+                            key={idx}
+                            className="relative w-24 h-24 border rounded overflow-hidden"
+                        >
                             <img
-                                src={url}
-                                alt="공지 이미지"
-                                className="w-24 h-24 object-cover rounded border"
+                                src={URL.createObjectURL(file)}
+                                alt="new"
+                                className="w-full h-full object-cover"
                             />
                             <button
                                 type="button"
-                                className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
-                                onClick={() => handleRemoveImage(url)}
+                                onClick={() =>
+                                    removeNewFile(file)
+                                }
+                                className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs shadow"
                             >
                                 ×
                             </button>
                         </div>
                     ))}
-                    {imgUrls.length === 0 && (
-                        <p className="text-sm text-gray-500">등록된 이미지가 없습니다.</p>
-                    )}
                 </div>
+            )}
 
-                {/* 이미지 업로드 버튼 */}
-                <div>
+            {/* 이미지 선택 버튼 + 상태 */}
+            <div>
+                <label className="block text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wide">
+                    이미지 파일
+                </label>
+                <div className="flex items-center gap-3">
                     <button
                         type="button"
-                        className="px-3 py-1 bg-blue-600 text-white rounded"
-                        onClick={() => fileInputRef.current?.click()}
-                        disabled={uploading || !initialData}
+                        onClick={() =>
+                            fileInputRef.current?.click()
+                        }
+                        className="flex items-center gap-1 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-100 hover:text-gray-800 transition"
                     >
-                        {uploading ? "업로드 중..." : "이미지 선택"}
+                        <FontAwesomeIcon icon={faImage} />
+                        이미지 선택
                     </button>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        ref={fileInputRef}
-                        className="hidden"
-                        onChange={handleFileChange}
-                    />
-                    {!initialData && (
-                        <p className="mt-1 text-sm text-red-500">
-                            이미지를 업로드하려면 먼저 공지를 저장한 후, 수정 화면에서 업로드하세요.
-                        </p>
-                    )}
+                    <span className="text-gray-600 truncate max-w-xs">
+            {cntLabel}
+          </span>
                 </div>
+                <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                />
             </div>
 
-            {/* 제출 버튼 */}
-            <div>
+            {/* 제출 & 추가 액션 */}
+            <div className="flex justify-end gap-2">
+                {extraActions}
                 <button
                     type="submit"
-                    className="px-4 py-2 bg-green-600 text-white rounded"
+                    className={submitBtnClass}
                 >
                     {submitLabel}
                 </button>
