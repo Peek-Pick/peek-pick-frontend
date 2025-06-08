@@ -4,12 +4,11 @@
 export interface ProductListDTO {
     productId: number;
     barcode: string;
-    product_id: number;
     name: string;
     category?: string | null;
-    img_url?: string | null;
-    like_count?: number | null;
-    review_count?: number | null;
+    imgUrl?: string | null;
+    likeCount?: number | null;
+    reviewCount?: number | null;
     score?: number | null;
 }
 
@@ -18,8 +17,8 @@ export interface ProductListDTO {
  */
 export interface PageResponse<T> {
     content: T[];
-    total_elements: number;
-    total_pages: number;
+    totalElements: number;
+    totalPages: number;
     size: number;
     number: number;
 }
@@ -29,7 +28,7 @@ export interface PageResponse<T> {
  */
 export interface ProductDetailDTO {
     /** 상품 id */
-    product_id: number;
+    productId: number;
     /** 바코드 */
     barcode: string;
     /** 상품명 */
@@ -41,7 +40,7 @@ export interface ProductDetailDTO {
     /** 용량 */
     volume?: string | null;
     /** 이미지 URL */
-    img_url?: string | null;
+    imgUrl?: string | null;
     /** 원재료 */
     ingredients?: string | null;
     /** 알레르기 정보 */
@@ -49,11 +48,11 @@ export interface ProductDetailDTO {
     /** 영양 성분 */
     nutrition?: string | null;
     /** 좋아요 수 */
-    like_count?: number | null;
+    likeCount?: number | null;
     /** 리뷰 수 */
-    review_count?: number | null;
+    reviewCount?: number | null;
     /** 별점 */
     score?: number | null;
     /** 로그인 사용자 좋아요 여부 */
-    is_liked?: boolean | null;
+    isLiked?: boolean | null;
 }

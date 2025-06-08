@@ -8,7 +8,7 @@ function ModifyPage() {
 
     // 리뷰 정보 가져오기
     const { data } = useQuery({
-        queryKey: ["review", rid],
+        queryKey: ["review", Number(rid)],
         queryFn: () => getReview(Number(rid))
     });
     console.log(data?.data)

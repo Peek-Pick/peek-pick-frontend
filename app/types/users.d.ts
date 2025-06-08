@@ -1,15 +1,15 @@
-export interface quick_stats {
-    wishlisted_count: number;
-    review_count: number;
-    coupon_count: number;
-    barcode_history_count: number;
+export interface quickStats {
+    wishlistedCount: number;
+    reviewCount: number;
+    couponCount: number;
+    barcodeHistoryCount: number;
 }
 
 export interface MyPageResponseDTO {
-    profile_img_url: string;
+    profileImgUrl: string;
     nickname: string;
     point: number;
-    quick_stats: quick_stats;
+    quickStats: quick_stats;
 }
 
 export interface ProfileReadDTO {
@@ -25,9 +25,10 @@ export interface ProfileReadDTO {
     tagIdList: number[];
 }
 
-// export interface ProfileEditDTO {
-//     nickname: string;
-//     password?: string;
-//     profileImgUrl: string;
-//     tagIdList: number[];
-// }
+// admin
+export interface UsersListDTO {
+    userId: number;
+    email: string;
+    isSocial: string;
+    status: string;
+}

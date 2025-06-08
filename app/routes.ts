@@ -58,11 +58,13 @@ export default [
         route("inquiries/:id/edit",   "routes/inquiries/editPage.tsx"),
 
         // 지도
-        route("map",   "routes/map/kakaoMapPage.tsx"),
+        route("map", "routes/map/mapPage.tsx"),
 
         // 검색
         // route("search", "routes/search/searchPage.tsx"),
 
+        // 내역
+        route("barcode/history", "routes/barcode/barcodeHistoryPage.tsx"),
 
     ]),
 
@@ -104,11 +106,11 @@ export default [
 
         // 어드민 유저
         route("users/list",       "routes/admin/users/adminUsersListPage.tsx"), // 목록
-        // route("users/:id",        "routes/admin/users/detailPage.tsx"), // 상세
+        route("users/detail",        "routes/admin/users/auDetailPage.tsx"), // 상세
 
         // 어드민 리뷰
-        // route("reviews/list",       "routes/admin/reviews/listPage.tsx"), // 목록
-        // route("reviews/:id",        "routes/admin/reviews/detailPage.tsx"), // 상세
+        route("reviews/list",       "routes/admin/reviews/listPage.tsx"), // 목록
+        route("reviews/:rid",        "routes/admin/reviews/readPage.tsx"), // 상세
 
     ])
   

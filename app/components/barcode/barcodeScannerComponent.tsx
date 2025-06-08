@@ -4,7 +4,7 @@ import ModalComponent from "~/components/common/modalComponent";
 import {useNavigate} from "react-router-dom";
 import {ChevronLeft} from "lucide-react";
 import {scanBarcode} from "~/api/barcodeAPI";
-import BarcodeAddRequest from "~/components/barcode/BarcodeAddRequest";
+import BarcodeAddRequest from "~/components/barcode/barcodeAddRequest";
 
 const BarcodeScannerComponent = () => {
     const videoRef = useRef<HTMLVideoElement>(null);

@@ -45,7 +45,7 @@ function ProductListPage() {
         enabled: productId !== null,
         getNextPageParam: (lastPage) => {
             console.log(lastPage)
-            const currentPage = lastPage.data.pageable.page_number;
+            const currentPage = lastPage.data.pageable.pageNumber;
             const isLast = lastPage.data.last;
             return isLast ? undefined : currentPage + 1;
         }

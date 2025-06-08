@@ -64,15 +64,15 @@ export default function SignupTagComponent() {
                             <div className="flex flex-wrap gap-2">
                                 {tagList.map(tag => (
                                     <button
-                                        key={tag.tag_name}
-                                        onClick={() => selectTag(tag.tag_id)}
+                                        key={tag.tagName}
+                                        onClick={() => selectTag(tag.tagId)}
                                         className={`px-3 py-1 rounded-full border text-sm shadow transition
-                                        ${tags.includes(tag.tag_id)
+                                        ${tags.includes(tag.tagId)
                                             ? "bg-blue-500 text-white"
                                             : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                                         }`}
                                     >
-                                        {tag.tag_name}
+                                        {tag.tagName}
                                     </button>
                                 ))}
                             </div>

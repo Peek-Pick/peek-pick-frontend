@@ -7,6 +7,7 @@ import { useTagSelector } from "~/hooks/tags/useTagSelector";
 import { Rating } from "~/components/reviews/rating/rating"
 import Swal from "sweetalert2"
 import '~/util/customSwal.css'
+import TextareaAutosize from "react-textarea-autosize";
 
 interface AddProps {
     product?: ProductDetailDTO;
@@ -20,8 +21,11 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
     const [images, setImages] = useState<File[]>([]);
     const navigate = useNavigate();
 
+    // 무한 호출 방지용 useState
+    const [initSelected] = useState<number[]>([]);
+
     // 선택된 태그들
-    const {selectedTags, toggleTag, groupedTags} = useTagSelector();
+    const {selectedTags, toggleTag, groupedTags} = useTagSelector(initSelected);
 
     // 리뷰 추가 뮤테이션
     const addMutation = useMutation({
@@ -50,7 +54,7 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
 
         // 1) 리뷰 데이터(JSON)만 객체로 추출
         const review: ReviewAddDTO = {
-            productId: product!.product_id,
+            productId: product!.productId,
             score: Number(formRef.current?.score.value),
             comment: formRef.current?.comment.value,
             tagIdList: selectedTags,
@@ -94,15 +98,10 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
     return (
         <section className="py-12">
             <div className="max-w-3xl mx-auto px-4 sm:px-6 md:px-8">
-                {/* 제목 */}
-                <h2 className="font-manrope font-bold text-4xl sm:text-4xl md:text-4xl text-center text-gray-900 mb-6">
-                    Write Review
-                </h2>
-
                 {/* 상품 이미지 + 정보 */}
                 <div className="flex flex-col items-center mb-8">
                     <img
-                        src={product?.img_url || "/example.jpg"}
+                        src={product?.imgUrl || "/example.jpg"}
                         alt={product?.name || "상품 이미지"}
                         className="w-40 h-40 sm:w-40 sm:h-40 md:w-40 md:h-40 rounded-lg object-cover mb-"
                     />
@@ -113,7 +112,7 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
 
                 {/* 별점 선택 */}
                 <div className="text-center mb-8">
-                    <h3 className="font-manrope font-bold text-lg sm:text-xl text-gray-800 mb-4">
+                    <h3 className="font-manrope font-bold text-lg sm:text-xl text-gray-700 mb-4">
                         상품은 어떠셨나요?
                     </h3>
                     <div className="flex justify-center space-x-2">
@@ -141,12 +140,12 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
                         <input type="hidden" name="score" value={score} />
 
                         {/* 코멘트 */}
-                        <textarea
+                        <TextareaAutosize
                             name="comment"
-                            rows={6}
-                            required
+                            minRows={6}
+                            maxRows={15}
                             placeholder="솔직한 상품 리뷰를 남겨주세요"
-                            className="w-full border border-gray-300 rounded-md p-3 text-base sm:text-base focus:outline-none focus:ring-2 focus:ring-gray-300"
+                            className="w-full border text-gray-600 border-gray-300 rounded-md p-3 text-base sm:text-base focus:outline-none focus:ring-2 focus:ring-gray-300"
                         />
 
                         {/* 태그 선택 */}
@@ -166,17 +165,17 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
                                              style={{scrollbarWidth: "none", msOverflowStyle: "none"}}>
                                             {tagList.map(tag => (
                                                 <button
-                                                    key={tag.tag_id}
+                                                    key={tag.tagId}
                                                     type="button"
-                                                    onClick={() => toggleTag(tag.tag_id)}
-                                                    className={`whitespace-nowrap px-4 py-2 text-sm font-semibold rounded-full border transition-colors
+                                                    onClick={() => toggleTag(tag.tagId)}
+                                                    className={`whitespace-nowrap px-3 py-1 text-sm sm:text-sm rounded-full border transition-colors
                                                         ${
-                                                        selectedTags.includes(tag.tag_id)
-                                                            ? "bg-emerald-100 text-emerald-700 border-emerald-300"
-                                                            : "bg-gray-50 text-gray-600 border-gray-400"
+                                                        selectedTags.includes(tag.tagId)
+                                                            ? "bg-emerald-50 text-emerald-500 border-emerald-200"
+                                                            : "bg-gray-100 text-gray-500 border-gray-400"
                                                     }`}
                                                 >
-                                                    {tag.tag_name}
+                                                    {tag.tagName}
                                                 </button>
                                             ))}
                                         </div>
@@ -235,7 +234,7 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
                             type="submit"
                             disabled={addMutation.isPending}
                             className={`
-                                w-full py-3 font-semibold rounded-md text-base sm:text-base transition-colors
+                                w-full px-4 py-2 font-medium rounded-md text-sm sm:text-sm transition-colors
                                 ${addMutation.isPending
                                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                                 : "bg-emerald-400 text-white hover:bg-emerald-600"}

@@ -44,7 +44,7 @@ export default function DetailPage() {
     return (
         <>
             <DetailComponent product={data} />
-            <PreviewComponent barcode={barcode!} reviewNum={data.review_count!}></PreviewComponent>
+            <PreviewComponent barcode={barcode!} reviewNum={data.reviewCount!}></PreviewComponent>
 
             <BottomNavComponent/>
         </>
