@@ -7,6 +7,7 @@ import { useProfileImageUpload } from '~/hooks/users/useProfileImageUpload';
 import { PasswordChangeSection } from '~/components/users/passwordChangeSection'
 import { useNicknameChange } from '~/hooks/users/useNicknameChange';
 import { useMyPageEdit } from '~/hooks/users/useMyPageEdit';
+import {getCountryName} from "~/util/countryUtils";
 
 export default function MyPageEditComponent() {
 
@@ -125,7 +126,7 @@ export default function MyPageEditComponent() {
                             <label className="text-sm font-medium text-gray-600">Nationality</label>
                             <input
                                 type="text"
-                                value={profile.nationality}
+                                value={getCountryName(profile.nationality)}
                                 disabled
                                 className="w-full bg-gray-100 border rounded px-4 py-2 cursor-not-allowed"
                             />

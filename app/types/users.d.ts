@@ -25,10 +25,34 @@ export interface ProfileReadDTO {
     tagIdList: number[];
 }
 
-// admin
+// ========= Admin =========
 export interface UsersListDTO {
     userId: number;
     email: string;
-    isSocial: string;
+    isSocial: boolean;
     status: string;
+    banUntil?: string;
+}
+
+export interface UsersDetailDTO {
+    nickname: string;
+    email: string;
+    profileImgUrl: string;
+    isSocial: boolean;
+    gender: string;
+    nationality: string;
+    birthDate: string;
+    status: string;
+    tagIdList: number[];
+    regDate: string;
+}
+
+export interface UpdateStatus {
+    status: "ACTIVE" | "BANNED" | "DELETED";
+    banUntil?: string; // YYYY-MM-DD
+}
+
+export interface UpdateUserStatus {
+    userId: number;
+    updateStatus: UpdateStatus;
 }
