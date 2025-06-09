@@ -71,7 +71,7 @@ export default [
     // admin
     route("/admin", "layout/adminLayout.tsx", [
         // 로그인
-        //route('/login', 'routes/auth/loginPage.tsx'),
+        route('login', 'routes/admin/auth/loginPage.tsx'),
         
         //관리자 대시보드
         route("dashboard", "routes/admin/dashboardPage.tsx"),
