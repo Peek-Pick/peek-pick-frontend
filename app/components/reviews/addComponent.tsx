@@ -31,8 +31,20 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
     const addMutation = useMutation({
         mutationFn: (formData: FormData) => addReview(formData),
         onSuccess: () => {
-            navigate(`/reviews/product/${product?.barcode}`);
-        },
+            Swal.fire({
+                title: "추가가 완료되었습니다",
+                icon: "success",
+                confirmButtonText: "확인",
+                customClass: {
+                    popup: 'custom-popup',
+                    title: 'custom-title',
+                    actions: 'custom-actions',
+                    confirmButton: 'custom-confirm-button',
+                }
+            }).then(() => {
+                navigate(`/reviews/product/${product?.barcode}`);
+            });
+        }
     });
 
     // 이미지 처리
@@ -60,8 +72,6 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
             tagIdList: selectedTags,
         };
 
-        console.log(JSON.stringify(review));
-
         // 2) FormData 직접 생성
         const formData = new FormData();
         formData.append(
@@ -76,18 +86,6 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
 
         // 4) 전송
         addMutation.mutate(formData);
-
-        Swal.fire({
-            title: "추가가 완료되었습니다",
-            icon: "success",
-            confirmButtonText: "확인",
-            customClass: {
-                popup: 'custom-popup',
-                title: 'custom-title',
-                actions: 'custom-actions',
-                confirmButton: 'custom-confirm-button',
-            }
-        })
     };
 
     if (isLoading)

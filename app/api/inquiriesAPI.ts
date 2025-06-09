@@ -80,3 +80,15 @@ export function uploadImages(
         },
     });
 }
+
+/**
+ * 문의 이미지 삭제
+ */
+export async function deleteImages(inquiryId: number, urls: string[]) {
+    await axiosInstance.delete(`inquiries/${inquiryId}/images`, {
+        data: { urls },
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+}

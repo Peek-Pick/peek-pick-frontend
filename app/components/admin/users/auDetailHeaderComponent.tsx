@@ -1,14 +1,14 @@
 
 interface HeaderProps {
     backgroundProfile: string;
-    // avatarImage: string;
+    avatarImage: string;
     name: string;
     email: string;
 }
 
 const AuDetailHeaderComponent: React.FC<HeaderProps> = ({
                                            backgroundProfile,
-                                           // avatarImage,
+                                           avatarImage,
                                            name,
                                            email,
                                        }) => {
@@ -27,7 +27,7 @@ const AuDetailHeaderComponent: React.FC<HeaderProps> = ({
             >
                 <div className="flex flex-col md:flex-row items-center text-center md:text-left w-full">
                     <img
-                        src="/basicImg.jpg"
+                        src={`http://localhost/${avatarImage}`}
                         alt="Avatar"
                         className="w-[80px] h-[80px] rounded-[15px] md:mr-[22px]"
                     />

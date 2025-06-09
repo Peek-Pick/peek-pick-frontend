@@ -1,6 +1,6 @@
 import ConfirmModalComponent from "~/components/common/ConfirmModalComponent";
 import { useNavigate } from "react-router-dom";
-import { type FormEvent, useState } from "react";
+import { useState } from "react";
 import type { InquiryRequestDTO } from "~/types/inquiries";
 import { createInquiry } from "~/api/inquiriesAPI";
 
@@ -43,7 +43,7 @@ function BarcodeAddRequest({ barcode, onClose }: BarcodeAddRequestProps) {
 
     return (
         <ConfirmModalComponent
-            message={"해당 상품 정보가 없습니다.\n관리자에게 추가 요청하시겠습니까?"}
+            message={`바코드 번호: ${barcode}\n상품 정보가 없습니다.\n바코드 번호를 다시 한 번 확인해주세요!\n\n관리자에게 추가 요청하시겠습니까?`}
             confirmText={loading ? "처리 중..." : "Yes"}
             cancelText="No"
             onConfirm={handleConfirm}

@@ -18,12 +18,10 @@ export default function PreviewComponent({ barcode, reviewNum }: PreviewProps) {
 
     // barcode로 productId 받아오기
     useEffect(() => {
-        if (!barcode) return;
-
         getProductIdByBarcode(barcode)
             .then((response) => {
                 setProductId(Number(response.data));
-                console.log(response.data)})
+            });
     }, [barcode]);
 
     // 상품별 리뷰 3개 받아오기
@@ -104,7 +102,7 @@ function ReviewItem({ review, productId }: ReviewItemProps) {
             {/* 작성자 정보와 작성일*/}
             <div className="flex sm:items-center flex-col min-[400px]:flex-row justify-between gap-5 mb-3">
                 <div className="flex items-center gap-3">
-                    <img src={review.profileImageUrl ? `http://localhost/s_${review.profileImageUrl}` : "/default.png"}
+                    <img src={review.profileImageUrl ? `http://localhost/${review.profileImageUrl}` : "/default.png"}
                          alt="profile image" className="w-14 h-14 rounded-full object-cover"/>
                     <h6 className="font-semibold text-md leading-8 text-gray-600">{review.nickname ?? "테스트"}</h6>
                 </div>
@@ -180,15 +178,15 @@ function ReviewItem({ review, productId }: ReviewItemProps) {
         </div>
             {review.isHidden && !showHidden && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center rounded-md z-10">
-                    {/* 반투명 + 블러 효과 */}
-                    <div className="absolute inset-0 bg-black/20 backdrop-blur-sm rounded-md"></div>
-                    <div className="relative flex flex-col items-center">
-                        <p className="mb-3 text-gray-100 font-medium">신고된 리뷰입니다.</p>
+                    <div className="absolute inset-0 bg-yellow-100/50 backdrop-blur-md rounded-md border border-yellow-300 shadow-inner"></div>
+                    <div className="relative flex flex-col items-center text-center px-4">
+                        <span className="text-3xl mb-2">🙈</span>
+                        <p className="mb-3 text-yellow-800 font-semibold">이 리뷰는 숨겨졌어요!</p>
                         <button
                             onClick={() => setShowHidden(true)}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+                            className="px-4 py-2 font-semibold bg-yellow-400 text-white rounded-full hover:bg-yellow-500 transition-all shadow-md"
                         >
-                            열람하기
+                            살짝 보기 👀
                         </button>
                     </div>
                 </div>

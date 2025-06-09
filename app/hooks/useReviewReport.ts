@@ -4,14 +4,14 @@ import { useState } from "react";
 import Swal from "sweetalert2"
 import '~/util/customSwal.css'
 
-enum ReportReason {
+export enum ReportReason {
     POLITICS = "POLITICS",
     HATE = "HATE",
     DEFAMATION = "DEFAMATION",
     PROFANITY = "PROFANITY",
 }
 
-const ReportReasonDescriptions: Record<ReportReason, string> = {
+export const ReportReasonDescriptions: Record<ReportReason, string> = {
     [ReportReason.POLITICS]: "정치",
     [ReportReason.HATE]: "혐오",
     [ReportReason.DEFAMATION]: "비방",
