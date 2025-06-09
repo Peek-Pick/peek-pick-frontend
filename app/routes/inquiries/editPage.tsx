@@ -7,12 +7,15 @@ import type {
 import { fetchInquiry, updateInquiry, uploadImages } from "~/api/inquiriesAPI";
 import LoadingComponent from "~/components/common/loadingComponent";
 import EditComponent from "~/components/inquiries/editComponent";
+import BottomNavComponent from "~/components/main/bottomNavComponent";
+import ModalComponent from "~/components/common/modalComponent";
 
 function EditPage() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const [data, setData] = useState<InquiryResponseDTO | null>(null);
     const [loading, setLoading] = useState(true);
+    const [showAuthModal, setShowAuthModal] = useState(false);
 
     useEffect(() => {
         if (!id) return;
@@ -22,7 +25,10 @@ function EditPage() {
             })
             .catch((err) => {
                 console.error("문의 조회 중 오류:", err);
-                // 필요 시 에러 화면 처리
+                // 500 이거나 권한 관련 에러면 모달 띄우기
+                if (err.response?.status === 500) {
+                    setShowAuthModal(true);
+                }
             })
             .finally(() => {
                 setLoading(false);
@@ -33,28 +39,48 @@ function EditPage() {
         if (!id) return;
         setLoading(true);
         try {
-            // 텍스트 + 기존 imgUrls만 서버로 보냄
             await updateInquiry(+id, dto);
-
-            // 새로 선택된 파일이 있으면 업로드
             if (files && files.length > 0) {
                 await uploadImages(+id, files);
             }
-
             navigate("/inquiries/list");
-        } catch (err) {
+        } catch (err: any) {
             console.error("문의 수정 중 오류:", err);
-            alert("문의 수정에 실패했습니다.");
+            if (err.response?.status === 500) {
+                setShowAuthModal(true);
+            } else {
+                alert("문의 수정에 실패했습니다.");
+            }
         } finally {
             setLoading(false);
         }
     }
 
-    if (loading || !data) {
+    // 모달 확인 시 이전 페이지로 돌아가기
+    const handleModalClose = () => {
+        setShowAuthModal(false);
+        navigate(-1);
+    };
+
+    if (loading || (!data && !showAuthModal)) {
         return <LoadingComponent isLoading={true} />;
     }
 
-    return <EditComponent initialData={data} onSubmit={handleSubmit} />;
+    return (
+        <div className="p-4">
+            {data && <EditComponent initialData={data} onSubmit={handleSubmit} />}
+            <BottomNavComponent />
+            {/* 임시 footer 공간 */}
+            <div className="h-20" />
+
+            {showAuthModal && (
+                <ModalComponent
+                    message={"권한이 없습니다."}
+                    onClose={handleModalClose}
+                />
+            )}
+        </div>
+    );
 }
 
 export default EditPage;

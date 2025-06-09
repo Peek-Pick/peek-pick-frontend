@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import type { InquiryRequestDTO } from "~/types/inquiries";
 import { createInquiry, uploadImages } from "~/api/inquiriesAPI";
 import AddComponent from "~/components/inquiries/addComponent";
+import BottomNavComponent from "~/components/main/bottomNavComponent";
 
 function AddPage() {
     const navigate = useNavigate();
@@ -30,7 +31,12 @@ function AddPage() {
         }
     }
 
-    return <AddComponent onSubmit={handleSubmit} />; // 변경: props로 handleSubmit 전달
+    return (
+        <div className="p-4">
+            <AddComponent onSubmit={handleSubmit} />
+            <BottomNavComponent/>
+        </div>
+    );
 }
 
 export default AddPage;
