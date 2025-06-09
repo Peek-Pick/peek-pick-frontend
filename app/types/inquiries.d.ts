@@ -20,12 +20,13 @@ export interface InquiryRequestDTO {
 export interface InquiryResponseDTO {
     inquiryId: number;
     userId: number;
+    userNickname: string;
     title: string;
     content: string;
     type: InquiryType;
     status: InquiryStatus;
     regDate: string;
-    updDate: string;
+    modDate: string;
     imgUrls: string[];
 }
 
