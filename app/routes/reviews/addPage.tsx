@@ -11,7 +11,6 @@ function AddPage() {
         queryKey: ["productDetail", barcode],
         queryFn: () => getProductDetail(barcode!)
     });
-    console.log(productDetail)
 
     return (
         <div>

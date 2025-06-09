@@ -43,7 +43,6 @@ export default function ModifyComponent({ review }: ModifyProps ) {
         const deleteTagIds = initialTagIds.filter(id => !selSet.has(id));
         const newTagIds = selectedTags.filter(id => !initSet.has(id));
 
-        console.log("deleteTaIds: {}, newTagIds: {}", deleteTagIds, newTagIds)
         return { deleteTagIds, newTagIds };
     }, [initialTagIds, selectedTags]);
 
@@ -123,7 +122,6 @@ export default function ModifyComponent({ review }: ModifyProps ) {
             deleteTagIds,
             newTagIds
         };
-        console.log(payload)
 
         const formData = new FormData();
         formData.append('review', new Blob([JSON.stringify(payload)], { type: 'application/json' }));

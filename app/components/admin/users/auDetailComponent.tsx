@@ -7,7 +7,7 @@ function AuDetailComponent() {
         <div className="flex flex-col">
             <AuDetailHeaderComponent
                 backgroundProfile="bg-white/80 dark:bg-gradient-to-br dark:from-white/20 dark:to-transparent"
-                // avatarImage="/basicImg"
+                avatarImage="/basicImg"
                 name="Esthera Jackson"
                 email="esthera@simmmple.com"
             />

@@ -29,10 +29,7 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
 
     // 리뷰 추가 뮤테이션
     const addMutation = useMutation({
-        mutationFn: (formData: FormData) => addReview(formData),
-        onSuccess: () => {
-            navigate(`/reviews/product/${product?.barcode}`);
-        },
+        mutationFn: (formData: FormData) => addReview(formData)
     });
 
     // 이미지 처리
@@ -60,8 +57,6 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
             tagIdList: selectedTags,
         };
 
-        console.log(JSON.stringify(review));
-
         // 2) FormData 직접 생성
         const formData = new FormData();
         formData.append(
@@ -87,7 +82,8 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
                 actions: 'custom-actions',
                 confirmButton: 'custom-confirm-button',
             }
-        })
+        });
+        navigate(`/reviews/product/${product?.barcode}`);
     };
 
     if (isLoading)
