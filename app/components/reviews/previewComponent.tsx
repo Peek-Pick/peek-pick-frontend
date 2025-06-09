@@ -178,15 +178,15 @@ function ReviewItem({ review, productId }: ReviewItemProps) {
         </div>
             {review.isHidden && !showHidden && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center rounded-md z-10">
-                    {/* 반투명 + 블러 효과 */}
-                    <div className="absolute inset-0 bg-black/20 backdrop-blur-sm rounded-md"></div>
-                    <div className="relative flex flex-col items-center">
-                        <p className="mb-3 text-gray-100 font-medium">신고된 리뷰입니다.</p>
+                    <div className="absolute inset-0 bg-yellow-100/50 backdrop-blur-md rounded-md border border-yellow-300 shadow-inner"></div>
+                    <div className="relative flex flex-col items-center text-center px-4">
+                        <span className="text-3xl mb-2">🙈</span>
+                        <p className="mb-3 text-yellow-800 font-semibold">이 리뷰는 숨겨졌어요!</p>
                         <button
                             onClick={() => setShowHidden(true)}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+                            className="px-4 py-2 font-semibold bg-yellow-400 text-white rounded-full hover:bg-yellow-500 transition-all shadow-md"
                         >
-                            열람하기
+                            살짝 보기 👀
                         </button>
                     </div>
                 </div>

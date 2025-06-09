@@ -29,7 +29,22 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
 
     // 리뷰 추가 뮤테이션
     const addMutation = useMutation({
-        mutationFn: (formData: FormData) => addReview(formData)
+        mutationFn: (formData: FormData) => addReview(formData),
+        onSuccess: () => {
+            Swal.fire({
+                title: "추가가 완료되었습니다",
+                icon: "success",
+                confirmButtonText: "확인",
+                customClass: {
+                    popup: 'custom-popup',
+                    title: 'custom-title',
+                    actions: 'custom-actions',
+                    confirmButton: 'custom-confirm-button',
+                }
+            }).then(() => {
+                navigate(`/reviews/product/${product?.barcode}`);
+            });
+        }
     });
 
     // 이미지 처리
@@ -71,19 +86,6 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
 
         // 4) 전송
         addMutation.mutate(formData);
-
-        Swal.fire({
-            title: "추가가 완료되었습니다",
-            icon: "success",
-            confirmButtonText: "확인",
-            customClass: {
-                popup: 'custom-popup',
-                title: 'custom-title',
-                actions: 'custom-actions',
-                confirmButton: 'custom-confirm-button',
-            }
-        });
-        navigate(`/reviews/product/${product?.barcode}`);
     };
 
     if (isLoading)
