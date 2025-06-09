@@ -1,13 +1,13 @@
-import ListComponent from "~/components/admin/reviews/listComponent";
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import type { PagingResponse } from "~/types/common";
-import { getAdminReviewList } from "~/api/reviews/adminReviewAPI";
-import PaginationComponent from "~/components/common/PaginationComponent";
-import FilterBar from "~/components/admin/reviews/reviewFilterBar";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStar } from "@fortawesome/free-solid-svg-icons";
 import { useSearchParams } from "react-router";
+import { useState } from "react";
+import { useQuery} from "@tanstack/react-query";
+import type { PagingResponse } from "~/types/common";
+import { getAdminReviewReportList } from "~/api/reviews/adminReviewAPI";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFlag } from "@fortawesome/free-solid-svg-icons";
+import FilterBar from "~/components/admin/reports/reportFilterBar";
+import ListComponent from "~/components/admin/reports/listComponent";
+import PaginationComponent from "~/components/common/PaginationComponent";
 
 function ListPage() {
     const [searchParamsUrl] = useSearchParams();
@@ -34,9 +34,9 @@ function ListPage() {
     };
 
     // 리뷰 리스트  - 페이지별
-    const { data, isLoading, isError } = useQuery<PagingResponse<AdminReviewSimpleDTO>>({
-        queryKey: ["adminReviewList", page, searchParams],
-        queryFn: () => getAdminReviewList(page, searchParams.category, searchParams.keyword),
+    const { data, isLoading, isError } = useQuery<PagingResponse<AdminReviewReportDTO>>({
+        queryKey: ["adminReviewReportList", page, searchParams],
+        queryFn: () => getAdminReviewReportList(page, searchParams.category, searchParams.keyword),
     });
 
     if (isLoading) return <div className="p-4 text-gray-600">Loading...</div>;
@@ -45,7 +45,7 @@ function ListPage() {
     return (
         <div>
             <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                <FontAwesomeIcon icon={faStar} /> 리뷰 관리
+                <FontAwesomeIcon icon={faFlag} /> 리뷰 신고 관리
             </h3>
 
             {/* 검색 바 */}
@@ -72,4 +72,4 @@ function ListPage() {
     );
 }
 
-export default ListPage;
+export default ListPage

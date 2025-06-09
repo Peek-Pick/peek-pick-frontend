@@ -50,13 +50,11 @@ export const getProductReviews = async (productId: number, page: number, sortBy:
     params.append("sort", `${sortBy},desc`);
     params.append("sort", "regDate,desc");
 
-    console.log(params.toString())
     return await axiosInstance.get(`${host}?${params.toString()}`);
 };
 
 export const getProductReviewsCount = async (productId: number): Promise<number> => {
     const response = await axiosInstance.get(`${host}/count/${productId}`);
-    console.log(response);
     return response.data;
 };
 

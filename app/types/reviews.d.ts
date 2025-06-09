@@ -75,6 +75,16 @@ interface AdminReviewDetailDTO {
     nickname: string;
     profileImageUrl: string;
     recommendCnt: number;
+    reportCnt: number;
     isHidden: boolean;
     name: stinrg;
+}
+
+interface AdminReviewReportDTO {
+    reviewReportId: number;
+    userId: number;
+    reviewId: number;
+    reviewerId: number
+    reason: ReportReason;
+    regDate: string;
 }

@@ -1,95 +1,118 @@
-import type {TagDTO} from "~/types/tag";
+import AuDetailHeaderComponent from "~/components/admin/users/auDetailHeaderComponent";
+import ReviewDetailInfo from "~/components/admin/reviews/reviewDetailInfo";
+import ReviewMetaInfo from "~/components/admin/reviews/reviewMetaInfo";
+import { useLocation, useNavigate } from "react-router-dom";
+import { deleteAdminReview, toggleAdminReview } from "~/api/reviews/adminReviewAPI";
+import { useSearchParams } from "react-router";
 
 export interface AdminReviewDetailProps {
     data: AdminReviewDetailDTO;
 }
 
 export default function ReadComponent({ data }: AdminReviewDetailProps) {
-    return (
-        <div className="bg-white shadow-md rounded-lg p-6 text-gray-800 max-w-4xl mx-auto">
-            <h2 className="text-xl font-bold mb-6 border-b pb-2">리뷰 상세 정보</h2>
+    const navigate = useNavigate();
 
-            {/* 유저 정보 */}
-            <div className="flex items-center gap-4 mb-6">
-                <img
-                    src={`http://localhost/s_${data.profileImageUrl}`}
-                    alt="프로필 이미지"
-                    className="w-12 h-12 rounded-full object-cover border"
-                />
-                <div>
-                    <p className="text-lg font-semibold">{data.nickname}</p>
-                    <p className="text-sm text-gray-500">User ID: {data.userId}</p>
+    // 현재 URL 정보 - 페이지, 필터링
+    const location = useLocation();
+
+    // 이전 화면 (reviewList 또는 reportList)
+    const [searchParams] = useSearchParams();
+    const from = searchParams.get("from") || "reviewList";
+
+    // 목록으로 버튼 경로 설정
+    const backToListPath =
+        from === 'reportList'
+            ? `/admin/reports/list${location.search}`
+            : `/admin/reviews/list${location.search}`;
+
+    // 리뷰 삭제 핸들러
+    const handleDelete = async () => {
+        const confirmed = window.confirm("정말 이 리뷰를 삭제하시겠습니까?");
+        if (!confirmed) return;
+
+        try {
+            await deleteAdminReview(data.reviewId);
+            alert("삭제가 완료되었습니다.");
+            navigate(backToListPath);
+        } catch (error) {
+            alert("삭제 중 오류가 발생했습니다.");
+            console.error(error);
+        }
+    };
+
+    // 숨김 여부 토글 핸들러
+    const handleToggleHidden = async () => {
+        const confirmed = window.confirm(
+            data.isHidden
+                ? "해당 리뷰의 숨김을 해제하시겠습니까?"
+                : "해당 리뷰를 숨기시겠습니까?"
+        );
+        if (!confirmed) return;
+
+        try {
+            await toggleAdminReview(data.reviewId);
+            alert("숨김 상태를 변경하였습니다.");
+            navigate(0);
+        } catch (error) {
+            alert("숨김 상태 변경 중 오류가 발생했습니다.");
+            console.error(error);
+        }
+    };
+
+    return (
+        <div className="flex flex-col min-h-screen px-4 py-6 bg-white dark:bg-gray-900">
+            {/* 상단 사용자 정보 */}
+            <AuDetailHeaderComponent
+                backgroundProfile="/BackgroundCard1.png"
+                avatarImage={data.profileImageUrl
+                    ? `http://localhost/${data.profileImageUrl}`
+                    : `http://localhost/basicImg.jpg`}
+                name={data.nickname}
+                email={`userId ${data.userId}`}
+            />
+
+            {/* 리뷰 정보 + 리뷰 내용 가로 배치 */}
+            <div className="flex flex-col xl:flex-row gap-6 flex-grow mt-6">
+                <div className="w-full xl:w-1/2">
+                    <ReviewMetaInfo
+                        title="리뷰 정보"
+                        reviewId={data.reviewId}
+                        productId={data.productId}
+                        productName={data.name}
+                        recommendCnt={data.recommendCnt}
+                        reportCnt={data.reportCnt}
+                        isHidden={data.isHidden}
+                        regDate={new Date(data.regDate).toLocaleString()}
+                        modDate={new Date(data.modDate).toLocaleString()}
+                        onToggleHidden={handleToggleHidden}
+                    />
+                </div>
+                <div className="w-full xl:w-1/2">
+                    <ReviewDetailInfo
+                        title="리뷰 내용"
+                        score={data.score}
+                        comment={data.comment}
+                        images={data.images}
+                        tags={data.tagList}
+                    />
                 </div>
             </div>
 
-            {/* 제품 및 리뷰 정보 */}
-            <div className="space-y-4 mb-6">
-                <InfoCard label="상품명" value={data.name} />
-                <InfoCard label="제품 ID" value={data.productId.toString()} />
-                <InfoCard label="평점" value={`${data.score} / 5`} />
-                <InfoCard label="추천 수" value={`${data.recommendCnt}회`} />
-                <InfoCard label="숨김 여부" value={data.isHidden ? "숨김" : "표시"} />
-                <InfoCard label="등록일" value={new Date(data.regDate).toLocaleString()} />
-                <InfoCard label="수정일" value={new Date(data.modDate).toLocaleString()} />
-                <InfoCard label="코멘트" value={data.comment || "작성된 코멘트가 없습니다."} isDescription />
+            {/* 하단 버튼 영역 */}
+            <div className="flex flex-wrap justify-end gap-2 mt-6">
+                <button
+                    onClick={handleDelete}
+                    className="bg-red-500 hover:bg-red-700 text-white py-1.5 px-4 rounded-lg"
+                >
+                    리뷰 삭제
+                </button>
+                <button
+                    onClick={() => navigate(backToListPath)}
+                    className="bg-gray-300 hover:bg-gray-400 text-gray-800 py-1.5 px-4 rounded-lg"
+                >
+                    목록가기
+                </button>
             </div>
-
-            {/* 이미지 목록 */}
-            {data.images.length > 0 && (
-                <div className="mb-6">
-                    <h3 className="text-sm font-semibold text-gray-500 mb-2">첨부 이미지</h3>
-                    <div className="flex flex-wrap gap-2">
-                        {data.images.map((img: ReviewImgDTO) => (
-                            <img
-                                key={img.imgId}
-                                src={`http://localhost/s_${img.imgUrl}`}
-                                alt={`review-img-${img.imgId}`}
-                                className="w-25 h-25 object-cover rounded-lg border"
-                            />
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            {/* 태그 목록 */}
-            {data.tagList.length > 0 && (
-                <div className="mb-6">
-                    <h3 className="text-sm font-semibold text-gray-500 mb-2">태그</h3>
-                    <div className="flex flex-wrap gap-2">
-                        {data.tagList.map((tag: TagDTO) => (
-                            <span
-                                key={tag.tagId}
-                                className="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-full"
-                            >
-                                #{tag.tagName} ({tag.category})
-                            </span>
-                        ))}
-                    </div>
-                </div>
-            )}
-        </div>
-    );
-}
-
-// ✨ 재사용 가능한 카드 UI 컴포넌트
-function InfoCard({
-                      label,
-                      value,
-                      isDescription = false,
-                  }: {
-    label: string;
-    value: string;
-    isDescription?: boolean;
-}) {
-    return (
-        <div className="bg-white rounded-lg p-5 shadow-sm border border-gray-100">
-            <h3 className="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wide">{label}</h3>
-            <p
-                className={`text-gray-900 ${isDescription ? "whitespace-pre-line leading-relaxed" : "font-medium"}`}
-                style={{ fontSize: isDescription ? "0.9rem" : "1rem" }}
-            >
-                {value}
-            </p>
         </div>
     );
 }
