@@ -7,13 +7,16 @@ interface HeaderProps {
 }
 
 const AuDetailHeaderComponent: React.FC<HeaderProps> = ({
-                                           backgroundProfile, avatarImage,
-                                           name, email,}) => {
+                                           backgroundProfile,
+                                           avatarImage,
+                                           name,
+                                           email,
+                                       }) => {
     return (
         <div className="relative flex flex-col items-center mb-[70px] sm:mb-[205px] md:mb-[75px] px-0">
             {/* 배경 이미지 */}
             <img
-                src={backgroundProfile}
+                src="/BackgroundCard1.png"
                 alt="Profile Background"
                 className="w-full h-[300px] object-cover rounded-[25px]"
             />
@@ -24,7 +27,7 @@ const AuDetailHeaderComponent: React.FC<HeaderProps> = ({
             >
                 <div className="flex flex-col md:flex-row items-center text-center md:text-left w-full">
                     <img
-                        src={avatarImage}
+                        src={`http://localhost/${avatarImage}`}
                         alt="Avatar"
                         className="w-[80px] h-[80px] rounded-[15px] md:mr-[22px]"
                     />
