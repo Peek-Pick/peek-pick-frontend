@@ -98,10 +98,10 @@ export default [
         route("reports/list",       "routes/admin/reports/listPage.tsx"),
 
         // 어드민 상품
-        // route("products/list",       "routes/admin/inquiries/listPage.tsx"),     // 상품 목록
-        // route("products/add",        "routes/admin/inquiries/addPage.tsx"),      // 상품 등록
-        // route("products/:id",        "routes/admin/inquiries/detailPage.tsx"),   // 상품 상세
-        // route("products/:id/edit",   "routes/admin/inquiries/editPage.tsx"),     // 수정
+         route("products/list",       "routes/admin/products/listPage.tsx"),     // 상품 목록
+         route("products/add",        "routes/admin/products/addPage.tsx"),      // 상품 등록
+         route("products/:id",        "routes/admin/products/detailPage.tsx"),   // 상품 상세
+         route("products/:id/edit",   "routes/admin/products/editPage.tsx"),     // 수정
 
         // 어드민 유저
         route("users/list",       "routes/admin/users/adminUsersListPage.tsx"), // 목록

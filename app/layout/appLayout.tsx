@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 // ① 상품 상세 정보를 가져오는 API 함수 import
 import type { ProductDetailDTO } from "~/types/products";
-import { getProductDetail } from "~/api/productsAPI";
+import { getProductDetail } from "~/api/products/productsAPI";
 
 export default function AppLayout() {
     const location = useLocation();

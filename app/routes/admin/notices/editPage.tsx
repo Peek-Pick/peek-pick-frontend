@@ -1,4 +1,6 @@
-import { useState, useEffect } from "react";                  // ← useState, useEffect 임포트
+// src/routes/admin/notices/editPage.tsx
+
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import FormComponent from "~/components/admin/notices/formComponent";
@@ -17,17 +19,16 @@ import Swal from "sweetalert2";
 export default function EditPage() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const [initialData, setInitialData] =
-        useState<NoticeResponseDto | null>(null);
-    const [pendingFiles, setPendingFiles] =
-        useState<FileList | null>(null);
+    const [initialData, setInitialData] = useState<NoticeResponseDto | null>(null);
+    const [pendingFiles, setPendingFiles] = useState<FileList | null>(null);
 
     // 기존 공지 로드
     useEffect(() => {
         if (!id) return;
-        fetchNotice(Number(id)).then(dto => setInitialData(dto));
+        fetchNotice(Number(id)).then((dto) => setInitialData(dto));
     }, [id]);
 
+    // 수정 뮤테이션
     const updateMut = useMutation<
         NoticeResponseDto,
         Error,
@@ -44,10 +45,9 @@ export default function EditPage() {
                         )
                         .catch((e) => {
                             console.error(e);
-                            Swal.fire("이미지 업로드 실패", "", "error")
-                                .then(() =>
-                                    navigate(`/admin/notices/${updated.noticeId}`)
-                                );
+                            Swal.fire("이미지 업로드 실패", "", "error").then(() =>
+                                navigate(`/admin/notices/${updated.noticeId}`)
+                            );
                         });
                 } else {
                     navigate(`/admin/notices/${updated.noticeId}`);
@@ -60,6 +60,7 @@ export default function EditPage() {
         },
     });
 
+    // 삭제 뮤테이션
     const deleteMut = useMutation({
         mutationFn: () => deleteNotice(Number(id)),
         onSuccess: () => navigate("/admin/notices/list"),
@@ -81,31 +82,33 @@ export default function EditPage() {
         }
     };
 
+    const handleCancel = () => navigate(`/admin/notices/${id}`);
+
     return (
         <div className="p-6 max-w-3xl mx-auto">
-            <h1 className="text-2xl font-bold mb-4">
-                공지사항 수정
-            </h1>
-            <div className="flex gap-2 mb-4">
-                <button
-                    className="px-4 py-2 bg-gray-200 rounded"
-                    onClick={() =>
-                        navigate(`/admin/notices/${id}`)
-                    }
-                >
-                    취소
-                </button>
-                <button
-                    className="px-4 py-2 bg-red-200 rounded"
-                    onClick={handleDelete}
-                >
-                    삭제
-                </button>
-            </div>
+            <h1 className="text-2xl font-bold mb-4">공지사항 수정</h1>
             <FormComponent
                 initialData={initialData}
                 submitLabel="수정"
                 onSubmit={handleSubmit}
+                extraActions={
+                    <>
+                        <button
+                            type="button"
+                            onClick={handleCancel}
+                            className="flex items-center gap-1 rounded-md px-4 py-2 text-sm font-medium shadow-sm transition bg-gray-200 hover:bg-gray-300"
+                        >
+                            취소
+                        </button>
+                        <button
+                            type="button"
+                            onClick={handleDelete}
+                            className="flex items-center gap-1 rounded-md px-4 py-2 text-sm font-medium text-red-600 bg-red-200 shadow-sm hover:bg-red-300 transition"
+                        >
+                            삭제
+                        </button>
+                    </>
+                }
             />
         </div>
     );
