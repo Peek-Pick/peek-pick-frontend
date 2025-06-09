@@ -18,12 +18,10 @@ export default function PreviewComponent({ barcode, reviewNum }: PreviewProps) {
 
     // barcode로 productId 받아오기
     useEffect(() => {
-        if (!barcode) return;
-
         getProductIdByBarcode(barcode)
             .then((response) => {
                 setProductId(Number(response.data));
-                console.log(response.data)})
+            });
     }, [barcode]);
 
     // 상품별 리뷰 3개 받아오기
@@ -104,7 +102,7 @@ function ReviewItem({ review, productId }: ReviewItemProps) {
             {/* 작성자 정보와 작성일*/}
             <div className="flex sm:items-center flex-col min-[400px]:flex-row justify-between gap-5 mb-3">
                 <div className="flex items-center gap-3">
-                    <img src={review.profileImageUrl ? `http://localhost/s_${review.profileImageUrl}` : "/default.png"}
+                    <img src={review.profileImageUrl ? `http://localhost/${review.profileImageUrl}` : "/default.png"}
                          alt="profile image" className="w-14 h-14 rounded-full object-cover"/>
                     <h6 className="font-semibold text-md leading-8 text-gray-600">{review.nickname ?? "테스트"}</h6>
                 </div>

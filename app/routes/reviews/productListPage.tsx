@@ -20,7 +20,6 @@ function ProductListPage() {
         getProductIdByBarcode(barcode)
             .then((response) => {
                 setProductId(Number(response.data));
-                console.log(response.data)
             })
     }, [barcode]);
 
@@ -44,7 +43,6 @@ function ProductListPage() {
         initialPageParam: 0,
         enabled: productId !== null,
         getNextPageParam: (lastPage) => {
-            console.log(lastPage)
             const currentPage = lastPage.data.pageable.pageNumber;
             const isLast = lastPage.data.last;
             return isLast ? undefined : currentPage + 1;
@@ -58,7 +56,6 @@ function ProductListPage() {
         queryKey: ["productDetail", barcode],
         queryFn: () => getProductDetail(barcode!)
     });
-    console.log(productDetail)
 
     return (
         <div>

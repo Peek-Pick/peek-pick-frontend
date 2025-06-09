@@ -8,12 +8,12 @@ function ReadPage() {
 
     const reviewId = Number(rid)
 
+    // 리뷰 상세
     const { data , isLoading, isError } = useQuery<AdminReviewDetailDTO>({
         queryKey: ["adminReview", reviewId],
         queryFn: () => getAdminReviewDetail(reviewId),
         enabled:  reviewId !== null,
     });
-    console.log(data)
 
     if (isLoading) return <div className="p-4 text-gray-600">Loading...</div>;
     if (isError || !data) return <div className="p-4 text-red-500">An error occurred</div>;

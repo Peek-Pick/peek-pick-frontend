@@ -94,9 +94,8 @@ export default [
         // route("inquiries/:id",        "routes/admin/inquiries/detailPage.tsx"),  // 문의 상세보기
         // route("inquiries/:id/edit",   "routes/admin/inquiries/editPage.tsx"),
 
-        // 신고
-        // route("reports/list",       "routes/admin/reports/listPage.tsx"),    // 리뷰 신고 목록
-        // route("reports/:id",       "routes/admin/reports/detailPage.tsx"),    // 신고 상세
+        //신고
+        route("reports/list",       "routes/admin/reports/listPage.tsx"),
 
         // 어드민 상품
         // route("products/list",       "routes/admin/inquiries/listPage.tsx"),     // 상품 목록
@@ -109,8 +108,8 @@ export default [
         route("users/detail",        "routes/admin/users/auDetailPage.tsx"), // 상세
 
         // 어드민 리뷰
-        route("reviews/list",       "routes/admin/reviews/listPage.tsx"), // 목록
-        route("reviews/:rid",        "routes/admin/reviews/readPage.tsx"), // 상세
+        route("reviews/list",       "routes/admin/reviews/listPage.tsx"),
+        route("reviews/:rid",        "routes/admin/reviews/readPage.tsx"),
 
     ])
   

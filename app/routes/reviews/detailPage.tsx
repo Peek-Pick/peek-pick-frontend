@@ -11,7 +11,6 @@ function DetailPage() {
         queryKey: ["review", Number(rid)],
         queryFn: () => getReview(Number(rid))
     });
-    console.log(data?.data)
 
     return (
         <div>
