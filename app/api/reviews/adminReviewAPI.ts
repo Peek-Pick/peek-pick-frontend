@@ -1,6 +1,6 @@
 import axiosInstance from "~/instance/axiosInstance";
 
-export const getAdminReviewList = async (page: number, category?: string, keyword?: string) => {
+export const getAdminReviewList = async (page: number, category?: string, keyword?: string, hidden?: boolean) => {
     const params: Record<string, string> = {
         page: String(page),
         sort: "regDate,desc",
@@ -8,6 +8,7 @@ export const getAdminReviewList = async (page: number, category?: string, keywor
 
     if (category) params.category = category;
     if (keyword) params.keyword = keyword;
+    if (hidden !== undefined) params.hidden = String(hidden);
 
     const response = await axiosInstance.get(`admin/reviews`, {params});
     return response.data;
@@ -22,7 +23,7 @@ export const deleteAdminReview = async (reviewId: number) => {
     return await axiosInstance.delete(`admin/reviews/${reviewId}`);
 };
 
-export const getAdminReviewReportList = async (page: number, category?: string, keyword?: string) => {
+export const getAdminReviewReportList = async (page: number, category?: string, keyword?: string, hidden?: boolean) => {
     const params: Record<string, string> = {
         page: String(page),
         sort: "regDate,desc",
@@ -30,6 +31,7 @@ export const getAdminReviewReportList = async (page: number, category?: string, 
 
     if (category) params.category = category;
     if (keyword) params.keyword = keyword;
+    if (hidden !== undefined) params.hidden = String(hidden);
 
     const response = await axiosInstance.get(`admin/reviews/report`, {params});
     return response.data;

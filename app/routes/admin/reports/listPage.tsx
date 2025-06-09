@@ -16,6 +16,7 @@ function ListPage() {
     const initialCategory = searchParamsUrl.get("category") || "all";
     const initialKeyword = searchParamsUrl.get("keyword") || "";
     const initialPage = Number(searchParamsUrl.get("page") || "0");
+    const initialHidden = searchParamsUrl.get("hidden") === "true";
 
     // 필터링 타입과 키워드
     const [category, setCategory] = useState(initialCategory);
@@ -24,19 +25,35 @@ function ListPage() {
     // 페이지 번호
     const [page, setPage] = useState(initialPage);
 
+    // 숨겨진 리뷰만 보여주기
+    const [hidden, setHidden] = useState(initialHidden);
+
+    // 숨겨진 리뷰 체크박스 핸들러
+    const handleHiddenToggle = (value: boolean) => {
+        setHidden(value);
+        setSearchParams({category, keyword, hidden: value,});
+        setPage(0);
+    };
+
     // 실제 쿼리 요청 r값
-    const [searchParams, setSearchParams] = useState({ category: initialCategory, keyword: initialKeyword });
+    const [searchParams, setSearchParams] = useState(
+        {
+            category: initialCategory,
+            keyword: initialKeyword,
+            hidden: initialHidden
+        }
+    );
 
     // 검색 버튼 핸들링
     const handleSearch = () => {
-        setSearchParams({ category, keyword });
+        setSearchParams({ category, keyword, hidden });
         setPage(0);
     };
 
     // 리뷰 리스트  - 페이지별
     const { data, isLoading, isError } = useQuery<PagingResponse<AdminReviewReportDTO>>({
         queryKey: ["adminReviewReportList", page, searchParams],
-        queryFn: () => getAdminReviewReportList(page, searchParams.category, searchParams.keyword),
+        queryFn: () => getAdminReviewReportList(page, searchParams.category, searchParams.keyword, searchParams.hidden),
     });
 
     if (isLoading) return <div className="p-4 text-gray-600">Loading...</div>;
@@ -52,13 +69,14 @@ function ListPage() {
             <FilterBar
                 category={category} setCategory={setCategory}
                 keyword={keyword} setKeyword={setKeyword}
+                hidden={hidden} setHidden={handleHiddenToggle}
                 onSearch={handleSearch}
             />
 
             {/* 검색 결과 리뷰 리스트 */}
             <ListComponent
                 data={data.content} page={page}
-                category={category} keyword={keyword}
+                category={category} keyword={keyword} hidden={hidden}
             />
 
             {/* 페이지네이션 컴포넌트 추가 */}

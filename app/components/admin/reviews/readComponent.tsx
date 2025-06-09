@@ -64,9 +64,7 @@ export default function ReadComponent({ data }: AdminReviewDetailProps) {
             {/* 상단 사용자 정보 */}
             <AuDetailHeaderComponent
                 backgroundProfile="/BackgroundCard1.png"
-                avatarImage={data.profileImageUrl
-                    ? `http://localhost/${data.profileImageUrl}`
-                    : `http://localhost/basicImg.jpg`}
+                avatarImage={data.profileImageUrl}
                 name={data.nickname}
                 email={`userId ${data.userId}`}
             />
