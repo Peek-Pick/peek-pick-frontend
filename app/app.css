@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@tailwind utilities;
+
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
@@ -7,9 +9,16 @@
 
 html,
 body {
+
+  #map {
+    height: 200%;
+    width: 200%;
+  }
+
   @apply bg-white dark:bg-gray-950;
 
   @media (prefers-color-scheme: dark) {
     color-scheme: dark;
   }
+
 }

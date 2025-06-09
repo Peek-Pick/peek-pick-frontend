@@ -1,8 +1,10 @@
-import type {FetchNextPageOptions, InfiniteQueryObserverResult,} from "@tanstack/react-query";
+import type { FetchNextPageOptions, InfiniteQueryObserverResult } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { Rating20 } from "~/components/reviews/rating/rating"
 
 export interface ReviewListComponentProps {
+    reviewCount: number;
     reviewList: ReviewSimpleDTO[];
     fetchNextPage: (options?: FetchNextPageOptions) => Promise<InfiniteQueryObserverResult<any, Error>>;
     hasNextPage: boolean | undefined;
@@ -11,12 +13,14 @@ export interface ReviewListComponentProps {
     isError: boolean;
 }
 
-export default function UserListComponent({reviewList, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError}
+export default function UserListComponent({reviewCount, reviewList, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError}
                                           : ReviewListComponentProps) {
     const navigate = useNavigate()
-
+    
+    // 무한 스크롤 감지 요소
     const bottomRef = useRef<HTMLDivElement | null>(null);
 
+    // 무한 스크롤 다음 페이지 호출
     useEffect(() => {
         if (!bottomRef.current || !hasNextPage) return;
 
@@ -37,78 +41,77 @@ export default function UserListComponent({reviewList, fetchNextPage, hasNextPag
         return () => observer.disconnect();
     }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-    if (isLoading) return <p className="text-center p-4">로딩 중입니다</p>;
-    if (isError) return <p className="text-center p-4 text-red-500">리뷰를 불러오지 못했습니다</p>;
+    if (isLoading)
+        return <p className="text-center p-4 text-base sm:text-lg">로딩 중입니다</p>;
+    if (isError)
+        return
+            <p className="text-center p-4 text-red-500 text-base sm:text-lg">리뷰를 불러오지 못했습니다</p>;
 
     return (
-        <div className="w-full min-h-screen bg-gray-50 p-4">
-            <div className="max-w-md w-full mx-auto bg-white shadow rounded-lg space-y-2">
-                {reviewList.map((review) => (
-                    <div
-                        key={`review-${review.review_id}`}
-                        className="bg-white shadow-md rounded-lg p-4 space-y-2"
-                    >
-                        {/* 상품 정보 */}
-                        <div className="flex items-center space-x-3">
-                            <img
-                                src={'/example.jpg'}
-                                alt="상품 이미지"
-                                className="w-16 h-16 rounded-lg object-cover"
-                            />
-                            <div>
-                                <h2 className="text-sm font-semibold text-gray-900">바나나킥</h2>
-                                <p className="text-sm text-gray-500">농심</p>
-                            </div>
+        <div>
+            <section className="relative">
+                <div className="w-full max-w-7xl px-4 md:px-5 lg-6 mx-auto">
+                    <div className="w-full">
+                        {/* 정렬 탭 */}
+                        <div className="flex justify-between items-center border-t border-b border-gray-200 py-4 mb-2">
+                           <span>
+                                누적 리뷰 <span className="text-red-500 c">{reviewCount}</span>건
+                            </span>
                         </div>
 
-                        {/* 리뷰 별점 + 작성일 */}
-                        <div className="flex justify-between items-center text-xs text-gray-500">
-                            <div className="flex items-center space-x-1">
-                                {Array.from({ length: 5 }).map((_, i) => (
-                                    <span
-                                        key={i}
-                                        className={`text-lg ${
-                                            i < review.score ? "text-yellow-400" : "text-gray-300"
-                                        }`}
+                        {/* 리뷰 카드 */}
+                        {reviewList.map((review) => (
+                            <div className="bg-white rounded-md p-6 shadow-md mb-2" key={review.reviewId}>
+                                {/* 상품 정보 */}
+                                <div className="flex sm:items-center flex-col min-[400px]:flex-row justify-between gap-5 mb-3">
+                                    <div className="flex items-center gap-3">
+                                        <img src={review.imageUrl || "/example.jpg"}
+                                             className="w-20 h-20 rounded-lg object-cover border-2 border-gray-100" alt={"상품정보"}/>
+                                        <h6 className="font-semibold text-md leading-8 text-gray-600">{review.name}</h6>
+                                    </div>
+                                </div>
+
+                                {/* 별점과 작성일 */}
+                                <div className="flex items-center justify-between mb-2">
+                                    <div className="flex items-center gap-2">
+                                        {Array.from({ length: 5 }).map((_, i) => (
+                                            <Rating20 key={i} filled={i < review.score} />
+                                        ))}
+                                    </div>
+                                    <p className="font-normal text-sm sm:text-sm text-gray-400">
+                                        작성일자 {new Date(review.regDate).toLocaleDateString()}
+                                    </p>
+                                </div>
+
+                                {/* 리뷰 텍스트 */}
+                                <p className="line-clamp-4 font-normal text-base sm:text-base leading-7.5 text-gray-600 max-xl:text-justify mb-2">{review.comment}</p>
+
+                                <div className="flex flex-col-2 sm:flex-row items-stretch justify-end gap-4 mt-4 w-full">
+                                    {/* 리뷰 수정하기 버튼 */}
+                                    <button type="button" onClick={() => navigate(`/reviews/modify/${review.reviewId}`)}
+                                        className="w-full sm:flex-1 px-4 py-2 text-sm sm:text-sm rounded-lg bg-emerald-50 text-emerald-600 cursor-pointer font-medium text-center transition-all duration-300 hover:bg-emerald-100 hover:text-emerald-700 min-w-0"
                                     >
-                                        ★
-                                    </span>
-                                ))}
+                                        리뷰 수정하기
+                                    </button>
+
+                                    {/* 리뷰 상세보기 버튼 */}
+                                    <button type="button"  onClick={() => navigate(`/reviews/${review.reviewId}`)}
+                                        className="w-full sm:flex-1 px-4 py-2 text-sm sm:text-sm rounded-lg bg-emerald-50 text-emerald-600 cursor-pointer font-medium text-center transition-all duration-300 hover:bg-emerald-100 hover:text-emerald-700 min-w-0"
+                                    >
+                                        리뷰 상세보기
+                                    </button>
+                                </div>
                             </div>
-                            <span>{review.reg_date.slice(0, 10)}</span>
-                        </div>
+                        ))}
 
-                        {/* 리뷰 텍스트 */}
-                        <p className="whitespace-pre-wrap text-gray-800 text-sm">
-                            {review.comment}
-                        </p>
+                        {/* 무한 스크롤 디텍터 */}
+                        {hasNextPage && <div ref={bottomRef} className="h-1"/>}
 
-                        {/* 리뷰 관리 버튼 */}
-                        <div className="flex gap-2 pt-2">
-                            <button className="flex-1 text-center px-3 py-1.5 text-xs border rounded hover:bg-gray-100">
-                                리뷰 수정
-                            </button>
-                            <button className="flex-1 text-center px-3 py-1.5 text-xs border rounded hover:bg-gray-100"
-                                onClick={() => navigate(`/reviews/${review?.review_id}`)}>
-                                리뷰 보기
-                            </button>
-                        </div>
+                        {/* 리뷰 로딩중 */}
+                        {isFetchingNextPage && (<p className="text-center py-2">리뷰를 불러오는 중입니다</p>)}
                     </div>
-                ))}
-
-                {/* 무한 스크롤 */}
-                {hasNextPage && <div ref={bottomRef} className="h-1" />}
-                {isFetchingNextPage && (
-                    <p className="text-center py-2 text-sm text-gray-600">
-                        리뷰를 불러오는 중입니다...
-                    </p>
-                )}
-                {!hasNextPage && (
-                    <p className="text-center py-2 text-gray-400 text-sm">
-                        마지막 리뷰입니다
-                    </p>
-                )}
-            </div>
+                </div>
+            </section>
         </div>
     );
 }

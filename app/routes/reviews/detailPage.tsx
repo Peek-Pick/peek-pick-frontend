@@ -6,13 +6,11 @@ import { getReview } from "~/api/reviews/reviewAPI";
 function DetailPage() {
     const { rid } = useParams()
 
+    // 리뷰 받아오기
     const { data } = useQuery({
-        queryKey: ["review", rid],
-        queryFn: () => getReview(Number(rid)),
-        staleTime: 5 * 60 * 1000,
+        queryKey: ["review", Number(rid)],
+        queryFn: () => getReview(Number(rid))
     });
-
-    console.log(data?.data)
 
     return (
         <div>

@@ -1,5 +1,5 @@
 export interface TagDTO {
-    tag_id: number
-    tag_name: string
+    tagId: number
+    tagName: string
     category: string
 }
