@@ -3,9 +3,9 @@ import { Home, Search, ScanBarcode } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const navItems = [
-    { label: "HOME", icon: Home, path: "/app/main" },
+    { label: "HOME", icon: Home, path: "/main" },
     { label: "BARCODE", icon: ScanBarcode, path: "/barcode/scan" },
-    { label: "SEARCH", icon: Search, path: "/search" },
+    { label: "SEARCH", icon: Search, path: "/products/search" },
 ];
 
 export default function BottomNavComponent() {
