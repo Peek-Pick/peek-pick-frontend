@@ -52,10 +52,10 @@ export default function ProfileHeader() {
 
     // 동적 quickStats
     const quickStats = [
-        { icon: <FaHeart className="text-pink-500 text-2xl mb-2" />, label: 'Wishlisted Items', value: myData.wishlistedCount, to:'' },
+        { icon: <FaHeart className="text-pink-500 text-2xl mb-2" />, label: 'Wishlisted Items', value: myData.wishlistedCount, to:'/mypage/favorites' },
         { icon: <FaPen className="text-blue-500 text-2xl mb-2" />, label: 'My Reviews', value: myData.reviewCount, to:'/reviews/user' },
         { icon: <FaTicketAlt className="text-yellow-500 text-2xl mb-2" />, label: 'Coupons', value: myData.couponCount, to:'/mypage/coupons' },
-        { icon: <FaBarcode className="text-green-500 text-2xl mb-2" />, label: 'Barcode History', value: myData.barcodeHistoryCount, to:'' },
+        { icon: <FaBarcode className="text-green-500 text-2xl mb-2" />, label: 'Barcode History', value: myData.barcodeHistoryCount, to:'/barcode/history' },
     ];
 
     const buttons: [string, React.ComponentType<React.SVGProps<SVGSVGElement>>][] = [

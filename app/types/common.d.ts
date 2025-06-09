@@ -12,7 +12,7 @@ export interface PagingResponse<T> {
 }
 
 export interface PaginationProps {
-    currentPage: number;  // 1-based
+    currentPage: number;  // 0-based
     totalPages: number;
     onPageChange: (page: number) => void;
 }
