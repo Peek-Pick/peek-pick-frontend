@@ -62,7 +62,7 @@ function AuDetailReviewsComponent({ reviewCount, reviewList, isLoading, isError 
                         <div className="flex flex-col-2 sm:flex-row items-stretch justify-end gap-4 mt-4 w-full">
 
                             {/* 리뷰 상세보기 버튼 */}
-                            <button type="button"  onClick={() => navigate(`/reviews/${review.reviewId}`)}
+                            <button type="button"  onClick={() => navigate(`/admin/reviews/${review.reviewId}`)}
                                     className="w-full sm:flex-1 px-4 py-2 text-sm sm:text-sm rounded-lg bg-blue-100 text-blue-800 cursor-pointer font-medium text-center transition-all duration-300 hover:bg-blue-200 hover:text-blue-800 min-w-0"
                             >
                                 리뷰 상세보기
