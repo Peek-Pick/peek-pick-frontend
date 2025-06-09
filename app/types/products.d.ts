@@ -10,6 +10,8 @@ export interface ProductListDTO {
     likeCount?: number | null;
     reviewCount?: number | null;
     score?: number | null;
+    /** soft-delete 여부 */
+    isDelete?: boolean | null;
 }
 
 /**
@@ -36,7 +38,7 @@ export interface ProductDetailDTO {
     /** 카테고리 */
     category?: string | null;
     /** 상품 설명 (세부정보) */
-    description?: string | null;    // ← 추가
+    description?: string | null;
     /** 용량 */
     volume?: string | null;
     /** 이미지 URL */
@@ -55,4 +57,6 @@ export interface ProductDetailDTO {
     score?: number | null;
     /** 로그인 사용자 좋아요 여부 */
     isLiked?: boolean | null;
+    /** soft-delete 여부 */
+    isDelete?: boolean | null;
 }

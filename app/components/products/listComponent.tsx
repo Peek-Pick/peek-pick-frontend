@@ -20,7 +20,6 @@ export default function ListComponent({
     const bottomRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
 
-    // 무한 스크롤 옵저버 등록
     useEffect(() => {
         const el = bottomRef.current;
         if (!el) return;
@@ -45,7 +44,7 @@ export default function ListComponent({
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4">
             {products.map((p, idx) => (
                 <div
-                    key={`${p.barcode}-${idx}`}  // barcode + index 조합으로 고유 key 부여
+                    key={`${p.barcode}-${idx}`}
                     className="
                         p-[16px] bg-white border border-[#FBFBFB]
                         shadow-[0px_5px_22px_rgba(0,0,0,0.04)] rounded-[16px]
@@ -54,7 +53,6 @@ export default function ListComponent({
                     "
                     onClick={() => navigate(`/products/${p.barcode}`)}
                 >
-                    {/* 1. 이미지: 정사각형 컨테이너 + object-contain */}
                     <figure className="bg-[#F9F9F9] rounded-[12px] p-2 mb-4 overflow-hidden">
                         <div className="relative w-full" style={{ paddingBottom: "100%" }}>
                             {p.imgUrl && (
@@ -67,12 +65,10 @@ export default function ListComponent({
                         </div>
                     </figure>
 
-                    {/* 2. 상품명 */}
                     <h3 className="text-[14px] leading-[25px] font-semibold text-[#333] mb-1">
                         {p.name}
                     </h3>
 
-                    {/* 3. 좋아요 · 별점(리뷰 수) */}
                     <div className="flex items-center text-[13px] text-[#222] mb-1 space-x-4">
                         <span className="flex items-center">
                             <Icon
@@ -90,7 +86,6 @@ export default function ListComponent({
                         </span>
                     </div>
 
-                    {/* 4. 카테고리 */}
                     {p.category && (
                         <span className="text-[13px] text-[#9D9D9D] uppercase">
                             {p.category}
@@ -99,7 +94,6 @@ export default function ListComponent({
                 </div>
             ))}
 
-            {/* 무한 스크롤 트리거 엘리먼트 */}
             {hasNextPage && <div ref={bottomRef} className="col-span-full h-1" />}
             {isFetchingNextPage && (
                 <p className="col-span-full text-center py-2 text-sm">

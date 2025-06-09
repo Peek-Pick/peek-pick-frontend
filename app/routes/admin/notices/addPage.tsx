@@ -1,7 +1,9 @@
-import { useState } from "react";                          // ← useState 임포트
+// src/routes/admin/notices/addPage.tsx
+
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import FormComponent from "~/components/admin/notices/formComponent";  // your file
+import FormComponent from "~/components/admin/notices/formComponent";
 import type {
     NoticeRequestDto,
     NoticeResponseDto,
@@ -15,12 +17,12 @@ export default function AddPage() {
     const [pendingFiles, setPendingFiles] = useState<FileList | null>(null);
 
     const mutation = useMutation<
-        NoticeResponseDto,        // onSuccess 로 넘어오는 타입
-        Error,                    // onError 로 넘어오는 에러 타입
-        NoticeRequestDto          // mutate() 에 넘기는 변수 타입
+        NoticeResponseDto,
+        Error,
+        NoticeRequestDto
     >({
         mutationFn: (dto) =>
-            createNotice(dto).then((res) => res.data),              // AxiosResponse → unwrap .data
+            createNotice(dto).then((res) => res.data),
         onSuccess: (newNotice) => {
             Swal.fire("공지 등록 완료", "", "success").then(() => {
                 if (pendingFiles && newNotice.noticeId) {
@@ -45,19 +47,24 @@ export default function AddPage() {
         mutation.mutate(dto);
     };
 
+    const handleCancel = () => navigate("/admin/notices/list");
+
     return (
         <div className="p-6 max-w-3xl mx-auto">
             <h1 className="text-2xl font-bold mb-4">새 공지 작성</h1>
-            <button
-                className="mb-4 px-3 py-1 bg-gray-300 rounded hover:bg-gray-400"
-                onClick={() => navigate("/admin/notices/list")}
-            >
-                취소
-            </button>
             <FormComponent
                 initialData={null}
-                submitLabel="등록하기"
+                submitLabel="등록"
                 onSubmit={handleSubmit}
+                extraActions={
+                    <button
+                        type="button"
+                        onClick={handleCancel}
+                        className="flex items-center gap-1 rounded-md px-4 py-2 text-sm font-medium shadow-sm transition bg-gray-200 hover:bg-gray-300"
+                    >
+                        취소
+                    </button>
+                }
             />
         </div>
     );
