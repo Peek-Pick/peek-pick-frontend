@@ -30,7 +30,7 @@ function LoginComponent() {
             <LoadingComponent isLoading={isLoading} />
 
             <div
-                className="bg-[#fefefe] relative flex flex-col items-center justify-start min-h-screen"
+                className="bg-[#fefefe] relative flex flex-col items-center justify-start"
                 style={{ fontFamily: "'Quicksand', sans-serif" }}
             >
                 {/* 배경 이미지 */}
