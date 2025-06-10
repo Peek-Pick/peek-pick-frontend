@@ -6,9 +6,10 @@ export interface AdminReportListProps {
     page: number;
     category?: string;
     keyword?: string;
+    hidden?: boolean
 }
 
-export default function ListComponent({data, page, category, keyword}: AdminReportListProps) {
+export default function ListComponent({data, page, category, keyword, hidden}: AdminReportListProps) {
     const navigate = useNavigate();
 
     const reasonColorMap: Record<ReportReason, string> = {
@@ -63,7 +64,7 @@ export default function ListComponent({data, page, category, keyword}: AdminRepo
                                     <td className="px-4 py-3.5">
                                         <button
                                             onClick={() =>
-                                                navigate(`/admin/reviews/${report.reviewId}?from=reportList&page=${page}&keyword=${keyword}&category=${category}`, {
+                                                navigate(`/admin/reviews/${report.reviewId}?from=reportList&page=${page}&keyword=${keyword}&category=${category}&hidden=${hidden}`, {
                                                     state: { from: 'reportList' }
                                                 })}
                                             className="text-blue-600 hover:underline text-xs">
@@ -73,7 +74,7 @@ export default function ListComponent({data, page, category, keyword}: AdminRepo
                                     <td className="px-4 py-3.5">
                                         <button
                                             onClick={() =>
-                                                navigate(`/admin/reviews/${report.reviewId}?from=reportList&page=${page}&keyword=${keyword}&category=${category}`, {
+                                                navigate(`/admin/users/${report.userId}`, {
                                                     state: { from: 'reportList' }
                                                 })}
                                             className="text-blue-600 hover:underline text-xs">

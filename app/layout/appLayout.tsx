@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 // ① 상품 상세 정보를 가져오는 API 함수 import
 import type { ProductDetailDTO } from "~/types/products";
-import { getProductDetail } from "~/api/productsAPI";
+import { getProductDetail } from "~/api/products/productsAPI";
 
 export default function AppLayout() {
     const location = useLocation();
@@ -20,7 +20,7 @@ export default function AppLayout() {
         "/mypage": "My Page",
         "/mypage/favorites": "찜한 상품",
         "/products/ranking": "상품 랭킹",
-        "/reviews/user": "User Review",
+        "/reviews/user": "내 리뷰",
         "/products/search": "상품 검색",
         // 다른 정적 경로가 필요하다면 여기에 추가
     };

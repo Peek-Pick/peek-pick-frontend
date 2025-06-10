@@ -4,13 +4,12 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { Icon } from "@iconify/react";
 import ListComponent from "~/components/products/listComponent";
 import BottomNavComponent from "~/components/main/bottomNavComponent";
-import { searchProducts } from "~/api/productsAPI";
+import { searchProducts } from "~/api/products/productsAPI";
 import type { PageResponse, ProductListDTO } from "~/types/products";
 
 export default function SearchPage() {
     const size = 10;
 
-    // ─────────────────────────────────────────────────────────────────────────
     // 1) 검색창 상태
     const [inputValue, setInputValue] = useState("");
     const [searchKeyword, setSearchKeyword] = useState("");
@@ -32,8 +31,6 @@ export default function SearchPage() {
     type CategoryType = typeof categories[number]["label"];
     const [categoryLabel, setCategoryLabel] = useState<CategoryType>("전체");
     const [showCategoryMenu, setShowCategoryMenu] = useState(false);
-
-    // 카테고리 드롭다운 ref
     const categoryRef = useRef<HTMLDivElement>(null);
 
     // 3) 정렬 드롭다운 상태
@@ -46,18 +43,14 @@ export default function SearchPage() {
     const [sortLabel, setSortLabel] = useState<SortLabelType>("좋아요 순");
     const [sortParam, setSortParam] = useState<SortParamType>("likeCount,DESC");
     const [showSortMenu, setShowSortMenu] = useState(false);
-
-    // 정렬 드롭다운 ref
     const sortRef = useRef<HTMLDivElement>(null);
 
-    // 4) 스크롤 시 “올릴 때”만 검색창+필터 바가 보이도록 제어하는 로직
+    // 4) 스크롤 시 필터 영역 숨김/보임 제어
     const [showFilters, setShowFilters] = useState(true);
     const lastScrollY = useRef(0);
     useEffect(() => {
         const handler = () => {
             const currentY = window.scrollY;
-            // 스크롤을 내릴 때: showFilters = false → 숨김
-            // 스크롤을 올릴 때: showFilters = true → 보임
             if (currentY > lastScrollY.current && currentY > 100) {
                 setShowFilters(false);
             } else {
@@ -69,12 +62,10 @@ export default function SearchPage() {
         return () => window.removeEventListener("scroll", handler);
     }, []);
 
-    // 5) 화면 터치/클릭 시 드롭다운 닫기 로직
+    // 5) 화면 터치/클릭 시 드롭다운 닫기
     useEffect(() => {
         const handleClickOutside = (ev: MouseEvent | TouchEvent) => {
             const target = ev.target as Node;
-
-            // 카테고리 메뉴가 열려 있고, 클릭/터치 대상이 카테고리 영역 밖이면 닫기
             if (
                 showCategoryMenu &&
                 categoryRef.current &&
@@ -82,8 +73,6 @@ export default function SearchPage() {
             ) {
                 setShowCategoryMenu(false);
             }
-
-            // 정렬 메뉴가 열려 있고, 클릭/터치 대상이 정렬 영역 밖이면 닫기
             if (
                 showSortMenu &&
                 sortRef.current &&
@@ -92,20 +81,18 @@ export default function SearchPage() {
                 setShowSortMenu(false);
             }
         };
-
         document.addEventListener("mousedown", handleClickOutside);
         document.addEventListener("touchstart", handleClickOutside);
-
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
             document.removeEventListener("touchstart", handleClickOutside);
         };
     }, [showCategoryMenu, showSortMenu]);
 
-    // 6) 카테고리 파라미터 (전체 → 빈 문자열)
+    // 6) 카테고리 파라미터: "전체"는 빈 문자열로 변환
     const categoryParam = categoryLabel === "전체" ? "" : categoryLabel;
 
-    // 7) React Query: 무한 스크롤로 검색 결과 가져오기
+    // 7) React Query: 검색 결과 무한 스크롤
     const {
         data,
         fetchNextPage,
@@ -139,28 +126,20 @@ export default function SearchPage() {
         }
     };
 
-    // 9) 필터(카테고리/정렬) 또는 검색어가 변경되면 스크롤을 최상단으로 올려주는 로직
+    // 9) 필터 또는 검색어 변경 시 스크롤 최상단으로
     useEffect(() => {
         window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
     }, [searchKeyword, categoryLabel, sortParam]);
 
     return (
         <div className="min-h-screen bg-gray-50">
-            {/* ───────────────────────────────────────────────────────────────────────
-              1) 검색창 + 필터 바 전체를 묶은 컨테이너
-              - showFilters가 true일 때 화면 상단에 “translate-y-0” (보임)
-              - false일 때 “-translate-y-full” (숨김)
-              - 부드러운 애니메이션 : transition-transform duration-300 ease-in-out
-         ─────────────────────────────────────────────────────────────────────── */}
+            {/* 검색창 + 필터 바 */}
             <div
-                className={`
-          sticky top-16 z-40 bg-white transition-transform duration-300 ease-in-out
-          ${showFilters ? "translate-y-0" : "-translate-y-full"}
-        `}
+                className={`sticky top-16 z-40 bg-white transition-transform duration-300 ease-in-out ${
+                    showFilters ? "translate-y-0" : "-translate-y-full"
+                }`}
             >
-                {/* ─────────────────────────────────────────────────────────────────────
-              1-1) 검색창 (가로로 넓게)
-           ───────────────────────────────────────────────────────────────────── */}
+                {/* 검색창 */}
                 <div className="px-4 py-4">
                     <div className="relative">
                         <input
@@ -190,14 +169,10 @@ export default function SearchPage() {
                     </div>
                 </div>
 
-                {/* ─────────────────────────────────────────────────────────────────────
-              1-2) 검색창 아래 필터 바 (카테고리 + 정렬)
-              - 두 블럭 사이에 구분선(border) 없음
-              - 같은 줄에 카테고리, 정렬 버튼 flex로 배치
-           ───────────────────────────────────────────────────────────────────── */}
+                {/* 카테고리 + 정렬 필터 */}
                 <div className="px-4 pb-2">
                     <div className="flex items-center space-x-2">
-                        {/* 카테고리 드롭다운 (flex-1으로 너비 균등) */}
+                        {/* 카테고리 드롭다운 */}
                         <div ref={categoryRef} className="relative inline-block text-left flex-1">
                             <button
                                 onClick={() => {
@@ -206,12 +181,12 @@ export default function SearchPage() {
                                 }}
                                 className="w-full flex items-center justify-between px-4 py-2 bg-white border rounded-lg hover:bg-gray-100 text-sm"
                             >
-                <span className="flex items-center">
-                  <span className="mr-1">
-                    {categories.find((c) => c.label === categoryLabel)?.emoji}
-                  </span>
-                  <span>{categoryLabel}</span>
-                </span>
+                                <span className="flex items-center">
+                                    <span className="mr-1">
+                                        {categories.find((c) => c.label === categoryLabel)?.emoji}
+                                    </span>
+                                    <span>{categoryLabel}</span>
+                                </span>
                                 <Icon icon="ri:arrow-down-s-line" className="w-5 h-5" />
                             </button>
                             {showCategoryMenu && (
@@ -245,13 +220,15 @@ export default function SearchPage() {
                                 }}
                                 className="w-full flex items-center justify-between px-4 py-2 bg-white border rounded-lg hover:bg-gray-100 text-sm"
                             >
-                <span className="flex items-center">
-                  <Icon
-                      icon={sortOptions.find((s) => s.label === sortLabel)!.icon}
-                      className={`w-5 h-5 mr-1 ${sortOptions.find((s) => s.label === sortLabel)!.color}`}
-                  />
-                  <span>{sortLabel}</span>
-                </span>
+                                <span className="flex items-center">
+                                    <Icon
+                                        icon={sortOptions.find((s) => s.label === sortLabel)!.icon}
+                                        className={`w-5 h-5 mr-1 ${
+                                            sortOptions.find((s) => s.label === sortLabel)!.color
+                                        }`}
+                                    />
+                                    <span>{sortLabel}</span>
+                                </span>
                                 <Icon icon="ri:arrow-down-s-line" className="w-5 h-5" />
                             </button>
                             {showSortMenu && (
@@ -280,9 +257,7 @@ export default function SearchPage() {
                 </div>
             </div>
 
-            {/* ───────────────────────────────────────────────────────────────────────
-            2) 로딩 / 에러 표시
-         ─────────────────────────────────────────────────────────────────────── */}
+            {/* 로딩 / 에러 표시 */}
             {isLoading && <div className="p-4 text-center">불러오는 중…</div>}
             {isError && (
                 <div className="p-4 text-center text-red-500">
@@ -290,21 +265,19 @@ export default function SearchPage() {
                 </div>
             )}
 
-            {/* ───────────────────────────────────────────────────────────────────────
-            3) 검색 결과 리스트 (ListComponent)
-         ─────────────────────────────────────────────────────────────────────── */}
+            {/* 검색 결과 리스트 */}
             {data && (
                 <ListComponent
-                    products={data.pages.flatMap((pg) => pg.content)}
+                    products={data.pages
+                        .flatMap((pg) => pg.content)
+                        .filter((p) => !p.isDelete)}
                     fetchNextPage={fetchNextPage}
                     hasNextPage={hasNextPage}
                     isFetchingNextPage={isFetchingNextPage}
                 />
             )}
 
-            {/* ───────────────────────────────────────────────────────────────────────
-            4) 하단 네비게이션
-         ─────────────────────────────────────────────────────────────────────── */}
+            {/* 하단 네비게이션 */}
             <BottomNavComponent />
         </div>
     );

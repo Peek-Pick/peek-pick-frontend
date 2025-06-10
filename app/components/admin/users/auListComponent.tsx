@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUsers } from '@fortawesome/free-solid-svg-icons';
 import type { UsersListDTO } from "~/types/users";
 import {useUserStatusUpdater} from "~/hooks/users/useUserStatusUpdater";
+import AuUserStatusModal from "~/components/admin/users/auUserStatusModal";
 
 interface UsersListProps {
     users: UsersListDTO[];
@@ -12,6 +13,7 @@ interface UsersListProps {
 export default function AuListComponent({ users }: UsersListProps) {
     const navigate = useNavigate();
     const { updateStatus, loading } = useUserStatusUpdater();
+    const [userList, setUserList] = useState(users);
 
     const goDetail = (uid: number) => {
         navigate(`/admin/users/${uid}`);
@@ -19,41 +21,58 @@ export default function AuListComponent({ users }: UsersListProps) {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
-    const [selectedStatus, setSelectedStatus] = useState<string>("ACTIVE");
+    // const [selectedStatus, setSelectedStatus] = useState<string>("ACTIVE");
 
     const openModal = (userId: number) => {
         setSelectedUserId(userId);
-        setSelectedStatus("ACTIVE");
+        // setSelectedStatus("ACTIVE");
         setIsModalOpen(true);
     };
 
     const closeModal = () => {
         setIsModalOpen(false);
         setSelectedUserId(null);
-        setSelectedStatus("ACTIVE");
+        // setSelectedStatus("ACTIVE");
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (selectedStatus: string) => {
         if (selectedUserId === null) return;
 
         let banUntil: string | undefined;
+        let status: "ACTIVE" | "DELETED" | "BANNED";
 
         if (selectedStatus.startsWith("BANNED_")) {
             const days = Number(selectedStatus.split("_")[1]);
             const untilDate = new Date();
             untilDate.setDate(untilDate.getDate() + days);
-            banUntil = untilDate.toISOString().split("T")[0]; // YYYY-MM-DD
+            banUntil = untilDate.toISOString().split("T")[0];
+            status = "BANNED";
+        } else {
+            status = selectedStatus as "ACTIVE" | "DELETED";
         }
 
-        await updateStatus({
-            userId: selectedUserId,
-            updateStatus: {
-                status: selectedStatus.startsWith("BANNED") ? "BANNED" : (selectedStatus as "ACTIVE" | "DELETED"),
-                banUntil,
-            },
-        });
+        try {
+            await updateStatus({
+                userId: selectedUserId,
+                updateStatus: { status, banUntil },
+            });
 
-        closeModal();
+            setUserList((prevList) =>
+                prevList.map((user) =>
+                    user.userId === selectedUserId
+                        ? {
+                            ...user,
+                            status,
+                            banUntil: status === "BANNED" ? banUntil : undefined,
+                        }
+                        : user
+                )
+            );
+        } catch (e) {
+            alert("상태 변경에 실패했습니다. 다시 시도해주세요.");
+        } finally {
+            closeModal();
+        }
     };
 
     return (
@@ -81,7 +100,7 @@ export default function AuListComponent({ users }: UsersListProps) {
                             </td>
                         </tr>
                     ) : (
-                        users.map((user) => (
+                        userList.map((user) => (
                             <tr
                                 key={user.userId}
                                 onClick={() => goDetail(user.userId)}
@@ -111,55 +130,13 @@ export default function AuListComponent({ users }: UsersListProps) {
                     )}
                     </tbody>
                 </table>
+                <AuUserStatusModal isOpen={isModalOpen}
+                                   onClose={closeModal}
+                                   onSubmit={handleSubmit}
+                                   loading={loading}
+                />
             </div>
 
-            {/* 모달 */}
-            {isModalOpen && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-                     style={{ backgroundColor: 'rgba(169, 169, 169, 0.7)' }}  >
-                    <div className="bg-white rounded-lg shadow-lg p-6 w-[320px]">
-                        <h4 className="text-lg font-semibold mb-4">상태 변경</h4>
-                        <div className="mb-4 space-y-2">
-                            {[
-                                { label: "ACTIVE", value: "ACTIVE" },
-                                { label: "BANNED (3일)", value: "BANNED_3" },
-                                { label: "BANNED (7일)", value: "BANNED_7" },
-                                { label: "BANNED (15일)", value: "BANNED_15" },
-                                { label: "DELETED", value: "DELETED" },
-                            ].map((option) => (
-                                <label key={option.value} className="flex items-center gap-2 cursor-pointer">
-                                    <input
-                                        type="radio"
-                                        name="status"
-                                        value={option.value}
-                                        checked={selectedStatus === option.value}
-                                        onChange={(e) => setSelectedStatus(e.target.value)}
-                                        className="form-radio text-indigo-600"
-                                    />
-                                    <span>{option.label}</span>
-                                </label>
-                            ))}
-                        </div>
-
-
-                        <div className="flex justify-end gap-2">
-                            <button
-                                onClick={closeModal}
-                                className="px-3 py-1 bg-gray-300 rounded hover:bg-gray-400 text-sm"
-                            >
-                                취소
-                            </button>
-                            <button
-                                onClick={handleSubmit}
-                                disabled={loading}
-                                className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
-                            >
-                                {loading ? "변경 중..." : "변경"}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }

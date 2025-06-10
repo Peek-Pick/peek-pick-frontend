@@ -5,9 +5,10 @@ export interface AdminReviewListProps {
     page: number;
     category?: string;
     keyword?: string;
+    hidden?: boolean
 }
 
-export default function ListComponent({data, page, category, keyword}: AdminReviewListProps) {
+export default function ListComponent({data, page, category, keyword, hidden}: AdminReviewListProps) {
     const navigate = useNavigate();
 
     return (
@@ -48,7 +49,7 @@ export default function ListComponent({data, page, category, keyword}: AdminRevi
                                     <td className="px-4 py-3.5">
                                         <button
                                             onClick={() =>
-                                                navigate(`/admin/reviews/${review.reviewId}?from=reviewList&page=${page}&keyword=${keyword}&category=${category}`, {
+                                                navigate(`/admin/reviews/${review.reviewId}?from=reviewList&page=${page}&keyword=${keyword}&category=${category}&hidden=${hidden}`, {
                                                     state: { from: 'reportList' }
                                                 })}
                                             className="text-blue-600 hover:underline text-xs">
