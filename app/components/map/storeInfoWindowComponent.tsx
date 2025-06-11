@@ -4,9 +4,10 @@ interface StoreInfoWindowProps {
     position: google.maps.LatLngLiteral;
     onClose: () => void;
     selectedStore: google.maps.places.PlaceResult;
+    onRoute: (storePosition: google.maps.LatLngLiteral) => void;
 }
 
-const StoreInfoWindow: React.FC<StoreInfoWindowProps> = ({ position, onClose, selectedStore }) => {
+const StoreInfoWindow: React.FC<StoreInfoWindowProps> = ({ position, onClose, selectedStore, onRoute }) => {
     if (!selectedStore) return null;
 
     return (
@@ -78,6 +79,19 @@ const StoreInfoWindow: React.FC<StoreInfoWindowProps> = ({ position, onClose, se
                         </div>
                     </div>
                 )}
+
+                {/* 길찾기 버튼 */}
+                <button
+                    onClick={() => {
+                        if (onRoute) {
+                            onRoute(position); // 위치 전달
+                        }
+
+                    }}
+                    className="mt-4 w-full bg-blue-400 hover:bg-blue-500 text-white font-semibold py-2 rounded-lg transition duration-300 text-center"
+                >
+                    🚶 Directions
+                </button>
             </div>
         </InfoWindow>
     );

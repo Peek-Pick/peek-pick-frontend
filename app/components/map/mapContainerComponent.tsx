@@ -1,9 +1,12 @@
 
 import { useEffect, useState } from 'react';
-import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api';
+import { GoogleMap, Marker, useLoadScript} from '@react-google-maps/api';
 import StoreSearchComponent from "~/components/map/storeSearchComponent";
 import { EyeSlashIcon, BuildingStorefrontIcon } from '@heroicons/react/24/outline';
 import StoreInfoWindowComponent from "~/components/map/storeInfoWindowComponent";
+import MapLoadingComponent from "~/components/map/mapLoadingComponent";
+import usePolyline from "~/hooks/map/usePolyline";
+import {getDirections} from "~/api/mapAPI";
 
 
 
@@ -24,8 +27,10 @@ const MapContainerComponent: React.FC = () => {
     const [showNearbyStores, setShowNearbyStores] = useState(false); // 버튼으로 주변 편의점 표시할지 여부
     const [selectedStore, setSelectedStore] = useState<google.maps.places.PlaceResult | null>(null); // 마커 클릭 시 선택된 장소 정보 저장
     const [selectedPosition, setSelectedPosition] = useState<google.maps.LatLngLiteral | null>(null); // 클릭된 마커 위치 저장 (InfoWindow 위치용)
-    const [isLoading, setIsLoading] = useState(false); // 로딩 상태
+    const [path, setPath] = useState<google.maps.LatLngLiteral[]>([]); //경로
+    const [isNavigating, setIsNavigating] = useState(false); //길찾기 진행 상태
 
+    usePolyline(mapRef, path); // path가 변경시 실행됨
 
     // 구글 맵 API 스크립트 로드
     const { isLoaded, loadError } = useLoadScript({
@@ -187,16 +192,33 @@ const MapContainerComponent: React.FC = () => {
         });
     };
 
+    // 길찾기 함수
+    const handleDirection = async (destination: google.maps.LatLngLiteral) => {
+        if (!currentPosition) return;
+
+        const result = await getDirections(currentPosition, destination);
+        if (result) {
+            setPath(result);
+            setIsNavigating(true);  // 길찾기 시작 표시
+            setShowNearbyStores(false);
+
+            const bounds = new google.maps.LatLngBounds();
+            bounds.extend(result[0]); // 출발지
+            bounds.extend(result[result.length - 1]); // 도착지
+
+            mapRef?.fitBounds(bounds);
+        } else {
+            alert("길찾기 경로를 가져올 수 없습니다.");
+        }
+    };
 
 
     // 로드 에러 또는 로딩 중인 경우 처리
     if (loadError) return <div>지도를 불러오는 중 오류가 발생했습니다.</div>;
 
-    if (!isLoaded || !currentPosition || isLoading) {
+    if (!isLoaded || !currentPosition) {
         return (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60">
-                <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin shadow-md"></div>
-            </div>
+            <MapLoadingComponent/>
         );
     }
 
@@ -204,15 +226,6 @@ const MapContainerComponent: React.FC = () => {
         <div className="relative">
             {/*검색창 컴포넌트*/}
             <StoreSearchComponent onSearch={handleSearch} />
-
-            {/*주변 편의점 표시 버튼*/}
-            <button
-                onClick={() => setShowNearbyStores(!showNearbyStores)}
-                className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-10 w-12 h-12 bg-white/90 backdrop-blur-sm p-2 rounded-full shadow-md hover:bg-gray-100 transition"
-                title={showNearbyStores ? "Hide Nearby Convenience Stores" : "Show Nearby Convenience Stores"}
-            >
-                {showNearbyStores ? <EyeSlashIcon /> : <BuildingStorefrontIcon />}
-            </button>
 
             {/* 구글맵 컴포넌트 */}
             <GoogleMap
@@ -222,7 +235,7 @@ const MapContainerComponent: React.FC = () => {
                 onLoad={(map) => setMapRef(map)}
             >
                 {/* 현재위치 마커 */}
-                <Marker position={currentPosition} />
+                {!isNavigating && <Marker position={currentPosition} />}
 
                 {/* 편의점 마커들 */}
                 {storeMarkers.map((place, idx) => {
@@ -267,7 +280,7 @@ const MapContainerComponent: React.FC = () => {
                 })}
 
                 {/* 선택된 마커가 있으면 InfoWindow 표시 */}
-                {selectedStore && selectedPosition && (
+                {selectedStore && selectedPosition && !isNavigating && (
                     <StoreInfoWindowComponent
                         position={selectedPosition}
                         selectedStore={selectedStore}
@@ -275,8 +288,57 @@ const MapContainerComponent: React.FC = () => {
                             setSelectedStore(null);
                             setSelectedPosition(null);
                         }}
+                        onRoute={handleDirection}
                     />
                 )}
+
+                {/* 길찾기 - 출발, 도착지 마커 */}
+                {path.length >= 2 && (
+                    <>
+                        <Marker
+                            position={path[0]}
+                            icon={{
+                                url: "https://img.icons8.com/office/40/000000/marker.png", // 출발지
+                                scaledSize: new google.maps.Size(40, 40),
+                            }}
+                            title="출발지"
+                        />
+                        <Marker
+                            position={path[path.length - 1]}
+                            icon={{
+                                url: "https://img.icons8.com/color/48/000000/finish-flag.png", // 도착지
+                                scaledSize: new google.maps.Size(40, 40),
+                            }}
+                            animation={google.maps.Animation.DROP}
+                        title="도착지"
+                        />
+                    </>
+                )}
+
+                {/* 주변 편의점 표시 버튼 or 길찾기 종료 버튼 */}
+                {isNavigating ? (
+                    <button
+                        onClick={() => {
+                            setIsNavigating(false);
+                            setPath([])
+                        }}
+                        className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-10 w-12 h-12 bg-red-300 text-white p-2 rounded-full shadow-md hover:bg-red-700/90 transition backdrop-blur-sm"
+                        title="Stop Navigation"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                ) : (
+                    <button
+                        onClick={() => setShowNearbyStores(!showNearbyStores)}
+                        className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-10 w-12 h-12 bg-white/90 backdrop-blur-sm p-2 rounded-full shadow-md hover:bg-gray-100 transition"
+                        title={showNearbyStores ? "Hide Nearby Convenience Stores" : "Show Nearby Convenience Stores"}
+                    >
+                        {showNearbyStores ? <EyeSlashIcon /> : <BuildingStorefrontIcon />}
+                    </button>
+                )}
+                
             </GoogleMap>
 
 
