@@ -269,8 +269,7 @@ export default function SearchPage() {
             {data && (
                 <ListComponent
                     products={data.pages
-                        .flatMap((pg) => pg.content)
-                        .filter((p) => !p.isDelete)}
+                        .flatMap((pg) => pg.content)}
                     fetchNextPage={fetchNextPage}
                     hasNextPage={hasNextPage}
                     isFetchingNextPage={isFetchingNextPage}
