@@ -15,16 +15,23 @@ import {
 
 export default function AdminProductsListComponent() {
     const [page, setPage] = useState(0);
+    const [inputValue, setInputValue] = useState("");
+    const [searchKeyword, setSearchKeyword] = useState("");
     const size = 10;
-    const [keyword, setKeyword] = useState("");
     const navigate = useNavigate();
+
+    // Enter 또는 버튼 클릭 시 실제 검색어로 설정하고 페이지 초기화
+    const handleSearch = () => {
+        setPage(0);
+        setSearchKeyword(inputValue.trim());
+    };
 
     const { data, isLoading, isError } = useQuery<
         PageResponse<ProductListDTO>,
         Error
     >({
-        queryKey: ["adminProducts", page, keyword] as const,
-        queryFn: () => listAdminProducts(page, size, keyword),
+        queryKey: ["adminProducts", page, searchKeyword] as const,
+        queryFn: () => listAdminProducts(page, size, searchKeyword),
     });
 
     if (isLoading) return <LoadingComponent isLoading />;
@@ -45,14 +52,14 @@ export default function AdminProductsListComponent() {
                 <div className="flex items-center gap-2">
                     <input
                         type="text"
-                        value={keyword}
-                        onChange={(e) => setKeyword(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && setPage(0)}
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                         placeholder="상품명/설명 검색"
                         className="w-64 px-2 py-1 border rounded text-sm focus:outline-none focus:ring"
                     />
                     <button
-                        onClick={() => setPage(0)}
+                        onClick={handleSearch}
                         className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded hover:bg-gray-200 transition"
                     >
                         검색
@@ -108,7 +115,9 @@ export default function AdminProductsListComponent() {
                                     navigate(`/admin/products/${p.productId}`)
                                 }
                             >
-                                <td className="px-4 py-3 align-middle">{p.productId}</td>
+                                <td className="px-4 py-3 align-middle">
+                                    {p.productId}
+                                </td>
                                 <td className="px-4 py-3 align-middle">
                                     {p.imgUrl ? (
                                         <img
@@ -137,8 +146,8 @@ export default function AdminProductsListComponent() {
                                             className="w-5 h-5 text-red-500"
                                         />
                                         <span className="font-medium">
-                        {p.likeCount ?? 0}
-                      </span>
+                                                {p.likeCount ?? 0}
+                                            </span>
                                     </div>
                                     <div className="inline-flex items-center space-x-1 ml-4">
                                         <FontAwesomeIcon
@@ -146,19 +155,21 @@ export default function AdminProductsListComponent() {
                                             className="w-5 h-5 text-yellow-400"
                                         />
                                         <span className="font-medium">
-                        {p.score?.toFixed(1) ?? "0.0"} (
+                                                {p.score?.toFixed(1) ?? "0.0"} (
                                             {p.reviewCount ?? 0})
-                      </span>
+                                            </span>
                                     </div>
                                 </td>
                                 <td className="px-4 py-3 align-middle">
-                    <span
-                        className={`text-sm font-semibold ${
-                            p.isDelete ? "text-red-600" : "text-lime-600"
-                        }`}
-                    >
-                      {p.isDelete ? "삭제됨" : "정상"}
-                    </span>
+                                        <span
+                                            className={`text-sm font-semibold ${
+                                                p.isDelete
+                                                    ? "text-red-600"
+                                                    : "text-lime-600"
+                                            }`}
+                                        >
+                                            {p.isDelete ? "삭제됨" : "정상"}
+                                        </span>
                                 </td>
                             </tr>
                         ))
@@ -174,5 +185,5 @@ export default function AdminProductsListComponent() {
                 maxPageButtons={10}
             />
         </div>
-    )
+    );
 }
