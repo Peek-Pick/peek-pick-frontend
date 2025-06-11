@@ -1,7 +1,7 @@
 import ProductListComponent from "~/components/reviews/productListComponent";
 import {useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
-import { getProductDetail } from "~/api/productsAPI"
+import { getProductDetail } from "~/api/products/productsAPI"
 import { getProductReviews, getProductIdByBarcode } from "~/api/reviews/reviewAPI";
 import { useState, useEffect } from "react";
 

@@ -1,5 +1,6 @@
 import axios from "axios";
 import axiosInstance from "~/instance/axiosInstance";
+import {text} from "@fortawesome/fontawesome-svg-core";
 
 const host = "http://localhost:8080/api/v1";
 
@@ -29,3 +30,18 @@ export const refreshAccessToken = async () => {
         withCredentials: true,
     });
 };
+
+// 어드민 로그인
+export async function getAdminToken(aid: string, apw: string) {
+    return await fetch(`${host}/admin/auth/login`, {
+        method: "POST",
+        credentials: "include", // 쿠키 포함 필수
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+            aid: aid,
+            apw: apw,
+        }),
+    }).then((res) => {
+        if (!res.ok) throw new Error("로그인 실패");
+    });
+}

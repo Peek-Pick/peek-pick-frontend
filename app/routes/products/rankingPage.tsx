@@ -4,7 +4,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { Icon } from "@iconify/react";
 import ListComponent from "~/components/products/listComponent";
 import BottomNavComponent from "~/components/main/bottomNavComponent";
-import { listProducts } from "~/api/productsAPI";
+import { listProducts } from "~/api/products/productsAPI";
 import type { PageResponse, ProductListDTO } from "~/types/products";
 
 export default function RankingPage() {
@@ -67,7 +67,6 @@ export default function RankingPage() {
         const handleClickOutside = (ev: MouseEvent | TouchEvent) => {
             const target = ev.target as Node;
 
-            // 카테고리 메뉴가 열려 있고, 클릭/터치 대상이 카테고리 영역 밖이면 닫기
             if (
                 showCategoryMenu &&
                 categoryRef.current &&
@@ -76,7 +75,6 @@ export default function RankingPage() {
                 setShowCategoryMenu(false);
             }
 
-            // 정렬 메뉴가 열려 있고, 클릭/터치 대상이 정렬 영역 밖이면 닫기
             if (
                 showSortMenu &&
                 sortRef.current &&
@@ -88,7 +86,6 @@ export default function RankingPage() {
 
         document.addEventListener("mousedown", handleClickOutside);
         document.addEventListener("touchstart", handleClickOutside);
-
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
             document.removeEventListener("touchstart", handleClickOutside);
@@ -131,11 +128,7 @@ export default function RankingPage() {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            {/* ───────────────────────────────────────────────────────────────────────
-            1) 필터 영역 (카테고리 + 정렬)
-            - 검색 버튼/검색창 제거
-            - showFilters 상태에 따라 나타났다 사라지도록
-         ─────────────────────────────────────────────────────────────────────── */}
+            {/* 필터 영역 (카테고리 + 정렬) */}
             <div
                 className={`
           -mt-4 sticky top-16 bg-white z-40 border-b 
@@ -144,7 +137,7 @@ export default function RankingPage() {
         `}
             >
                 <div className="flex items-center px-4 py-2 space-x-4">
-                    {/* ─── 카테고리 드롭다운 ─── */}
+                    {/* 카테고리 드롭다운 */}
                     <div ref={categoryRef} className="relative inline-block text-left">
                         <button
                             onClick={() => {
@@ -153,9 +146,9 @@ export default function RankingPage() {
                             }}
                             className="flex items-center px-4 py-2 rounded-full border hover:bg-gray-100 text-sm"
                         >
-              <span className="mr-2">
-                {categories.find((c) => c.label === categoryLabel)?.emoji} {categoryLabel}
-              </span>
+                            <span className="mr-2">
+                                {categories.find((c) => c.label === categoryLabel)?.emoji} {categoryLabel}
+                            </span>
                             <Icon icon="ri:arrow-down-s-line" className="w-4 h-4" />
                         </button>
                         {showCategoryMenu && (
@@ -179,7 +172,7 @@ export default function RankingPage() {
                         )}
                     </div>
 
-                    {/* ─── 정렬 드롭다운 ─── */}
+                    {/* 정렬 드롭다운 */}
                     <div ref={sortRef} className="relative inline-block text-left">
                         <button
                             onClick={() => {
@@ -188,12 +181,12 @@ export default function RankingPage() {
                             }}
                             className="flex items-center px-4 py-2 rounded-full border hover:bg-gray-100 text-sm"
                         >
-              <span className="mr-2">
-                <Icon
-                    icon={sortOptions.find((s) => s.label === sortLabel)!.icon}
-                    className={`w-5 h-5 ${sortOptions.find((s) => s.label === sortLabel)!.color}`}
-                />
-              </span>
+                            <span className="mr-2">
+                                <Icon
+                                    icon={sortOptions.find((s) => s.label === sortLabel)!.icon}
+                                    className={`w-5 h-5 ${sortOptions.find((s) => s.label === sortLabel)!.color}`}
+                                />
+                            </span>
                             <span>{sortLabel}</span>
                         </button>
                         {showSortMenu && (
@@ -221,9 +214,7 @@ export default function RankingPage() {
                 </div>
             </div>
 
-            {/* ───────────────────────────────────────────────────────────────────────
-            2) 로딩 / 에러 표시
-         ─────────────────────────────────────────────────────────────────────── */}
+            {/* 로딩 / 에러 표시 */}
             {isLoading && <div className="p-4 text-center">불러오는 중…</div>}
             {isError && (
                 <div className="p-4 text-center text-red-500">
@@ -231,21 +222,18 @@ export default function RankingPage() {
                 </div>
             )}
 
-            {/* ───────────────────────────────────────────────────────────────────────
-            3) 랭킹 리스트 (ListComponent)
-         ─────────────────────────────────────────────────────────────────────── */}
+            {/* 랭킹 리스트 */}
             {data && (
                 <ListComponent
-                    products={data.pages.flatMap((pg) => pg.content)}
+                    products={data.pages
+                        .flatMap((pg) => pg.content)}
                     fetchNextPage={fetchNextPage}
                     hasNextPage={hasNextPage}
                     isFetchingNextPage={isFetchingNextPage}
                 />
             )}
 
-            {/* ───────────────────────────────────────────────────────────────────────
-            4) 하단 네비게이션
-         ─────────────────────────────────────────────────────────────────────── */}
+            {/* 하단 네비게이션 */}
             <BottomNavComponent />
         </div>
     );

@@ -5,9 +5,19 @@ import type {UpdateStatus} from "~/types/users";
 const host = "http://localhost:8080/api/v1/admin/users";
 
 // 사용자 목록 조회
-export async function getUserList(page: number, size: number) {
-    const res = await axiosInstance.get(`${host}/list?page=${page}&size=${size}`)
-    return res.data
+export async function getUserList(page: number, category?: string, keyword?: string, status?: string, social?: boolean) {
+    const params: Record<string, string> = {
+        page: String(page),
+        sort: "userId,desc"
+    }
+
+    if (category) params.category = category;
+    if (keyword) params.keyword = keyword;
+    if (status) params.status = status;
+    if (social !== undefined) params.social = String(social);
+
+    const response = await axiosInstance.get(`${host}/list`, {params});
+    return response.data;
 }
 
 // 사용자 디테일 조회

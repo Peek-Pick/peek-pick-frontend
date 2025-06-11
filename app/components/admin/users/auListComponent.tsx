@@ -1,38 +1,43 @@
-import { useState } from "react";
+import {useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUsers } from '@fortawesome/free-solid-svg-icons';
 import type { UsersListDTO } from "~/types/users";
 import {useUserStatusUpdater} from "~/hooks/users/useUserStatusUpdater";
 import AuUserStatusModal from "~/components/admin/users/auUserStatusModal";
 
 interface UsersListProps {
     users: UsersListDTO[];
+    page: number;
+    category?: string;
+    keyword?: string;
+    userStatus?: string
+    social?: boolean
 }
 
-export default function AuListComponent({ users }: UsersListProps) {
+export default function AuListComponent({ users, page, category, keyword, userStatus, social }: UsersListProps) {
     const navigate = useNavigate();
     const { updateStatus, loading } = useUserStatusUpdater();
     const [userList, setUserList] = useState(users);
 
+    useEffect(() => {
+        setUserList(users);
+    }, [users]);
+
     const goDetail = (uid: number) => {
-        navigate(`/admin/users/${uid}`);
+        const from = `from=reviewList&page=${page}&keyword=${keyword}&category=${category}&status=${userStatus}&social=${social}`
+        navigate(`/admin/users/${uid}?${from}`);
     };
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
-    // const [selectedStatus, setSelectedStatus] = useState<string>("ACTIVE");
 
     const openModal = (userId: number) => {
         setSelectedUserId(userId);
-        // setSelectedStatus("ACTIVE");
         setIsModalOpen(true);
     };
 
     const closeModal = () => {
         setIsModalOpen(false);
         setSelectedUserId(null);
-        // setSelectedStatus("ACTIVE");
     };
 
     const handleSubmit = async (selectedStatus: string) => {
@@ -77,10 +82,6 @@ export default function AuListComponent({ users }: UsersListProps) {
 
     return (
         <div>
-            <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                <FontAwesomeIcon icon={faUsers} /> 전체 사용자 목록
-            </h3>
-
             <div className="overflow-x-auto bg-white shadow rounded-lg">
                 <table className="min-w-full text-sm divide-y divide-gray-200">
                     <thead className="bg-gray-50">

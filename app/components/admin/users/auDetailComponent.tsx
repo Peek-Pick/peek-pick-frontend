@@ -8,6 +8,7 @@ import type {AxiosResponse} from "axios";
 import type {PagingResponse} from "~/types/common";
 import PaginationComponent from "~/components/common/PaginationComponent";
 import {getAdminUserReviews, getAdminUserReviewsCount} from "~/api/users/adminUsersAPI";
+import {useNavigate, useLocation, useSearchParams} from "react-router";
 
 interface UsersDetailProps {
     users: UsersDetailDTO;
@@ -15,6 +16,18 @@ interface UsersDetailProps {
 }
 
 function AuDetailComponent({users, userId}: UsersDetailProps) {
+
+    const navigate = useNavigate();
+
+    // 현재 URL 정보 - 페이지, 필터링
+    const location = useLocation();
+
+    // 이전 화면 (reviewList 또는 reportList)
+    const [searchParams] = useSearchParams();
+    const from = searchParams.get("from") || "userList";
+
+    // 목록으로 버튼 경로 설정
+    const backToListPath = `/admin/users/list${location.search}`;
 
     //유저 리뷰 개수 받아오기
     const { data: reviewCount } = useQuery({
@@ -78,6 +91,15 @@ function AuDetailComponent({users, userId}: UsersDetailProps) {
                         />
                 </div>
 
+                {/* 하단 버튼 영역 */}
+                <div className="xl:col-span-2 flex justify-end">
+                    <button
+                        onClick={() => navigate(backToListPath)}
+                        className="bg-gray-300 hover:bg-gray-400 text-gray-800 py-1.5 px-4 rounded-lg"
+                    >
+                        목록가기
+                    </button>
+                </div>
             </div>
         </div>
     );
