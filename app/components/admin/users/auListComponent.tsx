@@ -1,7 +1,5 @@
-import { useState } from "react";
+import {useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUsers } from '@fortawesome/free-solid-svg-icons';
 import type { UsersListDTO } from "~/types/users";
 import {useUserStatusUpdater} from "~/hooks/users/useUserStatusUpdater";
 import AuUserStatusModal from "~/components/admin/users/auUserStatusModal";
@@ -20,6 +18,10 @@ export default function AuListComponent({ users, page, category, keyword, userSt
     const { updateStatus, loading } = useUserStatusUpdater();
     const [userList, setUserList] = useState(users);
 
+    useEffect(() => {
+        setUserList(users);
+    }, [users]);
+
     const goDetail = (uid: number) => {
         const from = `from=reviewList&page=${page}&keyword=${keyword}&category=${category}&status=${userStatus}&social=${social}`
         navigate(`/admin/users/${uid}?${from}`);
@@ -27,18 +29,15 @@ export default function AuListComponent({ users, page, category, keyword, userSt
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
-    // const [selectedStatus, setSelectedStatus] = useState<string>("ACTIVE");
 
     const openModal = (userId: number) => {
         setSelectedUserId(userId);
-        // setSelectedStatus("ACTIVE");
         setIsModalOpen(true);
     };
 
     const closeModal = () => {
         setIsModalOpen(false);
         setSelectedUserId(null);
-        // setSelectedStatus("ACTIVE");
     };
 
     const handleSubmit = async (selectedStatus: string) => {
