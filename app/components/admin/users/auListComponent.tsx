@@ -4,9 +4,12 @@ import StatusChangeModal from "./statusChangeModal";
 import type { UsersListDTO } from "~/types/users";
 import { useUserStatusUpdater } from "~/hooks/users/useUserStatusUpdater";
 import { useQueryClient } from "@tanstack/react-query";
+import LoadingComponent from "~/components/common/loadingComponent";
 
 interface UsersListProps {
     users: UsersListDTO[];
+    isLoading?: boolean;
+    isError?: boolean;
     page: number;
     category?: string;
     keyword?: string;
@@ -14,7 +17,7 @@ interface UsersListProps {
     social?: boolean
 }
 
-export default function AuListComponent({ users, page, category, keyword, userStatus, social }: UsersListProps) {
+export default function AuListComponent({ users, isLoading, isError, page, category, keyword, userStatus, social }: UsersListProps) {
     const navigate = useNavigate();
     const [userList, setUserList] = useState(users);
 
@@ -61,6 +64,11 @@ export default function AuListComponent({ users, page, category, keyword, userSt
             closeModal();
         }
     };
+
+    if (isLoading)
+        return <LoadingComponent isLoading />;
+    if (isError || !userList)
+        return <div className="p-4 text-red-500">유저 목록 불러오기 실패</div>;
 
     return (
         <div>

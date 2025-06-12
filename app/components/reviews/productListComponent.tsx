@@ -2,10 +2,12 @@ import {type FetchNextPageOptions, type InfiniteQueryObserverResult, useMutation
 import { useEffect, useRef, useState } from "react";
 import { toggleReview } from "~/api/reviews/reviewAPI";
 import type {ProductDetailDTO} from "~/types/products";
-import { useReviewReport } from "~/hooks/useReviewReport";
+import { useReviewReport } from "~/hooks/reviews/useReviewReport";
 import AverageRating from "~/components/reviews/rating/averageRating";
 import { Rating20 } from "~/components/reviews/rating/rating"
 import {ReviewLoading, ReviewInfiniteLoading} from "~/util/loading/reviewLoading";
+import { useLikeClick } from "~/hooks/reviews/useLikeClick";
+import FloatingHearts from "~/components/reviews/effect/floatingHearts";
 
 export interface ReviewListComponentProps {
     productData?: ProductDetailDTO
@@ -72,20 +74,20 @@ export default function ProductListComponent({productData, productId, reviewList
     return (
         <div>
             <section className="relative">
-                <div className="w-full max-w-7xl px-4 md:px-5 lg-6 mx-auto">
+                <div className="w-full max-w-7xl md:px-5 lg-6 mx-auto">
                     <div className="w-full">
                         {/* 상품 평균 별점 */}
                         <div
-                            className="grid grid-cols-1 xl:grid-cols-1 gap-11 pb-11 border-b border-gray-100 max-xl:max-w-2xl max-xl:mx-auto">
-                            <div className="p-8 bg-yellow-50 rounded-3xl flex items-center justify-center flex-col">
-                                <h2 className="font-manrope font-bold text-5xl text-amber-400 mb-6">{productData?.score}</h2>
+                            className="grid grid-cols-1 xl:grid-cols-1 gap-11 pb-5 border-b border-gray-100 max-xl:max-w-2xl max-xl:mx-auto">
+                            <div className="p-6 bg-yellow-50 rounded-3xl flex items-center justify-center flex-col">
+                                <h2 className="font-manrope font-bold text-4xl text-amber-400 mb-6">{productData?.score}</h2>
                                 <AverageRating score={productData?.score ?? 5}/>
-                                <p className="font-medium text-xl leading-8 text-gray-900 text-center">{productData?.reviewCount} Ratings</p>
+                                <p className="font-semibold text-lg leading-8 text-gray-800 text-center">{productData?.reviewCount} Ratings</p>
                             </div>
                         </div>
 
                         {/* 정렬 탭 */}
-                        <div className="flex justify-between items-center border-t border-b border-gray-200 py-2 mb-4">
+                        <div className="flex text-sm sm:text-sm justify-between items-center border-t border-b border-gray-200 py-2 mb-4">
                             <nav
                                 className="tabs tabs-bordered"
                                 aria-label="정렬 탭"
@@ -159,9 +161,12 @@ function ReviewItem({review, productId}: ReviewItemProps) {
         },
     });
 
+    // 좋아요 클릭 핸들러, 애니메이션
+    const {handleLikeClick, containerRef, hearts} = useLikeClick(toggleLikeMutation.mutate, review);
+
     return (
-        <div className="relative">
-        <div className="bg-white rounded-md p-6 shadow-md mb-2">
+        <div className="relative" ref={containerRef}>
+        <div className="bg-white rounded-md p-5 shadow-md mb-2">
             {/* 작성자 정보와 작성일*/}
             <div className="flex sm:items-center flex-col min-[400px]:flex-row justify-between gap-5 mb-3">
                 <div className="flex items-center gap-3">
@@ -182,7 +187,11 @@ function ReviewItem({review, productId}: ReviewItemProps) {
             </div>
 
             {/* 리뷰 텍스트 */}
-            <p className="font-normal text-base sm:text-base leading-7.5 text-gray-500 max-xl:text-justify mb-3">{review.comment}</p>
+            <p className="font-normal text-sm sm:text-sm leading-6 text-gray-600 max-xl:text-justify mb-3"
+               style={{ whiteSpace: 'pre-line' }}
+            >
+                {review.comment}
+            </p>
 
             {/* 이미지 */}
             {review.images?.length > 0 && (
@@ -195,7 +204,7 @@ function ReviewItem({review, productId}: ReviewItemProps) {
                             key={img.imgId}
                             src={`http://localhost/s_${img.imgUrl}`}
                             alt="리뷰이미지"
-                            className="w-25 h-25 sm:w-25 sm:h-25 rounded-lg object-cover flex-shrink-0 border-1 border-gray-100 "
+                            className="w-25 h-25 sm:w-25 sm:h-25 rounded-lg object-cover flex-shrink-0 border-1 border-gray-300 "
                         />
                     ))}
                 </div>
@@ -219,7 +228,7 @@ function ReviewItem({review, productId}: ReviewItemProps) {
             <div className="flex justify-between items-center text-sm sm:text-base mt-3">
                 {/* 좋아요 버튼 */}
                 <button
-                    onClick={() => toggleLikeMutation.mutate(review.reviewId)}
+                    onClick={handleLikeClick}
                     disabled={toggleLikeMutation.isPending}
                     className={`flex items-center gap-1 px-2 py-1 rounded-full border font-medium text-sm sm:text-sm
                         ${review.isLiked
@@ -237,6 +246,11 @@ function ReviewItem({review, productId}: ReviewItemProps) {
                 >
                     신고하기
                 </button>
+
+                {/* 하트 이펙트 - 반드시 relative 컨테이너 안에서 렌더 */}
+                {hearts.map((heart) => (
+                    <FloatingHearts key={heart.id} x={heart.x} y={heart.y} />
+                ))}
             </div>
         </div>
             {/* 리뷰 볼래 말래 */}

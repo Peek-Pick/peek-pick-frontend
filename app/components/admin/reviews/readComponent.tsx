@@ -5,12 +5,15 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { deleteAdminReview, toggleAdminReview } from "~/api/reviews/adminReviewAPI";
 import { useSearchParams } from "react-router";
 import { useQueryClient } from "@tanstack/react-query";
+import LoadingComponent from "~/components/common/loadingComponent";
 
 export interface AdminReviewDetailProps {
     data: AdminReviewDetailDTO;
+    isLoading?: boolean;
+    isError?: boolean;
 }
 
-export default function ReadComponent({ data }: AdminReviewDetailProps) {
+export default function ReadComponent({ data, isLoading, isError }: AdminReviewDetailProps) {
     const queryClient = useQueryClient();
 
     const navigate = useNavigate();
@@ -68,6 +71,10 @@ export default function ReadComponent({ data }: AdminReviewDetailProps) {
             console.error(error);
         }
     };
+    if (isLoading)
+        return <LoadingComponent isLoading />;
+    if (isError || !data)
+        return <div className="p-4 text-red-500">리뷰 정보 불러오기 실패</div>;
 
     return (
         <div className="flex flex-col min-h-screen px-4 py-6 bg-white dark:bg-gray-900">

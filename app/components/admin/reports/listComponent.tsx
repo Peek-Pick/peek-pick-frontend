@@ -1,15 +1,18 @@
 import { useNavigate } from "react-router-dom";
-import  {ReportReason, ReportReasonDescriptions} from "~/hooks/useReviewReport";
+import  {ReportReason, ReportReasonDescriptions} from "~/hooks/reviews/useReviewReport";
+import LoadingComponent from "~/components/common/loadingComponent";
 
 export interface AdminReportListProps {
-    data: AdminReviewReportDTO[];
+    data?: AdminReviewReportDTO[];
+    isLoading?: boolean;
+    isError?: boolean;
     page: number;
     category?: string;
     keyword?: string;
     hidden?: boolean
 }
 
-export default function ListComponent({data, page, category, keyword, hidden}: AdminReportListProps) {
+export default function ListComponent({data, isLoading, isError, page, category, keyword, hidden}: AdminReportListProps) {
     const navigate = useNavigate();
 
     const reasonColorMap: Record<ReportReason, string> = {
@@ -19,21 +22,26 @@ export default function ListComponent({data, page, category, keyword, hidden}: A
         [ReportReason.PROFANITY]: "bg-purple-100 text-purple-800",
     };
 
+    if (isLoading)
+        return <LoadingComponent isLoading />;
+    if (isError || !data)
+        return <div className="p-4 text-red-500">신고 목록 불러오기 실패</div>;
+
     return (
         <div>
             <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
                 <div className="max-w-full overflow-x-auto">
                     <table className="min-w-full text-sm divide-y divide-gray-200">
-                        <thead className="bg-gray-100">
+                        <thead className="bg-gray-50">
                         <tr>
-                            <th className="w-1/9 px-4 py-2 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">#</th>
-                            <th className="w-1/9 px-4 py-2 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">리뷰번호</th>
-                            <th className="w-1/9 px-4 py-2 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">작성자번호</th>
-                            <th className="w-1/9 px-4 py-2 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">신고자번호</th>
-                            <th className="w-1/9 px-4 py-2 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">신고사유</th>
-                            <th className="w-2/9 px-4 py-2 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">신고일</th>
-                            <th className="w-1/9 px-4 py-2 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">리뷰상세</th>
-                            <th className="w-1/9 px-4 py-2 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">작성자상세</th>
+                            <th className="w-1/9 px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                            <th className="w-1/9 px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">리뷰번호</th>
+                            <th className="w-1/9 px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">작성자번호</th>
+                            <th className="w-1/9 px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">신고자번호</th>
+                            <th className="w-1/9 px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">신고사유</th>
+                            <th className="w-2/9 px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">신고일</th>
+                            <th className="w-1/9 px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">리뷰상세</th>
+                            <th className="w-1/9 px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">작성자상세</th>
                         </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">

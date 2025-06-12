@@ -4,7 +4,7 @@ import { useQuery} from "@tanstack/react-query";
 import type { PagingResponse } from "~/types/common";
 import { getAdminReviewReportList } from "~/api/reviews/adminReviewAPI";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFlag } from "@fortawesome/free-solid-svg-icons";
+import {faFlag, faStar} from "@fortawesome/free-solid-svg-icons";
 import FilterBar from "~/components/admin/reports/reportFilterBar";
 import ListComponent from "~/components/admin/reports/listComponent";
 import PaginationComponent from "~/components/common/PaginationComponent";
@@ -66,13 +66,13 @@ function ListPage() {
         staleTime: 1000 * 60 * 5
     });
 
-    if (isLoading) return <div className="p-4 text-gray-600">Loading...</div>;
-    if (isError || !data) return <div className="p-4 text-red-500">An error occurred</div>;
-
     return (
         <div>
             <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                <FontAwesomeIcon icon={faFlag} /> 리뷰 신고 관리
+                <FontAwesomeIcon
+                    icon={faFlag}
+                    style={{ width: '20px', height: '20px' }}
+                /> 리뷰 관리 리뷰 신고 관리
             </h3>
 
             {/* 검색 바 */}
@@ -85,8 +85,8 @@ function ListPage() {
 
             {/* 검색 결과 리뷰 리스트 */}
             <ListComponent
-                data={data.content} page={page}
-                category={category} keyword={keyword} hidden={hidden}
+                data={data?.content} isLoading={isLoading} isError={isError}
+                page={page} category={category} keyword={keyword} hidden={hidden}
             />
 
             {/* 페이지네이션 컴포넌트 추가 */}

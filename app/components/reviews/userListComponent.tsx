@@ -50,7 +50,7 @@ export default function UserListComponent({reviewCount, reviewList, fetchNextPag
     return (
         <div>
             <section className="relative">
-                <div className="w-full max-w-7xl px-4 md:px-5 lg-6 mx-auto">
+                <div className="w-full max-w-7xl md:px-5 lg-6 mx-auto">
                     <div className="w-full">
                         {/* 정렬 탭 */}
                         <div className="flex justify-between items-center border-t border-b border-gray-200 py-4 mb-2">
@@ -67,7 +67,7 @@ export default function UserListComponent({reviewCount, reviewList, fetchNextPag
                                     <div className="flex items-center gap-3">
                                         <img src={review.imageUrl || "/example.jpg"}
                                              className="w-20 h-20 rounded-lg object-cover border-2 border-gray-100" alt={"상품정보"}/>
-                                        <h6 className="font-semibold text-md leading-8 text-gray-600">{review.name}</h6>
+                                        <h6 className="font-semibold text-base leading-8 text-gray-600">{review.name}</h6>
                                     </div>
                                 </div>
 
@@ -79,12 +79,16 @@ export default function UserListComponent({reviewCount, reviewList, fetchNextPag
                                         ))}
                                     </div>
                                     <p className="font-normal text-sm sm:text-sm text-gray-400">
-                                        작성일자 {new Date(review.regDate).toLocaleDateString()}
+                                        {new Date(review.regDate).toLocaleDateString()}
                                     </p>
                                 </div>
 
                                 {/* 리뷰 텍스트 */}
-                                <p className="line-clamp-4 font-normal text-base sm:text-base leading-7.5 text-gray-600 max-xl:text-justify mb-2">{review.comment}</p>
+                                <p className="line-clamp-5 font-normal text-sm sm:text-sm leading-6 text-gray-600 max-xl:text-justify mb-1"
+                                   style={{ whiteSpace: 'pre-line' }}
+                                >
+                                    {review.comment}
+                                </p>
 
                                 <div className="flex flex-col-2 sm:flex-row items-stretch justify-end gap-4 mt-4 w-full">
                                     {/* 리뷰 수정하기 버튼 */}

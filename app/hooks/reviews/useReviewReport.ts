@@ -20,7 +20,7 @@ export const ReportReasonDescriptions: Record<ReportReason, string> = {
 
 export function useReviewReport(reviewId: number) {
     const [selectedReason, setSelectedReason] = useState<ReportReason | "">("");
-    
+
     // 신고 뮤테이션
     const reportMutation = useMutation({
         mutationFn: () => {
@@ -104,4 +104,4 @@ export function useReviewReport(reviewId: number) {
     };
 
     return {openReportModal};
-}
+    }
