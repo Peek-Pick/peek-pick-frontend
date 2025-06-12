@@ -13,7 +13,7 @@ import {
     updateNotice,
     uploadImages,
     deleteNotice,
-} from "~/api/noticeAPI";
+} from "~/api/notices/adminNoticesAPI";
 import Swal from "sweetalert2";
 
 export default function EditPage() {

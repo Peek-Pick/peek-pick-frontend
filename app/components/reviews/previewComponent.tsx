@@ -2,9 +2,11 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getProductPreviews, toggleReview } from "~/api/reviews/reviewAPI";
 import { useState, useEffect } from "react";
 import { getProductIdByBarcode} from "~/api/reviews/reviewAPI"
-import { useReviewReport } from "~/hooks/useReviewReport";
+import { useReviewReport } from "~/hooks/reviews/useReviewReport";
 import { Rating20 } from "~/components/reviews/rating/rating"
 import { useNavigate } from "react-router-dom";
+import { useLikeClick } from "~/hooks/reviews/useLikeClick";
+import FloatingHearts from "~/components/reviews/effect/floatingHearts";
 
 interface PreviewProps {
     barcode: string;
@@ -40,8 +42,8 @@ export default function PreviewComponent({ barcode, reviewNum }: PreviewProps) {
 
     return (
         <div>
-            <section className="py-24 relative">
-                <div className="w-full max-w-7xl px-4 md:px-5 lg-6 mx-auto">
+            <section className="relative">
+                <div className="w-full max-w-7xl md:px-5 lg-6 mx-auto">
                     <div className="w-full">
                         {/* 헤더: 타이틀 + 링크 */}
                         <div className="flex justify-between items-center border-t border-b border-gray-200 py-4 mb-2">
@@ -50,7 +52,7 @@ export default function PreviewComponent({ barcode, reviewNum }: PreviewProps) {
                             </span>
                             <button
                                 onClick={() => navigate(`/reviews/product/${barcode}`)}
-                                className="text-base text-gray-500 hover:text-gray-700 hover:font-semibold transition"
+                                className="text-sm sm:text-sm text-gray-500 hover:text-gray-700 hover:font-semibold transition"
                             >
                                 전체보기 &gt;
                             </button>
@@ -92,10 +94,13 @@ function ReviewItem({ review, productId }: ReviewItemProps) {
         },
     });
 
+    // 좋아요 클릭 핸들러, 애니메이션
+    const {handleLikeClick, containerRef, hearts} = useLikeClick(toggleLikeMutation.mutate, review);
+
     return (
-        <div className="relative">
+        <div className="relative" ref={containerRef}>
         <div
-            className={`bg-white rounded-md p-6 shadow-md mb-2 transition-opacity duration-200 ${
+            className={`bg-white rounded-md p-5 shadow-md mb-2 transition-opacity duration-200 ${
                 review.isHidden && !showHidden ? "opacity-50" : "opacity-100"
             }`}
         >
@@ -119,7 +124,11 @@ function ReviewItem({ review, productId }: ReviewItemProps) {
             </div>
 
             {/* 리뷰 텍스트 */}
-            <p className="font-normal text-base sm:text-base leading-7.5 text-gray-500 max-xl:text-justify mb-3">{review.comment}</p>
+            <p className="font-normal text-sm sm:text-sm leading-6 text-gray-600 max-xl:text-justify mb-2"
+               style={{ whiteSpace: 'pre-line' }}
+            >
+                {review.comment}
+            </p>
 
             {/* 이미지 */}
             {review.images?.length > 0 && (
@@ -132,7 +141,7 @@ function ReviewItem({ review, productId }: ReviewItemProps) {
                             key={img.imgId}
                             src={`http://localhost/s_${img.imgUrl}`}
                             alt="리뷰이미지"
-                            className="w-25 h-25 sm:w-25 sm:h-25 rounded-lg object-cover flex-shrink-0 border-1 border-gray-100 "
+                            className="w-25 h-25 sm:w-25 sm:h-25 rounded-lg object-cover flex-shrink-0 border-1 border-gray-300 "
                         />
                     ))}
                 </div>
@@ -156,7 +165,7 @@ function ReviewItem({ review, productId }: ReviewItemProps) {
             <div className="flex justify-between items-center text-sm sm:text-base mt-3">
                 {/* 좋아요 버튼 */}
                 <button
-                    onClick={() => toggleLikeMutation.mutate(review.reviewId)}
+                    onClick={handleLikeClick}
                     disabled={toggleLikeMutation.isPending}
                     className={`flex items-center gap-1 px-2 py-1 rounded-full border font-medium text-sm sm:text-sm
                         ${review.isLiked
@@ -174,6 +183,11 @@ function ReviewItem({ review, productId }: ReviewItemProps) {
                 >
                     신고하기
                 </button>
+
+                {/* 하트 이펙트 - 반드시 relative 컨테이너 안에서 렌더 */}
+                {hearts.map((heart) => (
+                    <FloatingHearts key={heart.id} x={heart.x} y={heart.y} />
+                ))}
             </div>
         </div>
             {review.isHidden && !showHidden && (

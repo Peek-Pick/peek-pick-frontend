@@ -1,3 +1,4 @@
+import { Icon } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
     FaStore, FaUserCog, FaCoins, FaAngleRight,
@@ -58,18 +59,17 @@ export default function ProfileHeader() {
         { icon: <FaBarcode className="text-green-500 text-2xl mb-2" />, label: 'Barcode History', value: myData.barcodeHistoryCount, to:'/barcode/history' },
     ];
 
-    const buttons: [string, React.ComponentType<React.SVGProps<SVGSVGElement>>][] = [
-        ['Language Settings', IoLanguage],
-        ['Support', FaQuestionCircle],
-        ['Notifications', FaBell],
-        ['Privacy Policy', FaUserShield],
-        ['Terms of Service', FaFileContract],
-        ['Licenses', FaIdBadge],
-        ['Logout', IoLogOutOutline],
-        ['Delete Account', FaUserAltSlash],
+    const buttons = [
+        { icon: IoLanguage, label: 'Language Settings', to: '' },
+        { icon: FaQuestionCircle, label: 'Support', to: '' },
+        { icon: FaBell, label: 'Notifications', to: '' },
+        { icon: FaUserShield, label: 'Privacy Policy', to: '' },
+        { icon: FaFileContract, label: 'Terms of Service', to: '' },
+        { icon: FaIdBadge, label: 'Licenses', to: '' },
+        { icon: IoLogOutOutline, label: 'Logout', to: '/logout' },
+        { icon: FaUserAltSlash, label: 'Delete Account', to: '' },
     ];
 
-    console.log(myData.profileImgUrl)
     return (
         <>
             {/* 커버 + 프로필 */}
@@ -123,10 +123,14 @@ export default function ProfileHeader() {
 
             {/* 기능 버튼 */}
             <div className="p-4 space-y-2">
-                {buttons.map(([label, Icon], i) => (
-                    <button key={i} className="w-full flex items-center px-4 py-3 rounded-lg hover:bg-gray-100 text-gray-600">
-                        <Icon className="mr-2" />
-                        {label}
+                {buttons.map(({ icon: Icon, label, to }, index) => (
+                    <button
+                    key={index}
+                    onClick={() => navigate(to)}
+                    className="w-full flex items-center px-4 py-3 rounded-lg hover:bg-gray-100 text-gray-600 text-base"
+                    >
+                    <Icon className="mr-2" />
+                    <span>{label}</span>
                     </button>
                 ))}
             </div>

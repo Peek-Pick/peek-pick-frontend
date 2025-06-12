@@ -13,6 +13,7 @@ export default [
 
         // 로그인
         route('/login', 'routes/auth/loginPage.tsx'),
+        route("/logout", 'routes/auth/logoutPage.tsx'),
 
         // 회원가입
         route("/signup", "layout/signupLayout.tsx", [
@@ -46,10 +47,8 @@ export default [
         route("/reviews/:rid", "routes/reviews/detailPage.tsx"),
 
         // 공지
-        // route("notices/list",       "routes/notices/listPage.tsx"),
-        // route("notices/add",        "routes/notices/addPage.tsx"),
-        // route("notices/:id",        "routes/notices/detailPage.tsx"),   // <-- useParams().id
-        // route("notices/:id/edit",   "routes/notices/editPage.tsx"),
+        route("notices/list",       "routes/notices/listPage.tsx"),
+        route("notices/:id",        "routes/notices/detailPage.tsx"),   // <-- useParams().id
 
         // 문의사항
         route("inquiries/list",       "routes/inquiries/listPage.tsx"),
