@@ -24,7 +24,7 @@ function DetailPage() {
                 setInquiry(res.data);
             })
             .catch((err) => {
-                // if backend threw "권한이 없습니다" (HTTP 500 in your case)
+                // if backend threw "권한이 없습니다" (HTTP 500)
                 console.error(err);
                 setErrorModal(true);
             })
@@ -41,11 +41,9 @@ function DetailPage() {
     if (loading) return <LoadingComponent isLoading={true} />;
 
     return (
-        <div className="p-4">
+        <div>
             {inquiry && <DetailComponent inquiry={inquiry} navigate={nav} />}
             <BottomNavComponent />
-            {/* 임시 footer 공간 */}
-            <div className="h-20" />
 
             {errorModal && (
                 <ModalComponent

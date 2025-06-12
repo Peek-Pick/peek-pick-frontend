@@ -1,18 +1,19 @@
-import {useState} from "react";
-import type {InquiryResponseDTO, InquiryType} from "~/types/inquiries";
-import {deleteInquiry} from "~/api/inquiriesAPI";
-import {Link} from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import type { InquiryResponseDTO, InquiryType } from "~/types/inquiries";
+import { useNavigate } from "react-router-dom";
 import ImageModalComponent from "~/components/common/ImageModalComponent";
+import {Edit, MoreVertical, Trash} from "lucide-react";
+import {useDeleteInquiry} from "~/hooks/useInquiryMutation";
 
 const API_URL = import.meta.env.VITE_API_URL?.replace("/api/v1", "") ?? "http://localhost:8080";
 
 const INQUIRY_TYPES: { value: InquiryType; label: string }[] = [
-    {value: "ACCOUNT", label: "계정/로그인"},
-    {value: "POINT_REVIEW", label: "포인트/리뷰"},
-    {value: "PRODUCT_ADD", label: "상품 추가"},
-    {value: "HOW_TO_USE", label: "사용 방법"},
-    {value: "BUG", label: "오류/버그"},
-    {value: "ETC", label: "기타 문의"},
+    { value: "ACCOUNT", label: "계정/로그인" },
+    { value: "POINT_REVIEW", label: "포인트/리뷰" },
+    { value: "PRODUCT_ADD", label: "상품 추가" },
+    { value: "HOW_TO_USE", label: "사용 방법" },
+    { value: "BUG", label: "오류/버그" },
+    { value: "ETC", label: "기타 문의" },
 ];
 
 interface Props {
@@ -20,15 +21,35 @@ interface Props {
     navigate: (to: string) => void;
 }
 
-export default function DetailComponent({inquiry, navigate}: Props) {
+function DetailComponent({ inquiry, navigate: navigateProp }: Props) {
     const [modalImage, setModalImage] = useState<string | null>(null);
+    const [menuOpen, setMenuOpen] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
+    const deleteInquiryMutation = useDeleteInquiry();
+    const navigate = useNavigate();
+
     const handleDelete = async () => {
         if (!confirm("정말 삭제하시겠습니까?")) return;
-        await deleteInquiry(inquiry.inquiryId);
-        navigate("/inquiries/list");
+        try {
+            await deleteInquiryMutation.mutateAsync(inquiry.inquiryId);
+            navigate("/inquiries/list");
+        } catch (error) {
+            alert("삭제 중 오류가 발생했습니다.");
+        }
     };
-    const typeLabel =
-        INQUIRY_TYPES.find((t) => t.value === inquiry.type)?.label ?? inquiry.type;
+
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+                setMenuOpen(false);
+            }
+        }
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    const typeLabel = INQUIRY_TYPES.find((t) => t.value === inquiry.type)?.label ?? inquiry.type;
 
     const formatDate = (iso: string) => {
         const d = new Date(iso);
@@ -43,49 +64,118 @@ export default function DetailComponent({inquiry, navigate}: Props) {
         if (isToday) {
             return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
         } else {
-            const yy = d.getFullYear().toString().slice(-2);
+            const yyyy = d.getFullYear();
             const mm = pad(d.getMonth() + 1);
             const dd = pad(d.getDate());
-            return `${yy}.${mm}.${dd}`;
+            const hh = pad(d.getHours());
+            const mi = pad(d.getMinutes());
+            return `${yyyy}.${mm}.${dd} ${hh}:${mi}`;
         }
     };
 
     return (
-        <div className="max-w-3xl mx-auto p-6 bg-white rounded-2xl shadow-lg space-y-6">
-            {/* 제목 */}
-            <h1 className="text-3xl font-extrabold text-gray-800">{inquiry.title}</h1>
+        <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow px-4 pt-4 pb-6 relative space-y-4">
+            {/* 상단 네비 영역 */}
+            <div className="flex items-center justify-between text-gray-600">
+                {/* 왼쪽: 뒤로가기 */}
+                <button
+                    onClick={() => {
+                        if (window.history.length > 1) { navigate(-1); }
+                        else { navigate("/inquiries/list"); }
+                    }}
+                    className="text-yellow-500 hover:text-yellow-600 p-1"
+                    aria-label="목록으로"
+                >
+                    <span className="text-2xl w-6 h-6 flex items-center justify-center">&lt;</span>
+                </button>
 
-            {/* 메타 정보 */}
-            <div className="flex flex-wrap gap-4 text-sm text-gray-500">
-                <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded">{typeLabel}</span>
-                <span> 작성자:{" "}
-                    <span className="font-medium text-gray-700">{inquiry.userNickname}</span>
-                </span>
-                <span> 등록일:{" "}
-                    <span className="font-medium text-gray-700">{formatDate(inquiry.regDate)}</span>
-                </span>
+                {/* 중앙: 문의번호 */}
+                <div className="flex-1 text-center text-sm text-gray-400 truncate py-0.5">
+                    문의사항 #{inquiry.inquiryId}
+                </div>
+
+                {/* 오른쪽: 더보기 메뉴 */}
+                <div className="relative" ref={menuRef}>
+                    <button
+                        onClick={() => setMenuOpen((prev) => !prev)}
+                        className="text-yellow-500 hover:text-yellow-600 p-1"
+                        aria-label="더보기"
+                    >
+                        <MoreVertical className="w-6 h-6" />
+                    </button>
+                    {menuOpen && (
+                        <div className="absolute right-0 mt-2 w-28 bg-white border rounded shadow z-10">
+                            <button
+                                className="w-full px-3 py-2 text-left hover:bg-gray-100 flex items-center gap-2"
+                                onClick={() => navigate(`/inquiries/${inquiry.inquiryId}/edit`)}
+                            >
+                                <Edit className="w-4 h-4" />
+                                수정
+                            </button>
+                            <button
+                                className="w-full px-3 py-2 text-left hover:bg-gray-100 text-red-600 flex items-center gap-2"
+                                onClick={handleDelete}
+                            >
+                                <Trash className="w-4 h-4" />
+                                삭제
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
 
+            {/* 제목 및 메타 정보 */}
+            <div className="mb-0.5 mt-1">
+                <h1 className="text-lg sm:text-xl font-extrabold text-gray-900 break-words leading-tight">
+                    <span className="text-yellow-500 mr-2">[{typeLabel}]</span>{inquiry.title}
+                </h1>
+                <div className="flex flex-wrap items-center gap-3 mt-2 ml-1 text-sm text-gray-600">
+                    <span className="font-semibold">{inquiry.userNickname}</span>
+                    <span className="text-gray-300">|</span>
+                    <span>작성일:
+                        <span className="ml-1 bg-gray-200 rounded px-1.5 py-0.5">
+                            {formatDate(inquiry.regDate)}
+                        </span>
+                    </span>
+
+                    {inquiry.modDate !== inquiry.regDate && (
+                        <>
+                            <span>수정일:
+                                <span className="ml-1 bg-gray-200 rounded px-1.5 py-0.5">
+                                    {formatDate(inquiry.modDate)}
+                                </span>
+                            </span>
+                        </>
+                    )}
+                </div>
+            </div>
+
+            <hr className="border-t border-gray-200 my-2" />
             {/* 본문 */}
-            <div className="prose prose-sm prose-gray">
-                <p>{inquiry.content}</p>
+            <div className="prose prose-sm prose-gray mt-5 max-w-none whitespace-pre-wrap">
+                {inquiry.content.split('\n').map((line, idx) => (
+                    <span key={idx}>{line}
+                        <br />
+                    </span>
+                ))}
             </div>
 
             {/* 이미지 그리드 */}
             {inquiry.imgUrls && inquiry.imgUrls.length > 0 && (
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 pt-2">
                     {inquiry.imgUrls.map((url) => {
                         const src = url.startsWith("http") ? url : `${API_URL}${url}`;
                         return (
                             <button
                                 key={url}
                                 onClick={() => setModalImage(src)}
-                                className="overflow-hidden rounded-lg border hover:shadow-md transition-shadow"
+                                className="relative w-full aspect-square overflow-hidden rounded-lg border border-gray-200 hover:shadow-sm transition-shadow"
+                                type="button"
                             >
                                 <img
                                     src={src}
                                     alt="첨부 이미지"
-                                    className="w-full h-24 object-cover"
+                                    className="w-full h-full object-cover"
                                     onError={(e) => {
                                         e.currentTarget.src = "";
                                     }}
@@ -95,29 +185,6 @@ export default function DetailComponent({inquiry, navigate}: Props) {
                     })}
                 </div>
             )}
-
-            {/* 액션 버튼 */}
-            <div className="flex space-x-3">
-                <button
-                    onClick={() => navigate(`/inquiries/${inquiry.inquiryId}/edit`)}
-                    className="flex-1 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
-                >
-                    수정
-                </button>
-                <button
-                    onClick={handleDelete}
-                    className="flex-1 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition"
-                >
-                    삭제
-                </button>
-            </div>
-
-            {/* 목록으로 */}
-            <div className="text-right">
-                <Link to="/inquiries/list" className="text-gray-500 hover:underline">
-                    ← 목록으로
-                </Link>
-            </div>
 
             {/* 이미지 모달 */}
             {modalImage && (
@@ -130,3 +197,5 @@ export default function DetailComponent({inquiry, navigate}: Props) {
         </div>
     );
 }
+
+export default DetailComponent

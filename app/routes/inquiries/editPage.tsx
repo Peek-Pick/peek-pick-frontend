@@ -20,12 +20,9 @@ function EditPage() {
     useEffect(() => {
         if (!id) return;
         fetchInquiry(+id)
-            .then((res) => {
-                setData(res.data);
-            })
+            .then((res) => setData(res.data))
             .catch((err) => {
                 console.error("문의 조회 중 오류:", err);
-                // 500 이거나 권한 관련 에러면 모달 띄우기
                 if (err.response?.status === 500) {
                     setShowAuthModal(true);
                 }
@@ -35,7 +32,7 @@ function EditPage() {
             });
     }, [id]);
 
-    async function handleSubmit(dto: InquiryRequestDTO, files: FileList | null) {
+    const handleSubmit = async (dto: InquiryRequestDTO, files: FileList | null) => {
         if (!id) return;
         setLoading(true);
         try {
@@ -43,7 +40,7 @@ function EditPage() {
             if (files && files.length > 0) {
                 await uploadImages(+id, files);
             }
-            navigate("/inquiries/list");
+            navigate(`/inquiries/${id}`);
         } catch (err: any) {
             console.error("문의 수정 중 오류:", err);
             if (err.response?.status === 500) {
@@ -54,9 +51,8 @@ function EditPage() {
         } finally {
             setLoading(false);
         }
-    }
+    };
 
-    // 모달 확인 시 이전 페이지로 돌아가기
     const handleModalClose = () => {
         setShowAuthModal(false);
         navigate(-1);
@@ -67,12 +63,9 @@ function EditPage() {
     }
 
     return (
-        <div className="p-4">
+        <div>
             {data && <EditComponent initialData={data} onSubmit={handleSubmit} />}
             <BottomNavComponent />
-            {/* 임시 footer 공간 */}
-            <div className="h-20" />
-
             {showAuthModal && (
                 <ModalComponent
                     message={"권한이 없습니다."}

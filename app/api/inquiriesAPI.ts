@@ -1,7 +1,6 @@
 import type { AxiosResponse } from "axios";
 import axiosInstance from "~/instance/axiosInstance";
 import type {
-    InquiryPageDTO,
     InquiryRequestDTO,
     InquiryResponseDTO,
 } from "~/types/inquiries";
@@ -9,11 +8,8 @@ import type {
 /**
  * 문의사항 목록(페이징) 조회
  */
-export function fetchInquiries(
-    page: number,
-    size: number
-): Promise<AxiosResponse<InquiryPageDTO>> {
-    return axiosInstance.get<InquiryPageDTO>(`inquiries`, {
+export function fetchInquiries(page: number, size?: number) {
+    return axiosInstance.get(`/inquiries`, {
         params: { page, size },
     });
 }
