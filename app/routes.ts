@@ -13,6 +13,7 @@ export default [
 
         // 로그인
         route('/login', 'routes/auth/loginPage.tsx'),
+        route("/logout", 'routes/auth/logoutPage.tsx'),
 
         // 회원가입
         route("/signup", "layout/signupLayout.tsx", [
