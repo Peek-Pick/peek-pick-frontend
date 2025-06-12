@@ -40,7 +40,7 @@ export default function SignupTagComponent() {
 
             const response = await SignupForm(data);
             console.log("회원가입 완료", response);
-            navigate("/home");
+            navigate('');          // 성공 시 인덱스 → 홈으로 이동
         } catch (error) {
             console.error("회원가입 실패", error);
             alert("회원가입 실패. 다시 시도해주세요.");

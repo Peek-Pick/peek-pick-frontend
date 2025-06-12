@@ -25,35 +25,8 @@ export interface InquiryResponseDTO {
     content: string;
     type: InquiryType;
     status: InquiryStatus;
+    isDelete: boolean;
     regDate: string;
     modDate: string;
     imgUrls: string[];
 }
-
-// 스프링 Data JPA Page<T> 구조
-export interface PageDTO<T> {
-    content: T[];
-    pageable: {
-        pageNumber: number;
-        pageSize: number;
-        offset: number;
-        paged: boolean;
-        unpaged: boolean;
-    };
-    totalElements: number;
-    totalPages: number;
-    last: boolean;
-    first: boolean;
-    sort: {
-        sorted: boolean;
-        unsorted: boolean;
-        empty: boolean;
-    };
-    number: number;
-    size: number;
-    numberOfElements: number;
-    empty: boolean;
-}
-
-// 문의사항 페이징 응답 타입
-export type InquiryPageDTO = PageDTO<InquiryResponseDTO>;

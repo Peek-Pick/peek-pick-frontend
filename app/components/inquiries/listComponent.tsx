@@ -1,109 +1,111 @@
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { fetchInquiries } from "~/api/inquiriesAPI";
-import type { InquiryResponseDTO } from "~/types/inquiries";
-import PaginationComponent from "~/components/common/PaginationComponent";
-import LoadingComponent from "../common/loadingComponent";
+import { useNavigate } from "react-router-dom";
+import { MessageSquare } from "lucide-react";
+import type { InquiryResponseDTO, InquiryType } from "~/types/inquiries";
 
-function ListComponent() {
-    const [searchParams, setSearchParams] = useSearchParams();
+const INQUIRY_TYPES: { value: InquiryType; label: string }[] = [
+    { value: "ACCOUNT", label: "계정/로그인" },
+    { value: "POINT_REVIEW", label: "포인트/리뷰" },
+    { value: "PRODUCT_ADD", label: "상품 추가" },
+    { value: "HOW_TO_USE", label: "사용 방법" },
+    { value: "BUG", label: "오류/버그" },
+    { value: "ETC", label: "기타 문의" },
+];
+
+interface ListComponentProps {
+    items: InquiryResponseDTO[];
+    size: number;
+    onSizeChange: (newSize: number) => void;
+}
+
+function ListComponent({ items, size, onSizeChange }: ListComponentProps) {
     const nav = useNavigate();
-    const raw = searchParams.get("page");
-    const initialPage = raw ? Math.max(0, parseInt(raw, 10)) : 0;
-    const [page, setPage] = useState(initialPage);
-    const size = 10;
-    const [pagesCache, setPagesCache] = useState<Record<number, InquiryResponseDTO[]>>({});
-    const [items, setItems] = useState<InquiryResponseDTO[]>([]);
-    const [totalElements, setTotalElements] = useState<number | null>(null);
-    const [loading, setLoading] = useState(true);
-
-    // 페이지 바뀔 때 URL 유지
-    useEffect(() => {
-        setSearchParams({ page: String(page) }, { replace: true });
-    }, [page, setSearchParams]);
-
-    // page가 바뀌면, 캐시 체크 후 필요하면 fetch
-    useEffect(() => {
-        if (pagesCache[page]) {
-            setItems(pagesCache[page]);
-            setLoading(false);
-            return;
-        }
-        setLoading(true);
-        fetchInquiries(page, size)
-            .then((res) => {
-                const content = res.data.content || [];
-                setItems(content);
-                setPagesCache((prev) => ({ ...prev, [page]: content }));
-                if (totalElements === null) {
-                    setTotalElements(res.data.totalElements || 0);
-                }
-            })
-            .catch(console.error)
-            .finally(() => setLoading(false));
-    }, [page, pagesCache, size, totalElements]);
 
     const handleDetail = (id: number) => {
         nav(`/inquiries/${id}`);
     };
 
-    // 날짜 포맷 함수
+    const handleAdd = () => {
+        nav("/inquiries/add");
+    };
+
     const formatDate = (iso: string) => {
         const d = new Date(iso);
         const now = new Date();
         const pad = (n: number) => n.toString().padStart(2, "0");
-
-        const isToday =
-            d.getFullYear() === now.getFullYear() &&
-            d.getMonth() === now.getMonth() &&
-            d.getDate() === now.getDate();
-
-        if (isToday) {
-            return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
-        } else {
-            const yy = d.getFullYear().toString().slice(-2);
-            const mm = pad(d.getMonth() + 1);
-            const dd = pad(d.getDate());
-            return `${yy}.${mm}.${dd}`;
-        }
+        const isToday = d.toDateString() === now.toDateString();
+        return isToday
+            ? `${pad(d.getHours())}:${pad(d.getMinutes())}`
+            : `${d.getFullYear().toString().slice(-2)}.${pad(d.getMonth() + 1)}.${pad(d.getDate())}`;
     };
 
-    if (loading) return <LoadingComponent isLoading />;
-
     return (
-        <div>
-            <button onClick={() => nav("/inquiries/add")} className="mb-4 px-4 py-2 bg-green-600 text-white rounded" >
-                문의 추가
-            </button>
+        <div className="w-full max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-6">
+            <div className="flex justify-between items-center mb-6">
+                <h2 className="flex items-center gap-2 text-xl font-bold text-gray-800">
+                    <MessageSquare className="w-6 h-6 text-yellow-500" />
+                    문의사항
+                </h2>
+                <div className="flex items-center gap-3">
+                    <select
+                        value={size}
+                        onChange={(e) => onSizeChange(Number(e.target.value))}
+                        className="border border-gray-300 rounded-md px-2 py-1 text-sm"
+                    >
+                        {[5, 10, 20, 50].map((n) => (
+                            <option key={n} value={n}>
+                                {n}개
+                            </option>
+                        ))}
+                    </select>
+                    <button
+                        onClick={handleAdd}
+                        className="px-4 py-1.5 rounded-md bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-semibold"
+                    >
+                        + 추가
+                    </button>
+                </div>
+            </div>
 
-            {items.length === 0 ? ( <p className="text-center text-gray-500">문의사항이 없습니다.</p> ) : (
-                <ul className="space-y-2">
-                    {items.map((item) => (
-                        <li key={item.inquiryId}
-                            className="flex items-center p-3 border rounded hover:bg-gray-50" >
-                            <div className="w-12 text-gray-500 text-sm flex-shrink-0">
-                                #{item.inquiryId}
-                            </div>
-                            <div className="flex-1 cursor-pointer font-medium text-blue-600 truncate"
-                                onClick={() => handleDetail(item.inquiryId)} >
-                                {item.title}
-                            </div>
-                            <div className="ml-4 text-sm text-gray-500 flex-shrink-0 flex items-center space-x-1">
-                                <span>{formatDate(item.regDate)}</span>
-                                <span>|</span>
-                                <span className="whitespace-nowrap">{item.userNickname}</span>
-                            </div>
-                        </li>
-                    ))}
+            {items.length === 0 ? (
+                <div className="py-8 text-center text-gray-400 text-sm">
+                    문의사항이 없습니다.
+                </div>
+            ) : (
+                <ul className="flex flex-col gap-2">
+                    {items.map((item) => {
+                        const typeLabel =
+                            INQUIRY_TYPES.find((t) => t.value === item.type)?.label ?? item.type;
+
+                        return (
+                            <li
+                                key={item.inquiryId}
+                                onClick={() => handleDetail(item.inquiryId)}
+                                className="flex items-center justify-between px-4 py-3 border border-gray-200 rounded-xl bg-white hover:bg-gray-50 transition cursor-pointer shadow-sm"
+                            >
+                                {/* ID + [type] + 제목 */}
+                                <div className="flex items-center gap-2 min-w-0">
+                                    <span className="text-xs text-yellow-500 font-semibold whitespace-nowrap">
+                                        #{item.inquiryId}
+                                    </span>
+                                    <span className="text-yellow-500 font-bold text-sm whitespace-nowrap">
+                                        [{typeLabel}]
+                                    </span>
+                                    <span className="text-sm text-gray-800 truncate max-w-[45vw]">
+                                        {item.title}
+                                    </span>
+                                </div>
+
+                                {/* 날짜 | 닉네임 */}
+                                <div className="flex items-center gap-1 text-xs text-gray-500 whitespace-nowrap pl-2">
+                                    <span>{formatDate(item.regDate)}</span>
+                                    <span className="text-gray-300">|</span>
+                                    <span>{item.userNickname}</span>
+                                </div>
+                            </li>
+                        );
+                    })}
                 </ul>
             )}
-
-            <PaginationComponent
-                currentPage={page}
-                totalPages={Math.ceil((totalElements ?? 0) / size)}
-                onPageChange={setPage}
-                maxPageButtons={10}
-            />
         </div>
     );
 }
