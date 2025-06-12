@@ -3,12 +3,18 @@ import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
 import type { ProductListDTO } from "~/types/products";
+import {
+    ProductLoading,
+    ProductInfiniteLoading,
+} from "~/util/loading/productLoading";
 
 interface Props {
     products: ProductListDTO[];
     fetchNextPage: () => void | Promise<unknown>;
     hasNextPage?: boolean;
     isFetchingNextPage: boolean;
+    isLoading: boolean;
+    isError: boolean;
 }
 
 export default function ListComponent({
@@ -16,6 +22,8 @@ export default function ListComponent({
                                           fetchNextPage,
                                           hasNextPage,
                                           isFetchingNextPage,
+                                          isLoading,
+                                          isError,
                                       }: Props) {
     const bottomRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
@@ -32,6 +40,19 @@ export default function ListComponent({
         return () => observer.disconnect();
     }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
+    // 1) 초기 로딩
+    if (isLoading) {
+        return <ProductLoading />;
+    }
+    // 2) 에러
+    if (isError) {
+        return (
+            <p className="p-4 text-center text-red-500 text-base sm:text-lg">
+                상품 정보를 불러오지 못했습니다.
+            </p>
+        );
+    }
+    // 3) 빈 목록
     if (products.length === 0) {
         return (
             <p className="p-4 text-center text-gray-500">
@@ -71,10 +92,7 @@ export default function ListComponent({
 
                     <div className="flex items-center text-[13px] text-[#222] mb-1 space-x-4">
                         <span className="flex items-center">
-                            <Icon
-                                icon="ri:heart-fill"
-                                className="w-4 h-4 text-red-500 mr-1"
-                            />
+                            <Icon icon="ri:heart-fill" className="w-4 h-4 text-red-500 mr-1" />
                             {p.likeCount ?? 0}
                         </span>
                         <span className="flex items-center">
@@ -94,12 +112,10 @@ export default function ListComponent({
                 </div>
             ))}
 
+            {/* 무한 스크롤 추가 로딩 */}
+            {isFetchingNextPage && <ProductInfiniteLoading />}
+
             {hasNextPage && <div ref={bottomRef} className="col-span-full h-1" />}
-            {isFetchingNextPage && (
-                <p className="col-span-full text-center py-2 text-sm">
-                    로딩 중…
-                </p>
-            )}
             {!hasNextPage && (
                 <p className="col-span-full text-center py-2 text-sm text-gray-400">
                     마지막 상품입니다.
