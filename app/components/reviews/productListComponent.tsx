@@ -5,9 +5,10 @@ import type {ProductDetailDTO} from "~/types/products";
 import { useReviewReport } from "~/hooks/useReviewReport";
 import AverageRating from "~/components/reviews/rating/averageRating";
 import { Rating20 } from "~/components/reviews/rating/rating"
+import {ReviewLoading, ReviewInfiniteLoading} from "~/util/loading/reviewLoading";
 
 export interface ReviewListComponentProps {
-    productDetail?: ProductDetailDTO
+    productData?: ProductDetailDTO
     productId: number;
     reviewList: ReviewDetailDTO[];
     fetchNextPage: (options?: FetchNextPageOptions) => Promise<InfiniteQueryObserverResult<any, Error>>;
@@ -17,10 +18,23 @@ export interface ReviewListComponentProps {
     isError: boolean;
     sortType: "latest" | "likes";
     setSortType: React.Dispatch<React.SetStateAction<"latest" | "likes">>;
+    productLoading: boolean;
+    productError: boolean
+
 }
 
-export default function ProductListComponent({productDetail, productId, reviewList, fetchNextPage, hasNextPage, isFetchingNextPage,
-                                                 isLoading, isError, sortType, setSortType}: ReviewListComponentProps) {
+export default function ProductListComponent({productData, productId, reviewList, fetchNextPage, hasNextPage, isFetchingNextPage,
+                                                 isLoading, isError, sortType, setSortType, productLoading, productError}: ReviewListComponentProps) {
+    if (isLoading || productLoading)
+        return <ReviewLoading />;
+    if (isError || productError|| !reviewList || !productData) {
+        return (
+            <p className="text-center p-4 text-red-500 text-base sm:text-lg">
+                리뷰 정보를 불러오지 못했습니다
+            </p>
+        );
+    }
+
     const queryClient = useQueryClient();
 
     // 무한 스크롤 감지 요소
@@ -54,23 +68,19 @@ export default function ProductListComponent({productDetail, productId, reviewLi
         }
     };
 
-    if (isLoading)
-        return <p className="text-center p-4 text-base sm:text-lg">로딩 중입니다</p>;
-    if (isError)
-        return<p className="text-center p-4 text-red-500 text-base sm:text-lg">리뷰를 불러오지 못했습니다</p>
 
     return (
         <div>
-            <section className="py-24 relative">
+            <section className="relative">
                 <div className="w-full max-w-7xl px-4 md:px-5 lg-6 mx-auto">
                     <div className="w-full">
                         {/* 상품 평균 별점 */}
                         <div
                             className="grid grid-cols-1 xl:grid-cols-1 gap-11 pb-11 border-b border-gray-100 max-xl:max-w-2xl max-xl:mx-auto">
                             <div className="p-8 bg-yellow-50 rounded-3xl flex items-center justify-center flex-col">
-                                <h2 className="font-manrope font-bold text-5xl text-amber-400 mb-6">{productDetail?.score}</h2>
-                                <AverageRating score={productDetail?.score ?? 5}/>
-                                <p className="font-medium text-xl leading-8 text-gray-900 text-center">{productDetail?.reviewCount} Ratings</p>
+                                <h2 className="font-manrope font-bold text-5xl text-amber-400 mb-6">{productData?.score}</h2>
+                                <AverageRating score={productData?.score ?? 5}/>
+                                <p className="font-medium text-xl leading-8 text-gray-900 text-center">{productData?.reviewCount} Ratings</p>
                             </div>
                         </div>
 
@@ -119,7 +129,7 @@ export default function ProductListComponent({productDetail, productId, reviewLi
             {hasNextPage && <div ref={bottomRef} className="h-1"/>}
 
             {/* 리뷰 로딩중 */}
-            {isFetchingNextPage && (<p className="text-center py-2">리뷰를 불러오는 중입니다</p>)}
+            {isFetchingNextPage && (<ReviewInfiniteLoading />)}
         </div>
     );
 }

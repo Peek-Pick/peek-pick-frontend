@@ -8,6 +8,7 @@ import { Rating } from "~/components/reviews/rating/rating"
 import Swal from "sweetalert2"
 import '~/util/customSwal.css'
 import TextareaAutosize from "react-textarea-autosize";
+import { ReviewLoading } from "~/util/loading/reviewLoading";
 
 interface AddProps {
     product?: ProductDetailDTO;
@@ -16,6 +17,16 @@ interface AddProps {
 }
 
 export default function AddComponent({ product, isLoading, isError }: AddProps) {
+    if (isLoading)
+        return <ReviewLoading />;
+    if (isError || !product) {
+        return (
+            <p className="text-center p-4 text-red-500 text-base sm:text-lg">
+                상품 정보를 불러오지 못했습니다
+            </p>
+        );
+    }
+
     const formRef = useRef<HTMLFormElement>(null);
     const [score, setScore] = useState(0);
     const [images, setImages] = useState<File[]>([]);
@@ -29,10 +40,27 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
 
     // 리뷰 추가 뮤테이션
     const addMutation = useMutation({
-        mutationFn: (formData: FormData) => addReview(formData),
+        mutationFn: (formData: FormData) => {
+            Swal.fire({
+                title: "리뷰 등록 중...",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+                customClass: {
+                    popup: 'custom-popup',
+                    title: 'custom-title',
+                    actions: 'custom-actions',
+                    confirmButton: 'custom-confirm-button',
+                }
+            });
+
+            return addReview(formData);
+        },
         onSuccess: () => {
             Swal.fire({
-                title: "추가가 완료되었습니다",
+                title: "리뷰가 추가되었습니다",
                 icon: "success",
                 confirmButtonText: "확인",
                 customClass: {
@@ -43,6 +71,19 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
                 }
             }).then(() => {
                 navigate(`/reviews/product/${product?.barcode}`);
+            });
+        },
+        onError: () => {
+            Swal.fire({
+                title: "리뷰 등록에 실패하였습니다.",
+                icon: "error",
+                confirmButtonText: "확인",
+                customClass: {
+                    popup: 'custom-popup',
+                    title: 'custom-title',
+                    actions: 'custom-actions',
+                    confirmButton: 'custom-confirm-button',
+                }
             });
         }
     });
@@ -87,11 +128,6 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
         // 4) 전송
         addMutation.mutate(formData);
     };
-
-    if (isLoading)
-        return <p className="text-center p-4 text-base sm:text-lg">로딩 중입니다</p>;
-    if (isError)
-        return <p className="text-center p-4 text-red-500 text-base sm:text-lg">상품 정보를 불러오지 못했습니다</p>
 
     return (
         <section className="py-12">
