@@ -48,7 +48,7 @@ export interface UsersDetailDTO {
 }
 
 export interface UpdateStatus {
-    status: "ACTIVE" | "BANNED" | "DELETED";
+    status: string;
     banUntil?: string; // YYYY-MM-DD
 }
 
