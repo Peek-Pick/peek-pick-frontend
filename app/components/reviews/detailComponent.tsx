@@ -1,10 +1,10 @@
 import { useMutation, useQueryClient} from "@tanstack/react-query";
 import { toggleReview } from "~/api/reviews/reviewAPI";
-import { useReviewReport } from "~/hooks/useReviewReport";
+import { useReviewReport } from "~/hooks/reviews/useReviewReport";
 import { Rating20 } from "~/components/reviews/rating/rating"
 import { ReviewLoading } from "~/util/loading/reviewLoading";
-import FloatingHearts from "~/util/effect/floatingHearts";
-import {useRef, useState} from "react";
+import { useLikeClick } from "~/hooks/reviews/useLikeClick";
+import FloatingHearts from "~/components/reviews/effect/floatingHearts";
 
 export interface ReviewProps {
     review?: ReviewDetailDTO;
@@ -23,12 +23,6 @@ export default function DetailComponent({review, isLoading, isError }: ReviewPro
         );
     }
 
-    // 기준 요소(컨테이너)의 DOM 참조
-    const containerRef = useRef(null);
-
-    // 좋아요 버튼 애니메이션
-    const [hearts, setHearts] = useState([]);
-
     // 쿼리 클라이언트
     const queryClient = useQueryClient();
 
@@ -46,33 +40,20 @@ export default function DetailComponent({review, isLoading, isError }: ReviewPro
         },
     });
 
-    // 좋아요 클릭 핸들러
-    const handleLikeClick = (e) => {
-        if (!review.isLiked) {
-            const buttonRect = e.currentTarget.getBoundingClientRect();
-            const containerRect = containerRef.current.getBoundingClientRect();
-
-            const x = buttonRect.left - containerRect.left + buttonRect.width / 2 - 120;
-            const y = buttonRect.top - containerRect.top - 250;
-
-            setHearts((prev) => [...prev, { id: Date.now(), x, y }]);
-        }
-
-        toggleLikeMutation.mutate(review.reviewId);
-    };
+    const {handleLikeClick, containerRef, hearts} = useLikeClick(toggleLikeMutation.mutate, review);
 
     return (
         <div>
             <section className="relative" ref={containerRef}>
-                <div className="w-full max-w-7xl px-4 md:px-5 lg-6 mx-auto">
+                <div className="w-full max-w-7xl md:px-5 lg-6 mx-auto">
                     <div className="w-full">
-                        <div className="bg-white rounded-md p-6 shadow-md mb-2">
+                        <div className="bg-white rounded-md p-5 shadow-md mb-2">
                             {/* 작성자 정보와 작성일*/}
-                            <div className="flex sm:items-center flex-col min-[400px]:flex-row justify-between gap-5 mb-3">
+                            <div className="flex sm:items-center flex-col min-[400px]:flex-row justify-between gap-4 mb-2">
                                 <div className="flex items-center gap-3">
                                     <img src="/default.png" alt="profile image"
                                          className="w-14 h-14 rounded-full object-cover"/>
-                                    <h6 className="font-semibold text-md sm:text-base leading-8 text-gray-600">{review.nickname ?? "테스트"}</h6>
+                                    <h6 className="font-semibold text-md sm:text-base leading-2 text-gray-600">{review.nickname ?? "테스트"}</h6>
                                 </div>
                                 <p className="font-normal text-sm sm:text-sm leading-8 text-gray-400">작성일자 {new Date(review.regDate).toLocaleDateString()}</p>
                             </div>
@@ -85,7 +66,11 @@ export default function DetailComponent({review, isLoading, isError }: ReviewPro
                             </div>
 
                             {/* 리뷰 텍스트 */}
-                            <p className="font-normal text-base sm:text-base leading-7.5 text-gray-600 max-xl:text-justify mb-3">{review.comment}</p>
+                            <p className="font-normal text-sm sm:text-sm leading-6 text-gray-600 max-xl:text-justify mb-2"
+                                style={{ whiteSpace: 'pre-line' }}
+                            >
+                                {review.comment}
+                            </p>
 
                             {/* 이미지 */}
                             {review.images?.length > 0 && (
@@ -98,7 +83,7 @@ export default function DetailComponent({review, isLoading, isError }: ReviewPro
                                             key={img.imgId}
                                             src={`http://localhost/s_${img.imgUrl}`}
                                             alt="리뷰이미지"
-                                            className="w-25 h-25 sm:w-25 sm:h-25 rounded-lg object-cover flex-shrink-0 border-1 border-gray-100 "
+                                            className="w-25 h-25 sm:w-25 sm:h-25 rounded-lg object-cover flex-shrink-0 border-1 border-gray-300 "
                                         />
                                     ))}
                                 </div>
@@ -143,7 +128,6 @@ export default function DetailComponent({review, isLoading, isError }: ReviewPro
                             </div>
                         </div>
                     </div>
-
                     {/* 하트 이펙트 - 반드시 relative 컨테이너 안에서 렌더 */}
                     {hearts.map((heart) => (
                         <FloatingHearts key={heart.id} x={heart.x} y={heart.y} />

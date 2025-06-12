@@ -112,15 +112,20 @@ export default function ListComponent({
                 </div>
             ))}
 
-            {/* 무한 스크롤 추가 로딩 */}
-            {isFetchingNextPage && <ProductInfiniteLoading />}
-
             {hasNextPage && <div ref={bottomRef} className="col-span-full h-1" />}
+
             {!hasNextPage && (
                 <p className="col-span-full text-center py-2 text-sm text-gray-400">
                     마지막 상품입니다.
                 </p>
             )}
+
+            {/* 무한 스크롤 추가 로딩 */}
+            {isFetchingNextPage &&
+                <div className="col-span-full flex justify-center">
+                    <ProductInfiniteLoading />
+                </div>
+            }
         </div>
     );
 }

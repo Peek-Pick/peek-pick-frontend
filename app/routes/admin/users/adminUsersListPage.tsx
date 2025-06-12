@@ -5,11 +5,12 @@ import AuListComponent from "~/components/admin/users/auListComponent";
 import PaginationComponent from "~/components/common/PaginationComponent";
 import type { PagingResponse } from "~/types/common";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUsers } from '@fortawesome/free-solid-svg-icons';
+import {faStar, faUsers} from '@fortawesome/free-solid-svg-icons';
 
 import type { UsersListDTO } from "~/types/users";
 import {useSearchParams} from "react-router";
 import UserFilterBar from "~/components/admin/users/auUserFilterBar";
+import LoadingComponent from "~/components/common/loadingComponent";
 
 function AdminUsersListPage() {
 
@@ -80,13 +81,13 @@ function AdminUsersListPage() {
         staleTime: 5 * 60 * 1000,
     });
 
-    if (isLoading) return <div className="p-4 text-gray-600">불러오는 중...</div>;
-    if (isError || !data) return <div className="p-4 text-red-500">에러 발생</div>;
-
     return (
         <div>
             <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                <FontAwesomeIcon icon={faUsers} /> 전체 사용자 목록
+                <FontAwesomeIcon
+                    icon={faUsers}
+                    style={{ width: '20px', height: '20px' }}
+                /> 전체 사용자 목록
             </h3>
             {/* 검색 바 */}
             <UserFilterBar
@@ -97,7 +98,9 @@ function AdminUsersListPage() {
                 onSearch={handleSearch}
             />
             <AuListComponent
-                users={data.content}
+                users={data?.content}
+                isLoading={isLoading}
+                isError={isError}
                 page={page}
                 category={category}
                 keyword={keyword}

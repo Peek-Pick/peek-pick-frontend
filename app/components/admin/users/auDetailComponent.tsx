@@ -9,13 +9,16 @@ import type {PagingResponse} from "~/types/common";
 import PaginationComponent from "~/components/common/PaginationComponent";
 import {getAdminUserReviews, getAdminUserReviewsCount} from "~/api/users/adminUsersAPI";
 import {useNavigate, useLocation, useSearchParams} from "react-router";
+import LoadingComponent from "~/components/common/loadingComponent";
 
 interface UsersDetailProps {
     users: UsersDetailDTO;
-    userId: number
+    userId: number;
+    isLoading?: boolean;
+    isError?: boolean;
 }
 
-function AuDetailComponent({users, userId}: UsersDetailProps) {
+function AuDetailComponent({users, userId, isLoading, isError}: UsersDetailProps) {
 
     const navigate = useNavigate();
 
@@ -46,6 +49,11 @@ function AuDetailComponent({users, userId}: UsersDetailProps) {
         queryKey: ["adminUserReviews",userId, page],
         queryFn: () => getAdminUserReviews(userId, page)
     });
+
+    if (isLoading)
+        return <LoadingComponent isLoading />;
+    if (isError || !users)
+        return <div className="p-4 text-red-500">유저 정보 불러오기 실패</div>;
 
     return (
         <div className="flex flex-col">

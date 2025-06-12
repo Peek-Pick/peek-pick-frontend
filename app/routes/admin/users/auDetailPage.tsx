@@ -11,20 +11,18 @@ function AuDetailPage() {
 
     const userId = Number(uid)
 
-    const { data: userData, isError:userError, isLoading:userLoading } = useQuery<UsersDetailDTO>({
+    const { data: userData, isError: userError, isLoading: userLoading } = useQuery<UsersDetailDTO>({
         queryKey: ["adminUserProfile", userId],
         queryFn: () => getUserDetail(userId),
         enabled:  userId !== null,
     });
 
-
-    if (userLoading) return <div className="p-4 text-gray-600">Loading...</div>;
-    if (userError || !userData) return <div className="p-4 text-red-500">An error occurred</div>;
-
     return (
         <div>
             <AuDetailComponent users={userData}
                                userId={userId}
+                               isLoading={userLoading}
+                               isError={userError}
             />
         </div>
     );

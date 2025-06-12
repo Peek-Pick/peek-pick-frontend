@@ -4,10 +4,10 @@ import { deleteReview, modifyReview} from "~/api/reviews/reviewAPI";
 import { useNavigate } from "react-router-dom";
 import { useTagSelector } from "~/hooks/tags/useTagSelector";
 import { Rating } from "~/components/reviews/rating/rating"
+import { ReviewLoading } from "~/util/loading/reviewLoading";
 import TextareaAutosize from 'react-textarea-autosize';
 import Swal from "sweetalert2"
 import '~/util/customSwal.css'
-import { ReviewLoading } from "~/util/loading/reviewLoading";
 
 interface ModifyProps {
     review?: ReviewDetailDTO;
@@ -111,7 +111,7 @@ export default function ModifyComponent({ review, isLoading, isError }: ModifyPr
         },
         onSuccess: () => {
             Swal.fire({
-                title: "수정이 완료되었습니다",
+                title: "리뷰 수정이 완료되었습니다",
                 icon: "success",
                 confirmButtonText: "확인",
                 customClass: {
@@ -126,7 +126,7 @@ export default function ModifyComponent({ review, isLoading, isError }: ModifyPr
         },
         onError: () => {
             Swal.fire({
-                title: "리뷰 수정에 실패하였습니다.",
+                title: "리뷰 수정 실패하였습니다",
                 icon: "error",
                 confirmButtonText: "확인",
                 customClass: {
@@ -144,6 +144,25 @@ export default function ModifyComponent({ review, isLoading, isError }: ModifyPr
         e.preventDefault();
         if (!review) return;
 
+        const commentValue = formRef.current?.comment.value?.trim();
+
+        // 1) 코멘트 유효성 검사
+        if (!commentValue) {
+            Swal.fire({
+                title: "리뷰 내용을 입력하세요",
+                icon: "warning",
+                confirmButtonText: "확인",
+                customClass: {
+                    popup: 'custom-popup',
+                    title: 'custom-title',
+                    actions: 'custom-actions',
+                    confirmButton: 'custom-confirm-button',
+                }
+            });
+            return;
+        }
+
+        // 2) 리뷰 데이터(JSON)만 객체로 추출
         const payload = {
             reviewId: review.reviewId,
             score,
@@ -153,11 +172,14 @@ export default function ModifyComponent({ review, isLoading, isError }: ModifyPr
             newTagIds
         };
 
+        // 3) FormData 직접 생성
         const formData = new FormData();
         formData.append('review', new Blob([JSON.stringify(payload)], { type: 'application/json' }));
 
+        // 4) 이미지 파일들(files) append
         selectedFiles.forEach(file => formData.append('files', file));
 
+        // 5) 전송
         updateMutation.mutate(formData);
     };
 
@@ -198,7 +220,7 @@ export default function ModifyComponent({ review, isLoading, isError }: ModifyPr
         } catch (error) {
             console.log(error)
             await Swal.fire({
-                title: "리뷰 삭제에 실패하였습니다",
+                title: "리뷰 삭제 실패하였습니다",
                 icon: "error",
                 confirmButtonText: "확인",
                 customClass: {
@@ -254,7 +276,7 @@ export default function ModifyComponent({ review, isLoading, isError }: ModifyPr
                         value={comment}
                         onChange={e => setComment(e.target.value)}
                         placeholder="솔직한 상품 리뷰를 남겨주세요"
-                        className="w-full border text-gray-600 border-gray-300 rounded-md p-3 text-base sm:text-base focus:outline-none focus:ring-2 focus:ring-gray-300"
+                        className="w-full border text-gray-600 border-gray-300 rounded-md p-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-gray-300"
                     />
 
                     {/* ----- 카테고리별 태그 ----- */}
@@ -316,11 +338,11 @@ export default function ModifyComponent({ review, isLoading, isError }: ModifyPr
                             {existingImages.map(img => (
                                 <div
                                     key={img.imgId}
-                                    className="relative w-25 h-25 sm:w-25 sm:h-25 flex-shrink-0 rounded-md overflow-hidden border"
+                                    className="relative w-25 h-25 sm:w-25 sm:h-25 flex-shrink-0 rounded-lg overflow-hidden border border-gray-300"
                                 >
                                     <img
                                         src={`http://localhost/s_${img.imgUrl}`}
-                                        alt="기존 이미지"
+                                        alt={"기존 이미지"}
                                         className="w-full h-full object-cover"
                                     />
                                     <button
