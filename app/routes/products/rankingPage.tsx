@@ -1,4 +1,4 @@
-// src/routes/products/ListPage.tsx
+// src/routes/products/rankingPage.tsx
 import { useState, useEffect, useRef } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Icon } from "@iconify/react";
@@ -27,8 +27,6 @@ export default function RankingPage() {
     type CategoryType = typeof categories[number]["label"];
     const [categoryLabel, setCategoryLabel] = useState<CategoryType>("전체");
     const [showCategoryMenu, setShowCategoryMenu] = useState(false);
-
-    // 카테고리 드롭다운 ref
     const categoryRef = useRef<HTMLDivElement>(null);
 
     // 2) 정렬 드롭다운 상태
@@ -41,8 +39,6 @@ export default function RankingPage() {
     const [sortLabel, setSortLabel] = useState<SortLabelType>("좋아요 순");
     const [sortParam, setSortParam] = useState<SortParamType>("likeCount,DESC");
     const [showSortMenu, setShowSortMenu] = useState(false);
-
-    // 정렬 드롭다운 ref
     const sortRef = useRef<HTMLDivElement>(null);
 
     // 3) 스크롤 시 필터 영역 숨김/보임 제어
@@ -66,7 +62,6 @@ export default function RankingPage() {
     useEffect(() => {
         const handleClickOutside = (ev: MouseEvent | TouchEvent) => {
             const target = ev.target as Node;
-
             if (
                 showCategoryMenu &&
                 categoryRef.current &&
@@ -74,7 +69,6 @@ export default function RankingPage() {
             ) {
                 setShowCategoryMenu(false);
             }
-
             if (
                 showSortMenu &&
                 sortRef.current &&
@@ -83,7 +77,6 @@ export default function RankingPage() {
                 setShowSortMenu(false);
             }
         };
-
         document.addEventListener("mousedown", handleClickOutside);
         document.addEventListener("touchstart", handleClickOutside);
         return () => {
@@ -214,26 +207,15 @@ export default function RankingPage() {
                 </div>
             </div>
 
-            {/* 로딩 / 에러 표시 */}
-            {isLoading && <div className="p-4 text-center">불러오는 중…</div>}
-            {isError && (
-                <div className="p-4 text-center text-red-500">
-                    에러: {(error as Error).message}
-                </div>
-            )}
+            <ListComponent
+                products={data ? data.pages.flatMap((pg) => pg.content) : []}
+                fetchNextPage={fetchNextPage}
+                hasNextPage={hasNextPage}
+                isFetchingNextPage={isFetchingNextPage}
+                isLoading={isLoading}
+                isError={isError}
+            />
 
-            {/* 랭킹 리스트 */}
-            {data && (
-                <ListComponent
-                    products={data.pages
-                        .flatMap((pg) => pg.content)}
-                    fetchNextPage={fetchNextPage}
-                    hasNextPage={hasNextPage}
-                    isFetchingNextPage={isFetchingNextPage}
-                />
-            )}
-
-            {/* 하단 네비게이션 */}
             <BottomNavComponent />
         </div>
     );
