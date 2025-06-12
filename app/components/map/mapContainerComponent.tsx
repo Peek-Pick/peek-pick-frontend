@@ -7,6 +7,7 @@ import StoreInfoWindowComponent from "~/components/map/storeInfoWindowComponent"
 import MapLoadingComponent from "~/components/map/mapLoadingComponent";
 import usePolyline from "~/hooks/map/usePolyline";
 import {getDirections} from "~/api/mapAPI";
+import {useMapSearch} from "~/hooks/map/useMapSearch";
 
 
 
@@ -31,6 +32,8 @@ const MapContainerComponent: React.FC = () => {
     const [isNavigating, setIsNavigating] = useState(false); //길찾기 진행 상태
 
     usePolyline(mapRef, path); // path가 변경시 실행됨
+
+    const { handleSearch } = useMapSearch(mapRef, currentPosition, setStoreMarkers);
 
     // 구글 맵 API 스크립트 로드
     const { isLoaded, loadError } = useLoadScript({
@@ -75,122 +78,12 @@ const MapContainerComponent: React.FC = () => {
         };
 
         service.nearbySearch(request, (results, status) => {
+
             if (status === google.maps.places.PlacesServiceStatus.OK && results) {
                 setStoreMarkers(results);
             }
         });
     }, [mapRef, currentPosition, showNearbyStores]);
-
-    // 검색어 브랜드, 장소 분리
-    const brands = ["CU", "GS25", "7-Eleven", "EMART24"];
-    const parseKeyword = (input: string) => {
-        const tokens = input.trim().split(/\s+/);
-        const upperTokens = tokens.map((t) => t.toUpperCase());
-
-        const brand = brands.find((b) => upperTokens.includes(b.toUpperCase()));
-        const location = tokens.filter((t) => t.toUpperCase() !== (brand || "").toUpperCase()).join(" ");
-
-        return { brand, location };
-    };
-
-    // 검색 함수
-    const handleSearch = (input: string) => {
-        if (!mapRef || !input || !currentPosition) return;
-
-        const { brand, location } = parseKeyword(input);
-        const service = new google.maps.places.PlacesService(mapRef);
-
-        // 공통 로직: bounds + markers 헬퍼
-        const fitBoundsWithMarkers = (places: google.maps.places.PlaceResult[]) => {
-            const bounds = new google.maps.LatLngBounds();
-            const markers: google.maps.places.PlaceResult[] = [];
-
-            for (const place of places) {
-                if (!place.geometry || !place.geometry.location) continue;
-                bounds.extend(place.geometry.location);
-                markers.push(place);
-            }
-
-            if (markers.length === 0) {
-                alert("유효한 위치를 가진 장소가 없습니다.");
-                return false;
-            }
-
-            setStoreMarkers(markers); //마커 상태 업데이트
-            mapRef.fitBounds(bounds);
-            return true;
-        };
-
-        // 1) 브랜드+위치 둘 다 있는 경우 → 위치 먼저 검색 후 주변 편의점 nearbySearch + 브랜드 필터
-        if (brand && location) {
-            // 위치 이름으로 장소 검색
-            service.textSearch({ query: location }, (locResults, locStatus) => {
-                if (locStatus === google.maps.places.PlacesServiceStatus.OK && locResults && locResults.length > 0) {
-                    const loc = locResults[0].geometry?.location;
-                    if (!loc) return alert("위치 정보를 찾을 수 없습니다.");
-
-                    service.nearbySearch({ location: loc, radius: 1000, type: "convenience_store" }, (nearbyResults, nearbyStatus) => {
-                        if (nearbyStatus === google.maps.places.PlacesServiceStatus.OK && nearbyResults) {
-                            const filtered = nearbyResults.filter(p =>
-                                p.name?.toUpperCase().includes(brand.toUpperCase())
-                            );
-                            if (!fitBoundsWithMarkers(filtered)) alert("해당 조건에 맞는 편의점이 없습니다.");
-                        } else {
-                            alert("근처 편의점 정보를 찾을 수 없습니다.");
-                        }
-                    });
-                } else {
-                    alert("위치 정보를 찾을 수 없습니다.");
-                }
-            });
-            return;
-        }
-
-        // 2) 위치만 있는 경우 → 위치 먼저 검색 후 주변 편의점 전체 표시
-        if (!brand && location) {
-            service.textSearch({ query: location }, (locResults, locStatus) => {
-                if (locStatus === google.maps.places.PlacesServiceStatus.OK && locResults && locResults.length > 0) {
-                    const loc = locResults[0].geometry?.location;
-                    if (!loc) return alert("위치 정보를 찾을 수 없습니다.");
-
-                    service.nearbySearch({ location: loc, radius: 1000, type: "convenience_store" }, (nearbyResults, nearbyStatus) => {
-                        if (nearbyStatus === google.maps.places.PlacesServiceStatus.OK && nearbyResults) {
-                            if (!fitBoundsWithMarkers(nearbyResults)) alert("해당 조건에 맞는 편의점이 없습니다.");
-                        } else {
-                            alert("근처 편의점 정보를 찾을 수 없습니다.");
-                        }
-                    });
-                } else {
-                    alert("위치 정보를 찾을 수 없습니다.");
-                }
-            });
-            return;
-        }
-
-        // 3) 브랜드만 있는 경우 → 현재 위치 기준 nearbySearch + 브랜드 필터
-        if (brand && !location) {
-            service.nearbySearch({ location: currentPosition, radius: 1000, type: "convenience_store" }, (results, status) => {
-                if (status === google.maps.places.PlacesServiceStatus.OK && results) {
-                    const filtered = results.filter(p =>
-                        p.name?.toUpperCase().includes(brand.toUpperCase())
-                    );
-                    if (!fitBoundsWithMarkers(filtered)) alert("해당 조건에 맞는 편의점이 없습니다.");
-                } else {
-                    alert("근처 편의점 정보를 찾을 수 없습니다.");
-                }
-            });
-            return;
-        }
-
-        // 4) 그 외 → 입력값 그대로 textSearch
-        service.textSearch({ query: input }, (results, status) => {
-            if (status === google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
-                if (!fitBoundsWithMarkers(results)) alert("유효한 위치를 가진 장소가 없습니다.");
-            } else {
-                alert("검색 결과가 없습니다.");
-            }
-        });
-    };
 
     // 길찾기 함수
     const handleDirection = async (destination: google.maps.LatLngLiteral) => {
