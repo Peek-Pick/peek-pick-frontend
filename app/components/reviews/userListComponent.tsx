@@ -2,6 +2,7 @@ import type { FetchNextPageOptions, InfiniteQueryObserverResult } from "@tanstac
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Rating20 } from "~/components/reviews/rating/rating"
+import {ReviewLoading, ReviewInfiniteLoading} from "~/util/loading/reviewLoading";
 
 export interface ReviewListComponentProps {
     reviewCount: number;
@@ -15,6 +16,11 @@ export interface ReviewListComponentProps {
 
 export default function UserListComponent({reviewCount, reviewList, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError}
                                           : ReviewListComponentProps) {
+    if (isLoading)
+        return <ReviewLoading />;
+    if (isError)
+        return<p className="text-center p-4 text-red-500 text-base sm:text-lg">리뷰 정보를 불러오지 못했습니다.</p>;
+
     const navigate = useNavigate()
     
     // 무한 스크롤 감지 요소
@@ -41,12 +47,6 @@ export default function UserListComponent({reviewCount, reviewList, fetchNextPag
         return () => observer.disconnect();
     }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-    if (isLoading)
-        return <p className="text-center p-4 text-base sm:text-lg">로딩 중입니다</p>;
-    if (isError)
-        return
-            <p className="text-center p-4 text-red-500 text-base sm:text-lg">리뷰를 불러오지 못했습니다</p>;
-
     return (
         <div>
             <section className="relative">
@@ -55,7 +55,7 @@ export default function UserListComponent({reviewCount, reviewList, fetchNextPag
                         {/* 정렬 탭 */}
                         <div className="flex justify-between items-center border-t border-b border-gray-200 py-4 mb-2">
                            <span>
-                                누적 리뷰 <span className="text-red-500 c">{reviewCount}</span>건
+                                누적 리뷰 <span className="font-semibold text-red-500 c">{reviewCount}</span>건
                             </span>
                         </div>
 
@@ -108,7 +108,7 @@ export default function UserListComponent({reviewCount, reviewList, fetchNextPag
                         {hasNextPage && <div ref={bottomRef} className="h-1"/>}
 
                         {/* 리뷰 로딩중 */}
-                        {isFetchingNextPage && (<p className="text-center py-2">리뷰를 불러오는 중입니다</p>)}
+                        {isFetchingNextPage && (<ReviewInfiniteLoading />)}
                     </div>
                 </div>
             </section>

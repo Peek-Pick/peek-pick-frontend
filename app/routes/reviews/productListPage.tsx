@@ -52,8 +52,8 @@ function ProductListPage() {
     const allReviews = data?.pages.flatMap((page) => page.data.content) ?? [];
 
     // 상품 정보 productDetail 가져오기
-    const {data: productDetail} = useQuery({
-        queryKey: ["productDetail", barcode],
+    const {data: productData, isLoading: productLoading, isError: productError} = useQuery({
+        queryKey: ["productData", barcode],
         queryFn: () => getProductDetail(barcode!)
     });
 
@@ -61,7 +61,7 @@ function ProductListPage() {
         <div>
             <ProductListComponent
                 productId={Number(productId)}
-                productDetail={productDetail}
+                productData={productData}
                 reviewList={allReviews}
                 fetchNextPage={fetchNextPage}
                 hasNextPage={hasNextPage}
@@ -70,6 +70,8 @@ function ProductListPage() {
                 isError={isError}
                 sortType={sortType}
                 setSortType={setSortType}
+                productLoading={productLoading}
+                productError={productError}
             />
         </div>
     );

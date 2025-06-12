@@ -4,12 +4,15 @@ import ReviewMetaInfo from "~/components/admin/reviews/reviewMetaInfo";
 import { useLocation, useNavigate } from "react-router-dom";
 import { deleteAdminReview, toggleAdminReview } from "~/api/reviews/adminReviewAPI";
 import { useSearchParams } from "react-router";
+import { useQueryClient } from "@tanstack/react-query";
 
 export interface AdminReviewDetailProps {
     data: AdminReviewDetailDTO;
 }
 
 export default function ReadComponent({ data }: AdminReviewDetailProps) {
+    const queryClient = useQueryClient();
+
     const navigate = useNavigate();
 
     // 현재 URL 정보 - 페이지, 필터링
@@ -32,6 +35,13 @@ export default function ReadComponent({ data }: AdminReviewDetailProps) {
 
         try {
             await deleteAdminReview(data.reviewId);
+
+            // 삭제 후 리액트 쿼리 캐시 무효화
+            await Promise.all([
+                queryClient.invalidateQueries({ queryKey: ["adminReviewList"], exact: false }),
+                queryClient.invalidateQueries({ queryKey: ["adminReviewReportList"], exact: false }),
+            ]);
+
             alert("삭제가 완료되었습니다.");
             navigate(backToListPath);
         } catch (error) {
