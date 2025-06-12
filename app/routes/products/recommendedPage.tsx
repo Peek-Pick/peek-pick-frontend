@@ -1,5 +1,4 @@
-// src/routes/products/RecommendedPage.tsx
-
+// src/routes/products/recommendedPage.tsx
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
@@ -37,40 +36,15 @@ export default function RecommendedPage() {
         staleTime: 5 * 60 * 1000,
     });
 
-    // 로딩 / 에러 처리
-    if (isLoading) {
-        return (
-            <div className="p-4 text-center">
-                <Icon
-                    icon="ri:loader-2-line"
-                    className="animate-spin w-6 h-6 inline-block mr-2"
-                />
-                불러오는 중…
-            </div>
-        );
-    }
-    if (isError) {
-        return (
-            <div className="p-4 text-center text-red-500">
-                에러: {(error as Error).message}
-            </div>
-        );
-    }
-    if (!data) {
-        return null;
-    }
-
-    // 페이지별 content 평탄화
-    const pages = data.pages as PageResponse<ProductListDTO>[];
-    const products = pages.flatMap((pg) => pg.content);
-
     return (
         <>
             <ListComponent
-                products={products}
+                products={data ? data.pages.flatMap((pg) => pg.content) : []}
                 fetchNextPage={fetchNextPage}
                 hasNextPage={hasNextPage}
                 isFetchingNextPage={isFetchingNextPage}
+                isLoading={isLoading}
+                isError={isError}
             />
             <BottomNavComponent />
         </>

@@ -1,4 +1,4 @@
-// src/routes/products/SearchPage.tsx
+// src/routes/products/searchPage.tsx
 import { useState, useEffect, useRef } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Icon } from "@iconify/react";
@@ -133,7 +133,7 @@ export default function SearchPage() {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            {/* 검색창 + 필터 바 */}
+            {/* 검색창 + 필터 바 (기존 주석·로직 그대로) */}
             <div
                 className={`sticky top-16 z-40 bg-white transition-transform duration-300 ease-in-out ${
                     showFilters ? "translate-y-0" : "-translate-y-full"
@@ -255,28 +255,18 @@ export default function SearchPage() {
                         </div>
                     </div>
                 </div>
+
             </div>
 
-            {/* 로딩 / 에러 표시 */}
-            {isLoading && <div className="p-4 text-center">불러오는 중…</div>}
-            {isError && (
-                <div className="p-4 text-center text-red-500">
-                    에러: {(error as Error).message}
-                </div>
-            )}
+            <ListComponent
+                products={data ? data.pages.flatMap((pg) => pg.content) : []}
+                fetchNextPage={fetchNextPage}
+                hasNextPage={hasNextPage}
+                isFetchingNextPage={isFetchingNextPage}
+                isLoading={isLoading}
+                isError={isError}
+            />
 
-            {/* 검색 결과 리스트 */}
-            {data && (
-                <ListComponent
-                    products={data.pages
-                        .flatMap((pg) => pg.content)}
-                    fetchNextPage={fetchNextPage}
-                    hasNextPage={hasNextPage}
-                    isFetchingNextPage={isFetchingNextPage}
-                />
-            )}
-
-            {/* 하단 네비게이션 */}
             <BottomNavComponent />
         </div>
     );

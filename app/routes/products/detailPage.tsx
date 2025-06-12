@@ -2,10 +2,10 @@
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import DetailComponent from "~/components/products/detailComponent";
-import { getProductDetail } from "~/api/products/productsAPI";
 import PreviewComponent from "~/components/reviews/previewComponent";
-import type { ProductDetailDTO } from "~/types/products";
 import BottomNavComponent from "~/components/main/bottomNavComponent";
+import { getProductDetail } from "~/api/products/productsAPI";
+import type { ProductDetailDTO } from "~/types/products";
 
 export default function DetailPage() {
     const { barcode } = useParams<{ barcode: string }>();
@@ -22,24 +22,19 @@ export default function DetailPage() {
         staleTime: 5 * 60 * 1000,
     });
 
-    if (isLoading) {
-        return <div className="p-4 text-center">로딩 중…</div>;
-    }
-    if (isError || !data) {
-        return (
-            <div className="p-4 text-center text-red-500">
-                오류 발생: {error?.message ?? "상품을 불러올 수 없습니다."}
-            </div>
-        );
-    }
-
     return (
         <>
-            <DetailComponent product={data} />
-            <PreviewComponent
-                barcode={barcode!}
-                reviewNum={data.reviewCount!}
+            <DetailComponent
+                product={data}
+                isLoading={isLoading}
+                isError={isError}
             />
+            {data && (
+                <PreviewComponent
+                    barcode={barcode!}
+                    reviewNum={data.reviewCount!}
+                />
+            )}
             <BottomNavComponent />
         </>
     );
