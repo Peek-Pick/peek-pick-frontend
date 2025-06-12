@@ -19,9 +19,10 @@ export default function AppLayout() {
         "/main": "Peek & Pick",
         "/mypage": "My Page",
         "/mypage/favorites": "찜한 상품",
-        "/products/ranking": "상품 랭킹",
         "/reviews/user": "내 리뷰",
+        "/products/ranking": "상품 랭킹",
         "/products/search": "상품 검색",
+        "/products/recommended": "상품 추천",
         // 다른 정적 경로가 필요하다면 여기에 추가
     };
 

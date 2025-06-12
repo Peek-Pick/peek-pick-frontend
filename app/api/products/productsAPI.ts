@@ -56,3 +56,23 @@ export async function searchProducts(
     );
     return res.data;
 }
+
+/**
+ * 추천 상품 목록 조회
+ * 로그인한 사용자의 관심 태그에 매칭되는 상품들을 페이징하여 반환
+ */
+export async function getRecommendedProducts(
+    page: number,
+    size: number
+): Promise<PageResponse<ProductListDTO>> {
+    const res = await axiosInstance.get<PageResponse<ProductListDTO>>(
+        `${host}/recommended`,
+        {
+            params: {
+                page,
+                size,
+            },
+        }
+    );
+    return res.data;
+}
