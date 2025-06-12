@@ -23,8 +23,24 @@ export function useReviewReport(reviewId: number) {
     
     // 신고 뮤테이션
     const reportMutation = useMutation({
-        mutationFn: () =>
-            reportReview(reviewId, {reviewId: reviewId, reason: selectedReason as ReportReason}),
+        mutationFn: () => {
+            Swal.fire({
+                title: "리뷰 신고 중...",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+                customClass: {
+                    popup: 'custom-popup',
+                    title: 'custom-title',
+                    actions: 'custom-actions',
+                    confirmButton: 'custom-confirm-button',
+                }
+            })
+
+            return reportReview(reviewId, {reviewId: reviewId, reason: selectedReason as ReportReason});
+        },
         onSuccess: () => {
             Swal.fire({
                 title: "신고가 완료되었습니다",

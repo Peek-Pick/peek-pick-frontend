@@ -2,15 +2,34 @@ import { useMutation, useQueryClient} from "@tanstack/react-query";
 import { toggleReview } from "~/api/reviews/reviewAPI";
 import { useReviewReport } from "~/hooks/useReviewReport";
 import { Rating20 } from "~/components/reviews/rating/rating"
+import { ReviewLoading } from "~/util/loading/reviewLoading";
+import FloatingHearts from "~/util/effect/floatingHearts";
+import {useRef, useState} from "react";
 
 export interface ReviewProps {
-    review?: ReviewDetailDTO
+    review?: ReviewDetailDTO;
+    isLoading: boolean;
+    isError: boolean;
 }
 
-export default function DetailComponent({review}: ReviewProps) {
-    if (!review)
-        return<p className="text-center p-4 text-red-500 text-base sm:text-lg">리뷰를 불러오지 못했습니다</p>
+export default function DetailComponent({review, isLoading, isError }: ReviewProps) {
+    if (isLoading)
+        return <ReviewLoading />;
+    if (isError || !review) {
+        return (
+            <p className="text-center p-4 text-red-500 text-base sm:text-lg">
+                리뷰 정보를 불러오지 못했습니다
+            </p>
+        );
+    }
 
+    // 기준 요소(컨테이너)의 DOM 참조
+    const containerRef = useRef(null);
+
+    // 좋아요 버튼 애니메이션
+    const [hearts, setHearts] = useState([]);
+
+    // 쿼리 클라이언트
     const queryClient = useQueryClient();
 
     // 리뷰 신고 모달
@@ -27,9 +46,24 @@ export default function DetailComponent({review}: ReviewProps) {
         },
     });
 
+    // 좋아요 클릭 핸들러
+    const handleLikeClick = (e) => {
+        if (!review.isLiked) {
+            const buttonRect = e.currentTarget.getBoundingClientRect();
+            const containerRect = containerRef.current.getBoundingClientRect();
+
+            const x = buttonRect.left - containerRect.left + buttonRect.width / 2 - 120;
+            const y = buttonRect.top - containerRect.top - 250;
+
+            setHearts((prev) => [...prev, { id: Date.now(), x, y }]);
+        }
+
+        toggleLikeMutation.mutate(review.reviewId);
+    };
+
     return (
         <div>
-            <section className="relative">
+            <section className="relative" ref={containerRef}>
                 <div className="w-full max-w-7xl px-4 md:px-5 lg-6 mx-auto">
                     <div className="w-full">
                         <div className="bg-white rounded-md p-6 shadow-md mb-2">
@@ -88,9 +122,9 @@ export default function DetailComponent({review}: ReviewProps) {
                             <div className="flex justify-between items-center  mt-3">
                                 {/* 좋아요 버튼 */}
                                 <button
-                                    onClick={() => toggleLikeMutation.mutate(review.reviewId)}
+                                    onClick={handleLikeClick}
                                     disabled={toggleLikeMutation.isPending}
-                                    className={`flex items-center gap-1 px-2 py-1 rounded-full border font-medium text-sm sm:text-sm
+                                    className={`flex items-center gap-1 px-2 py-1 rounded-full border font-medium text-sm sm:text-sm 
                                         ${review.isLiked
                                         ? "bg-red-50 text-red-500 border-red-200"
                                         : "bg-gray-100 text-gray-500 border-gray-200"} 
@@ -109,6 +143,11 @@ export default function DetailComponent({review}: ReviewProps) {
                             </div>
                         </div>
                     </div>
+
+                    {/* 하트 이펙트 - 반드시 relative 컨테이너 안에서 렌더 */}
+                    {hearts.map((heart) => (
+                        <FloatingHearts key={heart.id} x={heart.x} y={heart.y} />
+                    ))}
                 </div>
             </section>
         </div>

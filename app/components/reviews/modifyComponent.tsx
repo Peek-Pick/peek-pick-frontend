@@ -1,18 +1,31 @@
 import { useRef, useState, useEffect, useMemo, type FormEvent, type ChangeEvent } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { deleteReview, modifyReview } from "~/api/reviews/reviewAPI";
+import { deleteReview, modifyReview} from "~/api/reviews/reviewAPI";
 import { useNavigate } from "react-router-dom";
 import { useTagSelector } from "~/hooks/tags/useTagSelector";
 import { Rating } from "~/components/reviews/rating/rating"
 import TextareaAutosize from 'react-textarea-autosize';
 import Swal from "sweetalert2"
 import '~/util/customSwal.css'
+import { ReviewLoading } from "~/util/loading/reviewLoading";
 
 interface ModifyProps {
     review?: ReviewDetailDTO;
+    isLoading: boolean;
+    isError: boolean;
 }
 
-export default function ModifyComponent({ review }: ModifyProps ) {
+export default function ModifyComponent({ review, isLoading, isError }: ModifyProps ) {
+    if (isLoading)
+        return <ReviewLoading />;
+    if (isError || !review) {
+        return (
+            <p className="text-center p-4 text-red-500 text-base sm:text-lg">
+                리뷰 정보를 불러오지 못했습니다
+            </p>
+        );
+    }
+
     const formRef = useRef<HTMLFormElement>(null);
     const navigate = useNavigate();
 
@@ -78,7 +91,24 @@ export default function ModifyComponent({ review }: ModifyProps ) {
 
     // 리뷰 수정 뮤테이션
     const updateMutation = useMutation({
-        mutationFn: (formData: FormData) => modifyReview(review!.reviewId, formData),
+        mutationFn: (formData: FormData) => {
+            Swal.fire({
+                title: "리뷰 수정 중...",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+                customClass: {
+                    popup: 'custom-popup',
+                    title: 'custom-title',
+                    actions: 'custom-actions',
+                    confirmButton: 'custom-confirm-button',
+                }
+            })
+
+            return modifyReview(review!.reviewId, formData);
+        },
         onSuccess: () => {
             Swal.fire({
                 title: "수정이 완료되었습니다",
@@ -89,24 +119,24 @@ export default function ModifyComponent({ review }: ModifyProps ) {
                     title: 'custom-title',
                     actions: 'custom-actions',
                     confirmButton: 'custom-confirm-button',
-                },
-            }),
+                }
+            }).then(() => {
                 navigate(`/reviews/user`);
+            });
         },
-        onError: (error) => {
-            console.log(error)
+        onError: () => {
             Swal.fire({
-                title: "수정중 오료가 발생했습니다",
-                icon: "warning",
+                title: "리뷰 수정에 실패하였습니다.",
+                icon: "error",
                 confirmButtonText: "확인",
                 customClass: {
                     popup: 'custom-popup',
                     title: 'custom-title',
                     actions: 'custom-actions',
                     confirmButton: 'custom-confirm-button',
-                },
-            })
-        },
+                }
+            });
+        }
     });
 
     // 수정된 리뷰 제출하기
@@ -136,8 +166,24 @@ export default function ModifyComponent({ review }: ModifyProps ) {
         if (!review) return;
 
         try {
-            await deleteReview(review.reviewId);
             Swal.fire({
+                title: "리뷰 삭제 중...",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+                customClass: {
+                    popup: 'custom-popup',
+                    title: 'custom-title',
+                    actions: 'custom-actions',
+                    confirmButton: 'custom-confirm-button',
+                }
+            })
+
+            await deleteReview(review.reviewId);
+
+            await Swal.fire({
                 title: "삭제가 완료되었습니다",
                 icon: "success",
                 confirmButtonText: "확인",
@@ -147,13 +193,13 @@ export default function ModifyComponent({ review }: ModifyProps ) {
                     actions: 'custom-actions',
                     confirmButton: 'custom-confirm-button',
                 },
-            }),
-                navigate(`/reviews/user`);
+            });
+            navigate(`/reviews/user`);
         } catch (error) {
             console.log(error)
-            Swal.fire({
-                title: "삭제중 오류가 발생했습니다",
-                icon: "warning",
+            await Swal.fire({
+                title: "리뷰 삭제에 실패하였습니다",
+                icon: "error",
                 confirmButtonText: "확인",
                 customClass: {
                     popup: 'custom-popup',
@@ -164,8 +210,6 @@ export default function ModifyComponent({ review }: ModifyProps ) {
             })
         }
     };
-
-    if (!review) return <p className="text-center text-gray-500">리뷰 정보를 불러오는 중입니다...</p>;
 
     return (
         <section className="py-12">
