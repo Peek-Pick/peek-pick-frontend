@@ -17,7 +17,7 @@ const usePolyline = (map: google.maps.Map | null, path: google.maps.LatLngLitera
         polylineRef.current = new google.maps.Polyline({
             path,                  // 경로 데이터
             map,                   // 표시할 지도 인스턴스
-            strokeColor: '#1976d2', // 선 색상 (파란색)
+            strokeColor: '#fdd835', // 선 색상 (파란색)
             strokeOpacity: 0.8,     // 선 투명도
             strokeWeight: 5,        // 선 두께
         });

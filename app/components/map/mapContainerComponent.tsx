@@ -30,6 +30,8 @@ const MapContainerComponent: React.FC = () => {
     const [selectedPosition, setSelectedPosition] = useState<google.maps.LatLngLiteral | null>(null); // 클릭된 마커 위치 저장 (InfoWindow 위치용)
     const [path, setPath] = useState<google.maps.LatLngLiteral[]>([]); //경로
     const [isNavigating, setIsNavigating] = useState(false); //길찾기 진행 상태
+    const [startPosition, setStartPosition] = useState<google.maps.LatLngLiteral | null>(null); // 길찾기 시작점
+
 
     usePolyline(mapRef, path); // path가 변경시 실행됨
 
@@ -89,6 +91,8 @@ const MapContainerComponent: React.FC = () => {
     const handleDirection = async (destination: google.maps.LatLngLiteral) => {
         if (!currentPosition) return;
 
+        setStartPosition(currentPosition); // 출발지 고정
+
         const result = await getDirections(currentPosition, destination);
         if (result) {
             setPath(result);
@@ -104,6 +108,37 @@ const MapContainerComponent: React.FC = () => {
             alert("길찾기 경로를 가져올 수 없습니다.");
         }
     };
+
+    //길찾기 사용자 위치 추적
+    useEffect(() => {
+        if (!navigator.geolocation) return;
+
+        // watchPosition: 위치가 바뀔 때마다 콜백 실행됨
+        const watchId = navigator.geolocation.watchPosition(
+            (position) => {
+                // 위치가 업데이트되면 currentPosition 상태에 저장
+                setCurrentPosition({
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude,
+                });
+            },
+            (error) => {
+                // 위치 정보 가져오다가 에러 발생 시 콘솔에 출력
+                console.error('현재 위치를 추적하는 중 오류 발생:', error);
+            },
+            {
+                enableHighAccuracy: true, // GPS 등 정확한 위치 사용 권장
+                maximumAge: 1000,         // 1초 이내에 캐시된 위치면 재사용 가능
+                timeout: 5000,            // 위치 정보를 얻기까지 최대 5초 대기
+            }
+        );
+
+        // 컴포넌트 언마운트 시 위치 추적 해제해서 리소스 낭비 방지
+        return () => {
+            navigator.geolocation.clearWatch(watchId);
+        };
+    }, []);
+
 
 
     // 로드 에러 또는 로딩 중인 경우 처리
@@ -131,7 +166,7 @@ const MapContainerComponent: React.FC = () => {
                 {!isNavigating && <Marker position={currentPosition} />}
 
                 {/* 편의점 마커들 */}
-                {storeMarkers.map((place, idx) => {
+                {!isNavigating && storeMarkers.map((place, idx) => {
                     const pos = {
                         lat: place.geometry?.location?.lat() || 0,
                         lng: place.geometry?.location?.lng() || 0,
@@ -142,11 +177,11 @@ const MapContainerComponent: React.FC = () => {
                             key={idx}
                             position={pos}
                             icon={{
-                                url: 'https://img.icons8.com/?size=100&id=9rCm9FIFH5qA&format=png&color=000000',
-                                scaledSize: new google.maps.Size(20, 20),
+                                url: "/icons/map_shop.png",
+                                scaledSize: new google.maps.Size(30, 30),
                             }}
                             onClick={() => {
-                                if (!mapRef || !place.place_id) return; // place_id 없으면 불가
+                                if (!mapRef || !place.place_id) return;
 
                                 const service = new google.maps.places.PlacesService(mapRef);
                                 service.getDetails(
@@ -185,26 +220,43 @@ const MapContainerComponent: React.FC = () => {
                     />
                 )}
 
-                {/* 길찾기 - 출발, 도착지 마커 */}
-                {path.length >= 2 && (
+                {/* 길찾기 - 출발지, 현재위치, 도착지 마커 */}
+                {isNavigating && (
                     <>
-                        <Marker
-                            position={path[0]}
-                            icon={{
-                                url: "https://img.icons8.com/office/40/000000/marker.png", // 출발지
-                                scaledSize: new google.maps.Size(40, 40),
-                            }}
-                            title="출발지"
-                        />
-                        <Marker
-                            position={path[path.length - 1]}
-                            icon={{
-                                url: "https://img.icons8.com/color/48/000000/finish-flag.png", // 도착지
-                                scaledSize: new google.maps.Size(40, 40),
-                            }}
-                            animation={google.maps.Animation.DROP}
-                        title="도착지"
-                        />
+                        {startPosition && (
+                            <Marker
+                                position={startPosition}
+                                icon={{
+                                    url: "https://img.icons8.com/office/40/000000/marker.png",
+                                    scaledSize: new google.maps.Size(40, 40),
+                                }}
+                                title="출발지"
+                            />
+                        )}
+
+                        {currentPosition && (
+                            <Marker
+                                position={currentPosition}
+                                icon={{
+                                    url: "/icons/map_directions_marker.png",
+                                    scaledSize: new google.maps.Size(60, 95),
+                                }}
+                                title="내 위치"
+                                animation={google.maps.Animation.DROP}
+                            />
+                        )}
+
+                        {path.length >= 2 && (
+                            <Marker
+                                position={path[path.length - 1]}
+                                icon={{
+                                    url: "https://img.icons8.com/color/48/000000/finish-flag.png",
+                                    scaledSize: new google.maps.Size(40, 40),
+                                }}
+                                animation={google.maps.Animation.DROP}
+                                title="도착지"
+                            />
+                        )}
                     </>
                 )}
 

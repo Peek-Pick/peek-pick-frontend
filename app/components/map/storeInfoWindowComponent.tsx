@@ -88,7 +88,7 @@ const StoreInfoWindow: React.FC<StoreInfoWindowProps> = ({ position, onClose, se
                         }
 
                     }}
-                    className="mt-4 w-full bg-blue-400 hover:bg-blue-500 text-white font-semibold py-2 rounded-lg transition duration-300 text-center"
+                    className="mt-4 w-full bg-yellow-300/70 hover:bg-yellow-400 text-white font-semibold py-2 rounded-lg transition duration-300 text-center"
                 >
                     🚶 Directions
                 </button>
