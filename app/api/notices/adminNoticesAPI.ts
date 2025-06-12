@@ -1,6 +1,6 @@
 import axiosInstance from "~/instance/axiosInstance";
 import type {
-    NoticePageDto,
+    NoticePageDTO,
     NoticeResponseDto,
     NoticeRequestDto,
 } from "~/types/notice";
@@ -11,8 +11,8 @@ const BASE_URL = "http://localhost:8080/api/v1/admin/notices";
 export async function fetchNotices(
     page: number,
     size: number
-): Promise<NoticePageDto> {
-    const res = await axiosInstance.get<NoticePageDto>(
+): Promise<NoticePageDTO> {
+    const res = await axiosInstance.get<NoticePageDTO>(
         `${BASE_URL}?page=${page}&size=${size}`
     );
     return res.data;

@@ -27,7 +27,24 @@ export interface NoticeResponseDto {
     imgUrls: string[]; // 백엔드에 저장된 imgUrl 목록
 }
 
+/** 목록용 DTO */
+export interface NoticeListDTO {
+    noticeId: number;
+    title: string;
+    regDate: string;   // ISO 문자열
+}
+
+/** 상세용 DTO */
+export interface NoticeDetailDTO {
+    noticeId: number;
+    title: string;
+    content: string;
+    regDate: string;
+    modDate: string;
+    imgUrls: string[];
+}
+
 /**
  * 공지사항 페이지 조회 응답 DTO (PagingResponse 상속)
  */
-export type NoticePageDto = PagingResponse<NoticeResponseDto>;
+export type NoticePageDTO = PagingResponse<NoticeResponseDto>;

@@ -23,11 +23,20 @@ export default function AppLayout() {
         "/products/ranking": "상품 랭킹",
         "/products/search": "상품 검색",
         "/products/recommended": "상품 추천",
+
+        "/notices/list": "공지사항/이벤트",
+        "/notices/:id": "공지사항/이벤트",
         // 다른 정적 경로가 필요하다면 여기에 추가
     };
 
     // ③ location.pathname이 변경될 때마다 실행
     useEffect(() => {
+        ///notices/:id 패턴 확인하는거임
+        if (/^\/notices\/\d+$/.test(location.pathname)) {
+            setDynamicTitle("공지사항/이벤트");
+            return;
+        }
+        
         // 우선 정적 매핑 가능한 경로인지 확인
         if (pageTitleMap[location.pathname]) {
             // 정적 매핑이 있으면 dynamicTitle을 비워두고(또는 초기화) 종료
