@@ -12,7 +12,7 @@ const StoreInfoWindow: React.FC<StoreInfoWindowProps> = ({ position, onClose, se
 
     return (
         <InfoWindow position={position} onCloseClick={onClose}>
-            <div className="p-3 w-[175px] sm:w-[340px] bg-gradient-to-br from-white to-gray-100 rounded-2xl shadow-lg transition-all duration-300 text-xs sm:text-sm">
+            <div onClick={e => e.stopPropagation()} className="p-3 w-[175px] sm:w-[340px] bg-gradient-to-br from-white to-gray-100 rounded-2xl shadow-lg transition-all duration-300 text-xs sm:text-sm">
                 {/* 가게명 */}
                 <h4 className="text-sm sm:text-base font-bold mb-2 text-gray-800 break-words">
                     🏪 {selectedStore.name}

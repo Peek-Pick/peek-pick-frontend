@@ -10,13 +10,6 @@ import {getDirections} from "~/api/mapAPI";
 import {useMapSearch} from "~/hooks/map/useMapSearch";
 
 
-
-// 지도 컨테이너 스타일
-const containerStyle = {
-    width: '100%',
-    height: '500px',
-};
-
 // 사용할 라이브러리
 const libraries = ['places'];
 
@@ -40,6 +33,7 @@ const MapContainerComponent: React.FC = () => {
     // 구글 맵 API 스크립트 로드
     const { isLoaded, loadError } = useLoadScript({
         googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string,
+        language:"en", // 언어 설정 (현재 영어)
         libraries: libraries as any,
     });
 
@@ -83,6 +77,17 @@ const MapContainerComponent: React.FC = () => {
 
             if (status === google.maps.places.PlacesServiceStatus.OK && results) {
                 setStoreMarkers(results);
+
+                // bounds 처리
+                const bounds = new google.maps.LatLngBounds();
+                bounds.extend(new google.maps.LatLng(currentPosition.lat, currentPosition.lng));
+                results.forEach((place) => {
+                    const location = place.geometry?.location;
+                    if (location) {
+                        bounds.extend(location);
+                    }
+                });
+                mapRef.fitBounds(bounds);
             }
         });
     }, [mapRef, currentPosition, showNearbyStores]);
@@ -99,10 +104,10 @@ const MapContainerComponent: React.FC = () => {
             setIsNavigating(true);  // 길찾기 시작 표시
             setShowNearbyStores(false);
 
+            // bounds 처리
             const bounds = new google.maps.LatLngBounds();
             bounds.extend(result[0]); // 출발지
             bounds.extend(result[result.length - 1]); // 도착지
-
             mapRef?.fitBounds(bounds);
         } else {
             alert("길찾기 경로를 가져올 수 없습니다.");
@@ -139,7 +144,18 @@ const MapContainerComponent: React.FC = () => {
         };
     }, []);
 
+    // InfoWindow 외 부분 클릭시 꺼짐
+    useEffect(() => {
+        const handleClickOutside = () => {
+            setSelectedStore(null);
+            setSelectedPosition(null);
+        };
 
+        document.body.addEventListener("click", handleClickOutside);
+        return () => {
+            document.body.removeEventListener("click", handleClickOutside);
+        };
+    }, []);
 
     // 로드 에러 또는 로딩 중인 경우 처리
     if (loadError) return <div>지도를 불러오는 중 오류가 발생했습니다.</div>;
@@ -151,15 +167,15 @@ const MapContainerComponent: React.FC = () => {
     }
 
     return (
-        <div className="relative">
+        <div className="w-full h-[80vh] sm:h-[90vh] lg:h-[75vh] relative">
             {/*검색창 컴포넌트*/}
             <StoreSearchComponent onSearch={handleSearch} />
 
             {/* 구글맵 컴포넌트 */}
             <GoogleMap
-                mapContainerStyle={containerStyle}
+                mapContainerStyle={{ width: '100%', height: '100%' }}
                 center={currentPosition}
-                zoom={15}
+                zoom={16}
                 onLoad={(map) => setMapRef(map)}
             >
                 {/* 현재위치 마커 */}
@@ -217,7 +233,8 @@ const MapContainerComponent: React.FC = () => {
                             setSelectedPosition(null);
                         }}
                         onRoute={handleDirection}
-                    />
+                    >
+                    </StoreInfoWindowComponent>
                 )}
 
                 {/* 길찾기 - 출발지, 현재위치, 도착지 마커 */}
