@@ -6,6 +6,14 @@ export default [
     // 바코드
     route("barcode/scan", "routes/barcode/scanPage.tsx"),
 
+    // 회원가입
+    route("/signup", "layout/signupLayout.tsx", [
+        index("routes/users/signupPage.tsx"),
+        route("profile", "routes/users/signupProfilePage.tsx"),
+        route("tag", "routes/users/signupTagPage.tsx"),
+        route("google", "routes/auth/googleCallbackPage.tsx"),
+    ]),
+
     // app
     route("", "layout/appLayout.tsx", [
         //메인
@@ -15,13 +23,6 @@ export default [
         route('/login', 'routes/auth/loginPage.tsx'),
         route("/logout", 'routes/auth/logoutPage.tsx'),
 
-        // 회원가입
-        route("/signup", "layout/signupLayout.tsx", [
-            index("routes/users/signupPage.tsx"),
-            route("profile", "routes/users/signupProfilePage.tsx"),
-            route("tag", "routes/users/signupTagPage.tsx"),
-            route("google", "routes/auth/googleCallbackPage.tsx"),
-        ]),
 
         // 마이페이지
         route("/mypage", "routes/users/myPagePage.tsx"),
