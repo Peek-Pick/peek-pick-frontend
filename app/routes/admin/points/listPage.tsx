@@ -1,25 +1,21 @@
 import ListComponent from "~/components/admin/points/listComponent";
 import { useQuery } from "@tanstack/react-query";
-import { listCoupon } from "~/api/points/pointsAPI";
 import { useState } from "react";
 import type {PointStoreListDTO} from "~/types/points";
+import PaginationComponent from "~/components/common/PaginationComponent";
+import type {PagingResponse} from "~/types/common";
+import {listAdminCoupon} from "~/api/points/adminPointsAPI";
 
-interface PageResponse<T> {
-    content: T[];
-    total_elements: number;
-    total_pages: number;
-    size: number;
-    number: number;
-}
 
 function ListPage() {
     const [page, setPage] = useState(0); // 0-based
     const size = 10;
     const sort = "pointstoreId";
 
-    const { data, isLoading, isError } = useQuery<PageResponse<PointStoreListDTO>>({
+    const { data, isLoading, isError } = useQuery<PagingResponse<PointStoreListDTO>>({
         queryKey: ["points", page, size],
-        queryFn: () => listCoupon(page, size, sort)
+        queryFn: () => listAdminCoupon(page, size, sort),
+        staleTime: 1000 * 60 * 5
     });
 
     console.log("API 응답 확인:", data);
@@ -31,10 +27,14 @@ function ListPage() {
         <div>
             <ListComponent
                 products={data.content}
-                page={data.number}
-                setPage={setPage}
-                size={data.size}
-                totalElements={data.total_elements}
+            />
+
+            {/* 페이지네이션 컴포넌트 */}
+            <PaginationComponent
+                currentPage={data.number}
+                totalPages={data.totalPages}
+                onPageChange={setPage}
+                maxPageButtons={10}
             />
         </div>
     );

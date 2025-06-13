@@ -1,20 +1,22 @@
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router";
-import { useMutation } from "@tanstack/react-query";
-import { addCoupon } from "~/api/points/pointsAPI";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 import { PointProductType } from "~/enums/points/points";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import {addCoupon} from "~/api/points/adminPointsAPI";
 
 export default function AddComponent() {
     const navigate = useNavigate();
     const formRef = useRef<HTMLFormElement | null>(null);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [selectedFileName, setSelectedFileName] = useState("파일을 선택하세요");
+    const queryClient = useQueryClient();
 
     const mutation = useMutation({
         mutationFn: (data: FormData) => addCoupon(data),
         onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["points"] }); //추가 후 목록 최신화
             alert("상품이 등록되었습니다.");
             navigate("/admin/points/list");
         },

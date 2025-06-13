@@ -2,25 +2,17 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type {PointLogsDTO} from "~/types/points";
 import {userPointLogs} from "~/api/points/pointsAPI";
-import PointLogsComponent from "~/components/users/pointLogsComponent";
+import PointLogsComponent from "~/components/points/pointLogsComponent";
+import type {PagingResponse} from "~/types/common";
+import PaginationComponent from "~/components/common/PaginationComponent";
 
-interface PageResponse<T> {
-    content: T[];
-    total_elements: number;
-    total_pages: number;
-    number: number;
-    pageable: {
-        page_size: number;
-        page_number: number;
-    };
-}
 
 function PointLogPage() {
     const [page, setPage] = useState(0); // 0-based
     const size = 10;
     const sort = "pointLogId";
 
-    const { data, isLoading, isError } = useQuery<PageResponse<PointLogsDTO>>({
+    const { data, isLoading, isError } = useQuery<PagingResponse<PointLogsDTO>>({
         queryKey: ["pointLogs", page, size, sort],
         queryFn: () => userPointLogs(page, size, sort),
     });
@@ -31,13 +23,19 @@ function PointLogPage() {
     console.log("포인트 내역 데이터", data);
 
     return (
-        <PointLogsComponent
-            pointLogs={data.content}
-            page={data.number}
-            setPage={setPage}
-            size={data.pageable.page_size}
-            totalElements={data.total_elements}
-        />
+        <>
+            <PointLogsComponent
+                pointLogs={data.content}
+            />
+
+            {/* 페이지네이션 컴포넌트 */}
+            <PaginationComponent
+                currentPage={data.number}
+                totalPages={data.totalPages}
+                onPageChange={setPage}
+                maxPageButtons={5}
+            />
+        </>
     );
 }
 

@@ -5,25 +5,11 @@ import { faCartShopping } from '@fortawesome/free-solid-svg-icons'
 
 interface Props {
     products: PointStoreListDTO[];
-    page: number;
-    size: number;
-    totalElements: number;
-    setPage: (page: number) => void;
 }
 
-export default function ListComponent({ products, page, size, totalElements, setPage }: Props) {
+export default function ListComponent({ products}: Props) {
 
     const navigate = useNavigate();
-    
-    const totalPages = Math.ceil(
-        (Number.isFinite(totalElements) && totalElements >= 0 ? totalElements : 0) /
-        (Number.isFinite(size) && size > 0 ? size : 1)
-    );
-
-    const onPageChange = (newPage: number) => {
-        if (newPage < 0 || newPage >= totalPages) return;
-        setPage(newPage);
-    };
 
     const goDetail = (id: number) => {
         navigate(`/admin/points/read/${id}`);
@@ -101,98 +87,6 @@ export default function ListComponent({ products, page, size, totalElements, set
                     </table>
                 </div>
             </div>
-
-            {/*페이지네이션*/}
-            <nav aria-label="Page navigation" className="mt-8">
-                <ul className="flex justify-center space-x-3">
-                    {/* 이전 버튼 */}
-                    <li>
-                        <button
-                            type="button"
-                            onClick={() => onPageChange(page - 1)}
-                            disabled={page === 0}
-                            className={`
-w-9 h-9 flex items-center justify-center
-font-medium text-gray-500 transition-colors duration-200 relative
-${page === 0 ? "cursor-not-allowed opacity-50" : "hover:text-blue-600"}
-focus:outline-none
-`}
-                            aria-disabled={page === 0}
-                            aria-label="Previous page"
-                        >
-                            {/* 왼쪽 화살표 SVG */}
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-5 w-5"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                                strokeWidth={2}
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            >
-                                <path d="M15 19l-7-7 7-7" />
-                            </svg>
-                        </button>
-                    </li>
-
-                    {/* 페이지 번호 */}
-                    {[...Array(totalPages)].map((_, i) => {
-                        const isActive = i === page;
-                        return (
-                            <li key={i}>
-                                <button
-                                    type="button"
-                                    onClick={() => onPageChange(i)}
-                                    aria-current={isActive ? "page" : undefined}
-                                    className={`
-px-4 py-2 font-medium relative transition-colors duration-200
-${
-                                        isActive
-                                            ? "text-blue-600 after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-blue-600"
-                                            : "text-gray-500 hover:text-blue-600"
-                                    }
-focus:outline-none
-`}
-                                >
-                                    {i + 1}
-                                </button>
-                            </li>
-                        );
-                    })}
-
-                    {/* 다음 버튼 */}
-                    <li>
-                        <button
-                            type="button"
-                            onClick={() => onPageChange(page + 1)}
-                            disabled={page === totalPages - 1}
-                            className={`
-w-9 h-9 flex items-center justify-center
-font-medium text-gray-500 transition-colors duration-200 relative
-${page === totalPages - 1 ? "cursor-not-allowed opacity-50" : "hover:text-blue-600"}
-focus:outline-none
-`}
-                            aria-disabled={page === totalPages - 1}
-                            aria-label="Next page"
-                        >
-                            {/* 오른쪽 화살표 SVG */}
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-5 w-5"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                                strokeWidth={2}
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            >
-                                <path d="M9 5l7 7-7 7" />
-                            </svg>
-                        </button>
-                    </li>
-                </ul>
-            </nav>
         </div>
     );
 }

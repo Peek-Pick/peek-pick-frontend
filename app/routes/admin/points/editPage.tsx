@@ -1,7 +1,7 @@
 import EditComponent from "~/components/admin/points/editComponent";
 import {useParams} from "react-router";
 import {useQuery} from "@tanstack/react-query";
-import {readCoupon} from "~/api/points/pointsAPI";
+import {readCoupon} from "~/api/points/adminPointsAPI";
 
 
 function EditPage() {
