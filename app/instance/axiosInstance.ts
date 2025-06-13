@@ -1,4 +1,4 @@
-import axios, { AxiosError, type AxiosRequestConfig } from "axios";
+import axios, {AxiosError, type AxiosRequestConfig, type AxiosResponse} from "axios";
 import { refreshAccessToken } from "~/api/authAPI";
 
 // snake_case → camelCase 유틸
@@ -26,7 +26,10 @@ const instance = axios.create({
     withCredentials: true,
 });
 
+// 요청 큐
 let isRefreshing = false;
+let refreshTokenPromise: Promise<void> | null = null;
+
 let failedQueue: {
     resolve: (value?: unknown) => void;
     reject: (error: unknown) => void;
@@ -38,15 +41,15 @@ const processQueue = (error: AxiosError | null) => {
         if (error) {
             reject(error);
         } else {
-            resolve(instance(config));
+            resolve(axios(config));
         }
     });
     failedQueue = [];
 };
 
-// 응답 인터셉터 추가
+// 응답 인터셉터
 instance.interceptors.response.use(
-    response => {
+    (response: AxiosResponse) => {
         if (response.data) {
             response.data = keysToCamel(response.data);
         }
@@ -58,25 +61,26 @@ instance.interceptors.response.use(
         if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
 
+            if (!refreshTokenPromise) {
+                isRefreshing = true;
+                refreshTokenPromise = refreshAccessToken()
+                    .then(() => {
+                        isRefreshing = false;
+                        processQueue(null);
+                    })
+                    .catch((err) => {
+                        processQueue(err);
+                        if (typeof window !== "undefined") {
+                            window.location.href = "/login";
+                        }
+                    })
+                    .finally(() => {
+                        refreshTokenPromise = null;
+                    });
+            }
+
             return new Promise((resolve, reject) => {
                 failedQueue.push({ resolve, reject, config: originalRequest });
-
-                if (!isRefreshing) {
-                    isRefreshing = true;
-
-                    refreshAccessToken()
-                        .then(() => {
-                            isRefreshing = false;
-                            processQueue(null);
-                        })
-                        .catch(err => {
-                            isRefreshing = false;
-                            processQueue(err);
-                            if (typeof window !== "undefined") {
-                                window.location.href = "/login";
-                            }
-                        });
-                }
             });
         }
 

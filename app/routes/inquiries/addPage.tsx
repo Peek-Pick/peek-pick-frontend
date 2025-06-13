@@ -1,22 +1,23 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import type { InquiryRequestDTO } from "~/types/inquiries";
-import { createInquiry, uploadImages } from "~/api/inquiriesAPI";
+import { uploadImages } from "~/api/inquiriesAPI";
 import BottomNavComponent from "~/components/main/bottomNavComponent";
 import AddComponent from "~/components/inquiries/addComponent";
 import LoadingComponent from "~/components/common/loadingComponent";
 import { useQueryClient } from "@tanstack/react-query";
+import { useCreateInquiry } from "~/hooks/inquiries/useInquiryMutation";
 
 function AddPage() {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const [loading, setLoading] = useState(false);
+    const createInquiryMutation = useCreateInquiry();
 
     async function handleSubmit(dto: InquiryRequestDTO, files: FileList | null) {
         setLoading(true);
         try {
             // 1. 텍스트 등록
-            const res = await createInquiry(dto);
+            const res = await createInquiryMutation.mutateAsync(dto);
             const newId = res.data.inquiryId;
 
             // 2. 이미지 업로드
@@ -24,8 +25,6 @@ function AddPage() {
                 await uploadImages(newId, files);
             }
 
-            // 3. 쿼리 무효화 및 이동
-            await queryClient.invalidateQueries({ queryKey: ["inquiries"] });
             navigate(`/inquiries/${newId}`);
         } catch (error) {
             console.error("문의 등록 실패:", error);
