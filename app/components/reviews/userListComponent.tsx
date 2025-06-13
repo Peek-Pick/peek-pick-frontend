@@ -3,6 +3,7 @@ import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Rating20 } from "~/components/reviews/rating/rating"
 import {ReviewLoading, ReviewInfiniteLoading} from "~/util/loading/reviewLoading";
+import { FloatingActionButtons } from "~/util/FloatingActionButtons";
 
 export interface ReviewListComponentProps {
     reviewCount: number;
@@ -53,7 +54,7 @@ export default function UserListComponent({reviewCount, reviewList, fetchNextPag
                 <div className="w-full max-w-7xl md:px-5 lg-6 mx-auto">
                     <div className="w-full">
                         {/* 정렬 탭 */}
-                        <div className="flex justify-between items-center border-t border-b border-gray-200 py-4 mb-2">
+                        <div className="flex justify-between items-center border-t border-b border-gray-200 py-3 mb-2">
                            <span>
                                 누적 리뷰 <span className="font-semibold text-red-500 c">{reviewCount}</span>건
                             </span>
@@ -107,6 +108,9 @@ export default function UserListComponent({reviewCount, reviewList, fetchNextPag
                                 </div>
                             </div>
                         ))}
+
+                        {/* 조이스틱 */}
+                        <FloatingActionButtons />
 
                         {/* 무한 스크롤 디텍터 */}
                         {hasNextPage && <div ref={bottomRef} className="h-1"/>}

@@ -19,24 +19,16 @@ export default function AppLayout() {
         "/main": "Peek & Pick",
         "/mypage": "My Page",
         "/mypage/favorites": "찜한 상품",
-        "/reviews/user": "내 리뷰",
+        "/reviews/user": "My Review List",
         "/products/ranking": "상품 랭킹",
         "/products/search": "상품 검색",
         "/products/recommended": "상품 추천",
-
         "/notices/list": "공지사항/이벤트",
-        "/notices/:id": "공지사항/이벤트",
         // 다른 정적 경로가 필요하다면 여기에 추가
     };
 
     // ③ location.pathname이 변경될 때마다 실행
     useEffect(() => {
-        ///notices/:id 패턴 확인하는거임
-        if (/^\/notices\/\d+$/.test(location.pathname)) {
-            setDynamicTitle("공지사항/이벤트");
-            return;
-        }
-        
         // 우선 정적 매핑 가능한 경로인지 확인
         if (pageTitleMap[location.pathname]) {
             // 정적 매핑이 있으면 dynamicTitle을 비워두고(또는 초기화) 종료
@@ -44,8 +36,26 @@ export default function AppLayout() {
             return;
         }
 
-        // ④ /products/:barcode 패턴인지 판별
-        const productMatch = location.pathname.match(/^\/products\/([^/]+)$/);
+        // /notices/:id 패턴 확인
+        if (/^\/notices\/\d+$/.test(location.pathname)) {
+            setDynamicTitle("공지사항/이벤트");
+            return;
+        }
+
+        // /reviews/:rid 패턴 확인
+        if (/^\/reviews\/\d+$/.test(location.pathname)) {
+            setDynamicTitle("My Review");
+            return;
+        }
+
+        // /reviews/modify/:rid 패턴 확인
+        if (/^\/reviews\/modify\/\d+$/.test(location.pathname)) {
+            setDynamicTitle("Review Modify");
+            return;
+        }
+
+        // ④ /products/:barcode 패턴 확인
+        const productMatch = location.pathname.match(/^\/(products|reviews\/product)\/([^/]+)$/);
         if (productMatch) {
             const barcode = productMatch[1];
             // API 호출하여 상품명을 가져와 dynamicTitle에 저장
@@ -75,8 +85,9 @@ export default function AppLayout() {
             {/* 헤더 */}
             <header className="sticky top-0 z-50 flex items-center justify-between px-4 py-3 bg-transparent backdrop-blur-md shadow-md">
                 {/* 왼쪽: 로고 + 페이지 이름 */}
-                <button className="flex items-center gap-2">
-                    <img src="/icons/icon_clean.png" alt="Logo" className="h-10 w-10" />
+                <button className="flex items-center gap-2"
+                        onClick={() => navigate("/main")}>
+                    <img src="/icons/icon_clean.png" alt="Logo" className="h-8.5 w-10" />
                     <span className="text-lg font-semibold">{pageTitle}</span>
                 </button>
 

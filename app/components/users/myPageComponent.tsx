@@ -1,4 +1,3 @@
-import { Icon } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
     FaStore, FaUserCog, FaCoins, FaAngleRight,
@@ -8,6 +7,7 @@ import {
 import { IoLanguage, IoLogOutOutline } from "react-icons/io5";
 import { useNavigate } from "react-router";
 import { getMyPage } from "~/api/myPageAPI";
+import { getUserReviewsCount } from "~/api/reviews/reviewAPI";
 
 // 타입 정의
 interface MypageData {
@@ -36,17 +36,29 @@ export default function ProfileHeader() {
     const [myData, setMyData] = useState<MypageData>(initState);
 
     useEffect(() => {
-        getMyPage()
-            .then(result => {
+        const fetchData = async () => {
+            try {
+                const [myPageResult, reviewCount] = await Promise.all([
+                    getMyPage(),
+                    getUserReviewsCount()
+                ]);
+
+
                 const transformed = {
-                    profileImgUrl: result.profileImgUrl,
-                    nickname: result.nickname,
-                    point: result.point,
-                    ...result.quickStats, // quickStats 내부 값 펼쳐서 넣어야 함
+                    profileImgUrl: myPageResult.profileImgUrl,
+                    nickname: myPageResult.nickname,
+                    point: myPageResult.point,
+                    reviewCount: reviewCount,
+                    ...myPageResult.quickStats,
                 };
+
                 setMyData(transformed);
-            })
-            .catch((err) => console.error("프로필 불러오기 실패", err));
+            } catch (err) {
+                console.error("마이페이지 불러오기 실패", err);
+            }
+        };
+
+        fetchData();
     }, []);
 
     if (!myData) return <div className="p-4">불러오는 중...</div>;

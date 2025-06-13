@@ -97,21 +97,21 @@ export default function AuListComponent({ users, isLoading, isError, page, categ
                                     onClick={() => goDetail(user.userId)}
                                     className="hover:bg-gray-100 cursor-pointer text-sm"
                                 >
-                                    <td className="px-6 py-4">{user.userId}</td>
-                                    <td className="px-4 py-2">{user.email}</td>
-                                    <td className="px-4 py-2">{user.isSocial ? "Social" : "Local"}</td>
-                                    <td className="px-4 py-2">
+                                    <td className="px-4 py-4">{user.userId}</td>
+                                    <td className="px-4 py-4">{user.email}</td>
+                                    <td className="px-4 pp-4">{user.isSocial ? "Social" : "Local"}</td>
+                                    <td className="px-4 py-4">
                                         {user.status === "BANNED" && user.banUntil
                                             ? `BANNED (~${user.banUntil})`
                                             : user.status}
                                     </td>
-                                    <td className="px-4 py-2">
+                                    <td className="px-4">
                                         <button
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 openModal(user.userId);
                                             }}
-                                            className="px-2 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
+                                            className="px-2 py-1 h-7 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
                                         >
                                             Change
                                         </button>
