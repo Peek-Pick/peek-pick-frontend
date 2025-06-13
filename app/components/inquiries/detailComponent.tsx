@@ -1,20 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import type { InquiryResponseDTO, InquiryType } from "~/types/inquiries";
 import { useNavigate } from "react-router-dom";
 import ImageModalComponent from "~/components/common/ImageModalComponent";
 import {Edit, MoreVertical, Trash} from "lucide-react";
-import {useDeleteInquiry} from "~/hooks/useInquiryMutation";
+import {useDeleteInquiry} from "~/hooks/inquiries/useInquiryMutation";
+import {INQUIRY_TYPES} from "~/enums/inquiries/inquiry";
 
 const API_URL = import.meta.env.VITE_API_URL?.replace("/api/v1", "") ?? "http://localhost:8080";
-
-const INQUIRY_TYPES: { value: InquiryType; label: string }[] = [
-    { value: "ACCOUNT", label: "계정/로그인" },
-    { value: "POINT_REVIEW", label: "포인트/리뷰" },
-    { value: "PRODUCT_ADD", label: "상품 추가" },
-    { value: "HOW_TO_USE", label: "사용 방법" },
-    { value: "BUG", label: "오류/버그" },
-    { value: "ETC", label: "기타 문의" },
-];
 
 interface Props {
     inquiry: InquiryResponseDTO & { userNickname: string };
