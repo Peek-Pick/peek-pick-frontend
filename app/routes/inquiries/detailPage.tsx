@@ -1,6 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import type { InquiryResponseDTO } from "~/types/inquiries";
 import { fetchInquiry } from "~/api/inquiriesAPI";
 import DetailComponent from "~/components/inquiries/detailComponent";
 import LoadingComponent from "~/components/common/loadingComponent";

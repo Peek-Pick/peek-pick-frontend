@@ -7,14 +7,8 @@ import StoreInfoWindowComponent from "~/components/map/storeInfoWindowComponent"
 import MapLoadingComponent from "~/components/map/mapLoadingComponent";
 import usePolyline from "~/hooks/map/usePolyline";
 import {getDirections} from "~/api/mapAPI";
+import {useMapSearch} from "~/hooks/map/useMapSearch";
 
-
-
-// 지도 컨테이너 스타일
-const containerStyle = {
-    width: '100%',
-    height: '500px',
-};
 
 // 사용할 라이브러리
 const libraries = ['places'];
@@ -29,12 +23,17 @@ const MapContainerComponent: React.FC = () => {
     const [selectedPosition, setSelectedPosition] = useState<google.maps.LatLngLiteral | null>(null); // 클릭된 마커 위치 저장 (InfoWindow 위치용)
     const [path, setPath] = useState<google.maps.LatLngLiteral[]>([]); //경로
     const [isNavigating, setIsNavigating] = useState(false); //길찾기 진행 상태
+    const [startPosition, setStartPosition] = useState<google.maps.LatLngLiteral | null>(null); // 길찾기 시작점
+
 
     usePolyline(mapRef, path); // path가 변경시 실행됨
+
+    const { handleSearch } = useMapSearch(mapRef, currentPosition, setStoreMarkers);
 
     // 구글 맵 API 스크립트 로드
     const { isLoaded, loadError } = useLoadScript({
         googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string,
+        language:"en", // 언어 설정 (현재 영어)
         libraries: libraries as any,
     });
 
@@ -75,126 +74,29 @@ const MapContainerComponent: React.FC = () => {
         };
 
         service.nearbySearch(request, (results, status) => {
+
             if (status === google.maps.places.PlacesServiceStatus.OK && results) {
                 setStoreMarkers(results);
+
+                // bounds 처리
+                const bounds = new google.maps.LatLngBounds();
+                bounds.extend(new google.maps.LatLng(currentPosition.lat, currentPosition.lng));
+                results.forEach((place) => {
+                    const location = place.geometry?.location;
+                    if (location) {
+                        bounds.extend(location);
+                    }
+                });
+                mapRef.fitBounds(bounds);
             }
         });
     }, [mapRef, currentPosition, showNearbyStores]);
 
-    // 검색어 브랜드, 장소 분리
-    const brands = ["CU", "GS25", "7-Eleven", "EMART24"];
-    const parseKeyword = (input: string) => {
-        const tokens = input.trim().split(/\s+/);
-        const upperTokens = tokens.map((t) => t.toUpperCase());
-
-        const brand = brands.find((b) => upperTokens.includes(b.toUpperCase()));
-        const location = tokens.filter((t) => t.toUpperCase() !== (brand || "").toUpperCase()).join(" ");
-
-        return { brand, location };
-    };
-
-    // 검색 함수
-    const handleSearch = (input: string) => {
-        if (!mapRef || !input || !currentPosition) return;
-
-        const { brand, location } = parseKeyword(input);
-        const service = new google.maps.places.PlacesService(mapRef);
-
-        // 공통 로직: bounds + markers 헬퍼
-        const fitBoundsWithMarkers = (places: google.maps.places.PlaceResult[]) => {
-            const bounds = new google.maps.LatLngBounds();
-            const markers: google.maps.places.PlaceResult[] = [];
-
-            for (const place of places) {
-                if (!place.geometry || !place.geometry.location) continue;
-                bounds.extend(place.geometry.location);
-                markers.push(place);
-            }
-
-            if (markers.length === 0) {
-                alert("유효한 위치를 가진 장소가 없습니다.");
-                return false;
-            }
-
-            setStoreMarkers(markers); //마커 상태 업데이트
-            mapRef.fitBounds(bounds);
-            return true;
-        };
-
-        // 1) 브랜드+위치 둘 다 있는 경우 → 위치 먼저 검색 후 주변 편의점 nearbySearch + 브랜드 필터
-        if (brand && location) {
-            // 위치 이름으로 장소 검색
-            service.textSearch({ query: location }, (locResults, locStatus) => {
-                if (locStatus === google.maps.places.PlacesServiceStatus.OK && locResults && locResults.length > 0) {
-                    const loc = locResults[0].geometry?.location;
-                    if (!loc) return alert("위치 정보를 찾을 수 없습니다.");
-
-                    service.nearbySearch({ location: loc, radius: 1000, type: "convenience_store" }, (nearbyResults, nearbyStatus) => {
-                        if (nearbyStatus === google.maps.places.PlacesServiceStatus.OK && nearbyResults) {
-                            const filtered = nearbyResults.filter(p =>
-                                p.name?.toUpperCase().includes(brand.toUpperCase())
-                            );
-                            if (!fitBoundsWithMarkers(filtered)) alert("해당 조건에 맞는 편의점이 없습니다.");
-                        } else {
-                            alert("근처 편의점 정보를 찾을 수 없습니다.");
-                        }
-                    });
-                } else {
-                    alert("위치 정보를 찾을 수 없습니다.");
-                }
-            });
-            return;
-        }
-
-        // 2) 위치만 있는 경우 → 위치 먼저 검색 후 주변 편의점 전체 표시
-        if (!brand && location) {
-            service.textSearch({ query: location }, (locResults, locStatus) => {
-                if (locStatus === google.maps.places.PlacesServiceStatus.OK && locResults && locResults.length > 0) {
-                    const loc = locResults[0].geometry?.location;
-                    if (!loc) return alert("위치 정보를 찾을 수 없습니다.");
-
-                    service.nearbySearch({ location: loc, radius: 1000, type: "convenience_store" }, (nearbyResults, nearbyStatus) => {
-                        if (nearbyStatus === google.maps.places.PlacesServiceStatus.OK && nearbyResults) {
-                            if (!fitBoundsWithMarkers(nearbyResults)) alert("해당 조건에 맞는 편의점이 없습니다.");
-                        } else {
-                            alert("근처 편의점 정보를 찾을 수 없습니다.");
-                        }
-                    });
-                } else {
-                    alert("위치 정보를 찾을 수 없습니다.");
-                }
-            });
-            return;
-        }
-
-        // 3) 브랜드만 있는 경우 → 현재 위치 기준 nearbySearch + 브랜드 필터
-        if (brand && !location) {
-            service.nearbySearch({ location: currentPosition, radius: 1000, type: "convenience_store" }, (results, status) => {
-                if (status === google.maps.places.PlacesServiceStatus.OK && results) {
-                    const filtered = results.filter(p =>
-                        p.name?.toUpperCase().includes(brand.toUpperCase())
-                    );
-                    if (!fitBoundsWithMarkers(filtered)) alert("해당 조건에 맞는 편의점이 없습니다.");
-                } else {
-                    alert("근처 편의점 정보를 찾을 수 없습니다.");
-                }
-            });
-            return;
-        }
-
-        // 4) 그 외 → 입력값 그대로 textSearch
-        service.textSearch({ query: input }, (results, status) => {
-            if (status === google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
-                if (!fitBoundsWithMarkers(results)) alert("유효한 위치를 가진 장소가 없습니다.");
-            } else {
-                alert("검색 결과가 없습니다.");
-            }
-        });
-    };
-
     // 길찾기 함수
     const handleDirection = async (destination: google.maps.LatLngLiteral) => {
         if (!currentPosition) return;
+
+        setStartPosition(currentPosition); // 출발지 고정
 
         const result = await getDirections(currentPosition, destination);
         if (result) {
@@ -202,16 +104,58 @@ const MapContainerComponent: React.FC = () => {
             setIsNavigating(true);  // 길찾기 시작 표시
             setShowNearbyStores(false);
 
+            // bounds 처리
             const bounds = new google.maps.LatLngBounds();
             bounds.extend(result[0]); // 출발지
             bounds.extend(result[result.length - 1]); // 도착지
-
             mapRef?.fitBounds(bounds);
         } else {
             alert("길찾기 경로를 가져올 수 없습니다.");
         }
     };
 
+    //길찾기 사용자 위치 추적
+    useEffect(() => {
+        if (!navigator.geolocation) return;
+
+        // watchPosition: 위치가 바뀔 때마다 콜백 실행됨
+        const watchId = navigator.geolocation.watchPosition(
+            (position) => {
+                // 위치가 업데이트되면 currentPosition 상태에 저장
+                setCurrentPosition({
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude,
+                });
+            },
+            (error) => {
+                // 위치 정보 가져오다가 에러 발생 시 콘솔에 출력
+                console.error('현재 위치를 추적하는 중 오류 발생:', error);
+            },
+            {
+                enableHighAccuracy: true, // GPS 등 정확한 위치 사용 권장
+                maximumAge: 1000,         // 1초 이내에 캐시된 위치면 재사용 가능
+                timeout: 5000,            // 위치 정보를 얻기까지 최대 5초 대기
+            }
+        );
+
+        // 컴포넌트 언마운트 시 위치 추적 해제해서 리소스 낭비 방지
+        return () => {
+            navigator.geolocation.clearWatch(watchId);
+        };
+    }, []);
+
+    // InfoWindow 외 부분 클릭시 꺼짐
+    useEffect(() => {
+        const handleClickOutside = () => {
+            setSelectedStore(null);
+            setSelectedPosition(null);
+        };
+
+        document.body.addEventListener("click", handleClickOutside);
+        return () => {
+            document.body.removeEventListener("click", handleClickOutside);
+        };
+    }, []);
 
     // 로드 에러 또는 로딩 중인 경우 처리
     if (loadError) return <div>지도를 불러오는 중 오류가 발생했습니다.</div>;
@@ -223,22 +167,22 @@ const MapContainerComponent: React.FC = () => {
     }
 
     return (
-        <div className="relative">
+        <div className="w-full h-[80vh] sm:h-[90vh] lg:h-[75vh] relative">
             {/*검색창 컴포넌트*/}
             <StoreSearchComponent onSearch={handleSearch} />
 
             {/* 구글맵 컴포넌트 */}
             <GoogleMap
-                mapContainerStyle={containerStyle}
+                mapContainerStyle={{ width: '100%', height: '100%' }}
                 center={currentPosition}
-                zoom={15}
+                zoom={16}
                 onLoad={(map) => setMapRef(map)}
             >
                 {/* 현재위치 마커 */}
                 {!isNavigating && <Marker position={currentPosition} />}
 
                 {/* 편의점 마커들 */}
-                {storeMarkers.map((place, idx) => {
+                {!isNavigating && storeMarkers.map((place, idx) => {
                     const pos = {
                         lat: place.geometry?.location?.lat() || 0,
                         lng: place.geometry?.location?.lng() || 0,
@@ -249,11 +193,11 @@ const MapContainerComponent: React.FC = () => {
                             key={idx}
                             position={pos}
                             icon={{
-                                url: 'https://img.icons8.com/?size=100&id=9rCm9FIFH5qA&format=png&color=000000',
-                                scaledSize: new google.maps.Size(20, 20),
+                                url: "/icons/map_shop.png",
+                                scaledSize: new google.maps.Size(30, 30),
                             }}
                             onClick={() => {
-                                if (!mapRef || !place.place_id) return; // place_id 없으면 불가
+                                if (!mapRef || !place.place_id) return;
 
                                 const service = new google.maps.places.PlacesService(mapRef);
                                 service.getDetails(
@@ -289,29 +233,47 @@ const MapContainerComponent: React.FC = () => {
                             setSelectedPosition(null);
                         }}
                         onRoute={handleDirection}
-                    />
+                    >
+                    </StoreInfoWindowComponent>
                 )}
 
-                {/* 길찾기 - 출발, 도착지 마커 */}
-                {path.length >= 2 && (
+                {/* 길찾기 - 출발지, 현재위치, 도착지 마커 */}
+                {isNavigating && (
                     <>
-                        <Marker
-                            position={path[0]}
-                            icon={{
-                                url: "https://img.icons8.com/office/40/000000/marker.png", // 출발지
-                                scaledSize: new google.maps.Size(40, 40),
-                            }}
-                            title="출발지"
-                        />
-                        <Marker
-                            position={path[path.length - 1]}
-                            icon={{
-                                url: "https://img.icons8.com/color/48/000000/finish-flag.png", // 도착지
-                                scaledSize: new google.maps.Size(40, 40),
-                            }}
-                            animation={google.maps.Animation.DROP}
-                        title="도착지"
-                        />
+                        {startPosition && (
+                            <Marker
+                                position={startPosition}
+                                icon={{
+                                    url: "https://img.icons8.com/office/40/000000/marker.png",
+                                    scaledSize: new google.maps.Size(40, 40),
+                                }}
+                                title="출발지"
+                            />
+                        )}
+
+                        {currentPosition && (
+                            <Marker
+                                position={currentPosition}
+                                icon={{
+                                    url: "/icons/map_directions_marker.png",
+                                    scaledSize: new google.maps.Size(60, 95),
+                                }}
+                                title="내 위치"
+                                animation={google.maps.Animation.DROP}
+                            />
+                        )}
+
+                        {path.length >= 2 && (
+                            <Marker
+                                position={path[path.length - 1]}
+                                icon={{
+                                    url: "https://img.icons8.com/color/48/000000/finish-flag.png",
+                                    scaledSize: new google.maps.Size(40, 40),
+                                }}
+                                animation={google.maps.Animation.DROP}
+                                title="도착지"
+                            />
+                        )}
                     </>
                 )}
 
