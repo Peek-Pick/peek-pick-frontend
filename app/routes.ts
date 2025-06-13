@@ -30,8 +30,8 @@ export default [
 
         // 포인트
         route("points/store/list",   "routes/points/storelistPage.tsx"), //포인트 상점
-        route("/mypage/points/history", "routes/users/pointLogsPage.tsx"), // 포인트 내역
-        route("/mypage/coupons", "routes/users/userCouponPage.tsx"), // 쿠폰함
+        route("/mypage/points/history", "routes/points/pointLogsPage.tsx"), // 포인트 내역
+        route("/mypage/coupons", "routes/points/userCouponPage.tsx"), // 쿠폰함
         route("/mypage/favorites", "routes/users/favoritesPage.tsx"), // 즐겨찾기 상품 목록
         route("/mypage/views",   "routes/users/viewsPage.tsx"), // 상품 조회 내역
         // 상품
@@ -74,7 +74,7 @@ export default [
         route('login', 'routes/admin/auth/loginPage.tsx'),
         
         //관리자 대시보드
-        route("dashboard", "routes/admin/dashboardPage.tsx"),
+        route("dashboard", "routes/admin/dashboard/dashboardPage.tsx"),
 
         // 포인트
         route("points/list", 'routes/admin/points/listPage.tsx'),

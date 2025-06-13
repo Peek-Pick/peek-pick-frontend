@@ -1,21 +1,16 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { listCoupon, readCoupon, redeemCoupon } from "~/api/points/pointsAPI";
+import { listCoupon, redeemCoupon } from "~/api/points/pointsAPI";
 import StoreListComponent from "~/components/points/storeListComponent";
 import CouponModal from "~/routes/points/couponModal";
 import type { PointStoreDTO, PointStoreListDTO } from "~/types/points";
 import { PointProductType } from "~/enums/points/points";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStore } from "@fortawesome/free-solid-svg-icons";
+import PaginationComponent from "~/components/common/PaginationComponent";
+import type {PagingResponse} from "~/types/common";
+import {readCoupon} from "~/api/points/adminPointsAPI";
 
-interface PageResponse<T> {
-    content: T[];
-    total_elements: number;
-    total_pages: number;
-    size: number;
-    number: number;
-}
 
 function StoreListPage() {
     const [page, setPage] = useState(0); // 0-based
@@ -28,9 +23,10 @@ function StoreListPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     // 쿠폰 list 불러오기
-    const { data, isLoading, isError } = useQuery<PageResponse<PointStoreListDTO>>({
+    const { data, isLoading, isError } = useQuery<PagingResponse<PointStoreListDTO>>({
         queryKey: ["points", page, size, filter],
         queryFn: () => listCoupon(page, size, sort, filter),
+        staleTime: 1000 * 60 * 5
     });
 
     // 쿠폰 상세정보 불러오기 - 모달에서 보여 줄 정보
@@ -55,6 +51,7 @@ function StoreListPage() {
             alert("Purchase failed");
         }
     };
+
 
     return (
         <div className="max-w-4xl mx-auto bg-white rounded-2xl p-6 shadow-lg">
@@ -104,14 +101,18 @@ function StoreListPage() {
             <div>
                 <StoreListComponent
                     products={data.content}
-                    page={data.number}
-                    setPage={setPage}
-                    size={data.size}
-                    totalElements={data.total_elements}
                     onProductClick={(product) => {
                         setSelectedProductId(product.pointstoreId);
                         setIsModalOpen(true);
                     }}
+                />
+
+                {/* 페이지네이션 컴포넌트 */}
+                <PaginationComponent
+                    currentPage={data.number}
+                    totalPages={data.totalPages}
+                    onPageChange={setPage}
+                    maxPageButtons={5}
                 />
 
                 {/*쿠폰 구매 모달 - 상품 클릭시 불러옴*/}

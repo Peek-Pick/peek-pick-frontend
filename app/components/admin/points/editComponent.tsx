@@ -1,12 +1,12 @@
 import { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { useMutation } from "@tanstack/react-query";
-import { updateCoupon, deleteCoupon } from "~/api/points/pointsAPI";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 import { PointProductType } from "~/enums/points/points";
 import type { PointStoreDTO } from "~/types/points";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPencil } from '@fortawesome/free-solid-svg-icons'
+import {deleteCoupon, updateCoupon} from "~/api/points/adminPointsAPI";
 
 interface Props {
     idNumber: number | null;
@@ -18,12 +18,13 @@ export default function EditComponent({ idNumber, data }: Props) {
     const formRef = useRef<HTMLFormElement | null>(null);
     const [selectedFileName, setSelectedFileName] = useState<string>("파일을 선택하세요");
     const fileInputRef = useRef<HTMLInputElement | null>(null);
-
+    const queryClient = useQueryClient();
 
     // 수정 뮤테이션
     const updateMutation = useMutation({
         mutationFn: (formData: FormData) => updateCoupon(idNumber ?? 0, formData),
         onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["points"] }); //수정 후 목록 최신화
             alert("수정 완료!");
             navigate("/admin/points/list");
         },
@@ -36,6 +37,7 @@ export default function EditComponent({ idNumber, data }: Props) {
     const deleteMutation = useMutation({
         mutationFn: () => deleteCoupon(idNumber ?? 0),
         onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["points"] }); //삭제 후 목록 최신화
             alert("삭제 완료!");
             navigate("/admin/points/list");
         },

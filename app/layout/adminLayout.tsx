@@ -63,7 +63,9 @@ export default function AdminLayout() {
         "/admin/reviews/list": "Reviews List",
         "/admin/inquiries/list": "Inquiries List",
         "/admin/reports/list": "Reports List",
-        "/admin/notices/list": "Notice List"
+        "/admin/notices/list": "Notice List",
+        "/admin/points/list": "Point Products List"
+
         // 다른 정적 경로가 필요하다면 여기에 추가
     };
     // ② 상품명을 담을 로컬 상태
