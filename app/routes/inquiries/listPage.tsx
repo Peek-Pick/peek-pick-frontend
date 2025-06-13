@@ -1,7 +1,6 @@
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchInquiries } from "~/api/inquiriesAPI";
-import type { InquiryResponseDTO } from "~/types/inquiries";
 import type { PagingResponse } from "~/types/common";
 import ListComponent from "~/components/inquiries/listComponent";
 import PaginationComponent from "~/components/common/PaginationComponent";

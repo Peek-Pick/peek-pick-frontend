@@ -1,15 +1,7 @@
 import { type ChangeEvent, type FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import type { InquiryRequestDTO, InquiryType } from "~/types/inquiries";
 import { MessageCirclePlus } from "lucide-react";
-
-const INQUIRY_TYPES: { value: InquiryType; label: string }[] = [
-    { value: "ACCOUNT", label: "계정/로그인" },
-    { value: "POINT_REVIEW", label: "포인트/리뷰" },
-    { value: "HOW_TO_USE", label: "사용 방법" },
-    { value: "BUG", label: "오류/버그" },
-    { value: "ETC", label: "기타 문의" },
-];
+import {INQUIRY_TYPES} from "~/enums/inquiries/inquiry";
 
 interface AddComponentProps {
     onSubmit: (dto: InquiryRequestDTO, files: FileList | null) => Promise<void>;

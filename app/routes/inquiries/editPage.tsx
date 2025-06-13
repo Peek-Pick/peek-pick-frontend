@@ -1,14 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import type {
-    InquiryResponseDTO,
-    InquiryRequestDTO,
-} from "~/types/inquiries";
 import { fetchInquiry, updateInquiry, uploadImages } from "~/api/inquiriesAPI";
 import LoadingComponent from "~/components/common/loadingComponent";
 import EditComponent from "~/components/inquiries/editComponent";
 import BottomNavComponent from "~/components/main/bottomNavComponent";
 import ModalComponent from "~/components/common/modalComponent";
+import {useUpdateInquiry} from "~/hooks/inquiries/useInquiryMutation";
 
 function EditPage() {
     const { id } = useParams<{ id: string }>();
@@ -16,6 +13,7 @@ function EditPage() {
     const [data, setData] = useState<InquiryResponseDTO | null>(null);
     const [loading, setLoading] = useState(true);
     const [showAuthModal, setShowAuthModal] = useState(false);
+    const updateInquiryMutation = useUpdateInquiry();
 
     useEffect(() => {
         if (!id) return;
@@ -36,7 +34,7 @@ function EditPage() {
         if (!id) return;
         setLoading(true);
         try {
-            await updateInquiry(+id, dto);
+            await updateInquiryMutation.mutateAsync({ id: +id, data: dto });
             if (files && files.length > 0) {
                 await uploadImages(+id, files);
             }

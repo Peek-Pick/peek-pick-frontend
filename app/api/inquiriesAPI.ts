@@ -1,9 +1,7 @@
-import type { AxiosResponse } from "axios";
+import type {AxiosResponse} from "axios";
 import axiosInstance from "~/instance/axiosInstance";
-import type {
-    InquiryRequestDTO,
-    InquiryResponseDTO,
-} from "~/types/inquiries";
+import axiosInstanceAdmin from "~/instance/axiosInstanceAdmin";
+import type {PagingResponse} from "~/types/common";
 
 /**
  * 문의사항 목록(페이징) 조회
@@ -17,9 +15,7 @@ export function fetchInquiries(page: number, size?: number) {
 /**
  * 단일 문의 조회
  */
-export function fetchInquiry(
-    id: number
-): Promise<AxiosResponse<InquiryResponseDTO>> {
+export function fetchInquiry(id: number): Promise<AxiosResponse<InquiryResponseDTO>> {
     if (id <= 0) {
         return Promise.reject(new Error("Invalid inquiry id"));
     }
@@ -29,19 +25,14 @@ export function fetchInquiry(
 /**
  * 문의사항 생성 (텍스트 + imgUrls)
  */
-export function createInquiry(
-    data: InquiryRequestDTO
-): Promise<AxiosResponse<InquiryResponseDTO>> {
+export function createInquiry(data: InquiryRequestDTO): Promise<AxiosResponse<InquiryResponseDTO>> {
     return axiosInstance.post<InquiryResponseDTO>(`inquiries`, data);
 }
 
 /**
  * 문의사항 수정 (텍스트 + imgUrls)
  */
-export function updateInquiry(
-    id: number,
-    data: InquiryRequestDTO
-): Promise<AxiosResponse<InquiryResponseDTO>> {
+export function updateInquiry(id: number, data: InquiryRequestDTO): Promise<AxiosResponse<InquiryResponseDTO>> {
     if (id <= 0) {
         return Promise.reject(new Error("Invalid inquiry id"));
     }
@@ -62,10 +53,7 @@ export function deleteInquiry(id: number): Promise<AxiosResponse<void>> {
  * 문의 이미지 업로드 (여러 파일 가능)
  * 서버는 Nginx로 저장 → URL만 DB에 기록
  */
-export function uploadImages(
-    inquiryId: number,
-    files: FileList | File[]
-): Promise<AxiosResponse<void>> {
+export function uploadImages(inquiryId: number, files: FileList | File[]): Promise<AxiosResponse<void>> {
     const formData = new FormData();
     Array.from(files).forEach((file) => {
         formData.append("files", file);
@@ -87,4 +75,24 @@ export async function deleteImages(inquiryId: number, urls: string[]) {
             'Content-Type': 'application/json'
         }
     });
+}
+
+export async function fetchAdminInquiries(params: FetchAdminInquiriesParams): Promise<{
+    data: PagingResponse<InquiryResponseDTO>
+}> {
+    return axiosInstanceAdmin.get(`admin/inquiries`, {params});
+};
+
+export function fetchAdminInquiry(id: number): Promise<AxiosResponse<InquiryResponseDTO>> {
+    if (id <= 0) {
+        return Promise.reject(new Error("Invalid inquiry id"));
+    }
+    return axiosInstanceAdmin.get<InquiryResponseDTO>(`admin/inquiries/${id}`);
+}
+
+export function deleteAdminInquiry(id: number): Promise<AxiosResponse<void>> {
+    if (id <= 0) {
+        return Promise.reject(new Error("Invalid inquiry id"));
+    }
+    return axiosInstanceAdmin.delete<void>(`/admin/inquiries/${id}`);
 }
