@@ -9,7 +9,7 @@ export default function SignupTagComponent() {
     const navigate = useNavigate();
 
     const { email, password, nickname, birthDate, gender, nationality, tags, setTags } = useSignupContext();
-    const { selectedTags, groupedTags, loading } = useTagSelector()
+    const { groupedTags, loading } = useTagSelector(tags)
     const [isSubmitting, setIsSubmitting] = useState(false)
 
     // 태그를 클릭하면 해당 tag가 배열에 있는지 확인하고 추가하거나 제거
