@@ -6,22 +6,17 @@ import ModifyComponent from "~/components/reviews/modifyComponent";
 function ModifyPage() {
     const { rid } = useParams()
 
-    const { data } = useQuery({
-        queryKey: ["review", rid],
+    // 리뷰 정보 가져오기
+    const { data, isLoading, isError } = useQuery({
+        queryKey: ["review", Number(rid)],
         queryFn: () => getReview(Number(rid))
     });
-    console.log(data?.data)
-
-    const { data: tagData } = useQuery({
-        queryKey: ["tags"],
-        queryFn: getTags,
-        staleTime: 10 * 60 * 1000,
-    });
-    console.log(tagData?.data)
 
     return (
         <div>
-            <ModifyComponent tags={tagData?.data} review={data?.data}></ModifyComponent>
+            <ModifyComponent review={data?.data} isLoading={isLoading} isError={isError}>
+
+            </ModifyComponent>
         </div>
     );
 }

@@ -6,16 +6,15 @@ import { getReview } from "~/api/reviews/reviewAPI";
 function DetailPage() {
     const { rid } = useParams()
 
-    const { data } = useQuery({
-        queryKey: ["review", rid],
+    // 리뷰 받아오기
+    const { data, isLoading, isError} = useQuery({
+        queryKey: ["review", Number(rid)],
         queryFn: () => getReview(Number(rid))
     });
 
-    console.log(data?.data)
-
     return (
         <div>
-            <DetailComponent review={data?.data}></DetailComponent>
+            <DetailComponent review={data?.data} isLoading={isLoading} isError={isError}></DetailComponent>
         </div>
     );
 }

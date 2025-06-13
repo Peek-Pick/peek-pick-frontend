@@ -1,5 +1,5 @@
 import {createContext, useContext} from "react";
-import {useSignupForm} from "~/hooks/useSignupForm";
+import {useSignupForm} from "~/hooks/users/useSignupForm";
 
 const SignupContext = createContext<ReturnType<typeof useSignupForm> | null>(null);
 
@@ -10,7 +10,6 @@ export const SignupProvider = ({ children }: {children: React.ReactNode}) => {
 
 export const useSignupContext = () => {
     const context = useContext(SignupContext)
-    console.log("SignupContext value:", context);
     if (!context) throw new Error('SignupContext must be used within a SignupProvider');
     return context;
 };

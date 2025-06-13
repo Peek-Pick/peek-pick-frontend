@@ -4,7 +4,7 @@ import ModalComponent from "~/components/common/modalComponent";
 import {useNavigate} from "react-router-dom";
 import {ChevronLeft} from "lucide-react";
 import {scanBarcode} from "~/api/barcodeAPI";
-import BarcodeAddRequest from "~/components/barcode/BarcodeAddRequest";
+import BarcodeAddRequest from "~/components/barcode/barcodeAddRequest";
 
 const BarcodeScannerComponent = () => {
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -115,34 +115,38 @@ const BarcodeScannerComponent = () => {
         <div className="relative w-full h-full bg-black">
             {/* 버튼, 바코드 프레임 CSS */}
             <style>{`
-            .back-button {
-              position: absolute; top: 1rem; left: 1rem; z-index: 10;
-              width: 64px; height: 64px;
-              display: flex; align-items: center; justify-content: center;
-              background: rgba(0,0,0,0.7); border: 2px solid white; border-radius: 50%;
-              color: white; transition: background-color 0.2s;
-            }
-            .back-button:hover { background: rgba(0,0,0,0.8); }
-            .back-button svg { width: 40px; height: 40px; }
-            @media (orientation: portrait) {
-              .back-button { width: 96px; height: 96px; }
-              .back-button svg { width: 56px; height: 56px; }
-            }
-            
-            .barcode-guide {
-              border: 4px dashed white;
-              border-radius: 8px;
-              width: 98vw;
-              max-width: 800px;
-              height: 320px;
-            }
-            @media (orientation: landscape) {
-              .barcode-guide {
-                width: 70vw;
-                height: 200px;
+              .back-button {
+                position: absolute; top: 1rem; left: 1rem; z-index: 10;
+                width: 48px; height: 48px;
+                display: flex; align-items: center; justify-content: center;
+                background: rgba(0,0,0,0.7); border: 2px solid white; border-radius: 50%;
+                color: white; transition: background-color 0.2s;
               }
-            }
-      `}</style>
+              .back-button:hover { background: rgba(0,0,0,0.8); }
+              .back-button svg { width: 28px; height: 28px; }
+            
+              .barcode-guide {
+                border: 4px dashed white;
+                border-radius: 8px;
+                width: 90vw;
+                max-width: 800px;
+                height: 280px;
+              }
+            
+              @media (orientation: portrait) {
+                .barcode-guide {
+                  width: 80vw;
+                  height: 160px;
+                }
+              }
+            
+              @media (orientation: landscape) {
+                .barcode-guide {
+                  width: 70vw;
+                  height: 200px;
+                }
+              }
+            `}</style>
 
             {/* 뒤로가기 버튼 */}
             <button aria-label="뒤로가기" className="back-button" onClick={() => navigate(-1)}>

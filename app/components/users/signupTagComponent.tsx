@@ -2,20 +2,19 @@ import { useSignupContext } from "~/contexts/signupContext";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {SignupForm} from "~/api/signupAPI";
-import { useTagSelector } from "~/hooks/useTagSelector";
-
+import { useTagSelector } from "~/hooks/tags/useTagSelector";
 
 export default function SignupTagComponent() {
 
     const navigate = useNavigate();
 
     const { email, password, nickname, birthDate, gender, nationality, tags, setTags } = useSignupContext();
-    const { selectedTags, groupedTags, loading } = useTagSelector()
+    const { groupedTags, loading } = useTagSelector(tags)
     const [isSubmitting, setIsSubmitting] = useState(false)
 
     // 태그를 클릭하면 해당 tag가 배열에 있는지 확인하고 추가하거나 제거
-    const selectTag = (tag: string) => {
-        setTags(tags.includes(tag) ? tags.filter(t => t !== tag) : [...tags, tag])
+    const selectTag = (tagId: number) => {
+        setTags(tags.includes(tagId) ? tags.filter(id => id !== tagId) : [...tags, tagId])
     };
 
     // 전체 form 제출
@@ -31,7 +30,7 @@ export default function SignupTagComponent() {
                 nationality,
                 birthDate: birthDate,
                 profileImgUrl: "basicImg.jpg",
-                tagIdList: selectedTags,
+                tagIdList: tags,
                 isSocial: false,
             };
 
@@ -41,7 +40,7 @@ export default function SignupTagComponent() {
 
             const response = await SignupForm(data);
             console.log("회원가입 완료", response);
-            navigate("/home");
+            navigate('');          // 성공 시 인덱스 → 홈으로 이동
         } catch (error) {
             console.error("회원가입 실패", error);
             alert("회원가입 실패. 다시 시도해주세요.");
@@ -65,15 +64,15 @@ export default function SignupTagComponent() {
                             <div className="flex flex-wrap gap-2">
                                 {tagList.map(tag => (
                                     <button
-                                        key={tag.tag_name}
-                                        onClick={() => selectTag(tag.tag_name)}
+                                        key={tag.tagName}
+                                        onClick={() => selectTag(tag.tagId)}
                                         className={`px-3 py-1 rounded-full border text-sm shadow transition
-                                        ${tags.includes(tag.tag_name)
+                                        ${tags.includes(tag.tagId)
                                             ? "bg-blue-500 text-white"
                                             : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                                         }`}
                                     >
-                                        {tag.tag_name}
+                                        {tag.tagName}
                                     </button>
                                 ))}
                             </div>

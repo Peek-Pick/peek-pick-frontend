@@ -3,13 +3,13 @@ import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { getUserReviews, getUserReviewsCount } from "~/api/reviews/reviewAPI";
 
 function UserListPage() {
-    // 리뷰 개수
-    const { data: reviewCount, isLoading: isCountLoading} = useQuery({
+    // 유저 리뷰 개수 받아오기
+    const { data: reviewCount } = useQuery({
         queryKey: ["userReviewCount"],
         queryFn: () => getUserReviewsCount()
     });
 
-    // 리뷰 리스트 (무한 스크롤)
+    // 유저 리뷰 리스트 userReviews 받아오기 (무한스크롤)
     const {
         data,
         fetchNextPage,
@@ -22,37 +22,25 @@ function UserListPage() {
         queryFn: ({ pageParam}) => getUserReviews(pageParam),
         initialPageParam: 0,
         getNextPageParam: (lastPage) => {
-            const currentPage = lastPage.data.pageable.page_number;
+            const currentPage = lastPage.data.pageable.pageNumber;
             const isLast = lastPage.data.last;
             return isLast ? undefined : currentPage + 1;
         }
     });
-    console.log(data)
 
     const allReviews = data?.pages.flatMap((page) => page.data.content) ?? [];
 
     return (
         <div>
-            {/* 리뷰 개수 로딩 완료 후 리스트 표시 */}
-            {!isCountLoading && (
-                <div className="w-full min-h-screen bg-gray-50 p-4">
-                    <div className="text-center">
-                        작성한 리뷰 수:{" "}
-                        <span className="font-bold text-red-500">
-                            {isCountLoading ? "로딩 중..." : `${reviewCount}`}
-                        </span>
-                    </div>
-
-                    <UserListComponent
-                        reviewList={allReviews}
-                        fetchNextPage={fetchNextPage}
-                        hasNextPage={hasNextPage}
-                        isFetchingNextPage={isFetchingNextPage}
-                        isLoading={isLoading}
-                        isError={isError}
-                    />
-                </div>
-            )}
+            <UserListComponent
+                reviewCount={reviewCount!}
+                reviewList={allReviews}
+                fetchNextPage={fetchNextPage}
+                hasNextPage={hasNextPage}
+                isFetchingNextPage={isFetchingNextPage}
+                isLoading={isLoading}
+                isError={isError}
+            />
         </div>
     );
 }

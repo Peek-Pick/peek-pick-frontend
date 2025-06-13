@@ -20,7 +20,7 @@ const LoginComponent = () => {
 
         try {
             await getToken(mem, mpw);   // 백에서 HttpOnly 쿠키까지 내려줌
-            navigate('/home');          // 성공 시 홈으로 이동
+            navigate('');          // 성공 시 인덱스 → 홈으로 이동
         } catch (error) {
             console.error('로그인 실패', error);
             alert('로그인에 실패했습니다. 이메일 또는 비밀번호를 확인하세요.');
