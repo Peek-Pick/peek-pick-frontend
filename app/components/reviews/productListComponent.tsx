@@ -8,6 +8,7 @@ import { Rating20 } from "~/components/reviews/rating/rating"
 import {ReviewLoading, ReviewInfiniteLoading} from "~/util/loading/reviewLoading";
 import { useLikeClick } from "~/hooks/reviews/useLikeClick";
 import FloatingHearts from "~/components/reviews/effect/floatingHearts";
+import { FloatingActionButtons } from "~/util/FloatingActionButtons";
 
 export interface ReviewListComponentProps {
     productData?: ProductDetailDTO
@@ -126,6 +127,9 @@ export default function ProductListComponent({productData, productId, reviewList
                     </div>
                 </div>
             </section>
+
+            {/* 조이스틱 */}
+            <FloatingActionButtons />
 
             {/* 무한 스크롤 디텍터 */}
             {hasNextPage && <div ref={bottomRef} className="h-1"/>}

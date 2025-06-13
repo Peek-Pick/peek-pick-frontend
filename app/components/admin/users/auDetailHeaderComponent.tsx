@@ -4,6 +4,7 @@ interface HeaderProps {
     avatarImage: string;
     name: string;
     email: string;
+    onClick?: () => void;
 }
 
 const AuDetailHeaderComponent: React.FC<HeaderProps> = ({
@@ -11,9 +12,11 @@ const AuDetailHeaderComponent: React.FC<HeaderProps> = ({
                                            avatarImage,
                                            name,
                                            email,
+                                           onClick,
                                        }) => {
     return (
-        <div className="relative flex flex-col items-center mb-[70px] sm:mb-[205px] md:mb-[75px] px-0">
+        <div className="relative flex flex-col items-center mb-[70px] sm:mb-[205px] md:mb-[75px] px-0"
+             onClick={onClick}>
             {/* 배경 이미지 */}
             <img
                 src="/BackgroundCard1.png"

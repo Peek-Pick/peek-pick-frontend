@@ -72,7 +72,7 @@ function ListPage() {
                 <FontAwesomeIcon
                     icon={faFlag}
                     style={{ width: '20px', height: '20px' }}
-                /> 리뷰 관리 리뷰 신고 관리
+                /> 리뷰 신고 관리
             </h3>
 
             {/* 검색 바 */}

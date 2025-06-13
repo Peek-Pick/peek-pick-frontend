@@ -120,6 +120,7 @@ export default function ListComponent({
                 </p>
             )}
 
+
             {/* 무한 스크롤 추가 로딩 */}
             {isFetchingNextPage &&
                 <div className="col-span-full flex justify-center">
