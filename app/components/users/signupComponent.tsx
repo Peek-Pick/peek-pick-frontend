@@ -4,19 +4,46 @@ import {useSignupContext} from "~/contexts/signupContext";
 import {getGoogleLoginLink} from "~/api/googleAPI";
 import {Link} from "react-router";
 import {SignupStepperHeader} from "~/components/users/signupStepperHeader";
+import {useEmailChecker} from "~/hooks/users/useEmailChecker";
+import {usePasswordChange} from "~/hooks/users/usePasswordChange";
 
 
 export default function SignUpPage() {
 
-    const {email, setEmail, password, setPassword} = useSignupContext()
-
     const googleLink = getGoogleLoginLink();
 
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+
+    const {email, setEmail, password, setPassword} = useSignupContext();
+
+    // 이메일 중복 확인 커스텀 훅
+    const {
+        email:checkEmail,
+        setEmail:setChekEmail,
+        checkEmailDupl,
+        isChecking,
+        isValidFormat,
+        isAvailable,
+        error: emailError
+    } = useEmailChecker();
+
+    // 비밀번호 확인 커스텀 훅
+    const {
+        newPassword,
+        confirmPassword,
+        setNewPassword,
+        setConfirmPassword,
+        checkNewPassword,
+        error: passwordError,
+    } = usePasswordChange();
+
+    // 실시간 비밀번호 유효성 체크
+    const isValidPassword =
+        !!newPassword && !!confirmPassword && newPassword === confirmPassword;
 
     const moveToProfileFormPage = (e: React.FormEvent) => {
         e.preventDefault();
-        navigate('/signup/profile')
+        navigate('/signup/profile');
     }
 
     return (
@@ -49,11 +76,12 @@ export default function SignUpPage() {
                         </div>
                     ))}
 
-
                     <p className="text-center text-gray-400 font-bold mb-6">or</p>
 
                     {/* Form */}
                     <form className="space-y-6">
+
+                        {/*이메일*/}
                         <div>
                             <label className="block text-sm font-normal">Email</label>
                             <input
@@ -63,9 +91,19 @@ export default function SignUpPage() {
                                 placeholder="Your email address"
                                 className="w-full px-4 py-3 mt-1 rounded-[15px] border border-gray-300 text-sm"
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                onChange={(e) => {
+                                    setEmail(e.target.value);           // context에 이메일 저장
+                                    setChekEmail(e.target.value);       // emailCheck에 값 전달
+                                }}
+                                onBlur={checkEmailDupl}
                             />
+
+                            {emailError && <p className="text-red-500 text-sm mt-1 ml-4">{emailError}</p>}
+                            {isAvailable && <p className="text-green-500 text-sm mt-1 ml-4">The email is available.</p>}
+                            {isChecking && <p className="text-gray-500 text-sm mt-1 ml-4">Checking...</p>}
                         </div>
+
+                        {/*비밀번호 */}
                         <div>
                             <label className="block text-sm font-normal">Password</label>
                             <input
@@ -75,13 +113,38 @@ export default function SignUpPage() {
                                 placeholder="Your password"
                                 className="w-full px-4 py-3 mt-1 rounded-[15px] border border-gray-300 text-sm"
                                 value={password ?? ""}
-                                onChange={(e) => setPassword(e.target.value)}
+                                onChange={(e) => {
+                                    setPassword(e.target.value)
+                                    setNewPassword(e.target.value)
+                                }}
                             />
+                            {/*비밀번호 확인*/}
+                            <input
+                                type="password"
+                                required
+                                placeholder="Confirm password"
+                                className="w-full px-4 py-3 mt-3 rounded-[15px] border border-gray-300 text-sm"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                            />
+
+                            {passwordError && (<p className="text-red-500 text-sm mt-1 ml-4">{passwordError}</p>)}
+                            {!passwordError && newPassword && confirmPassword && !isValidPassword && (
+                                <p className="text-red-500 text-sm mt-1 ml-4">
+                                    Passwords do not match.
+                                </p>
+                            )}
                         </div>
 
                         <button
                             type="submit"
-                            className="w-full bg-amber-300 hover:bg-amber-400 active:bg-amber-200 text-white font-bold text-sm h-11 rounded-md transition"
+                            disabled={!isAvailable || !isValidPassword}
+                            className={`
+                                w-full h-11 rounded-md font-bold text-sm transition
+                                ${isAvailable && isValidPassword
+                                    ? "bg-amber-300 hover:bg-amber-400 active:bg-amber-200 text-white"
+                                    : "bg-gray-300 text-gray-500 cursor-not-allowed"}
+                                `}
                             onClick={moveToProfileFormPage}
                         >
                             NEXT
