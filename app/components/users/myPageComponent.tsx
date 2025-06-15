@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import {
     FaStore, FaUserCog, FaCoins, FaAngleRight,
     FaHeart, FaPen, FaTicketAlt, FaBarcode,
@@ -6,62 +5,21 @@ import {
 } from 'react-icons/fa';
 import { IoLanguage, IoLogOutOutline } from "react-icons/io5";
 import { useNavigate } from "react-router";
-import { getMyPage } from "~/api/myPageAPI";
-import { getUserReviewsCount } from "~/api/reviews/reviewAPI";
+
+import type { MypageData } from "~/types/users";
+import {useAccountDelete} from "~/hooks/users/useAccountDelete";
 
 // 타입 정의
-interface MypageData {
-    profileImgUrl: string;
-    nickname: string;
-    point: number;
-    wishlistedCount: number;
-    reviewCount: number;
-    couponCount: number;
-    barcodeHistoryCount: number;
+interface MyPageProps {
+    myData: MypageData;
 }
 
-export default function ProfileHeader() {
-
-    const initState = {
-        profileImgUrl: '',
-        nickname: '',
-        point: 0,
-        wishlistedCount: 0,
-        reviewCount: 0,
-        couponCount: 0,
-        barcodeHistoryCount: 0
-    }
+export default function MyPageComponent({ myData }:MyPageProps) {
 
     const navigate = useNavigate();
-    const [myData, setMyData] = useState<MypageData>(initState);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const [myPageResult, reviewCount] = await Promise.all([
-                    getMyPage(),
-                    getUserReviewsCount()
-                ]);
-
-
-                const transformed = {
-                    profileImgUrl: myPageResult.profileImgUrl,
-                    nickname: myPageResult.nickname,
-                    point: myPageResult.point,
-                    reviewCount: reviewCount,
-                    ...myPageResult.quickStats,
-                };
-
-                setMyData(transformed);
-            } catch (err) {
-                console.error("마이페이지 불러오기 실패", err);
-            }
-        };
-
-        fetchData();
-    }, []);
-
-    if (!myData) return <div className="p-4">불러오는 중...</div>;
+    // 삭제 모달 불러오기
+    const { openDeleteModal } = useAccountDelete();
 
     // 동적 quickStats
     const quickStats = [
@@ -79,7 +37,7 @@ export default function ProfileHeader() {
         { icon: FaFileContract, label: 'Terms of Service', to: '' },
         { icon: FaIdBadge, label: 'Licenses', to: '' },
         { icon: IoLogOutOutline, label: 'Logout', to: '/logout' },
-        { icon: FaUserAltSlash, label: 'Delete Account', to: '' },
+        { icon: FaUserAltSlash, label: 'Delete Account', onClick: openDeleteModal },
     ];
 
     return (
@@ -135,11 +93,14 @@ export default function ProfileHeader() {
 
             {/* 기능 버튼 */}
             <div className="p-4 space-y-2">
-                {buttons.map(({ icon: Icon, label, to }, index) => (
+                {buttons.map(({ icon: Icon, label, to, onClick }, index) => (
                     <button
-                    key={index}
-                    onClick={() => navigate(to)}
-                    className="w-full flex items-center px-4 py-3 rounded-lg hover:bg-gray-100 text-gray-600 text-base"
+                        key={index}
+                        onClick={() => {
+                            if (onClick) onClick();
+                            else if (to) navigate(to);
+                        }}
+                        className="w-full flex items-center px-4 py-3 rounded-lg hover:bg-gray-100 text-gray-600 text-base"
                     >
                     <Icon className="mr-2" />
                     <span>{label}</span>

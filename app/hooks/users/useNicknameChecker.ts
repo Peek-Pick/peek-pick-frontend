@@ -7,7 +7,7 @@ export function useNicknameChecker(nickname: string) {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!nickname || nickname.length < 2 || nickname.length > 16) {
+        if (!nickname || nickname.length < 2 || nickname.length > 15) {
             setError("Please choose the nickname from 2 to 15 characters.");
             setIsAvailable(false);
             return;

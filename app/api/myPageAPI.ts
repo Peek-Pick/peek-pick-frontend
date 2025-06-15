@@ -2,7 +2,6 @@ import axiosInstance from "~/instance/axiosInstance";
 import type {ProfileReadDTO, MyPageResponseDTO } from "~/types/users";
 import type {ProductListDTO, PageResponse} from "~/types/products";
 
-
 const host = "http://localhost:8080/api/v1/users";
 
 // myPage 조회
@@ -41,4 +40,11 @@ export async function getMyPageFavorite(
         }
     );
     return res.data;
+}
+
+// 계정 삭제(soft)
+export async function softDeleteAccount(): Promise<void> {
+    return axiosInstance.patch(`${host}/delete`, {
+        status: "DELETED"
+    });
 }
