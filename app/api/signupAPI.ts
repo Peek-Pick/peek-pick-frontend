@@ -38,3 +38,11 @@ export const checkEmail = async (email:string): Promise<{exists: boolean}> => {
     return res.data;
 }
 
+// 닉네임 체크
+export const CheckNickname = async (nickname: string) => {
+    const res = await axiosInstance.get("/users/check-nickname-duplicate", {
+        params: { nickname },
+    });
+    return res.data;
+};
+

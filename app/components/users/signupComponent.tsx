@@ -18,11 +18,9 @@ export default function SignUpPage() {
 
     // 이메일 중복 확인 커스텀 훅
     const {
-        email:checkEmail,
         setEmail:setChekEmail,
         checkEmailDupl,
         isChecking,
-        isValidFormat,
         isAvailable,
         error: emailError
     } = useEmailChecker();
@@ -33,7 +31,6 @@ export default function SignUpPage() {
         confirmPassword,
         setNewPassword,
         setConfirmPassword,
-        checkNewPassword,
         error: passwordError,
     } = usePasswordChange();
 
@@ -41,6 +38,7 @@ export default function SignUpPage() {
     const isValidPassword =
         !!newPassword && !!confirmPassword && newPassword === confirmPassword;
 
+    // 페이지 이동 핸들러
     const moveToProfileFormPage = (e: React.FormEvent) => {
         e.preventDefault();
         navigate('/signup/profile');
