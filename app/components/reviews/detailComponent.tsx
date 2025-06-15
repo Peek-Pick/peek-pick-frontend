@@ -18,7 +18,7 @@ export default function DetailComponent({review, isLoading, isError }: ReviewPro
     if (isError || !review) {
         return (
             <p className="text-center p-4 text-red-500 text-base sm:text-lg">
-                리뷰 정보를 불러오지 못했습니다
+                Failed to load review data.
             </p>
         );
     }
@@ -51,11 +51,11 @@ export default function DetailComponent({review, isLoading, isError }: ReviewPro
                             {/* 작성자 정보와 작성일*/}
                             <div className="flex sm:items-center flex-col min-[400px]:flex-row justify-between gap-4 mb-2">
                                 <div className="flex items-center gap-3">
-                                    <img src="/default.png" alt="profile image"
-                                         className="w-14 h-14 rounded-full object-cover"/>
-                                    <h6 className="font-semibold text-md sm:text-base leading-2 text-gray-600">{review.nickname ?? "테스트"}</h6>
+                                    <img src={`http://localhost/${review.profileImageUrl}`}
+                                         className="w-14 h-14 rounded-full object-cover" alt="profile image"/>
+                                    <h6 className="font-semibold text-md sm:text-base leading-2 text-gray-600">{review.nickname ?? "User"}</h6>
                                 </div>
-                                <p className="font-normal text-sm sm:text-sm leading-8 text-gray-400">작성일자 {new Date(review.regDate).toLocaleDateString()}</p>
+                                <p className="font-normal text-sm sm:text-sm leading-8 text-gray-400">Posted on {new Date(review.regDate).toLocaleDateString()}</p>
                             </div>
 
                             {/* 별점 */}
@@ -82,7 +82,7 @@ export default function DetailComponent({review, isLoading, isError }: ReviewPro
                                         <img
                                             key={img.imgId}
                                             src={`http://localhost/s_${img.imgUrl}`}
-                                            alt="리뷰이미지"
+                                            alt="Review Image"
                                             className="w-25 h-25 sm:w-25 sm:h-25 rounded-lg object-cover flex-shrink-0 border-1 border-gray-300 "
                                         />
                                     ))}
@@ -115,7 +115,7 @@ export default function DetailComponent({review, isLoading, isError }: ReviewPro
                                         : "bg-gray-100 text-gray-500 border-gray-200"} 
                                         hover:shadow-sm transition-colors duration-200`}
                                     >
-                                    {review.isLiked ? '❤️' : '🤍'} 좋아요 {review.recommendCnt}
+                                    {review.isLiked ? '❤️' : '🤍'} Like {review.recommendCnt}
                                 </button>
 
                                 {/* 신고하기 버튼 */}
@@ -123,7 +123,7 @@ export default function DetailComponent({review, isLoading, isError }: ReviewPro
                                     onClick={openReportModal}
                                     className="text-red-500 hover:text-red-600 transition text-sm sm:text-sm duration-200"
                                 >
-                                    신고하기
+                                    Report
                                 </button>
                             </div>
                         </div>

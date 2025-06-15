@@ -5,17 +5,16 @@
     padding: 15px;
     max-width: 400px;
     width: 90%;
-    max-height: 400px;
     overflow-y: auto;
+    text-align: left;
 }
 
 /* 제목 스타일 */
 .custom-title {
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     color: #333;
     font-weight: bold;
     text-align: center;
-    margin-bottom: 10px;
 }
 
 /* 버튼 컨테이너 */
@@ -59,4 +58,29 @@
 .custom-cancel-button:hover {
     background-color: #374151;
     /* pink-600 */
+}
+
+/* 라디오 버튼 전체 컨테이너: 세로 정렬 + 왼쪽 정렬 */
+.swal2-radio {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 10px;
+    text-align: left;
+    width: 100%;
+}
+
+/* 라벨 스타일: 줄바꿈 허용 + 전체 너비 정렬 */
+.swal2-radio label {
+    font-size: 1.1rem;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    user-select: none;
+    width: 100%;
+    word-break: break-word;
+    white-space: normal;
 }

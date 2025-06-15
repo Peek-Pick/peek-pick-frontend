@@ -33,7 +33,7 @@ export default function ProductListComponent({productData, productId, reviewList
     if (isError || productError|| !reviewList || !productData) {
         return (
             <p className="text-center p-4 text-red-500 text-base sm:text-lg">
-                리뷰 정보를 불러오지 못했습니다
+                Failed to load review data.
             </p>
         );
     }
@@ -91,7 +91,7 @@ export default function ProductListComponent({productData, productId, reviewList
                         <div className="flex text-sm sm:text-sm justify-between items-center border-t border-b border-gray-200 py-2 mb-4">
                             <nav
                                 className="tabs tabs-bordered"
-                                aria-label="정렬 탭"
+                                aria-label="Sort Tabs"
                                 role="tablist"
                                 aria-orientation="horizontal"
                             >
@@ -104,7 +104,7 @@ export default function ProductListComponent({productData, productId, reviewList
                                     role="tab"
                                     aria-selected={sortType === "latest"}
                                 >
-                                    최신순
+                                    Latest
                                 </button>
                                 <button
                                     type="button"
@@ -115,7 +115,7 @@ export default function ProductListComponent({productData, productId, reviewList
                                     role="tab"
                                     aria-selected={sortType === "likes"}
                                 >
-                                    좋아요순
+                                    Most Liked
                                 </button>
                             </nav>
                         </div>
@@ -174,12 +174,12 @@ function ReviewItem({review, productId}: ReviewItemProps) {
             {/* 작성자 정보와 작성일*/}
             <div className="flex sm:items-center flex-col min-[400px]:flex-row justify-between gap-5 mb-3">
                 <div className="flex items-center gap-3">
-                    <img src={review.profileImageUrl ? `http://localhost/${review.profileImageUrl}` : "/default.png"}
+                    <img src={`http://localhost/${review.profileImageUrl}`}
                          alt="profile image" className="w-14 h-14 rounded-full object-cover"/>
-                    <h6 className="font-semibold text-md leading-8 text-gray-600">{review.nickname ?? "테스트"}</h6>
+                    <h6 className="font-semibold text-md leading-8 text-gray-600">{review.nickname ?? "User"}</h6>
                 </div>
                 <div className="flex items-center gap-3">
-                    <p className="font-normal text-sm sm:text-sm leading-8 text-gray-400">작성일자 {new Date(review.regDate).toLocaleDateString()}</p>
+                    <p className="font-normal text-sm sm:text-sm leading-5 text-gray-400">{new Date(review.regDate).toLocaleDateString()}</p>
                 </div>
             </div>
 
@@ -207,7 +207,7 @@ function ReviewItem({review, productId}: ReviewItemProps) {
                         <img
                             key={img.imgId}
                             src={`http://localhost/s_${img.imgUrl}`}
-                            alt="리뷰이미지"
+                            alt="Review Image"
                             className="w-25 h-25 sm:w-25 sm:h-25 rounded-lg object-cover flex-shrink-0 border-1 border-gray-300 "
                         />
                     ))}
@@ -240,7 +240,7 @@ function ReviewItem({review, productId}: ReviewItemProps) {
                         : "bg-gray-100 text-gray-500 border-gray-200"} 
                         hover:shadow-sm transition-colors duration-200`}
                 >
-                    {review.isLiked ? '❤️' : '🤍'} 좋아요 {review.recommendCnt}
+                    {review.isLiked ? '❤️' : '🤍'} Like {review.recommendCnt}
                 </button>
 
                 {/* 신고하기 버튼 */}
@@ -248,7 +248,7 @@ function ReviewItem({review, productId}: ReviewItemProps) {
                     onClick={openReportModal}
                     className="text-red-500 hover:text-red-600 transition text-sm sm:text-sm duration-200"
                 >
-                    신고하기
+                    Report
                 </button>
 
                 {/* 하트 이펙트 - 반드시 relative 컨테이너 안에서 렌더 */}
@@ -263,12 +263,12 @@ function ReviewItem({review, productId}: ReviewItemProps) {
                     <div className="absolute inset-0 bg-yellow-100/50 backdrop-blur-md rounded-md border border-yellow-300 shadow-inner"></div>
                     <div className="relative flex flex-col items-center text-center px-4">
                         <span className="text-3xl mb-2">🙈</span>
-                        <p className="mb-3 text-yellow-800 font-semibold">이 리뷰는 숨겨졌어요!</p>
+                        <p className="mb-3 text-yellow-800 font-semibold">This review is hidden!</p>
                         <button
                             onClick={() => setShowHidden(true)}
                             className="px-4 py-2 font-semibold bg-yellow-400 text-white rounded-full hover:bg-yellow-500 transition-all shadow-md"
                         >
-                            살짝 보기 👀
+                            Show Anyway 👀
                         </button>
                     </div>
                 </div>
