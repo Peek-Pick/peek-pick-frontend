@@ -19,12 +19,13 @@ export default function EditComponent({ idNumber, data }: Props) {
     const [selectedFileName, setSelectedFileName] = useState<string>("파일을 선택하세요");
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const queryClient = useQueryClient();
+    const [isDeleted, setIsDeleted] = useState<boolean>(false);
 
     // 수정 뮤테이션
     const updateMutation = useMutation({
         mutationFn: (formData: FormData) => updateCoupon(idNumber ?? 0, formData),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["points"] }); //수정 후 목록 최신화
+            queryClient.invalidateQueries({ queryKey: ["pointsList"] }); //수정 후 목록 최신화
             alert("수정 완료!");
             navigate("/admin/points/list");
         },
@@ -33,19 +34,34 @@ export default function EditComponent({ idNumber, data }: Props) {
         },
     });
 
+    useEffect(() => {
+        if (!data) return;
+        setIsDeleted(Boolean(data.isHidden));  // data.isHidden이 false면 isDeleted는 true가 됨 (이 부분은 확인 필요)
+    }, [data]);
+
     // 삭제 뮤테이션
     const deleteMutation = useMutation({
         mutationFn: () => deleteCoupon(idNumber ?? 0),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["points"] }); //삭제 후 목록 최신화
-            alert("삭제 완료!");
+            queryClient.invalidateQueries({ queryKey: ["pointsList"] }); //삭제 후 목록 최신화
+            const nextDeleted = !isDeleted;
+            setIsDeleted(nextDeleted);
+            alert(isDeleted ? "판매 시작됨!" : "판매 중단됨!");
             navigate("/admin/points/list");
         },
         onError: () => {
             alert("삭제 실패");
         },
     });
+    // 판매 상태 토글 버튼 클릭 핸들러
+    const handleToggleSale = () => {
+        // 현재 상태에 따라 확인창 표시
+        if (confirm(isDeleted ? "판매를 시작하시겠습니까?" : "판매를 중단하시겠습니까?")) {
+            deleteMutation.mutate();
+        }
+    };
 
+    // 폼 제출 핸들러 (수정)
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const formEl = formRef.current;
@@ -176,10 +192,10 @@ export default function EditComponent({ idNumber, data }: Props) {
                     </button>
                     <button
                         type="button"
-                        onClick={handleDelete}
+                        onClick={handleToggleSale}
                         className="flex items-center gap-1 rounded-md bg-red-100 px-4 py-2 text-sm font-medium text-red-700 shadow-sm hover:bg-red-200 transition"
                     >
-                        삭제
+                        {isDeleted ? "판매 시작하기" : "판매 중단하기"}
                     </button>
                 </div>
             </form>

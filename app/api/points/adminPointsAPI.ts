@@ -10,13 +10,17 @@ export async function readCoupon(pointstoreId: number | null): Promise<PointStor
 }
 
 // 쿠폰 목록 조회 (Admin)
-export async function listAdminCoupon(page: number, size: number, sort:string, type?: string) {
-    const params: any = { page, size, sort, type };
-    if (type && type !== "ALL") {
-        params.type = type;
-    }
+export async function listAdminCoupon (page: number, category?: string, keyword?: string, hidden?: boolean) {
+    const params: Record<string, string> = {
+        page: String(page),
+        sort: "regDate,desc",
+    };
 
-    const response = await axiosInstanceAdmin.get(`/admin/points`, { params });
+    if (category) params.category = category;
+    if (keyword) params.keyword = keyword;
+    if (hidden !== undefined) params.hidden = String(hidden);
+
+    const response = await axiosInstanceAdmin.get(`admin/points`, {params});
 
     return response.data;
 }

@@ -7,6 +7,7 @@ export interface PointStoreDTO {
     description: string;
     productType: PointProductType; // enum 사용
     imgUrl: string;
+    isHidden: boolean;
 }
 
 export interface PointStoreListDTO {
