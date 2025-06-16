@@ -36,8 +36,8 @@ export default function RankingPage() {
     ] as const;
     type SortLabelType = typeof sortOptions[number]["label"];
     type SortParamType = typeof sortOptions[number]["param"];
-    const [sortLabel, setSortLabel] = useState<SortLabelType>("좋아요 순");
-    const [sortParam, setSortParam] = useState<SortParamType>("likeCount,DESC");
+    const [sortLabel, setSortLabel] = useState<SortLabelType>("별점 순");
+    const [sortParam, setSortParam] = useState<SortParamType>("score,DESC");
     const [showSortMenu, setShowSortMenu] = useState(false);
     const sortRef = useRef<HTMLDivElement>(null);
 
