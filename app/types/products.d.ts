@@ -12,6 +12,7 @@ export interface ProductListDTO {
     score?: number | null;
     /** soft-delete 여부 */
     isDelete?: boolean | null;
+    rank?: number;
 }
 
 /**
