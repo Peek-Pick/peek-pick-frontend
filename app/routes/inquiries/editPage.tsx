@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { fetchInquiry, updateInquiry, uploadImages } from "~/api/inquiriesAPI";
+import { fetchInquiry, uploadImages } from "~/api/inquiriesAPI";
 import LoadingComponent from "~/components/common/loadingComponent";
 import EditComponent from "~/components/inquiries/editComponent";
 import BottomNavComponent from "~/components/main/bottomNavComponent";

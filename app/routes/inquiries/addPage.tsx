@@ -4,12 +4,10 @@ import { uploadImages } from "~/api/inquiriesAPI";
 import BottomNavComponent from "~/components/main/bottomNavComponent";
 import AddComponent from "~/components/inquiries/addComponent";
 import LoadingComponent from "~/components/common/loadingComponent";
-import { useQueryClient } from "@tanstack/react-query";
 import { useCreateInquiry } from "~/hooks/inquiries/useInquiryMutation";
 
 function AddPage() {
     const navigate = useNavigate();
-    const queryClient = useQueryClient();
     const [loading, setLoading] = useState(false);
     const createInquiryMutation = useCreateInquiry();
 

@@ -1,7 +1,7 @@
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import {
-    createInquiry,
-    deleteInquiry,
+    createInquiry, createInquiryAnswer,
+    deleteInquiry, deleteInquiryAnswer,
     updateInquiry
 } from "~/api/inquiriesAPI";
 import {deleteAdminInquiry} from "~/api/inquiriesAPI";
@@ -46,6 +46,27 @@ export function useDeleteAdminInquiry() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (id: number) => deleteAdminInquiry(id),
+        onSuccess: () => {
+            invalidateInquiryQueries(queryClient);
+        },
+    });
+}
+
+export function useCreateInquiryAnswer() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ inquiryId, data }: { inquiryId: number; data: InquiryAnswerRequestDTO }) =>
+            createInquiryAnswer(inquiryId, data),
+        onSuccess: () => {
+            invalidateInquiryQueries(queryClient);
+        },
+    });
+}
+
+export function useDeleteInquiryAnswer() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (inquiryId: number) => deleteInquiryAnswer(inquiryId),
         onSuccess: () => {
             invalidateInquiryQueries(queryClient);
         },

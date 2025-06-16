@@ -9,6 +9,8 @@ export interface InquiryFilterBarProps {
     setSize: (value: string) => void;
     waitingAnswerOnly: boolean;
     setWaitingAnswerOnly: (value: boolean) => void;
+    includeDeleted: boolean;
+    setIncludeDeleted: (value: boolean) => void;
     onSearch: () => void;
 }
 
@@ -21,37 +23,38 @@ function InquiryFilterBar({
                               setSize,
                               waitingAnswerOnly,
                               setWaitingAnswerOnly,
+                              includeDeleted,
+                              setIncludeDeleted,
                               onSearch,
                           }: InquiryFilterBarProps) {
-    // 로컬 상태로 입력/옵션을 관리하여 검색 버튼 클릭 시에만 적용
     const [localCategory, setLocalCategory] = useState(category);
     const [localKeyword, setLocalKeyword] = useState(keyword);
     const [localSize, setLocalSize] = useState(size);
 
-    // 부모 props 변경 시 로컬 상태 동기화
     useEffect(() => setLocalCategory(category), [category]);
     useEffect(() => setLocalKeyword(keyword), [keyword]);
     useEffect(() => setLocalSize(size), [size]);
 
-    // 검색 버튼 클릭 핸들러
     const handleSearch = () => {
         setCategory(localCategory);
-        // 키워드 없으면 빈 문자열로 설정해 키워드 파라미터 제외 로직을 부모에서 처리
         const kw = localKeyword.trim();
         setKeyword(kw);
         setSize(localSize);
         onSearch();
     };
 
-    // 체크박스 변경 즉시 필터링
     const handleWaitingChange = (checked: boolean) => {
         setWaitingAnswerOnly(checked);
         onSearch();
     };
 
+    const handleIncludeDeletedChange = (checked: boolean) => {
+        setIncludeDeleted(checked);
+        onSearch();
+    };
+
     return (
         <div className="flex justify-between items-center mb-2 text-sm bg-white p-2">
-            {/* 왼쪽: 검색 필터 */}
             <div className="flex items-center gap-2">
                 <select
                     value={localCategory}
@@ -81,7 +84,6 @@ function InquiryFilterBar({
                 </button>
             </div>
 
-            {/* 오른쪽: size 옵션 + 답변 대기만 보기 체크박스 */}
             <div className="flex items-center gap-4">
                 <select
                     value={localSize}
@@ -93,15 +95,23 @@ function InquiryFilterBar({
                     <option value="50">50개</option>
                 </select>
 
-                <div className="flex items-center gap-2">
-                    <input
-                        type="checkbox"
-                        id="waitingAnswerOnly"
-                        checked={waitingAnswerOnly}
-                        onChange={(e) => handleWaitingChange(e.target.checked)}
-                    />
-                    <label htmlFor="waitingAnswerOnly" className="text-sm text-gray-700">
+                <div className="flex items-center gap-4">
+                    <label className="flex items-center gap-1 text-gray-700">
+                        <input
+                            type="checkbox"
+                            checked={waitingAnswerOnly}
+                            onChange={(e) => handleWaitingChange(e.target.checked)}
+                        />
                         답변 대기만 보기
+                    </label>
+
+                    <label className="flex items-center gap-1 text-gray-700">
+                        <input
+                            type="checkbox"
+                            checked={!includeDeleted}
+                            onChange={(e) => handleIncludeDeletedChange(!e.target.checked)}
+                        />
+                        삭제된 문의 제외
                     </label>
                 </div>
             </div>
