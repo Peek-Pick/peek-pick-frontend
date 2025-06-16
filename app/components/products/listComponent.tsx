@@ -15,6 +15,8 @@ interface Props {
     isFetchingNextPage: boolean;
     isLoading: boolean;
     isError: boolean;
+    onItemClick: (barcode: string) => void;
+    isRanking?: boolean;
 }
 
 export default function ListComponent({
@@ -24,6 +26,8 @@ export default function ListComponent({
                                           isFetchingNextPage,
                                           isLoading,
                                           isError,
+                                          onItemClick,
+                                          isRanking = false,
                                       }: Props) {
     const bottomRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
@@ -40,11 +44,10 @@ export default function ListComponent({
         return () => observer.disconnect();
     }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-    // 1) 초기 로딩
     if (isLoading) {
         return <ProductLoading />;
     }
-    // 2) 에러
+
     if (isError) {
         return (
             <p className="p-4 text-center text-red-500 text-base sm:text-lg">
@@ -52,7 +55,7 @@ export default function ListComponent({
             </p>
         );
     }
-    // 3) 빈 목록
+
     if (products.length === 0) {
         return (
             <p className="p-4 text-center text-gray-500">
@@ -66,14 +69,19 @@ export default function ListComponent({
             {products.map((p, idx) => (
                 <div
                     key={`${p.barcode}-${idx}`}
-                    className="
-                        p-[16px] bg-white border border-[#FBFBFB]
+                    className="relative p-[16px] bg-white border border-[#FBFBFB]
                         shadow-[0px_5px_22px_rgba(0,0,0,0.04)] rounded-[16px]
                         transition-shadow duration-300 hover:shadow-[0px_21px_44px_rgba(0,0,0,0.08)]
-                        cursor-pointer
-                    "
-                    onClick={() => navigate(`/products/${p.barcode}`)}
+                        cursor-pointer"
+                    onClick={() => onItemClick(p.barcode)}
                 >
+                    {/* 🔢 순위 배지 */}
+                    {isRanking && p.rank && (
+                        <div className="absolute top-2 left-2 w-6 h-6 flex items-center justify-center rounded-full bg-[#ff5e5e] text-white text-xs font-bold z-10">
+                            {p.rank}
+                        </div>
+                    )}
+
                     <figure className="bg-[#F9F9F9] rounded-[12px] p-2 mb-4 overflow-hidden">
                         <div className="relative w-full" style={{ paddingBottom: "100%" }}>
                             {p.imgUrl && (
@@ -120,8 +128,6 @@ export default function ListComponent({
                 </p>
             )}
 
-
-            {/* 무한 스크롤 추가 로딩 */}
             {isFetchingNextPage &&
                 <div className="col-span-full flex justify-center">
                     <ProductInfiniteLoading />
