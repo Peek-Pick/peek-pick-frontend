@@ -50,14 +50,14 @@ export default function AppLayout() {
 
         // /reviews/modify/:rid 패턴 확인
         if (/^\/reviews\/modify\/\d+$/.test(location.pathname)) {
-            setDynamicTitle("Review Modify");
+            setDynamicTitle("Edit Review");
             return;
         }
 
         // ④ /products/:barcode 패턴 확인
         const productMatch = location.pathname.match(/^\/(products|reviews\/product)\/([^/]+)$/);
         if (productMatch) {
-            const barcode = productMatch[1];
+            const barcode = productMatch[2];
             // API 호출하여 상품명을 가져와 dynamicTitle에 저장
             (async () => {
                 try {
@@ -65,6 +65,7 @@ export default function AppLayout() {
                     setDynamicTitle(data.name);
                 } catch (error) {
                     console.error("상품명 조회 실패:", error);
+                    console.log(barcode)
                     // 조회 실패 시 기본값 또는 빈 문자열로 둡니다.
                     setDynamicTitle("");
                 }
@@ -80,10 +81,15 @@ export default function AppLayout() {
     const pageTitle =
         dynamicTitle || pageTitleMap[location.pathname] || "";
 
+    // outlet padding 제거 - main
+    const noPaddingPaths = ["/main"];
+
+    const hasPadding = !noPaddingPaths.includes(location.pathname);
+
     return (
         <div className="min-h-screen bg-gray-50">
             {/* 헤더 */}
-            <header className="sticky top-0 z-50 flex items-center justify-between px-4 py-3 bg-transparent backdrop-blur-md shadow-md">
+            <header className="sticky top-0 z-50 flex items-center justify-between px-4 py-2.5 bg-transparent backdrop-blur-md shadow-md">
                 {/* 왼쪽: 로고 + 페이지 이름 */}
                 <button className="flex items-center gap-2"
                         onClick={() => navigate("/main")}>
@@ -112,7 +118,7 @@ export default function AppLayout() {
             </header>
 
             {/* 본문 */}
-            <main className="p-4">
+            <main className={hasPadding ? "p-4" : ""}>
                 <Outlet />
             </main>
         </div>
