@@ -87,7 +87,15 @@ function ListComponent({ items }: AdminInquiryListComponentProps) {
                                             <div className="overflow-hidden whitespace-nowrap truncate max-w-[128px]">{item.userNickname}</div>
                                         </td>
                                         <td className="px-4 py-3.5">
-                                            <div className="overflow-hidden whitespace-nowrap truncate">{statusLabel}</div>
+                                            <div
+                                                className={`inline-block px-2 py-1 text-xs font-semibold rounded-full whitespace-nowrap truncate ${
+                                                    item.status === 'PENDING'
+                                                        ? "bg-gray-200 text-gray-700"
+                                                        : "bg-green-200 text-green-800"
+                                                }`}
+                                            >
+                                                {statusLabel}
+                                            </div>
                                         </td>
                                         <td className="px-4 py-3.5">
                                             <div className="overflow-hidden whitespace-nowrap truncate">{item.isDelete && <span className="text-red-500 font-semibold">삭제됨</span>}</div>

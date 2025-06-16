@@ -17,8 +17,18 @@ const InquiryDetailInfo = ({ data }: InquiryDetailInfoProps) => {
                 <h2 className="text-lg font-bold text-gray-700 dark:text-white">문의 내용</h2>
             </div>
 
+            {/* 제목 */}
+            <div className="mb-2">
+                <h1 className="text-xl font-bold text-gray-900 dark:text-white break-words">
+                    {data.title}
+                </h1>
+            </div>
+
+            {/* 점선 구분선 */}
+            <hr className="border-t border-dashed border-gray-200 dark:border-gray-600 my-4" />
+
             {/* 본문 */}
-            <div className="prose prose-sm prose-gray mt-5 max-w-none whitespace-pre-wrap">
+            <div className="prose prose-sm prose-gray mt-2 max-w-none whitespace-pre-wrap">
                 {data.content.split('\n').map((line, idx) => (
                     <span key={idx}>
                         {line}
@@ -27,7 +37,10 @@ const InquiryDetailInfo = ({ data }: InquiryDetailInfoProps) => {
                 ))}
             </div>
 
-            <br/>
+            {/* 점선 구분선 (이미지가 있을 때만 표시) */}
+            {data.imgUrls && data.imgUrls.length > 0 && (
+                <hr className="border-t border-dashed border-gray-200 dark:border-gray-600 my-4" />
+            )}
 
             {/* 이미지 그리드 */}
             {data.imgUrls && data.imgUrls.length > 0 && (

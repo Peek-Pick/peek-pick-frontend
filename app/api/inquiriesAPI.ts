@@ -16,9 +16,6 @@ export function fetchInquiries(page: number, size?: number) {
  * 단일 문의 조회
  */
 export function fetchInquiry(id: number): Promise<AxiosResponse<InquiryResponseDTO>> {
-    if (id <= 0) {
-        return Promise.reject(new Error("Invalid inquiry id"));
-    }
     return axiosInstance.get<InquiryResponseDTO>(`inquiries/${id}`);
 }
 
@@ -33,9 +30,6 @@ export function createInquiry(data: InquiryRequestDTO): Promise<AxiosResponse<In
  * 문의사항 수정 (텍스트 + imgUrls)
  */
 export function updateInquiry(id: number, data: InquiryRequestDTO): Promise<AxiosResponse<InquiryResponseDTO>> {
-    if (id <= 0) {
-        return Promise.reject(new Error("Invalid inquiry id"));
-    }
     return axiosInstance.put<InquiryResponseDTO>(`inquiries/${id}`, data);
 }
 
@@ -43,9 +37,6 @@ export function updateInquiry(id: number, data: InquiryRequestDTO): Promise<Axio
  * 문의사항 삭제
  */
 export function deleteInquiry(id: number): Promise<AxiosResponse<void>> {
-    if (id <= 0) {
-        return Promise.reject(new Error("Invalid inquiry id"));
-    }
     return axiosInstance.delete<void>(`inquiries/${id}`);
 }
 
@@ -84,15 +75,26 @@ export async function fetchAdminInquiries(params: FetchAdminInquiriesParams): Pr
 };
 
 export function fetchAdminInquiry(id: number): Promise<AxiosResponse<InquiryResponseDTO>> {
-    if (id <= 0) {
-        return Promise.reject(new Error("Invalid inquiry id"));
-    }
     return axiosInstanceAdmin.get<InquiryResponseDTO>(`admin/inquiries/${id}`);
 }
 
 export function deleteAdminInquiry(id: number): Promise<AxiosResponse<void>> {
-    if (id <= 0) {
-        return Promise.reject(new Error("Invalid inquiry id"));
-    }
     return axiosInstanceAdmin.delete<void>(`/admin/inquiries/${id}`);
+}
+
+export function createInquiryAnswer(inquiryId: number, data: InquiryAnswerRequestDTO): Promise<AxiosResponse<void>> {
+    return axiosInstanceAdmin.post<void>(`/admin/inquiries/${inquiryId}/reply`, data);
+}
+
+export async function updateInquiryAnswer(inquiryId: number, data: InquiryAnswerRequestDTO): Promise<void> {
+    await axiosInstanceAdmin.put(`/admin/inquiries/${inquiryId}/reply`, data);
+}
+
+export async function fetchInquiryAnswer(inquiryId: number): Promise<InquiryAnswerResponseDTO> {
+    const response = await axiosInstanceAdmin.get<InquiryAnswerResponseDTO>(`/admin/inquiries/${inquiryId}/reply`);
+    return response.data;
+}
+
+export function deleteInquiryAnswer(inquiryId: number): Promise<AxiosResponse<void>> {
+    return axiosInstanceAdmin.delete<void>(`/admin/inquiries/${inquiryId}/reply`);
 }
