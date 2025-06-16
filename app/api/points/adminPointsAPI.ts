@@ -25,7 +25,6 @@ export async function listAdminCoupon (page: number, category?: string, keyword?
     return response.data;
 }
 
-
 // 쿠폰 추가
 export async function addCoupon(formData: UpdateCouponFormData): Promise<number> {
     // 1. 이미지 먼저 업로드해서 URL 받기
