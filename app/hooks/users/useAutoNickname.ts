@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import {CheckNickname} from "~/api/signupAPI";
+import {CheckNickname} from "~/api/users/signupAPI";
 
 // 10 * 11 * 90 = 9900가지 경우의 수
 

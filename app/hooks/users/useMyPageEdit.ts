@@ -1,7 +1,7 @@
 import { useState } from "react"
 import '~/util/customSwal.css'
 import Swal from "sweetalert2";
-import { updateMyPage } from "~/api/myPageAPI";
+import { updateMyPage } from "~/api/users/myPageAPI";
 import { useQueryClient } from "@tanstack/react-query";
 
 export const useMyPageEdit = () =>{

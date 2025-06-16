@@ -1,6 +1,5 @@
 import axios from "axios";
 import type {ActionResult} from "~/types/common";
-import axiosInstance from "~/instance/axiosInstance";
 
 type SignupRequest = {
     email: string;
@@ -32,7 +31,7 @@ export async function SignupForm(data: SignupRequest): Promise<ActionResult<numb
 
 // 이메일 체크
 export const checkEmail = async (email:string): Promise<{exists: boolean}> => {
-    const res = await axiosInstance.get(`${host}/check-email`, {
+    const res = await axios.get(`${host}/signup/check-email`, {
         params: { email },
     });
     return res.data;
@@ -40,9 +39,10 @@ export const checkEmail = async (email:string): Promise<{exists: boolean}> => {
 
 // 닉네임 체크
 export const CheckNickname = async (nickname: string) => {
-    const res = await axiosInstance.get("/users/check-nickname-duplicate", {
+    const res = await axios.get(`${host}/signup/check-nickname-duplicate`, {
         params: { nickname },
     });
+    console.log(nickname)
     return res.data;
 };
 

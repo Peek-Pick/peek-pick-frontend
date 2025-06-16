@@ -1,9 +1,10 @@
 import { useSignupContext } from "~/contexts/signupContext";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {SignupForm} from "~/api/signupAPI";
+import {SignupForm} from "~/api/users/signupAPI";
 import { useTagSelector } from "~/hooks/tags/useTagSelector";
 import {SignupStepperHeader} from "~/components/users/signupStepperHeader";
+import {fireConfetti} from "~/util/fireConfetti";
 
 export default function SignupTagComponent() {
 
@@ -40,6 +41,8 @@ export default function SignupTagComponent() {
             // console.log("✅ 최종 전송 데이터", data);
 
             const response = await SignupForm(data);
+
+            fireConfetti();
             console.log("회원가입 완료", response);
             navigate('/main');
         } catch (error) {
@@ -89,6 +92,7 @@ export default function SignupTagComponent() {
 
 
                 <button
+                    id="Fire"
                     onClick={handleSubmit}
                     disabled={isSubmitting} //중복 클릭 방지
                     className="mt-6 w-full bg-amber-300 hover:bg-amber-400 active:bg-amber-200 text-white font-bold text-sm h-11 rounded-md transition"

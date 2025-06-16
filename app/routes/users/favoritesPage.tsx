@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import ListComponent from "~/components/products/listComponent";
 import BottomNavComponent from "~/components/main/bottomNavComponent";
 import type { PageResponse, ProductListDTO } from "~/types/products";
-import { getMyPageFavorite } from "~/api/myPageAPI"; // 실제 경로에 맞게 수정하세요
+import { getMyPageFavorite } from "~/api/users/myPageAPI"; // 실제 경로에 맞게 수정하세요
 
 export default function FavoritesPage() {
     const size = 10;

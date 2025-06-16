@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import MyPageComponent from "~/components/users/myPageComponent";
 import BottomNavComponent from "~/components/main/bottomNavComponent";
-import { getMyPage } from "~/api/myPageAPI";
+import { getMyPage } from "~/api/users/myPageAPI";
 import { getUserReviewsCount } from "~/api/reviews/reviewAPI";
 
 function useMyPageData() {
