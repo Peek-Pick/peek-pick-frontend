@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import { PointProductType } from "~/enums/points/points";
-import type { PointStoreDTO } from "~/types/points";
+import type {PointStoreDTO, UpdateCouponFormData} from "~/types/points";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPencil } from '@fortawesome/free-solid-svg-icons'
@@ -19,12 +19,13 @@ export default function EditComponent({ idNumber, data }: Props) {
     const [selectedFileName, setSelectedFileName] = useState<string>("파일을 선택하세요");
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const queryClient = useQueryClient();
+    const [isDeleted, setIsDeleted] = useState<boolean>(false);
 
     // 수정 뮤테이션
-    const updateMutation = useMutation({
-        mutationFn: (formData: FormData) => updateCoupon(idNumber ?? 0, formData),
+    const updateMutation = useMutation<void, unknown, UpdateCouponFormData>({
+        mutationFn: (formData) => updateCoupon(idNumber!, formData),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["points"] }); //수정 후 목록 최신화
+            queryClient.invalidateQueries({ queryKey: ["pointsList"] }); //수정 후 목록 최신화
             alert("수정 완료!");
             navigate("/admin/points/list");
         },
@@ -33,12 +34,20 @@ export default function EditComponent({ idNumber, data }: Props) {
         },
     });
 
+    // 최초 로딩 시 판매 중단 상태 세팅
+    useEffect(() => {
+        if (!data) return;
+        setIsDeleted(Boolean(data.isHidden));  // isHidden이 true면 판매 중단 상태
+    }, [data]);
+
     // 삭제 뮤테이션
     const deleteMutation = useMutation({
         mutationFn: () => deleteCoupon(idNumber ?? 0),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["points"] }); //삭제 후 목록 최신화
-            alert("삭제 완료!");
+            queryClient.invalidateQueries({ queryKey: ["pointsList"] }); //삭제 후 목록 최신화
+            const nextDeleted = !isDeleted;
+            setIsDeleted(nextDeleted);
+            alert(isDeleted ? "판매 시작됨!" : "판매 중단됨!");
             navigate("/admin/points/list");
         },
         onError: () => {
@@ -46,14 +55,32 @@ export default function EditComponent({ idNumber, data }: Props) {
         },
     });
 
+    // 판매 상태 토글 버튼 클릭 핸들러
+    const handleToggleSale = () => {
+        if (confirm(isDeleted ? "판매를 시작하시겠습니까?" : "판매를 중단하시겠습니까?")) {
+            deleteMutation.mutate();
+        }
+    };
+
+    // 폼 제출 핸들러 (수정)
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const formEl = formRef.current;
         if (!formEl) return;
-        const formData = new FormData(formEl);
+
+        const formData = {
+            imageFile: fileInputRef.current.files[0],
+            item: formEl.item.value,
+            price: Number(formEl.price.value),
+            description: formEl.description.value,
+            productType: formEl.productType.value,
+            imgUrl: data?.imgUrl || "",
+        };
+
         updateMutation.mutate(formData);
     };
 
+    // 파일 선택 시 파일 이름 업데이트
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
             setSelectedFileName(e.target.files[0].name);
@@ -62,12 +89,7 @@ export default function EditComponent({ idNumber, data }: Props) {
         }
     };
 
-    const handleDelete = () => {
-        if (confirm("정말 삭제하시겠습니까?")) {
-            deleteMutation.mutate();
-        }
-    };
-
+    // 수정 폼에 기존 데이터 채워넣기
     useEffect(() => {
         if (!data || !formRef.current) return;
         const formEl = formRef.current;
@@ -176,10 +198,10 @@ export default function EditComponent({ idNumber, data }: Props) {
                     </button>
                     <button
                         type="button"
-                        onClick={handleDelete}
+                        onClick={handleToggleSale}
                         className="flex items-center gap-1 rounded-md bg-red-100 px-4 py-2 text-sm font-medium text-red-700 shadow-sm hover:bg-red-200 transition"
                     >
-                        삭제
+                        {isDeleted ? "판매 시작하기" : "판매 중단하기"}
                     </button>
                 </div>
             </form>

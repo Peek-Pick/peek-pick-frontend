@@ -8,6 +8,7 @@ interface Props {
 
 export default function UserCouponComponent({ coupons, header }: Props) {
 
+    console.log(coupons);
 
     return (
         <div className="bg-gray-50 py-6 px-3 sm:px-6">
@@ -27,7 +28,7 @@ export default function UserCouponComponent({ coupons, header }: Props) {
                             {/*이미지*/}
                             <div className="w-20 h-20 mb-4 rounded-xl overflow-hidden">
                                 <img
-                                    src={`http://localhost:8080/uploads/${coupon.couponImg}`}
+                                    src={`http://localhost:8080/points/${coupon.couponImg}`}
                                     alt={coupon.itemName}
                                     className="w-full h-full object-cover"
                                 />

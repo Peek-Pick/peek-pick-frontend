@@ -9,7 +9,7 @@ export async function listCoupon(page: number, size: number, sort:string, type?:
         params.type = type;
     }
 
-    const response = await axiosInstance.get(`/admin/points`, { params });
+    const response = await axiosInstance.get(`/points/store`, { params });
 
     return response.data;
 }

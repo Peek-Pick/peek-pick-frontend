@@ -15,7 +15,7 @@ export default function ReadComponent({ data }: Props) {
             <div className="flex flex-col md:flex-row gap-8">
                 <div className="w-full md:w-1/3 flex justify-center items-center">
                     <img
-                        src={`http://localhost:8080/uploads/${data.imgUrl}`}
+                        src={`http://localhost:8080/points/${data.imgUrl}`}
                         alt={data.item}
                         className="w-full max-h-64 object-contain rounded-md border border-gray-200 shadow-sm"
                     />

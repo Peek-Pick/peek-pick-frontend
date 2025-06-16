@@ -14,9 +14,9 @@ export default function AddComponent() {
     const queryClient = useQueryClient();
 
     const mutation = useMutation({
-        mutationFn: (data: FormData) => addCoupon(data),
+        mutationFn: addCoupon,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["points"] }); //추가 후 목록 최신화
+            queryClient.invalidateQueries({ queryKey: ["pointsList"] }); //추가 후 목록 최신화
             alert("상품이 등록되었습니다.");
             navigate("/admin/points/list");
         },
@@ -29,7 +29,14 @@ export default function AddComponent() {
         e.preventDefault();
         const formEl = formRef.current;
         if (!formEl) return;
-        const formData = new FormData(formEl);
+
+        const formData = {
+            imageFile: fileInputRef.current.files[0],
+            item: formEl.item.value,
+            price: Number(formEl.price.value),
+            description: formEl.description.value,
+            productType: formEl.productType.value,
+        };
         mutation.mutate(formData);
     };
 
