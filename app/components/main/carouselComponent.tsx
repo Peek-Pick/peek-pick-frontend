@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 const images = [
     "/carousel/review_event.png",
     "/carousel/bingsu.png",
+    "/carousel/invitation.png",
     "/carousel/summer_event.png",
     "/carousel/best_photo_review.png",
 ];
