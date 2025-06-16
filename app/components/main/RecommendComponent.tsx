@@ -28,7 +28,7 @@ export function RecommendComponent() {
             <div className="flex justify-between items-center mb-3">
                 <h2 className="text-lg font-semibold">Top Picks for You</h2>
                 <button
-                    onClick={() => navigate("/products/ranking")}
+                    onClick={() => navigate("/products/recommended")}
                     className="text-sm text-gray-800 hover:underline"
                 >
                     More &gt;
