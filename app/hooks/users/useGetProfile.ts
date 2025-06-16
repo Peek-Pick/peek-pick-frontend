@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getMyPageEdit } from "~/api/myPageAPI";
+import { getMyPageEdit } from "~/api/users/myPageAPI";
 
 export const useGetProfile = () => {
     return useQuery({

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import {CheckNickname} from "~/api/signupAPI";
+import {CheckNickname} from "~/api/users/signupAPI";
 
 export function useNicknameChecker(nickname: string) {
     const [isChecking, setIsChecking] = useState(false);

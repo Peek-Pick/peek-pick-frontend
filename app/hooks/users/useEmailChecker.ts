@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {checkEmail} from "~/api/signupAPI";
+import {checkEmail} from "~/api/users/signupAPI";
 
 
 export const useEmailChecker = () => {
