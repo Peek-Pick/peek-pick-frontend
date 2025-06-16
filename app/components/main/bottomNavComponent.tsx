@@ -14,11 +14,11 @@ export default function BottomNavComponent() {
 
     return (
         <>
-            <div className="h-10" />
-            <nav className="fixed bottom-0 left-0 w-full h-16 bg-transparent backdrop-blur-md shadow-2xl flex justify-around items-center z-50"
+            <div className="h-20" />
+            <nav className="fixed bottom-0 left-0 w-full h-14 bg-transparent backdrop-blur-md shadow-2xl flex justify-around items-center z-50"
                  style={{
-                     boxShadow: "0 -4px 12px rgba(0, 0, 0, 0.1)", // 위쪽 그림자
-                 }} // 윗부분 그림자 주기
+                     boxShadow: "0 -4px 12px rgba(0, 0, 0, 0.1)",
+                 }}
             >
                 {navItems.map(({ label, icon: Icon, path }) => {
                     const isActive = pathname === path;
@@ -27,7 +27,7 @@ export default function BottomNavComponent() {
                         <button
                             key={path}
                             onClick={() => navigate(path)}
-                            className="flex flex-col items-center justify-center gap-1 text-xs"
+                            className="flex flex-col items-center justify-center gap-[2px] text-[10px]"
                         >
                             <Icon className={`w-6 h-6 ${isActive ? "text-yellow-500" : "text-gray-500"}`} />
                             <span className={isActive ? "text-yellow-500" : "text-gray-500"}>{label}</span>

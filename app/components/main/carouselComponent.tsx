@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const images = [
-    "/basicImg.jpg",
-    "/example.jpg",
-    "/icons/icon-512.png",
+    "/carousel/review_event.png",
+    "/carousel/bingsu.png",
+    "/carousel/summer_event.png",
+    "/carousel/best_photo_review.png",
 ];
 
 export default function CarouselComponent() {
@@ -19,10 +20,10 @@ export default function CarouselComponent() {
     useEffect(() => {
         const interval = setInterval(nextSlide, 5000); // 5초마다 전환
         return () => clearInterval(interval);
-    }, []);
+    }, [current]);
 
     return (
-        <div className="relative w-full overflow-hidden h-[500px]">
+        <div className="relative w-full overflow-hidden h-[50vh]">
             {/* 이미지 슬라이드 */}
             <div className="flex transition-transform duration-700 ease-in-out" style={{ transform: `translateX(-${current * 100}%)` }}>
                 {images.map((src, index) => (
@@ -30,7 +31,7 @@ export default function CarouselComponent() {
                         key={index}
                         src={src}
                         alt={`Slide ${index + 1}`}
-                        className="w-full flex-shrink-0 object-cover h-[500px]"
+                        className="w-full flex-shrink-0 object-cover h-[50vh]"
                     />
                 ))}
             </div>
@@ -38,14 +39,14 @@ export default function CarouselComponent() {
             {/* 이전 / 다음 버튼 */}
             <button
                 onClick={prevSlide}
-                className="absolute top-1/2 left-4 -translate-y-1/2 bg-white/70 hover:bg-white rounded-full p-2 shadow"
+                className="absolute top-1/2 left-2 bg-white/50 hover:bg-white rounded-full p-2 shadow"
                 aria-label="Previous slide"
             >
                 <ChevronLeft className="w-6 h-6" />
             </button>
             <button
                 onClick={nextSlide}
-                className="absolute top-1/2 right-4 -translate-y-1/2 bg-white/70 hover:bg-white rounded-full p-2 shadow"
+                className="absolute top-1/2 right-2 bg-white/50 hover:bg-white rounded-full p-2 shadow"
                 aria-label="Next slide"
             >
                 <ChevronRight className="w-6 h-6" />
