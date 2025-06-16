@@ -37,12 +37,15 @@ export default function SignupTagComponent() {
 
             if (password == null) data.isSocial=true;
 
+            // console.log("✅ 최종 전송 데이터", data);
+
             const response = await SignupForm(data);
             console.log("회원가입 완료", response);
             navigate('/main');
         } catch (error) {
             console.error("회원가입 실패", error);
             alert("회원가입 실패. 다시 시도해주세요.");
+            navigate('/signup');
         } finally {
             setIsSubmitting(false);
         }
