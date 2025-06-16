@@ -31,6 +31,13 @@ export async function userCouponList(page: number, size: number, sort: string, s
     return response.data;
 }
 
+// 쿠폰함 사용가능한 쿠폰 개수 조회
+export async function getCouponCount() {
+
+    const response = await axiosInstance.get(`/users/mypage/coupons/count`);
+    return response.data;
+}
+
 
 //사용자 포인트 내역 조회
 export async function userPointLogs(page: number, size: number, sort:string) {

@@ -3,14 +3,16 @@ import MyPageComponent from "~/components/users/myPageComponent";
 import BottomNavComponent from "~/components/main/bottomNavComponent";
 import { getMyPage } from "~/api/users/myPageAPI";
 import { getUserReviewsCount } from "~/api/reviews/reviewAPI";
+import {getCouponCount} from "~/api/points/pointsAPI";
 
 function useMyPageData() {
     return useQuery({
         queryKey: ['myPageData'],
         queryFn: async () => {
-            const [myPageResult, reviewCount] = await Promise.all([
+            const [myPageResult, reviewCount, couponCount] = await Promise.all([
                 getMyPage(),
-                getUserReviewsCount()
+                getUserReviewsCount(),
+                getCouponCount(),
             ]);
 
             return {
@@ -18,6 +20,7 @@ function useMyPageData() {
                 nickname: myPageResult.nickname,
                 point: myPageResult.point,
                 reviewCount,
+                couponCount,
                 ...myPageResult.quickStats,
             };
         },

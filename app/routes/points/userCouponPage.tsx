@@ -14,7 +14,7 @@ function UserCouponPage() {
     const [page, setPage] = useState(0);
     const [filter, setFilter] = useState<keyof typeof CouponStatus | "ALL">("ALL");
     const size = 10;
-    const sort = "couponId";
+    const sort = "couponId,desc";
 
     const { data, isLoading, isError } = useQuery<PagingResponse<UserCouponDTO>>({
         queryKey: ["coupons", page, size, sort, filter],

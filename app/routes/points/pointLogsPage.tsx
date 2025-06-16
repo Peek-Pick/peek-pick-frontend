@@ -10,7 +10,7 @@ import PaginationComponent from "~/components/common/PaginationComponent";
 function PointLogPage() {
     const [page, setPage] = useState(0); // 0-based
     const size = 10;
-    const sort = "pointLogId";
+    const sort = "pointLogId,desc";
 
     const { data, isLoading, isError } = useQuery<PagingResponse<PointLogsDTO>>({
         queryKey: ["pointLogs", page, size, sort],
