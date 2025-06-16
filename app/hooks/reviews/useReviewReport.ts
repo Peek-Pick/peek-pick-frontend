@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { reportReview } from "~/api/reviews/reviewAPI";
 import { useState } from "react";
 import Swal from "sweetalert2"
-import '~/util/customSwal.css'
+import '~/util/customReportSwal.css'
 
 export enum ReportReason {
     POLITICS = "POLITICS",
@@ -12,20 +12,19 @@ export enum ReportReason {
 }
 
 export const ReportReasonDescriptions: Record<ReportReason, string> = {
-    [ReportReason.POLITICS]: "정치",
-    [ReportReason.HATE]: "혐오",
-    [ReportReason.DEFAMATION]: "비방",
-    [ReportReason.PROFANITY]: "욕설",
+    [ReportReason.POLITICS]: "Political content",
+    [ReportReason.HATE]: "Hate speech",
+    [ReportReason.DEFAMATION]: "Defamation",
+    [ReportReason.PROFANITY]: "Inappropriate language",
 };
 
 export function useReviewReport(reviewId: number) {
     const [selectedReason, setSelectedReason] = useState<ReportReason | "">("");
 
-    // 신고 뮤테이션
     const reportMutation = useMutation({
         mutationFn: () => {
             Swal.fire({
-                title: "리뷰 신고 중...",
+                title: "Submitting report...",
                 allowOutsideClick: false,
                 allowEscapeKey: false,
                 didOpen: () => {
@@ -37,39 +36,41 @@ export function useReviewReport(reviewId: number) {
                     actions: 'custom-actions',
                     confirmButton: 'custom-confirm-button',
                 }
-            })
+            });
 
-            return reportReview(reviewId, {reviewId: reviewId, reason: selectedReason as ReportReason});
+            return reportReview(reviewId, {
+                reviewId: reviewId,
+                reason: selectedReason as ReportReason
+            });
         },
         onSuccess: () => {
             Swal.fire({
-                title: "신고가 완료되었습니다",
+                title: "Report submitted successfully",
                 icon: "success",
-                confirmButtonText: "확인",
+                confirmButtonText: "OK",
                 customClass: {
                     popup: 'custom-popup',
                     title: 'custom-title',
                     actions: 'custom-actions',
                     confirmButton: 'custom-confirm-button',
                 },
-            })
+            });
         },
         onError: () => {
             Swal.fire({
-                title: "이미 신고한 리뷰입니다",
+                title: "You have already reported this review",
                 icon: "warning",
-                confirmButtonText: "확인",
+                confirmButtonText: "OK",
                 customClass: {
                     popup: 'custom-popup',
                     title: 'custom-title',
                     actions: 'custom-actions',
                     confirmButton: 'custom-confirm-button',
                 },
-            })
+            });
         },
     });
 
-    // 모달을 띄우고 뮤테이션 호출
     const openReportModal = async () => {
         const inputOptions = Object.entries(ReportReasonDescriptions).reduce<
             Record<string, string>
@@ -78,15 +79,14 @@ export function useReviewReport(reviewId: number) {
             return acc;
         }, {});
 
-        // Swal radio 모달
         const { value: selected } = await Swal.fire({
-            title: "신고 사유 선택",
+            title: "Select a reason for reporting",
             input: "radio",
             inputOptions,
-            inputValidator: (v) => (v ? null : "신고 사유를 선택해주세요!"),
+            inputValidator: (v) => (v ? null : "Please select a reason."),
             showCancelButton: true,
-            confirmButtonText: "신고하기",
-            cancelButtonText: "취소",
+            confirmButtonText: "Submit Report",
+            cancelButtonText: "Cancel",
             customClass: {
                 popup: "custom-popup",
                 title: "custom-title",
@@ -103,5 +103,5 @@ export function useReviewReport(reviewId: number) {
         }
     };
 
-    return {openReportModal};
-    }
+    return { openReportModal };
+}

@@ -22,7 +22,7 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
     if (isError || !product) {
         return (
             <p className="text-center p-4 text-red-500 text-base sm:text-lg">
-                상품 정보를 불러오지 못했습니다
+                Failed to load product data.
             </p>
         );
     }
@@ -42,7 +42,7 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
     const addMutation = useMutation({
         mutationFn: (formData: FormData) => {
             Swal.fire({
-                title: "리뷰 등록 중...",
+                title: "Submitting review...",
                 allowOutsideClick: false,
                 allowEscapeKey: false,
                 didOpen: () => {
@@ -60,9 +60,9 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
         },
         onSuccess: () => {
             Swal.fire({
-                title: "리뷰가 등록되었습니다",
+                title: "Review submitted successfully",
                 icon: "success",
-                confirmButtonText: "확인",
+                confirmButtonText: "OK",
                 customClass: {
                     popup: 'custom-popup',
                     title: 'custom-title',
@@ -75,9 +75,9 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
         },
         onError: () => {
             Swal.fire({
-                title: "리뷰 등록 실패하였습니다",
+                title: "Failed to submit review",
                 icon: "error",
-                confirmButtonText: "확인",
+                confirmButtonText: "OK",
                 customClass: {
                     popup: 'custom-popup',
                     title: 'custom-title',
@@ -110,9 +110,9 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
         // 1) 코멘트 유효성 검사
         if (!commentValue) {
             Swal.fire({
-                title: "리뷰 내용을 입력하세요",
+                title: "Please enter your review",
                 icon: "warning",
-                confirmButtonText: "확인",
+                confirmButtonText: "OK",
                 customClass: {
                     popup: 'custom-popup',
                     title: 'custom-title',
@@ -154,7 +154,7 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
                 <div className="flex flex-col items-center mb-8">
                     <img
                         src={product?.imgUrl || "/example.jpg"}
-                        alt={product?.name || "상품 이미지"}
+                        alt={product?.name || "Product Image"}
                         className="w-40 h-40 sm:w-40 sm:h-40 md:w-40 md:h-40 rounded-lg object-cover mb-"
                     />
                     <p className="text-base sm:text-base md:text-md font-semibold text-gray-800 text-center">
@@ -165,7 +165,7 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
                 {/* 별점 선택 */}
                 <div className="text-center mb-8">
                     <h3 className="font-manrope font-bold text-lg sm:text-xl text-gray-700 mb-4">
-                        상품은 어떠셨나요?
+                        How did you like the product?
                     </h3>
                     <div className="flex justify-center space-x-2">
                         {[1, 2, 3, 4, 5].map(i => (
@@ -196,14 +196,14 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
                             name="comment"
                             minRows={6}
                             maxRows={15}
-                            placeholder="솔직한 상품 리뷰를 남겨주세요"
+                            placeholder="Please leave an honest product review."
                             className="w-full border text-gray-600 border-gray-300 rounded-md p-3 text-sm sm:text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
                         />
 
                         {/* 태그 선택 */}
                         <div>
                             <p className="font-medium text-gray-800 mb-2 text-base sm:text-base">
-                                태그 선택
+                                Select Tags
                             </p>
                             <div className="space-y-4">
                                 {Object.entries(groupedTags).map(([category, tagList]) => (
@@ -238,8 +238,8 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
 
                         {/* 이미지 업로드 & 미리보기 */}
                         <div>
-                            <p className="text-base sm:text-base text-gray-700 mb-2">
-                                사진 추가
+                            <p className="text-base sm:text-base text-gray-800 mb-2">
+                                Add Photo
                             </p>
                             {/* 파일 업로드 버튼 */}
                             <div className="w-full overflow-x-auto no-scrollbar flex space-x-2">
@@ -292,7 +292,7 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
                                 : "bg-emerald-400 text-white hover:bg-emerald-600"}
                             `}
                         >
-                            {addMutation.isPending ? "등록 중..." : "리뷰 등록하기"}
+                            {addMutation.isPending ? "Registering..." : "Submit Review"}
                         </button>
                     </form>
                 )}
