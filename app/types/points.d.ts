@@ -18,13 +18,20 @@ export interface PointStoreListDTO {
     imgUrl: string;
 }
 export interface PointStoreAddDTO {
-    pointstoreId: number;
     item: string;
     price: number;
     description: string;
     productType: PointProductType | ""; // enum 사용
     imgUrl: string;
-    imageFile: File | null;
+}
+
+interface UpdateCouponFormData {
+    imageFile?: File;
+    item: string;
+    price: number;
+    description: string;
+    productType: string;
+    imgUrl?: string;
 }
 
 export interface UserCouponDTO {

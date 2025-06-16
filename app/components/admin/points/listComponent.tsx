@@ -20,6 +20,8 @@ export default function ListComponent({ products, page, category, keyword, hidde
             state: { from: 'pointsList' }});
     };
 
+    console.log(products);
+
     return (
         <div>
             <div className="overflow-x-auto bg-white shadow rounded-lg">
@@ -51,7 +53,7 @@ export default function ListComponent({ products, page, category, keyword, hidde
                                     <td className="px-6 py-4">{product.pointstoreId}</td>
                                     <td className="px-6 py-4">
                                         <img
-                                            src={`http://localhost:8080/uploads/${product.imgUrl}`}
+                                            src={`http://localhost:8080/points/${product.imgUrl}`}
                                             alt={product.item}
                                             className="w-12 h-12 object-cover rounded"
                                         />

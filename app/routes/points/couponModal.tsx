@@ -27,7 +27,7 @@ export default function CouponModal({ product, onClose, onBuy }: Props) {
                 </div>
 
                 <img
-                    src={`http://localhost:8080/uploads/${product.imgUrl}`}
+                    src={`http://localhost:8080/points/${product.imgUrl}`}
                     alt={product.item}
                     className="w-full h-40 sm:h-48 object-cover rounded-lg mb-4"
                 />

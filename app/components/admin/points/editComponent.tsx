@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import { PointProductType } from "~/enums/points/points";
-import type { PointStoreDTO } from "~/types/points";
+import type {PointStoreDTO, UpdateCouponFormData} from "~/types/points";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPencil } from '@fortawesome/free-solid-svg-icons'
@@ -22,8 +22,8 @@ export default function EditComponent({ idNumber, data }: Props) {
     const [isDeleted, setIsDeleted] = useState<boolean>(false);
 
     // 수정 뮤테이션
-    const updateMutation = useMutation({
-        mutationFn: (formData: FormData) => updateCoupon(idNumber ?? 0, formData),
+    const updateMutation = useMutation<void, unknown, UpdateCouponFormData>({
+        mutationFn: (formData) => updateCoupon(idNumber!, formData),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["pointsList"] }); //수정 후 목록 최신화
             alert("수정 완료!");
@@ -34,9 +34,10 @@ export default function EditComponent({ idNumber, data }: Props) {
         },
     });
 
+    // 최초 로딩 시 판매 중단 상태 세팅
     useEffect(() => {
         if (!data) return;
-        setIsDeleted(Boolean(data.isHidden));  // data.isHidden이 false면 isDeleted는 true가 됨 (이 부분은 확인 필요)
+        setIsDeleted(Boolean(data.isHidden));  // isHidden이 true면 판매 중단 상태
     }, [data]);
 
     // 삭제 뮤테이션
@@ -53,9 +54,9 @@ export default function EditComponent({ idNumber, data }: Props) {
             alert("삭제 실패");
         },
     });
+
     // 판매 상태 토글 버튼 클릭 핸들러
     const handleToggleSale = () => {
-        // 현재 상태에 따라 확인창 표시
         if (confirm(isDeleted ? "판매를 시작하시겠습니까?" : "판매를 중단하시겠습니까?")) {
             deleteMutation.mutate();
         }
@@ -66,10 +67,20 @@ export default function EditComponent({ idNumber, data }: Props) {
         e.preventDefault();
         const formEl = formRef.current;
         if (!formEl) return;
-        const formData = new FormData(formEl);
+
+        const formData = {
+            imageFile: fileInputRef.current.files[0],
+            item: formEl.item.value,
+            price: Number(formEl.price.value),
+            description: formEl.description.value,
+            productType: formEl.productType.value,
+            imgUrl: data?.imgUrl || "",
+        };
+
         updateMutation.mutate(formData);
     };
 
+    // 파일 선택 시 파일 이름 업데이트
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
             setSelectedFileName(e.target.files[0].name);
@@ -78,12 +89,7 @@ export default function EditComponent({ idNumber, data }: Props) {
         }
     };
 
-    const handleDelete = () => {
-        if (confirm("정말 삭제하시겠습니까?")) {
-            deleteMutation.mutate();
-        }
-    };
-
+    // 수정 폼에 기존 데이터 채워넣기
     useEffect(() => {
         if (!data || !formRef.current) return;
         const formEl = formRef.current;
