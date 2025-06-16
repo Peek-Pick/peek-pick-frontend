@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import '~/util/customSwal.css';
-import {softDeleteAccount} from "~/api/myPageAPI";
+import {softDeleteAccount} from "~/api/users/myPageAPI";
 
 export function useAccountDelete() {
     const deleteMutation = useMutation({

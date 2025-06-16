@@ -1,7 +1,7 @@
 import MyPageEditComponent from "~/components/users/myPageEditComponent";
 import BottomNavComponent from "~/components/main/bottomNavComponent";
 import {useQuery} from "@tanstack/react-query";
-import {getMyPageEdit} from "~/api/myPageAPI";
+import {getMyPageEdit} from "~/api/users/myPageAPI";
 
 function useGetProfile ()  {
     return useQuery({

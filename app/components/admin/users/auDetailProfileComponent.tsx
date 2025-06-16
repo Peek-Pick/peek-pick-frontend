@@ -20,6 +20,17 @@ function AuDetailProfileComponent({isSocial, gender, nationality, birthDate, sta
 
     const selectedTagObjects = allTags.filter(tag => selectedTags.includes(tag.tagId));
 
+    // regDate 형식 바꾸기
+    const styleRegDate = new Date(regDate).toLocaleString('ko-KR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+    });
+
+
     return (
         <div className="flex flex-col overflow-x-auto ">
             {/*프로필 자리*/}
@@ -34,7 +45,8 @@ function AuDetailProfileComponent({isSocial, gender, nationality, birthDate, sta
                         { label: "Nationality", value: getCountryName(nationality) ?? "N/A" },
                         { label: "BirthDate", value: birthDate ?? "N/A" },
                         { label: "Status", value: status ?? "N/A", type: "status" },
-                        { label: "RegDate", value: regDate ?? "N/A" },
+                        { label: "RegDate", value: styleRegDate ?? "N/A" },
+
                     ].map(({ label, value, type }) => (
                         <div className="flex items-center mb-4" key={label}>
                             <p className="text-md font-bold text-gray-500 dark:text-white mr-2">{label}:</p>
