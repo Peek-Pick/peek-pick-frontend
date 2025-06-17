@@ -1,20 +1,23 @@
-// src/routes/products/recommendedPage.tsx
-import { useRef, useLayoutEffect, useEffect } from "react";
+import { useRef, useLayoutEffect, useEffect, useState } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useNavigate, useNavigationType } from "react-router-dom";
 import ListComponent from "~/components/products/listComponent";
 import BottomNavComponent from "~/components/main/bottomNavComponent";
 import { getRecommendedProducts } from "~/api/products/productsAPI";
-import type { PageResponse, ProductListDTO } from "~/types/products";
+import type { PageResponseCursor, ProductListDTO } from "~/types/products";
 
 const STORAGE_KEY = "recommendedPageScrollY";
 
 export default function RecommendedPage() {
-    const size = 10;
+    const size = 12;
     const navigate = useNavigate();
     const navigationType = useNavigationType();
     const isRestoredRef = useRef(false);
     const initialLoadRef = useRef(true);
+
+    // 기본 정렬 기준 (향후 UI 확장 가능)
+    const [sortParam] = useState("likeCount,DESC");
+    const sortKey = sortParam.split(",")[0];
 
     useLayoutEffect(() => {
         if ("scrollRestoration" in window.history) {
@@ -51,12 +54,33 @@ export default function RecommendedPage() {
         isFetchingNextPage,
         isLoading,
         isError,
-    } = useInfiniteQuery<PageResponse<ProductListDTO>, Error>({
-        queryKey: ["recommended", size],
-        queryFn: ({ pageParam = 0 }) => getRecommendedProducts(pageParam as number, size),
-        getNextPageParam: (last) =>
-            last.number + 1 < last.totalPages ? last.number + 1 : undefined,
-        initialPageParam: 0,
+    } = useInfiniteQuery<PageResponseCursor<ProductListDTO>, Error>({
+        queryKey: ["recommended", size, sortParam],
+        queryFn: async ({ pageParam }) => {
+            const last = pageParam as { lastValue?: number; lastProductId?: number } | undefined;
+            return await getRecommendedProducts(
+                size,
+                last?.lastValue,
+                last?.lastProductId,
+                sortParam
+            );
+        },
+        getNextPageParam: (lastPage) => {
+            const last = lastPage.content.at(-1);
+            if (!last || !lastPage.hasNext) return undefined;
+
+            // ✅ null 그대로 넘김 (null이면 null 그대로 전달)
+            const lastValue = sortKey === "score"
+                ? last.score
+                : last.likeCount ?? 0;
+
+            return {
+                lastValue,
+                lastProductId: last.productId,
+            };
+        },
+
+        initialPageParam: undefined,
         staleTime: 5 * 60 * 1000,
     });
 

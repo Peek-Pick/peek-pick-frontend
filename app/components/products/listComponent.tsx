@@ -32,17 +32,26 @@ export default function ListComponent({
     const bottomRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
 
+    // isRanking이면 최대 100개까지만 표시, 아니면 전체
+    const limitedProducts = isRanking ? products.slice(0, 100) : products;
+
     useEffect(() => {
         const el = bottomRef.current;
         if (!el) return;
+
         const observer = new IntersectionObserver((entries) => {
-            if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+            const canFetchMore = isRanking
+                ? limitedProducts.length < 100
+                : true;
+
+            if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage && canFetchMore) {
                 fetchNextPage();
             }
         });
+
         observer.observe(el);
         return () => observer.disconnect();
-    }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+    }, [fetchNextPage, hasNextPage, isFetchingNextPage, limitedProducts.length, isRanking]);
 
     if (isLoading) {
         return <ProductLoading />;
@@ -56,7 +65,7 @@ export default function ListComponent({
         );
     }
 
-    if (products.length === 0) {
+    if (limitedProducts.length === 0) {
         return (
             <p className="p-4 text-center text-gray-500">
                 상품이 없습니다.
@@ -66,7 +75,7 @@ export default function ListComponent({
 
     return (
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4">
-            {products.map((p, idx) => (
+            {limitedProducts.map((p, idx) => (
                 <div
                     key={`${p.barcode}-${idx}`}
                     className="relative p-[16px] bg-white border border-[#FBFBFB]
@@ -104,10 +113,7 @@ export default function ListComponent({
                             {p.likeCount ?? 0}
                         </span>
                         <span className="flex items-center">
-                            <Icon
-                                icon="ri:star-fill"
-                                className="w-4 h-4 text-[#FFC43F] mr-1"
-                            />
+                            <Icon icon="ri:star-fill" className="w-4 h-4 text-[#FFC43F] mr-1" />
                             {p.score?.toFixed(1) ?? "0.0"} ({p.reviewCount ?? 0})
                         </span>
                     </div>
@@ -120,19 +126,23 @@ export default function ListComponent({
                 </div>
             ))}
 
-            {hasNextPage && <div ref={bottomRef} className="col-span-full h-1" />}
+            {/* 더 불러올 수 있는 경우에만 bottomRef 활성화 */}
+            {hasNextPage && (
+                <div ref={bottomRef} className="col-span-full h-1" />
+            )}
 
-            {!hasNextPage && (
+            {/* 랭킹일 경우에만 제한 메시지 출력 */}
+            {isRanking && limitedProducts.length >= 100 && (
                 <p className="col-span-full text-center py-2 text-sm text-gray-400">
                     마지막 상품입니다.
                 </p>
             )}
 
-            {isFetchingNextPage &&
+            {isFetchingNextPage && (
                 <div className="col-span-full flex justify-center">
                     <ProductInfiniteLoading />
                 </div>
-            }
+            )}
         </div>
     );
 }
