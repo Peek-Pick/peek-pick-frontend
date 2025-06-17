@@ -65,7 +65,6 @@ export default [
 
         // 내역
         route("barcode/history", "routes/barcode/barcodeHistoryPage.tsx"),
-
     ]),
 
     // admin
@@ -110,7 +109,9 @@ export default [
         // 어드민 리뷰
         route("reviews/list",       "routes/admin/reviews/listPage.tsx"),
         route("reviews/:rid",        "routes/admin/reviews/readPage.tsx"),
+    ]),
 
-    ])
+    // 챗봇
+    route("chatbot", "routes/chatbot/chatbotPage.tsx")
   
 ] satisfies RouteConfig;
