@@ -12,9 +12,9 @@ export default function StoreListComponent({ products, onProductClick }: Props) 
 
 
     return (
-        <div className="container mx-auto py-5 px-4">
+        <div className="container mx-auto">
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1">
                 {products.map((product) => (
                     <div
                         key={product.pointstoreId}
@@ -34,7 +34,7 @@ export default function StoreListComponent({ products, onProductClick }: Props) 
                                 <FontAwesomeIcon icon={faShoppingBag} style={{ color: '#6b7280' }} />
                             </button>
                         </div>
-                        <div className="p-3 flex flex-col">
+                        <div className="p-3 flex flex-col text-center">
                             <span className="inline-block mb-1 px-2 py-0.5 rounded-full bg-gray-200 text-gray-700 text-xs font-medium">
                                 {product.productType}
                             </span>
