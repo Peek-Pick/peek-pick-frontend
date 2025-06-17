@@ -1,13 +1,17 @@
 import {type FetchNextPageOptions, type InfiniteQueryObserverResult, useMutation, useQueryClient} from "@tanstack/react-query";
-import {useEffect, useRef, useState} from "react";
+import { useEffect, useRef, useState } from "react";
 import { toggleReview } from "~/api/reviews/reviewAPI";
 import type {ProductDetailDTO} from "~/types/products";
-import { useReviewReport } from "~/hooks/useReviewReport";
+import { useReviewReport } from "~/hooks/reviews/useReviewReport";
 import AverageRating from "~/components/reviews/rating/averageRating";
-import { Rating } from "~/components/reviews/rating/rating"
+import { Rating20 } from "~/components/reviews/rating/rating"
+import {ReviewLoading, ReviewInfiniteLoading} from "~/util/loading/reviewLoading";
+import { useLikeClick } from "~/hooks/reviews/useLikeClick";
+import FloatingHearts from "~/components/reviews/effect/floatingHearts";
+import {BackButton, FloatingActionButtons} from "~/util/button/FloatingActionButtons";
 
 export interface ReviewListComponentProps {
-    productDetail?: ProductDetailDTO
+    productData?: ProductDetailDTO
     productId: number;
     reviewList: ReviewDetailDTO[];
     fetchNextPage: (options?: FetchNextPageOptions) => Promise<InfiniteQueryObserverResult<any, Error>>;
@@ -17,10 +21,23 @@ export interface ReviewListComponentProps {
     isError: boolean;
     sortType: "latest" | "likes";
     setSortType: React.Dispatch<React.SetStateAction<"latest" | "likes">>;
+    productLoading: boolean;
+    productError: boolean
+
 }
 
-export default function ProductListComponent({productDetail, productId, reviewList, fetchNextPage, hasNextPage, isFetchingNextPage,
-                                                 isLoading, isError, sortType, setSortType}: ReviewListComponentProps) {
+export default function ProductListComponent({productData, productId, reviewList, fetchNextPage, hasNextPage, isFetchingNextPage,
+                                                 isLoading, isError, sortType, setSortType, productLoading, productError}: ReviewListComponentProps) {
+    if (isLoading || productLoading)
+        return <ReviewLoading />;
+    if (isError || productError|| !reviewList || !productData) {
+        return (
+            <p className="text-center p-4 text-red-500 text-base sm:text-lg">
+                Failed to load review data.
+            </p>
+        );
+    }
+
     const queryClient = useQueryClient();
 
     // 무한 스크롤 감지 요소
@@ -54,34 +71,27 @@ export default function ProductListComponent({productDetail, productId, reviewLi
         }
     };
 
-    if (isLoading)
-        return <p className="text-center p-4 text-base sm:text-lg">로딩 중입니다</p>;
-    if (isError)
-        return<p className="text-center p-4 text-red-500 text-base sm:text-lg">리뷰를 불러오지 못했습니다</p>
 
     return (
         <div>
-            <section className="py-24 relative">
-                <div className="w-full max-w-7xl px-4 md:px-5 lg-6 mx-auto">
+            <section className="relative">
+                <div className="w-full max-w-7xl md:px-5 lg-6 mx-auto">
                     <div className="w-full">
-                        {/* 제목 */}
-                        <h2 className="font-manrope font-bold text-4xl text-black mb-8 text-center">Product Reviews</h2>
-
                         {/* 상품 평균 별점 */}
                         <div
-                            className="grid grid-cols-1 xl:grid-cols-1 gap-11 pb-11 border-b border-gray-100 max-xl:max-w-2xl max-xl:mx-auto">
-                            <div className="p-8 bg-yellow-50 rounded-3xl flex items-center justify-center flex-col">
-                                <h2 className="font-manrope font-bold text-5xl text-amber-400 mb-6">{productDetail?.score}</h2>
-                                <AverageRating score={productDetail?.score ?? 5}/>
-                                <p className="font-medium text-xl leading-8 text-gray-900 text-center">{productDetail?.review_count} Ratings</p>
+                            className="grid grid-cols-1 xl:grid-cols-1 gap-11 pb-5 border-b border-gray-100 max-xl:max-w-2xl max-xl:mx-auto">
+                            <div className="p-6 bg-yellow-50 rounded-3xl flex items-center justify-center flex-col">
+                                <h2 className="font-manrope font-bold text-4xl text-amber-400 mb-6">{productData?.score}</h2>
+                                <AverageRating score={productData?.score ?? 5}/>
+                                <p className="font-semibold text-lg leading-8 text-gray-800 text-center">{productData?.reviewCount} Ratings</p>
                             </div>
                         </div>
 
                         {/* 정렬 탭 */}
-                        <div className="flex justify-between items-center border-t border-b border-gray-200 py-2 mb-4">
+                        <div className="flex text-sm sm:text-sm justify-between items-center border-t border-b border-gray-200 py-2 mb-4">
                             <nav
                                 className="tabs tabs-bordered"
-                                aria-label="정렬 탭"
+                                aria-label="Sort Tabs"
                                 role="tablist"
                                 aria-orientation="horizontal"
                             >
@@ -94,7 +104,7 @@ export default function ProductListComponent({productDetail, productId, reviewLi
                                     role="tab"
                                     aria-selected={sortType === "latest"}
                                 >
-                                    최신순
+                                    Latest
                                 </button>
                                 <button
                                     type="button"
@@ -105,24 +115,28 @@ export default function ProductListComponent({productDetail, productId, reviewLi
                                     role="tab"
                                     aria-selected={sortType === "likes"}
                                 >
-                                    좋아요순
+                                    Most Liked
                                 </button>
                             </nav>
                         </div>
 
                         {/* 리뷰 카드 */}
                         {reviewList.map((review) => (
-                            <ReviewItem key={`${sortType}-${review.review_id}`} review={review} productId={productId} />
+                            <ReviewItem key={`${sortType}-${review.reviewId}`} review={review} productId={productId} />
                         ))}
                     </div>
                 </div>
             </section>
 
+            {/* 조이스틱 */}
+            <FloatingActionButtons />
+            <BackButton />
+
             {/* 무한 스크롤 디텍터 */}
             {hasNextPage && <div ref={bottomRef} className="h-1"/>}
 
             {/* 리뷰 로딩중 */}
-            {isFetchingNextPage && (<p className="text-center py-2">리뷰를 불러오는 중입니다</p>)}
+            {isFetchingNextPage && (<ReviewInfiniteLoading />)}
         </div>
     );
 }
@@ -139,7 +153,7 @@ function ReviewItem({review, productId}: ReviewItemProps) {
     const [showHidden, setShowHidden] = useState(false);
 
     // 리뷰 신고 모달
-    const { openReportModal } = useReviewReport(review.review_id);
+    const { openReportModal } = useReviewReport(review.reviewId);
 
     // 리뷰 좋아요
     const toggleLikeMutation = useMutation({
@@ -152,28 +166,37 @@ function ReviewItem({review, productId}: ReviewItemProps) {
         },
     });
 
+    // 좋아요 클릭 핸들러, 애니메이션
+    const {handleLikeClick, containerRef, hearts} = useLikeClick(toggleLikeMutation.mutate, review);
+
     return (
-        <div className="relative">
-        <div className="bg-white rounded-md p-6 shadow-md mb-2">
+        <div className="relative" ref={containerRef}>
+        <div className="bg-white rounded-md p-5 shadow-md mb-2">
             {/* 작성자 정보와 작성일*/}
             <div className="flex sm:items-center flex-col min-[400px]:flex-row justify-between gap-5 mb-3">
                 <div className="flex items-center gap-3">
-                    <img src="/default.png" alt="profile image"
-                         className="w-14 h-14 rounded-full object-cover"/>
-                    <h6 className="font-semibold text-lg leading-8 text-gray-600">{review.nickname ?? "테스트"}</h6>
+                    <img src={`http://localhost/${review.profileImageUrl}`}
+                         alt="profile image" className="w-14 h-14 rounded-full object-cover"/>
+                    <h6 className="font-semibold text-md leading-8 text-gray-600">{review.nickname ?? "User"}</h6>
                 </div>
-                <p className="font-normal text-lg leading-8 text-gray-400">{new Date(review.reg_date).toLocaleDateString()}</p>
+                <div className="flex items-center gap-3">
+                    <p className="font-normal text-sm sm:text-sm leading-5 text-gray-400">{new Date(review.regDate).toLocaleDateString()}</p>
+                </div>
             </div>
 
             {/* 별점 */}
             <div className="flex items-center gap-2 mb-4">
                 {Array.from({length: 5}).map((_, i) => (
-                    <Rating key={i} filled={i < review.score}/>
+                    <Rating20 key={i} filled={i < review.score}/>
                 ))}
             </div>
 
             {/* 리뷰 텍스트 */}
-            <p className="font-normal text-lg leading-7.5 text-gray-500 max-xl:text-justify mb-3">{review.comment}</p>
+            <p className="font-normal text-sm sm:text-sm leading-6 text-gray-600 max-xl:text-justify mb-3"
+               style={{ whiteSpace: 'pre-line' }}
+            >
+                {review.comment}
+            </p>
 
             {/* 이미지 */}
             {review.images?.length > 0 && (
@@ -183,24 +206,24 @@ function ReviewItem({review, productId}: ReviewItemProps) {
                 >
                     {review.images.map((img) => (
                         <img
-                            key={img.img_id}
-                            src={`http://localhost/s_${img.img_url}`}
-                            alt="리뷰이미지"
-                            className="w-25 h-25 sm:w-25 sm:h-25 rounded-lg object-cover flex-shrink-0 border-1 border-gray-100 "
+                            key={img.imgId}
+                            src={`http://localhost/s_${img.imgUrl}`}
+                            alt="Review Image"
+                            className="w-25 h-25 sm:w-25 sm:h-25 rounded-lg object-cover flex-shrink-0 border-1 border-gray-300 "
                         />
                     ))}
                 </div>
             )}
 
             {/* 태그 */}
-            {review.tag_list?.length > 0 && (
+            {review.tagList?.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-3">
-                    {review.tag_list.map((tag) => (
+                    {review.tagList.map((tag) => (
                         <span
-                            key={tag.tag_id}
-                            className="bg-emerald-50 text-emerald-500 border border-emerald-200 text-sm sm:text-base font-semibold px-3 py-1 rounded-full"
+                            key={tag.tagId}
+                            className="bg-emerald-50 text-emerald-500 border border-emerald-200 text-sm sm:text-sm px-3 py-1 rounded-full"
                         >
-                        #{tag.tag_name}
+                        #{tag.tagName}
                     </span>
                     ))}
                 </div>
@@ -210,38 +233,43 @@ function ReviewItem({review, productId}: ReviewItemProps) {
             <div className="flex justify-between items-center text-sm sm:text-base mt-3">
                 {/* 좋아요 버튼 */}
                 <button
-                    onClick={() => toggleLikeMutation.mutate(review.review_id)}
+                    onClick={handleLikeClick}
                     disabled={toggleLikeMutation.isPending}
-                    className={`flex items-center gap-1 px-2 py-1 rounded-full border font-semibold
-                ${review.is_liked
+                    className={`flex items-center gap-1 px-2 py-1 rounded-full border font-medium text-sm sm:text-sm
+                        ${review.isLiked
                         ? "bg-red-50 text-red-500 border-red-200"
                         : "bg-gray-100 text-gray-500 border-gray-200"} 
-                hover:shadow-sm transition-colors duration-200`}
+                        hover:shadow-sm transition-colors duration-200`}
                 >
-                    {review.is_liked ? '❤️' : '🤍'} 좋아요 {review.recommend_cnt}
+                    {review.isLiked ? '❤️' : '🤍'} Like {review.recommendCnt}
                 </button>
 
                 {/* 신고하기 버튼 */}
                 <button
                     onClick={openReportModal}
-                    className="text-red-500 hover:font-semibold hover:text-red-600 transition duration-200"
+                    className="text-red-500 hover:text-red-600 transition text-sm sm:text-sm duration-200"
                 >
-                    신고하기
+                    Report
                 </button>
+
+                {/* 하트 이펙트 - 반드시 relative 컨테이너 안에서 렌더 */}
+                {hearts.map((heart) => (
+                    <FloatingHearts key={heart.id} x={heart.x} y={heart.y} />
+                ))}
             </div>
         </div>
             {/* 리뷰 볼래 말래 */}
-            {review.is_hidden && !showHidden && (
+            {review.isHidden && !showHidden && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center rounded-md z-10">
                     <div className="absolute inset-0 bg-yellow-100/50 backdrop-blur-md rounded-md border border-yellow-300 shadow-inner"></div>
                     <div className="relative flex flex-col items-center text-center px-4">
                         <span className="text-3xl mb-2">🙈</span>
-                        <p className="mb-3 text-yellow-800 font-semibold">이 리뷰는 숨겨졌어요!</p>
+                        <p className="mb-3 text-yellow-800 font-semibold">This review is hidden!</p>
                         <button
                             onClick={() => setShowHidden(true)}
                             className="px-4 py-2 font-semibold bg-yellow-400 text-white rounded-full hover:bg-yellow-500 transition-all shadow-md"
                         >
-                            살짝 보기 👀
+                            Show Anyway 👀
                         </button>
                     </div>
                 </div>

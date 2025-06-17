@@ -2,6 +2,8 @@ import type { FetchNextPageOptions, InfiniteQueryObserverResult } from "@tanstac
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Rating20 } from "~/components/reviews/rating/rating"
+import {ReviewLoading, ReviewInfiniteLoading} from "~/util/loading/reviewLoading";
+import {BackButton, FloatingActionButtons} from "~/util/button/FloatingActionButtons";
 
 export interface ReviewListComponentProps {
     reviewCount: number;
@@ -15,6 +17,11 @@ export interface ReviewListComponentProps {
 
 export default function UserListComponent({reviewCount, reviewList, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError}
                                           : ReviewListComponentProps) {
+    if (isLoading)
+        return <ReviewLoading />;
+    if (isError)
+        return <p className="text-center p-4 text-red-500 text-base sm:text-lg">Failed to load review data.</p>;
+
     const navigate = useNavigate()
     
     // 무한 스크롤 감지 요소
@@ -41,33 +48,27 @@ export default function UserListComponent({reviewCount, reviewList, fetchNextPag
         return () => observer.disconnect();
     }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-    if (isLoading)
-        return <p className="text-center p-4 text-base sm:text-lg">로딩 중입니다</p>;
-    if (isError)
-        return
-            <p className="text-center p-4 text-red-500 text-base sm:text-lg">리뷰를 불러오지 못했습니다</p>;
-
     return (
         <div>
             <section className="relative">
-                <div className="w-full max-w-7xl px-4 md:px-5 lg-6 mx-auto">
+                <div className="w-full max-w-7xl md:px-5 lg-6 mx-auto">
                     <div className="w-full">
                         {/* 정렬 탭 */}
-                        <div className="flex justify-between items-center border-t border-b border-gray-200 py-4 mb-2">
+                        <div className="flex justify-between items-center border-t border-b border-gray-200 py-3 mb-2">
                            <span>
-                                누적 리뷰 <span className="text-red-500 font-semibold">{reviewCount}</span>건
+                                Total Reviews: <span className="font-semibold text-red-500 c">{reviewCount}</span>
                             </span>
                         </div>
 
                         {/* 리뷰 카드 */}
                         {reviewList.map((review) => (
-                            <div className="bg-white rounded-md p-6 shadow-md mb-2" key={review.review_id}>
+                            <div className="bg-white rounded-md p-6 shadow-md mb-2" key={review.reviewId}>
                                 {/* 상품 정보 */}
                                 <div className="flex sm:items-center flex-col min-[400px]:flex-row justify-between gap-5 mb-3">
                                     <div className="flex items-center gap-3">
-                                        <img src={review.image_url || "/example.jpg"}
-                                             className="w-20 h-20 rounded-lg object-cover border-2 border-gray-100"/>
-                                        <h6 className="font-semibold text-lg leading-8 text-gray-600">{review.name}</h6>
+                                        <img src={review.imageUrl || "/example.jpg"}
+                                             className="w-20 h-20 rounded-lg object-cover border-2 border-gray-100" alt={"Product Info"}/>
+                                        <h6 className="font-semibold text-base leading-8 text-gray-600">{review.name}</h6>
                                     </div>
                                 </div>
 
@@ -78,37 +79,45 @@ export default function UserListComponent({reviewCount, reviewList, fetchNextPag
                                             <Rating20 key={i} filled={i < review.score} />
                                         ))}
                                     </div>
-                                    <p className="font-normal text-base text-gray-400">
-                                        작성일자 {new Date(review.reg_date).toLocaleDateString()}
+                                    <p className="font-normal text-sm sm:text-sm text-gray-400">
+                                        {new Date(review.regDate).toLocaleDateString()}
                                     </p>
                                 </div>
 
                                 {/* 리뷰 텍스트 */}
-                                <p className="line-clamp-4 font-normal text-lg leading-7.5 text-gray-500 max-xl:text-justify mb-2">{review.comment}</p>
+                                <p className="line-clamp-5 font-normal text-sm sm:text-sm leading-6 text-gray-600 max-xl:text-justify mb-1"
+                                   style={{ whiteSpace: 'pre-line' }}
+                                >
+                                    {review.comment}
+                                </p>
 
                                 <div className="flex flex-col-2 sm:flex-row items-stretch justify-end gap-4 mt-4 w-full">
                                     {/* 리뷰 수정하기 버튼 */}
-                                    <button type="button" onClick={() => navigate(`/reviews/modify/${review.review_id}`)}
-                                        className="w-full sm:flex-1 px-4 py-2 text-sm sm:text-base rounded-lg bg-emerald-50 text-emerald-600 cursor-pointer font-semibold text-center transition-all duration-300 hover:bg-emerald-100 hover:text-emerald-700 min-w-0"
+                                    <button type="button" onClick={() => navigate(`/reviews/modify/${review.reviewId}`)}
+                                        className="w-full sm:flex-1 px-4 py-2 text-sm sm:text-sm rounded-lg bg-emerald-50 text-emerald-600 cursor-pointer font-medium text-center transition-all duration-300 hover:bg-emerald-100 hover:text-emerald-700 min-w-0"
                                     >
-                                        리뷰 수정하기
+                                        Edit Review
                                     </button>
 
                                     {/* 리뷰 상세보기 버튼 */}
-                                    <button type="button"  onClick={() => navigate(`/reviews/${review.review_id}`)}
-                                        className="w-full sm:flex-1 px-4 py-2 text-sm sm:text-base rounded-lg bg-emerald-50 text-emerald-600 cursor-pointer font-semibold text-center transition-all duration-300 hover:bg-emerald-100 hover:text-emerald-700 min-w-0"
+                                    <button type="button"  onClick={() => navigate(`/reviews/${review.reviewId}`)}
+                                        className="w-full sm:flex-1 px-4 py-2 text-sm sm:text-sm rounded-lg bg-emerald-50 text-emerald-600 cursor-pointer font-medium text-center transition-all duration-300 hover:bg-emerald-100 hover:text-emerald-700 min-w-0"
                                     >
-                                        리뷰 상세보기
+                                        View Details
                                     </button>
                                 </div>
                             </div>
                         ))}
 
+                        {/* 조이스틱 */}
+                        <FloatingActionButtons />
+                        <BackButton />
+
                         {/* 무한 스크롤 디텍터 */}
                         {hasNextPage && <div ref={bottomRef} className="h-1"/>}
 
                         {/* 리뷰 로딩중 */}
-                        {isFetchingNextPage && (<p className="text-center py-2">리뷰를 불러오는 중입니다</p>)}
+                        {isFetchingNextPage && (<ReviewInfiniteLoading />)}
                     </div>
                 </div>
             </section>

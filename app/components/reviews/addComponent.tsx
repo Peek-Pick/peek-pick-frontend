@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import type { ProductDetailDTO } from "~/types/products";
 import { useTagSelector } from "~/hooks/tags/useTagSelector";
 import { Rating } from "~/components/reviews/rating/rating"
+import { ReviewLoading } from "~/util/loading/reviewLoading";
+import TextareaAutosize from "react-textarea-autosize";
 import Swal from "sweetalert2"
 import '~/util/customSwal.css'
 
@@ -15,20 +17,75 @@ interface AddProps {
 }
 
 export default function AddComponent({ product, isLoading, isError }: AddProps) {
+    if (isLoading)
+        return <ReviewLoading />;
+    if (isError || !product) {
+        return (
+            <p className="text-center p-4 text-red-500 text-base sm:text-lg">
+                Failed to load product data.
+            </p>
+        );
+    }
+
     const formRef = useRef<HTMLFormElement>(null);
     const [score, setScore] = useState(0);
     const [images, setImages] = useState<File[]>([]);
     const navigate = useNavigate();
 
+    // 무한 호출 방지용 useState
+    const [initSelected] = useState<number[]>([]);
+
     // 선택된 태그들
-    const {selectedTags, toggleTag, groupedTags} = useTagSelector();
+    const {selectedTags, toggleTag, groupedTags} = useTagSelector(initSelected);
 
     // 리뷰 추가 뮤테이션
     const addMutation = useMutation({
-        mutationFn: (formData: FormData) => addReview(formData),
-        onSuccess: () => {
-            navigate(`/reviews/product/${product?.barcode}`);
+        mutationFn: (formData: FormData) => {
+            Swal.fire({
+                title: "Submitting review...",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+                customClass: {
+                    popup: 'custom-popup',
+                    title: 'custom-title',
+                    actions: 'custom-actions',
+                    confirmButton: 'custom-confirm-button',
+                }
+            });
+
+            return addReview(formData);
         },
+        onSuccess: () => {
+            Swal.fire({
+                title: "Review submitted successfully",
+                icon: "success",
+                confirmButtonText: "OK",
+                customClass: {
+                    popup: 'custom-popup',
+                    title: 'custom-title',
+                    actions: 'custom-actions',
+                    confirmButton: 'custom-confirm-button',
+                }
+            }).then(() => {
+                navigate(`/reviews/product/${product?.barcode}`);
+            });
+        },
+        onError: () => {
+            Swal.fire({
+                title: "Failed to submit review",
+                icon: "error",
+                confirmButtonText: "OK",
+                customClass: {
+                    popup: 'custom-popup',
+                    title: 'custom-title',
+                    actions: 'custom-actions',
+                    confirmButton: 'custom-confirm-button',
+                }
+            });
+        }
     });
 
     // 이미지 처리
@@ -48,62 +105,56 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
 
-        // 1) 리뷰 데이터(JSON)만 객체로 추출
+        const commentValue = formRef.current?.comment.value?.trim();
+
+        // 1) 코멘트 유효성 검사
+        if (!commentValue) {
+            Swal.fire({
+                title: "Please enter your review",
+                icon: "warning",
+                confirmButtonText: "OK",
+                customClass: {
+                    popup: 'custom-popup',
+                    title: 'custom-title',
+                    actions: 'custom-actions',
+                    confirmButton: 'custom-confirm-button',
+                }
+            });
+            return;
+        }
+
+        // 2) 리뷰 데이터(JSON)만 객체로 추출
         const review: ReviewAddDTO = {
-            productId: product!.product_id,
+            productId: product!.productId,
             score: Number(formRef.current?.score.value),
             comment: formRef.current?.comment.value,
             tagIdList: selectedTags,
         };
 
-        console.log(JSON.stringify(review));
-
-        // 2) FormData 직접 생성
+        // 3) FormData 직접 생성
         const formData = new FormData();
         formData.append(
             "review",
             new Blob([JSON.stringify(review)], {type: "application/json"})
         );
 
-        // 3) 이미지 파일들(files) append
+        // 4) 이미지 파일들(files) append
         images.forEach(file => {
             formData.append("files", file);
         });
 
-        // 4) 전송
+        // 5) 전송
         addMutation.mutate(formData);
-
-        Swal.fire({
-            title: "추가가 완료되었습니다",
-            icon: "success",
-            confirmButtonText: "확인",
-            customClass: {
-                popup: 'custom-popup',
-                title: 'custom-title',
-                actions: 'custom-actions',
-                confirmButton: 'custom-confirm-button',
-            }
-        })
     };
-
-    if (isLoading)
-        return <p className="text-center p-4 text-base sm:text-lg">로딩 중입니다</p>;
-    if (isError)
-        return <p className="text-center p-4 text-red-500 text-base sm:text-lg">상품 정보를 불러오지 못했습니다</p>
 
     return (
         <section className="py-12">
             <div className="max-w-3xl mx-auto px-4 sm:px-6 md:px-8">
-                {/* 제목 */}
-                <h2 className="font-manrope font-bold text-4xl sm:text-4xl md:text-4xl text-center text-gray-900 mb-6">
-                    Write Review
-                </h2>
-
                 {/* 상품 이미지 + 정보 */}
                 <div className="flex flex-col items-center mb-8">
                     <img
-                        src={product?.img_url || "/example.jpg"}
-                        alt={product?.name || "상품 이미지"}
+                        src={product?.imgUrl || "/example.jpg"}
+                        alt={product?.name || "Product Image"}
                         className="w-40 h-40 sm:w-40 sm:h-40 md:w-40 md:h-40 rounded-lg object-cover mb-"
                     />
                     <p className="text-base sm:text-base md:text-md font-semibold text-gray-800 text-center">
@@ -113,8 +164,8 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
 
                 {/* 별점 선택 */}
                 <div className="text-center mb-8">
-                    <h3 className="font-manrope font-bold text-lg sm:text-xl text-gray-800 mb-4">
-                        상품은 어떠셨나요?
+                    <h3 className="font-manrope font-bold text-lg sm:text-xl text-gray-700 mb-4">
+                        How did you like the product?
                     </h3>
                     <div className="flex justify-center space-x-2">
                         {[1, 2, 3, 4, 5].map(i => (
@@ -141,18 +192,18 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
                         <input type="hidden" name="score" value={score} />
 
                         {/* 코멘트 */}
-                        <textarea
+                        <TextareaAutosize
                             name="comment"
-                            rows={6}
-                            required
-                            placeholder="솔직한 상품 리뷰를 남겨주세요"
-                            className="w-full border border-gray-300 rounded-md p-3 text-base sm:text-base focus:outline-none focus:ring-2 focus:ring-gray-300"
+                            minRows={6}
+                            maxRows={15}
+                            placeholder="Please leave an honest product review."
+                            className="w-full border text-gray-600 border-gray-300 rounded-md p-3 text-sm sm:text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
                         />
 
                         {/* 태그 선택 */}
                         <div>
-                            <p className="font-medium text-gray-700 mb-2 text-base sm:text-base">
-                                태그 선택
+                            <p className="font-medium text-gray-800 mb-2 text-base sm:text-base">
+                                Select Tags
                             </p>
                             <div className="space-y-4">
                                 {Object.entries(groupedTags).map(([category, tagList]) => (
@@ -166,17 +217,17 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
                                              style={{scrollbarWidth: "none", msOverflowStyle: "none"}}>
                                             {tagList.map(tag => (
                                                 <button
-                                                    key={tag.tag_id}
+                                                    key={tag.tagId}
                                                     type="button"
-                                                    onClick={() => toggleTag(tag.tag_id)}
-                                                    className={`whitespace-nowrap px-4 py-2 text-sm font-semibold rounded-full border transition-colors
+                                                    onClick={() => toggleTag(tag.tagId)}
+                                                    className={`whitespace-nowrap px-3 py-1 text-sm sm:text-sm rounded-full border transition-colors
                                                         ${
-                                                        selectedTags.includes(tag.tag_id)
-                                                            ? "bg-emerald-100 text-emerald-700 border-emerald-300"
-                                                            : "bg-gray-50 text-gray-600 border-gray-400"
+                                                        selectedTags.includes(tag.tagId)
+                                                            ? "bg-emerald-50 text-emerald-500 border-emerald-200"
+                                                            : "bg-gray-100 text-gray-500 border-gray-400"
                                                     }`}
                                                 >
-                                                    {tag.tag_name}
+                                                    {tag.tagName}
                                                 </button>
                                             ))}
                                         </div>
@@ -187,8 +238,8 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
 
                         {/* 이미지 업로드 & 미리보기 */}
                         <div>
-                            <p className="text-base sm:text-base text-gray-700 mb-2">
-                                사진 추가
+                            <p className="text-base sm:text-base text-gray-800 mb-2">
+                                Add Photo
                             </p>
                             {/* 파일 업로드 버튼 */}
                             <div className="w-full overflow-x-auto no-scrollbar flex space-x-2">
@@ -208,7 +259,7 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
                                 {images.map((img, idx) => (
                                     <div
                                         key={idx}
-                                        className="relative w-25 h-25 sm:w-25 sm:h-25 flex-shrink-0 rounded-md overflow-hidden border"
+                                        className="relative w-25 h-25 sm:w-25 sm:h-25 flex-shrink-0 rounded-lg overflow-hidden border border-gray-300"
                                     >
                                         <img
                                             src={URL.createObjectURL(img)}
@@ -221,7 +272,7 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
                                                 removeImage(idx);
                                                 setImages(prev => prev.filter((_, i) => i !== idx));
                                             }}
-                                            className="absolute top-1 right-1 bg-black/50 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
+                                            className="absolute top-1 right-1 bg-black/50 text-white text-xs rounded-lg w-5 h-5 flex items-center justify-center"
                                         >
                                             ×
                                         </button>
@@ -235,13 +286,13 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
                             type="submit"
                             disabled={addMutation.isPending}
                             className={`
-                                w-full py-3 font-semibold rounded-md text-base sm:text-base transition-colors
+                                w-full px-4 py-2 font-medium rounded-md text-sm sm:text-sm transition-colors
                                 ${addMutation.isPending
                                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                                 : "bg-emerald-400 text-white hover:bg-emerald-600"}
                             `}
                         >
-                            {addMutation.isPending ? "등록 중..." : "리뷰 등록하기"}
+                            {addMutation.isPending ? "Registering..." : "Submit Review"}
                         </button>
                     </form>
                 )}

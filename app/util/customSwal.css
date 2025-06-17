@@ -11,7 +11,7 @@
 
 /* 제목 스타일 */
 .custom-title {
-    font-size: 1.4rem;
+    font-size: 1.2rem;
     color: #333;
     font-weight: bold;
     text-align: center;
@@ -25,7 +25,7 @@
     gap: 10px;
 }
 
-/* 확인 버튼 스타일 (삭제 버튼과 동일한 색상) */
+/* 확인 버튼 스타일 */
 .custom-confirm-button {
     background-color: #34D399;
     /* gray-700 */
@@ -43,7 +43,7 @@
     /* gray-800 */
 }
 
-/* 취소 버튼 스타일 (취소 버튼과 동일한 색상) */
+/* 취소 버튼 스타일 */
 .custom-cancel-button {
     background-color: #374151;
     /* pink-500 */
@@ -59,38 +59,4 @@
 .custom-cancel-button:hover {
     background-color: #374151;
     /* pink-600 */
-}
-
-/* SweetAlert2 라디오 버튼 커스텀 스타일 */
-.swal2-radio {
-    display: flex;
-    flex-direction: row;
-    margin-top: 20px;
-    padding: 15px;
-    white-space: nowrap;
-}
-
-/* 라디오 버튼 커스텀 */
-.swal2-radio input[type="radio"] {
-    width: 15px;
-    height: 15px;
-    cursor: pointer;
-    accent-color: #374151; /* 원하는 색상으로 변경 가능 */
-}
-
-/* 라디오 라벨 스타일 */
-.swal2-radio label {
-    font-size: 1.2rem;  /* 폰트 크기 키우기 */
-    color: #333;
-    cursor: pointer;
-    user-select: none;
-    line-height: 20px;
-    display: flex;
-    align-items: center;
-}
-
-/* 라디오 버튼 + 라벨을 한 줄로 정렬 */
-.swal2-radio input[type="radio"] + label {
-    display: inline-flex;
-    align-items: center;
 }

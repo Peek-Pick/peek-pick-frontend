@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 // ① 상품 상세 정보를 가져오는 API 함수 import
 import type { ProductDetailDTO } from "~/types/products";
-import { getProductDetail } from "~/api/productsAPI";
+import { getProductDetail } from "~/api/products/productsAPI";
 
 export default function AppLayout() {
     const location = useLocation();
@@ -18,9 +18,13 @@ export default function AppLayout() {
     const pageTitleMap: { [key: string]: string } = {
         "/main": "Peek & Pick",
         "/mypage": "My Page",
+        "/mypage/edit": "Edit Profile",
         "/mypage/favorites": "찜한 상품",
+        "/reviews/user": "My Review List",
         "/products/ranking": "상품 랭킹",
-        "/reviews/user": "User Review",
+        "/products/search": "상품 검색",
+        "/products/recommended": "상품 추천",
+        "/notices/list": "공지사항/이벤트",
         // 다른 정적 경로가 필요하다면 여기에 추가
     };
 
@@ -33,10 +37,28 @@ export default function AppLayout() {
             return;
         }
 
-        // ④ /products/:barcode 패턴인지 판별
-        const productMatch = location.pathname.match(/^\/products\/([^/]+)$/);
+        // /notices/:id 패턴 확인
+        if (/^\/notices\/\d+$/.test(location.pathname)) {
+            setDynamicTitle("공지사항/이벤트");
+            return;
+        }
+
+        // /reviews/:rid 패턴 확인
+        if (/^\/reviews\/\d+$/.test(location.pathname)) {
+            setDynamicTitle("My Review");
+            return;
+        }
+
+        // /reviews/modify/:rid 패턴 확인
+        if (/^\/reviews\/modify\/\d+$/.test(location.pathname)) {
+            setDynamicTitle("Edit Review");
+            return;
+        }
+
+        // ④ /products/:barcode 패턴 확인
+        const productMatch = location.pathname.match(/^\/(products|reviews\/product)\/([^/]+)$/);
         if (productMatch) {
-            const barcode = productMatch[1];
+            const barcode = productMatch[2];
             // API 호출하여 상품명을 가져와 dynamicTitle에 저장
             (async () => {
                 try {
@@ -44,6 +66,7 @@ export default function AppLayout() {
                     setDynamicTitle(data.name);
                 } catch (error) {
                     console.error("상품명 조회 실패:", error);
+                    console.log(barcode)
                     // 조회 실패 시 기본값 또는 빈 문자열로 둡니다.
                     setDynamicTitle("");
                 }
@@ -59,20 +82,29 @@ export default function AppLayout() {
     const pageTitle =
         dynamicTitle || pageTitleMap[location.pathname] || "";
 
+    // outlet padding 제거 - main
+    const noPaddingPaths = ["/main"];
+
+    const hasPadding = !noPaddingPaths.includes(location.pathname);
+
     return (
         <div className="min-h-screen bg-gray-50">
             {/* 헤더 */}
-            <header className="sticky top-0 z-50 flex items-center justify-between px-4 py-3 bg-transparent backdrop-blur-md shadow-md">
+            <header className="sticky top-0 z-50 flex items-center justify-between px-4 py-2.5 bg-transparent backdrop-blur-md shadow-md">
                 {/* 왼쪽: 로고 + 페이지 이름 */}
-                <button className="flex items-center gap-2">
-                    <img src="/icons/icon_clean.png" alt="Logo" className="h-10 w-10" />
+                <button className="flex items-center gap-2"
+                        onClick={() => navigate("/main")}>
+                    <img src="/icons/icon_clean.png" alt="Logo" className="h-8.5 w-10" />
                     <span className="text-lg font-semibold">{pageTitle}</span>
                 </button>
 
                 {/* 오른쪽: 아이콘들 */}
                 <div className="flex items-center gap-1">
                     {/* 영수증 버튼 */}
-                    <button className="w-10 h-10 flex items-center justify-center rounded hover:bg-gray-100">
+                    <button
+                        onClick={() => navigate("/barcode/history")}
+                        className="w-10 h-10 flex items-center justify-center rounded hover:bg-gray-100"
+                    >
                         <ReceiptText className="w-6 h-6 text-gray-500" />
                     </button>
 
@@ -87,7 +119,7 @@ export default function AppLayout() {
             </header>
 
             {/* 본문 */}
-            <main className="p-4">
+            <main className={hasPadding ? "p-4" : ""}>
                 <Outlet />
             </main>
         </div>

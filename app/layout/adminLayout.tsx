@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -18,6 +18,8 @@ import {
 
 export default function AdminLayout() {
     const [collapsed, setCollapsed] = useState(false);
+    const location = useLocation();
+
 
     //실시간 시간 처리
     const [currentTime, setCurrentTime] = useState(
@@ -27,6 +29,7 @@ export default function AdminLayout() {
             hour12: true,
         })
     );
+
     useEffect(() => {
         const timer = setInterval(() => {
             setCurrentTime(
@@ -52,6 +55,36 @@ export default function AdminLayout() {
         { to: "/admin/points/list", icon: faCartShopping, label: "포인트 상점" },
     ];
 
+    // 페이지 이름 매핑 (정적 경로에 대한 매핑)
+    const pageTitleMap: { [key: string]: string } = {
+        "/admin/dashboard": "DashBoard",
+        "/admin/products/list": "Products List",
+        "/admin/users/list": "Users List",
+        "/admin/reviews/list": "Reviews List",
+        "/admin/inquiries/list": "Inquiries List",
+        "/admin/reports/list": "Reports List",
+        "/admin/notices/list": "Notice List",
+        "/admin/points/list": "Point Products List"
+
+        // 다른 정적 경로가 필요하다면 여기에 추가
+    };
+    // ② 상품명을 담을 로컬 상태
+    const [dynamicTitle, setDynamicTitle] = useState<string>("");
+
+    // ③ location.pathname이 변경될 때마다 실행
+    useEffect(() => {
+        // 우선 정적 매핑 가능한 경로인지 확인
+        if (pageTitleMap[location.pathname]) {
+            // 정적 매핑이 있으면 dynamicTitle을 비워두고(또는 초기화) 종료
+            setDynamicTitle("");
+            return;
+        }
+    }, [location.pathname]);
+    // dynamicTitle이 있으면 그것을, 아니면 정적 맵핑을 사용
+   
+    const pageTitle =
+        dynamicTitle || pageTitleMap[location.pathname] || "";
+    
     return (
         <div className="flex min-h-screen">
             {/* 사이드바 */}
@@ -60,23 +93,21 @@ export default function AdminLayout() {
                     collapsed ? "w-20" : "w-72"
                 }`}
             >
-                {/* 토글 버튼 */}
-                <button
-                    onClick={() => setCollapsed(!collapsed)}
-                    className="absolute -right-3 top-6 bg-white text-black rounded-full w-8 h-8 shadow-md z-30 flex items-center justify-center"
-                >
-                    <FontAwesomeIcon icon={collapsed ? faChevronRight : faChevronLeft} />
-                </button>
-
-                {/* 로고 영역 */}
-                <div className="p-4">
-                    <p
-                        className={`text-sm text-gray-400 mt-1 transition-opacity duration-300 ${
-                            collapsed ? "opacity-0" : ""
-                        }`}
+                {/* 상단 영역 */}
+                <div className="flex items-center relative h-16 px-4">
+                    {/* 토글 버튼 - 항상 내부에 위치하도록 left로 설정 */}
+                    <button
+                        onClick={() => setCollapsed(!collapsed)}
+                        className="w-8 h-8 rounded-full flex items-center justify-center
+                                 bg-gray-700 text-white shadow-md hover:bg-gray-600 transition-colors duration-200"
                     >
-                        Dashboard
-                    </p>
+                        <FontAwesomeIcon icon={collapsed ? faChevronRight : faChevronLeft} className="w-4 h-4" />
+                    </button>
+
+                    {/* Dashboard 텍스트 */}
+                    {!collapsed && (
+                        <p className="text-sm text-gray-400 ml-3 transition-opacity duration-300">Dashboard</p>
+                    )}
                 </div>
 
                 {/* 메뉴 영역 */}
@@ -86,15 +117,27 @@ export default function AdminLayout() {
                             key={to}
                             to={to}
                             className={({ isActive }) =>
-                                `flex items-center gap-3 px-4 py-2 rounded transition-all duration-200 ${
+                                `flex items-center gap-3 py-2 rounded transition-all duration-200 ${
                                     isActive
                                         ? "bg-white/10 text-white font-semibold"
                                         : "text-gray-400 hover:text-white hover:translate-x-1"
-                                } ${collapsed ? "justify-center px-2" : ""}`
+                                } ${collapsed ? "justify-center px-2 gap-0" : "px-4"}`
                             }
                         >
-                            <FontAwesomeIcon icon={icon} />
-                            {!collapsed && <span>{label}</span>}
+                            <FontAwesomeIcon
+                                icon={icon}
+                                style={{ width: '18px', height: '18px' }}
+                                className="text-gray-400"
+                            />
+
+                            {/* 항상 렌더링하고 숨김처리 */}
+                            <span
+                                className={`transition-all duration-300 whitespace-nowrap ${
+                                    collapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100 w-auto"
+                                }`}
+                            >
+                                {label}
+                            </span>
                         </NavLink>
                     ))}
                 </nav>
@@ -133,7 +176,7 @@ export default function AdminLayout() {
                 >
                     {/* 좌측 타이틀 */}
                     <div className="flex items-center gap-3">
-                        <span className="text-xl font-bold text-gray-800">My Admin</span>
+                        <span className="text-xl font-bold text-gray-800">{pageTitle}</span>
                     </div>
 
                     {/* 우측 메뉴: 시간, 알림, 계정 */}
