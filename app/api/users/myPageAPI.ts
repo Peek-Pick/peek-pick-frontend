@@ -1,48 +1,46 @@
+// ✅ 수정된 프론트엔드 API 호출 파일
+// src/api/users/myPageAPI.ts
+
 import axiosInstance from "~/instance/axiosInstance";
-import type {ProfileReadDTO, MyPageResponseDTO } from "~/types/users";
-import type {ProductListDTO, PageResponse} from "~/types/products";
+import type { ProfileReadDTO, MyPageResponseDTO } from "~/types/users";
+import type { ProductListDTO, PageResponseCursor } from "~/types/products";
 
 const host = "http://localhost:8080/api/v1/users";
 
-// myPage 조회
 export const getMyPage = async (): Promise<MyPageResponseDTO> => {
     const response = await axiosInstance.get(`${host}/mypage`, { withCredentials: true });
     return response.data;
 };
 
-// myPage Edit 조회
 export const getMyPageEdit = async (): Promise<ProfileReadDTO> => {
     const response = await axiosInstance.get(`${host}/mypage/edit`, { withCredentials: true });
     return response.data;
 };
 
+export const updateMyPage = async (formData: FormData) => {
+    return axiosInstance.put(`${host}/mypage/edit`, formData);
+};
 
-//myPage Edit 수정
-export const updateMyPage = async (formData: FormData)=> {
-    return axiosInstance.put(`${host}/mypage/edit`, formData)
-}
-
-/**
- * 찜한(즐겨찾기) 상품 목록을 페이지 단위로 조회
- * - 백엔드: GET /api/v1/users/favorites?page={page}&size={size}
- * @param page 0부터 시작하는 페이지 번호
- * @param size 한 페이지당 상품 개수
- */
+// ✅ 커서 기반 찜 목록 조회 (최신순: modDate DESC, productId DESC)
 export async function getMyPageFavorite(
-    page: number,
-    size: number
-): Promise<PageResponse<ProductListDTO>> {
-    const res = await axiosInstance.get<PageResponse<ProductListDTO>>(
+    size: number,
+    lastModDate?: string,
+    lastProductId?: number
+): Promise<PageResponseCursor<ProductListDTO>> {
+    const res = await axiosInstance.get<PageResponseCursor<ProductListDTO>>(
         `${host}/favorites`,
         {
-            params: { page, size },
+            params: {
+                size,
+                ...(lastModDate && { lastModDate }),
+                ...(lastProductId !== undefined && { lastProductId }),
+            },
             withCredentials: true,
         }
     );
     return res.data;
 }
 
-// 계정 삭제(soft)
 export async function softDeleteAccount(): Promise<void> {
     return axiosInstance.patch(`${host}/delete`, {
         status: "DELETED"

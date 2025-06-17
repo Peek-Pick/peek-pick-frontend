@@ -1,16 +1,17 @@
-// src/routes/mypage/favoritesPage.tsx
+// src/routes/products/favoritesPage.tsx
+
 import { useRef, useLayoutEffect, useEffect } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useNavigate, useNavigationType } from "react-router-dom";
 import ListComponent from "~/components/products/listComponent";
 import BottomNavComponent from "~/components/main/bottomNavComponent";
 import { getMyPageFavorite } from "~/api/users/myPageAPI";
-import type { PageResponse, ProductListDTO } from "~/types/products";
+import type { PageResponseCursor, ProductListDTO } from "~/types/products";
 
 const STORAGE_KEY = "favoritesPageScrollY";
 
 export default function FavoritesPage() {
-    const size = 10;
+    const size = 12;
     const navigate = useNavigate();
     const navigationType = useNavigationType();
     const isRestoredRef = useRef(false);
@@ -51,12 +52,25 @@ export default function FavoritesPage() {
         isFetchingNextPage,
         isLoading,
         isError,
-    } = useInfiniteQuery<PageResponse<ProductListDTO>, Error>({
-        queryKey: ["favorites", size],
-        queryFn: ({ pageParam = 0 }) => getMyPageFavorite(pageParam as number, size),
-        getNextPageParam: lastPage =>
-            lastPage.number + 1 < lastPage.totalPages ? lastPage.number + 1 : undefined,
-        initialPageParam: 0,
+    } = useInfiniteQuery<PageResponseCursor<ProductListDTO>, Error>({
+        queryKey: ["favoritesCursor", size],
+        queryFn: async ({ pageParam }) => {
+            const last = pageParam as { lastModDate?: string; lastProductId?: number } | undefined;
+            return await getMyPageFavorite(
+                size,
+                last?.lastModDate,
+                last?.lastProductId
+            );
+        },
+        getNextPageParam: (lastPage) => {
+            const last = lastPage.content.at(-1);
+            if (!last || !last.modDate || !last.productId || !lastPage.hasNext) return undefined;
+            return {
+                lastModDate: last.modDate,
+                lastProductId: last.productId,
+            };
+        },
+        initialPageParam: undefined,
         staleTime: 5 * 60 * 1000,
     });
 

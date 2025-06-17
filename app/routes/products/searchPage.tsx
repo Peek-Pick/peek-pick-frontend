@@ -1,4 +1,3 @@
-// src/routes/products/searchPage.tsx
 import { useState, useEffect, useRef, useLayoutEffect } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Icon } from "@iconify/react";
@@ -6,7 +5,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import ListComponent from "~/components/products/listComponent";
 import BottomNavComponent from "~/components/main/bottomNavComponent";
 import { searchProducts } from "~/api/products/productsAPI";
-import type { PageResponse, ProductListDTO } from "~/types/products";
+import type { PageResponseCursor, ProductListDTO } from "~/types/products";
 
 const STORAGE_KEY = "searchPageScrollY";
 
@@ -18,7 +17,7 @@ function isPageReload(): boolean {
 }
 
 export default function SearchPage() {
-    const size = 10;
+    const size = 12;
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
 
@@ -96,6 +95,7 @@ export default function SearchPage() {
     const displaySortLabel = sortOptions.find((s) => s.param === sortParam)?.label ?? "정렬";
 
     const categoryForQuery = categoryLabel === "카테고리" || categoryLabel === "전체" ? undefined : categoryLabel;
+    const sortKey = sortParam.split(",")[0];
 
     const {
         data,
@@ -104,20 +104,35 @@ export default function SearchPage() {
         isFetchingNextPage,
         isLoading,
         isError,
-    } = useInfiniteQuery<PageResponse<ProductListDTO>, Error>({
+    } = useInfiniteQuery<PageResponseCursor<ProductListDTO>, Error>({
         queryKey: ["productsSearch", size, sortParam, categoryForQuery, keyword],
-        queryFn: ({ pageParam = 0 }) =>
-            searchProducts(
-                pageParam as number,
+        queryFn: async ({ pageParam }) => {
+            const last = pageParam as { lastValue?: number; lastProductId?: number } | undefined;
+            return await searchProducts(
                 size,
-                sortParam,
+                last?.lastValue,
+                last?.lastProductId,
                 categoryForQuery,
-                keyword || undefined
-            ),
+                keyword,
+                sortParam
+            );
+        },
         enabled: keyword.trim() !== "",
-        getNextPageParam: (last) =>
-            last.number + 1 < last.totalPages ? last.number + 1 : undefined,
-        initialPageParam: 0,
+        getNextPageParam: (lastPage) => {
+            const last = lastPage.content.at(-1);
+            if (!last || !lastPage.hasNext) return undefined;
+
+            // ✅ null 그대로 넘김 (null이면 null 그대로 전달)
+            const lastValue = sortKey === "score"
+                ? last.score
+                : last.likeCount ?? 0;
+
+            return {
+                lastValue,
+                lastProductId: last.productId,
+            };
+        },
+        initialPageParam: undefined,
         staleTime: 5 * 60 * 1000,
     });
 

@@ -1,4 +1,3 @@
-// src/routes/products/rankingPage.tsx
 import { useState, useEffect, useRef, useLayoutEffect } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Icon } from "@iconify/react";
@@ -6,7 +5,7 @@ import { useNavigate, useSearchParams, useNavigationType } from "react-router-do
 import ListComponent from "~/components/products/listComponent";
 import BottomNavComponent from "~/components/main/bottomNavComponent";
 import { listProducts } from "~/api/products/productsAPI";
-import type { PageResponse, ProductListDTO } from "~/types/products";
+import type { PageResponseCursor, ProductListDTO } from "~/types/products";
 
 const STORAGE_KEY = "rankingPageScrollY";
 
@@ -18,7 +17,7 @@ function isPageReload(): boolean {
 }
 
 export default function RankingPage() {
-    const size = 10;
+    const size = 12;
     const navigate = useNavigate();
     const navigationType = useNavigationType();
     const [searchParams, setSearchParams] = useSearchParams();
@@ -109,6 +108,8 @@ export default function RankingPage() {
         return () => window.removeEventListener("scroll", onScroll);
     }, []);
 
+    const sortKey = sortParam.split(",")[0];
+
     const {
         data,
         fetchNextPage,
@@ -116,18 +117,35 @@ export default function RankingPage() {
         isFetchingNextPage,
         isLoading,
         isError,
-    } = useInfiniteQuery<PageResponse<ProductListDTO>, Error>({
+    } = useInfiniteQuery<PageResponseCursor<ProductListDTO>, Error>({
         queryKey: ["productsRanking", size, sortParam, categoryForQuery],
-        queryFn: ({ pageParam = 0 }) =>
-            listProducts(
-                pageParam as number,
+        queryFn: async ({ pageParam }) => {
+            const last = pageParam as { lastValue?: number; lastProductId?: number } | undefined;
+            return await listProducts(
                 size,
-                sortParam,
-                categoryForQuery
-            ),
-        getNextPageParam: (last) =>
-            (last.number + 1) * size < 100 ? last.number + 1 : undefined, // TOP 100 제한
-        initialPageParam: 0,
+                last?.lastValue,
+                last?.lastProductId,
+                categoryForQuery,
+                sortParam
+            );
+        },
+
+        getNextPageParam: (lastPage) => {
+            const last = lastPage.content.at(-1);
+            if (!last || !lastPage.hasNext) return undefined;
+
+            // ✅ null 그대로 넘김 (null이면 null 그대로 전달)
+            const lastValue = sortKey === "score"
+                ? last.score
+                : last.likeCount ?? 0;
+
+            return {
+                lastValue,
+                lastProductId: last.productId,
+            };
+        },
+
+        initialPageParam: undefined,
         staleTime: 5 * 60 * 1000,
     });
 
@@ -219,10 +237,8 @@ export default function RankingPage() {
                                                     setSortParam(param);
                                                     setShowSortMenu(false);
                                                     const params: Record<string, string> = {};
-                                                    if (categoryLabel !== "카테고리") {
-                                                        if (categoryLabel !== "전체") {
-                                                            params.category = categoryLabel;
-                                                        }
+                                                    if (categoryLabel !== "카테고리" && categoryLabel !== "전체") {
+                                                        params.category = categoryLabel;
                                                     }
                                                     params.sort = param;
                                                     setSearchParams(params);
@@ -243,10 +259,17 @@ export default function RankingPage() {
             </div>
 
             <ListComponent
-                products={data ? data.pages.flatMap((pg, pgIdx) => pg.content.map((item, i) => ({
-                    ...item,
-                    rank: pgIdx * size + i + 1,
-                }))) : []}
+                products={
+                    data
+                        ? data.pages
+                            .flatMap((pg, pgIdx) =>
+                                pg.content.map((item, i) => ({
+                                    ...item,
+                                    rank: pgIdx * size + i + 1,
+                                }))
+                            )
+                        : []
+                }
                 fetchNextPage={fetchNextPage}
                 hasNextPage={hasNextPage}
                 isFetchingNextPage={isFetchingNextPage}
