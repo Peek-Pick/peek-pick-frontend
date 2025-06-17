@@ -44,11 +44,12 @@ function StoreListPage() {
         try {
             await redeemCoupon(product.pointstoreId);
 
-            alert(`${product.item} purchase complete!`);
             setIsModalOpen(false);
             setSelectedProductId(null);
-        } catch (e) {
-            alert("Purchase failed");
+
+            return { success: true };
+        } catch {
+            return { success: false };
         }
     };
 
@@ -61,7 +62,7 @@ function StoreListPage() {
 
             {/*필터링버튼*/}
             <div className="border-b border-gray-300 mb-6 px-4 sm:px-0">
-                <nav className="flex justify-center space-x-3 sm:space-x-6 overflow-x-auto no-scrollbar pl-5 sm:pl-8">
+                <nav className="flex justify-start sm:justify-center space-x-3 sm:space-x-6 overflow-x-auto no-scrollbar px-5 sm:px-0">
                     {(["ALL", "CU", "GS25", "SEVEN_ELEVEN", "EMART24", "OTHERS"] as (
                         | keyof typeof PointProductType
                         | "ALL"
@@ -90,7 +91,7 @@ function StoreListPage() {
                             >
                                 {labels[type]}
                                 {isActive && (
-                                    <span className="absolute -bottom-0 left-0 right-0 h-0.5 bg-yellow-400"></span>
+                                    <span className="absolute -bottom-0 left-0 right-0 h-0.5 bg-yellow-400 "></span>
                                 )}
                             </button>
                         );
