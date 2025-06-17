@@ -2,6 +2,7 @@ import MyPageEditComponent from "~/components/users/myPageEditComponent";
 import BottomNavComponent from "~/components/main/bottomNavComponent";
 import {useQuery} from "@tanstack/react-query";
 import {getMyPageEdit} from "~/api/users/myPageAPI";
+import {BackButton, FloatingActionButtons} from "~/util/button/FloatingActionButtons";
 
 function useGetProfile ()  {
     return useQuery({
@@ -25,7 +26,8 @@ function MyPageEditPage() {
     return (
         <div>
             <MyPageEditComponent profile={profile}/>
-            <BottomNavComponent/>
+            <BackButton />
+            <FloatingActionButtons />
         </div>
     );
 }
