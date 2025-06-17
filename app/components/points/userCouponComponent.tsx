@@ -23,32 +23,35 @@ export default function UserCouponComponent({ coupons, header }: Props) {
                     {coupons.map((coupon, idx) => (
                         <div
                             key={`${coupon.couponId ?? "unknown"}-${idx}`}
-                            className="w-full sm:max-w-xs md:max-w-sm lg:max-w-md bg-white rounded-2xl shadow-md hover:shadow-xl transition duration-300 transform hover:-translate-y-1 p-5 flex flex-col items-center text-center"
+                            className="w-full sm:max-w-xs md:max-w-sm lg:max-w-md bg-white rounded-2xl shadow-md hover:shadow-xl transition duration-300 transform hover:-translate-y-1 p-3 flex flex-col items-center"
                         >
-                            {/*이미지*/}
-                            <div className="w-20 h-20 mb-4 rounded-xl overflow-hidden">
+                            {/* 이미지 */}
+                            <div className="w-65 h-48 sm:h-48 rounded-lg overflow-hidden mb-3">
                                 <img
                                     src={`http://localhost:8080/points/${coupon.couponImg}`}
                                     alt={coupon.itemName}
-                                    className="w-full h-full object-cover"
+                                    className="w-full h-full object-cover rounded-lg"
                                 />
                             </div>
-                            {/*이름*/}
-                            <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-1">
+
+                            {/* 이름 */}
+                            <h3 className="text-sm sm:text-base font-semibold text-gray-800 mb-1 text-center">
                                 {coupon.itemName}
                             </h3>
-                            {/*소멸일*/}
-                            <p className="text-xs sm:text-sm text-gray-500 mb-1">
+
+                            {/* 소멸일 */}
+                            <p className="text-xs sm:text-sm text-gray-500 mb-0.5 text-center">
                                 Expiry:{" "}
                                 <span className="text-red-500 font-medium">
-                                    {new Date(coupon.expiredAt).toLocaleDateString()}
+                                  {new Date(coupon.expiredAt).toLocaleDateString()}
                                 </span>
                             </p>
-                            {/*상태*/}
-                            <p className="text-xs sm:text-sm text-gray-500">
+
+                            {/* 상태 */}
+                            <p className="text-xs sm:text-sm text-gray-500 text-center">
                                 Status:{" "}
                                 <span className="font-medium">
-                                    {CouponStatus[coupon.status as keyof typeof CouponStatus]}
+                                  {CouponStatus[coupon.status as keyof typeof CouponStatus]}
                                 </span>
                             </p>
                         </div>

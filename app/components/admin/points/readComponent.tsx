@@ -13,11 +13,12 @@ export default function ReadComponent({ data }: Props) {
             <h2 className="text-xl font-bold mb-6 border-b pb-2">상품 상세 정보</h2>
 
             <div className="flex flex-col md:flex-row gap-8">
-                <div className="w-full md:w-1/3 flex justify-center items-center">
+                {/* 이미지 영역 */}
+                <div className="w-full max-w-sm flex justify-center">
                     <img
                         src={`http://localhost:8080/points/${data.imgUrl}`}
                         alt={data.item}
-                        className="w-full max-h-64 object-contain rounded-md border border-gray-200 shadow-sm"
+                        className="w-full object-cover rounded-xl border border-gray-200 shadow-md"
                     />
                 </div>
 
@@ -36,7 +37,6 @@ export default function ReadComponent({ data }: Props) {
                             <h3 className="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wide">{label}</h3>
                             <p
                                 className={`text-gray-900 ${isDescription ? "whitespace-pre-line leading-relaxed" : "font-medium"}`}
-                                style={{ fontSize: isDescription ? "0.9rem" : "1rem" }}
                             >
                                 {value}
                             </p>

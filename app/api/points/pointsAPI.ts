@@ -17,7 +17,11 @@ export async function listCoupon(page: number, size: number, sort:string, type?:
 //--------------------
 // 쿠폰 구매
 export async function redeemCoupon(pointstoreId: number): Promise<void> {
-    await axiosInstance.patch(`/points/redeem/${pointstoreId}`);
+    try {
+        await axiosInstance.patch(`/points/redeem/${pointstoreId}`);
+    } catch (error) {
+        throw new Error("쿠폰 구매 실패");
+    }
 }
 
 // 사용자 쿠폰함 - 쿠폰 목록 조회
