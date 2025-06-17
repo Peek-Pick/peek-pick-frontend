@@ -18,6 +18,7 @@ export default function AppLayout() {
     const pageTitleMap: { [key: string]: string } = {
         "/main": "Peek & Pick",
         "/mypage": "My Page",
+        "/mypage/edit": "Edit Profile",
         "/mypage/favorites": "찜한 상품",
         "/reviews/user": "My Review List",
         "/products/ranking": "상품 랭킹",
