@@ -1,4 +1,4 @@
-// src/types/notice.ts
+// app/types/notice.d.ts
 
 import { PagingResponse } from "./common";
 
