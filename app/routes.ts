@@ -89,9 +89,7 @@ export default [
 
         // 문의사항
         route("inquiries/list",       "routes/admin/inquiries/listPage.tsx"),    // 사용자 문의목록
-        // route("inquiries/add",        "routes/admin/inquiries/addPage.tsx"),     // 답변 등록
         route("inquiries/:id",        "routes/admin/inquiries/detailPage.tsx"),  // 문의 상세보기
-        // route("inquiries/:id/edit",   "routes/admin/inquiries/editPage.tsx"),
 
         //신고
         route("reports/list",       "routes/admin/reports/listPage.tsx"),

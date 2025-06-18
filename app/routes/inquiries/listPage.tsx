@@ -1,31 +1,26 @@
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { fetchInquiries } from "~/api/inquiriesAPI";
 import type { PagingResponse } from "~/types/common";
-import ListComponent from "~/components/inquiries/listComponent";
 import PaginationComponent from "~/components/common/PaginationComponent";
 import LoadingComponent from "~/components/common/loadingComponent";
+import ListComponent from "~/components/inquiries/listComponent";
 import BottomNavComponent from "~/components/main/bottomNavComponent";
+import { fetchInquiries } from "~/api/inquiriesAPI";
+
+const FIXED_PAGE_SIZE = 5;
 
 function ListPage() {
     const [searchParams, setSearchParams] = useSearchParams();
-
-    const page = Number(searchParams.get("page") || "0");
-    const size = Number(searchParams.get("size") || "10");
+    const page = Number(searchParams.get("page") || "0"); // ⚠️ 0-based index
 
     const { data, isLoading, isError } = useQuery<PagingResponse<InquiryResponseDTO>>({
-        queryKey: ["inquiries", page, size],
-        queryFn: () => fetchInquiries(page, size).then((res) => res.data),
-        staleTime: 1000 * 60 * 10, // 10분
+        queryKey: ["inquiries", page],
+        queryFn: () => fetchInquiries({ page, size: FIXED_PAGE_SIZE }),
+        staleTime: 1000 * 60 * 10,
     });
 
-    const handleSizeChange = (newSize: number) => {
-        // size 바꾸면 page는 0으로 초기화
-        setSearchParams({ page: "0", size: String(newSize) });
-    };
-
     const handlePageChange = (newPage: number) => {
-        setSearchParams({ page: String(newPage), size: String(size) });
+        setSearchParams({ page: String(newPage) });
     };
 
     if (isLoading) return <LoadingComponent isLoading />;
@@ -33,23 +28,19 @@ function ListPage() {
         return <div className="p-4 text-red-500">데이터를 불러오지 못했습니다.</div>;
 
     return (
-        <div className="bg-gray-50 flex flex-col justify-between">
-            <main>
-                <ListComponent
-                    items={data.content}
-                    size={size}
-                    onSizeChange={handleSizeChange}
-                />
-                <div className="mt-4">
-                    <PaginationComponent
-                        currentPage={page}
-                        totalPages={data.totalPages}
-                        onPageChange={handlePageChange}
-                        maxPageButtons={5}
-                    />
-                </div>
-            </main>
-
+        <div>
+            <ListComponent
+                items={data.content}
+                currentPage={page + 1} // ✅ 사용자 시점에서 1-based 인덱스 전달
+                pageSize={FIXED_PAGE_SIZE} // ✅ 실제 사용된 페이지 크기 전달
+                totalCount={data.totalElements}
+            />
+            <PaginationComponent
+                currentPage={page}
+                totalPages={data.totalPages}
+                onPageChange={handlePageChange}
+                maxPageButtons={5}
+            />
             <BottomNavComponent />
         </div>
     );
