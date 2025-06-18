@@ -10,7 +10,6 @@ type InquiryStatus = "PENDING" | "ANSWERED";
 
 // 클라이언트 → 서버 요청 DTO (텍스트 + imgUrls)
 interface InquiryRequestDTO {
-    title: string,
     content: string,
     type: InquiryType,
     imgUrls: string[]
@@ -23,7 +22,6 @@ interface InquiryResponseDTO {
     userEmail: string,
     userNickname: string,
     userProfileImgUrl: string,
-    title: string,
     content: string,
     type: InquiryType,
     status: InquiryStatus,
@@ -31,6 +29,11 @@ interface InquiryResponseDTO {
     regDate: string,
     modDate: string,
     imgUrls: string[]
+    reply?: {
+        replyId: number;
+        content: string;
+        modDate: string;
+    } | null;
 }
 
 interface FetchAdminInquiriesParams {
@@ -47,5 +50,6 @@ interface InquiryAnswerRequestDTO {
 }
 
 interface InquiryAnswerResponseDTO {
-    content: string;
+    content: string,
+    regDate: string
 }

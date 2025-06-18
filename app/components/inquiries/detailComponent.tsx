@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ImageModalComponent from "~/components/common/ImageModalComponent";
-import {Edit, MoreVertical, Trash} from "lucide-react";
-import {useDeleteInquiry} from "~/hooks/inquiries/useInquiryMutation";
-import {INQUIRY_TYPES} from "~/enums/inquiries/inquiry";
+import { Edit, MoreVertical, Trash, Check, Hourglass } from "lucide-react";
+import { useDeleteInquiry } from "~/hooks/inquiries/useInquiryMutation";
+import { INQUIRY_TYPES } from "~/enums/inquiries/inquiry";
 
 const API_URL = import.meta.env.VITE_API_URL?.replace("/api/v1", "") ?? "http://localhost:8080";
 
@@ -24,18 +24,17 @@ function DetailComponent({ inquiry, navigate: navigateProp }: Props) {
         try {
             await deleteInquiryMutation.mutateAsync(inquiry.inquiryId);
             navigate("/inquiries/list");
-        } catch (error) {
+        } catch {
             alert("삭제 중 오류가 발생했습니다.");
         }
     };
 
     useEffect(() => {
-        function handleClickOutside(event: MouseEvent) {
+        const handleClickOutside = (event: MouseEvent) => {
             if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
                 setMenuOpen(false);
             }
-        }
-
+        };
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
@@ -52,46 +51,46 @@ function DetailComponent({ inquiry, navigate: navigateProp }: Props) {
             d.getMonth() === now.getMonth() &&
             d.getDate() === now.getDate();
 
-        if (isToday) {
-            return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
-        } else {
-            const yyyy = d.getFullYear();
-            const mm = pad(d.getMonth() + 1);
-            const dd = pad(d.getDate());
-            const hh = pad(d.getHours());
-            const mi = pad(d.getMinutes());
-            return `${yyyy}.${mm}.${dd} ${hh}:${mi}`;
-        }
+        return isToday
+            ? `${pad(d.getHours())}:${pad(d.getMinutes())}`
+            : `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
     };
 
+    const isAnswered = inquiry.status === "ANSWERED";
+    const statusLabel = isAnswered ? "답변 완료" : "답변 대기";
+
     return (
-        <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow px-4 pt-4 pb-6 relative space-y-4">
+        <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow px-4 pt-4 pb-6 space-y-4 relative">
+            {modalImage && (
+                <ImageModalComponent
+                    src={modalImage}
+                    alt="첨부 이미지"
+                    onClose={() => setModalImage(null)}
+                />
+            )}
             {/* 상단 네비 영역 */}
             <div className="flex items-center justify-between text-gray-600">
-                {/* 왼쪽: 뒤로가기 */}
                 <button
                     onClick={() => {
-                        if (window.history.length > 1) { navigate(-1); }
-                        else { navigate("/inquiries/list"); }
+                        if (window.history.length > 1) navigate(-1);
+                        else navigate("/inquiries/list");
                     }}
                     className="text-yellow-500 hover:text-yellow-600 p-1"
-                    aria-label="목록으로"
+                    aria-label="뒤로가기"
                 >
-                    <span className="text-2xl w-6 h-6 flex items-center justify-center">&lt;</span>
+                    <svg className="w-6 h-6 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
                 </button>
 
-                {/* 중앙: 문의번호 */}
-                <div className="flex-1 text-center text-sm text-gray-400 truncate py-0.5">
-                    문의사항 #{inquiry.inquiryId}
+                {/* 중앙 문의 유형 (노랑) */}
+                <div className="flex-1 text-center text-sm text-yellow-500 font-semibold truncate py-0.5">
+                    {typeLabel}
                 </div>
 
-                {/* 오른쪽: 더보기 메뉴 */}
+                {/* 우측 더보기 메뉴 */}
                 <div className="relative" ref={menuRef}>
-                    <button
-                        onClick={() => setMenuOpen((prev) => !prev)}
-                        className="text-yellow-500 hover:text-yellow-600 p-1"
-                        aria-label="더보기"
-                    >
+                    <button onClick={() => setMenuOpen((prev) => !prev)} className="text-yellow-500 hover:text-yellow-600 p-1">
                         <MoreVertical className="w-6 h-6" />
                     </button>
                     {menuOpen && (
@@ -114,79 +113,76 @@ function DetailComponent({ inquiry, navigate: navigateProp }: Props) {
                     )}
                 </div>
             </div>
-
-            {/* 제목 및 메타 정보 */}
-            <div className="mb-0.5 mt-1">
-                <h1 className="text-lg sm:text-xl font-extrabold text-gray-900 break-words leading-tight">
-                    <span className="text-yellow-500 mr-2">[{typeLabel}]</span>{inquiry.title}
-                </h1>
-                <div className="flex flex-wrap items-center gap-3 mt-2 ml-1 text-sm text-gray-600">
-                    <span className="font-semibold">{inquiry.userNickname}</span>
-                    <span className="text-gray-300">|</span>
-                    <span>작성일:
-                        <span className="ml-1 bg-gray-200 rounded px-1.5 py-0.5">
-                            {formatDate(inquiry.regDate)}
-                        </span>
-                    </span>
-
-                    {inquiry.modDate !== inquiry.regDate && (
-                        <>
-                            <span>수정일:
-                                <span className="ml-1 bg-gray-200 rounded px-1.5 py-0.5">
-                                    {formatDate(inquiry.modDate)}
-                                </span>
-                            </span>
-                        </>
-                    )}
+            {/* 1줄: 프로필 + 닉네임 + 상태 */}
+            <div className="flex justify-between items-center mb-1.5">
+                <div className="flex items-center gap-2">
+                    <img
+                        src={`http://localhost/${inquiry.userProfileImgUrl}`}
+                        alt="프로필"
+                        className="w-10 h-10 rounded-full object-cover border border-gray-300"
+                    />
+                    <span className="font-semibold text-base ml-0.5">{inquiry.userNickname}</span>
                 </div>
+                <span
+                    className={`inline-flex items-center gap-1 rounded-full px-3 py-1 font-semibold text-xs transition-colors ${
+                        isAnswered
+                            ? "bg-yellow-400 hover:bg-yellow-500 text-white"
+                            : "bg-gray-100 hover:bg-gray-200 text-gray-500"
+                    }`}
+                >
+                    {isAnswered ? <Check className="w-3.5 h-3.5" /> : <Hourglass className="w-3.5 h-3.5" />}
+                    {statusLabel}
+                </span>
             </div>
 
-            <hr className="border-t border-gray-200 my-2" />
+            {/* 2줄: 작성일, 수정일 */}
+            <div className="flex justify-end text-xs text-gray-500 mb-2.5 gap-2 leading-none">
+                <span>
+                    작성일:<span className="bg-gray-100 px-0.5 py-0.5 text-gray-700">{formatDate(inquiry.regDate)}</span>
+                </span>
+                {inquiry.modDate !== inquiry.regDate && (
+                    <span>
+                        수정일:<span className="bg-gray-100 px-0.5 py-0.5 text-gray-700">{formatDate(inquiry.modDate)}</span>
+                    </span>
+                )}
+            </div>
+
+            <hr className="border-t border-gray-200" />
+
             {/* 본문 */}
-            <div className="prose prose-sm prose-gray mt-5 max-w-none whitespace-pre-wrap">
-                {inquiry.content.split('\n').map((line, idx) => (
-                    <span key={idx}>{line}
-                        <br />
-                    </span>
-                ))}
+            <div className="text-gray-800 whitespace-pre-line leading-relaxed mt-4">
+                {inquiry.content}
             </div>
 
-            {/* 이미지 그리드 */}
-            {inquiry.imgUrls && inquiry.imgUrls.length > 0 && (
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 pt-2">
-                    {inquiry.imgUrls.map((url) => {
-                        const src = url.startsWith("http") ? url : `${API_URL}${url}`;
-                        return (
-                            <button
-                                key={url}
-                                onClick={() => setModalImage(src)}
-                                className="relative w-full aspect-square overflow-hidden rounded-lg border border-gray-200 hover:shadow-sm transition-shadow"
-                                type="button"
-                            >
-                                <img
-                                    src={src}
-                                    alt="첨부 이미지"
-                                    className="w-full h-full object-cover"
-                                    onError={(e) => {
-                                        e.currentTarget.src = "";
-                                    }}
-                                />
-                            </button>
-                        );
-                    })}
-                </div>
-            )}
-
-            {/* 이미지 모달 */}
-            {modalImage && (
-                <ImageModalComponent
-                    src={modalImage}
-                    alt="첨부 이미지"
-                    onClose={() => setModalImage(null)}
-                />
+            {/* 이미지 영역 */}
+            {inquiry.imgUrls?.length > 0 && (
+                <>
+                    <hr className="border-t border-dashed border-gray-300 my-4" />
+                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
+                        {inquiry.imgUrls.map((url) => {
+                            const src = url.startsWith("http") ? url : `${API_URL}${url}`;
+                            return (
+                                <button
+                                    key={url}
+                                    onClick={() => setModalImage(src)}
+                                    className="relative w-full aspect-square overflow-hidden rounded-lg border border-gray-200 hover:shadow-sm transition-shadow"
+                                >
+                                    <img
+                                        src={src}
+                                        alt="첨부 이미지"
+                                        className="w-full h-full object-cover"
+                                        onError={(e) => {
+                                            e.currentTarget.src = "";
+                                        }}
+                                    />
+                                </button>
+                            );
+                        })}
+                    </div>
+                </>
             )}
         </div>
     );
 }
 
-export default DetailComponent
+export default DetailComponent;

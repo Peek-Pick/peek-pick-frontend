@@ -5,6 +5,7 @@ import ListComponent from "~/components/products/listComponent";
 import BottomNavComponent from "~/components/main/bottomNavComponent";
 import { getRecommendedProducts } from "~/api/products/productsAPI";
 import type { PageResponseCursor, ProductListDTO } from "~/types/products";
+import { BackButton, FloatingActionButtons } from "~/util/button/FloatingActionButtons";
 
 const STORAGE_KEY = "recommendedPageScrollY";
 
@@ -15,7 +16,6 @@ export default function RecommendedPage() {
     const isRestoredRef = useRef(false);
     const initialLoadRef = useRef(true);
 
-    // 기본 정렬 기준 (향후 UI 확장 가능)
     const [sortParam] = useState("likeCount,DESC");
     const sortKey = sortParam.split(",")[0];
 
@@ -69,7 +69,6 @@ export default function RecommendedPage() {
             const last = lastPage.content.at(-1);
             if (!last || !lastPage.hasNext) return undefined;
 
-            // ✅ null 그대로 넘김 (null이면 null 그대로 전달)
             const lastValue = sortKey === "score"
                 ? last.score
                 : last.likeCount ?? 0;
@@ -79,7 +78,6 @@ export default function RecommendedPage() {
                 lastProductId: last.productId,
             };
         },
-
         initialPageParam: undefined,
         staleTime: 5 * 60 * 1000,
     });
@@ -118,7 +116,9 @@ export default function RecommendedPage() {
                 isError={isError}
                 onItemClick={handleItemClick}
             />
-            <BottomNavComponent />
+            {/*<BottomNavComponent />*/}
+            <BackButton />
+            <FloatingActionButtons />
         </>
     );
 }

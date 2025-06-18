@@ -25,6 +25,9 @@ export default function AppLayout() {
         "/products/search": "상품 검색",
         "/products/recommended": "상품 추천",
         "/notices/list": "공지사항/이벤트",
+        "/inquiries/list": "문의사항",
+        "/inquiries/add": "문의사항",
+        "/barcode/history": "바코드 기록",
         // 다른 정적 경로가 필요하다면 여기에 추가
     };
 
@@ -52,6 +55,18 @@ export default function AppLayout() {
         // /reviews/modify/:rid 패턴 확인
         if (/^\/reviews\/modify\/\d+$/.test(location.pathname)) {
             setDynamicTitle("Edit Review");
+            return;
+        }
+
+        // /inquiries/:id 패턴 확인
+        if (/^\/inquiries\/\d+$/.test(location.pathname)) {
+            setDynamicTitle("문의사항");
+            return;
+        }
+
+        // /inquiries/:id/edit 패턴 확인
+        if (/^\/inquiries\/\d+\/edit$/.test(location.pathname)) {
+            setDynamicTitle("문의사항");
             return;
         }
 
