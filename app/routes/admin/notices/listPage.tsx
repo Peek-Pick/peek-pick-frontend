@@ -1,34 +1,85 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBullhorn } from "@fortawesome/free-solid-svg-icons";
 import type { NoticePageDTO } from "~/types/notice";
 import { fetchNotices } from "~/api/notices/adminNoticesAPI";
 import NoticeListComponent from "~/components/admin/notices/listComponent";
+import PaginationComponent from "~/components/common/PaginationComponent";
+import NoticeFilterBar from "~/components/admin/notices/noticeFilterBar";
 
 export default function ListPage() {
-    const navigate = useNavigate();
-    const [page, setPage] = useState(0); // 0-based
-    const size = 10;
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    const page = Number(searchParams.get("page") || "0");
+    const size = searchParams.get("size") || "10";
+    const keyword = searchParams.get("keyword") || "";
+    const category = searchParams.get("category") || "title";
+
+    const [selectedCategory, setSelectedCategory] = useState(category);
+
+    const handleSearch = (kw: string) => {
+        const params = new URLSearchParams();
+        params.set("page", "0");
+        params.set("size", size);
+        if (kw) params.set("keyword", kw);
+        if (selectedCategory) params.set("category", selectedCategory);
+        setSearchParams(params);
+    };
+
+    const handlePageChange = (newPage: number) => {
+        const params = new URLSearchParams(searchParams);
+        params.set("page", newPage.toString());
+        setSearchParams(params);
+    };
+
+    const queryParams = useMemo(() => ({
+        page,
+        size: Number(size),
+        keyword: keyword.trim() || undefined,
+        category,
+    }), [page, size, keyword, category]);
 
     const { data, isLoading, isError } = useQuery<NoticePageDTO>({
-        queryKey: ["adminNotices", page, size],
-        queryFn: () => fetchNotices(page, size),
+        queryKey: ["admin-notices", queryParams],
+        queryFn: () => fetchNotices(queryParams),
+        staleTime: 1000 * 60 * 10,
     });
 
-    if (isLoading)
-        return <div className="p-4 text-gray-600">불러오는 중...</div>;
-    if (isError || !data)
-        return <div className="p-4 text-red-500">공지사항을 불러오는 중 오류 발생</div>;
+    if (isLoading) return <div className="p-4 text-gray-600">불러오는 중...</div>;
+    if (isError || !data) return <div className="p-4 text-red-500">공지사항을 불러오는 중 오류 발생</div>;
 
     return (
         <div>
+            {/* 📄 타이틀 */}
+            <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                <FontAwesomeIcon icon={faBullhorn} />
+                공지사항 관리
+            </h3>
+
+            {/* 🔍 필터바 */}
+            <NoticeFilterBar
+                keyword={keyword}
+                category={selectedCategory}
+                setCategory={setSelectedCategory}
+                onSearch={handleSearch}
+            />
+
+            {/* 📋 리스트 */}
             <NoticeListComponent
                 notices={data.content}
-                page={data.number}
-                setPage={setPage}
-                size={data.size}
+                page={page}
+                size={Number(size)}
                 totalElements={data.totalElements}
+                setPage={handlePageChange}
+            />
+
+            {/* 📦 페이지네이션 */}
+            <PaginationComponent
+                currentPage={page}
+                totalPages={data.totalPages}
+                onPageChange={handlePageChange}
             />
         </div>
     );
