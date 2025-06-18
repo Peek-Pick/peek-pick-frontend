@@ -1,0 +1,70 @@
+/* 팝업의 기본 스타일을 수정 */
+.custom-popup {
+    background-color: #fff;
+    border-radius: 20px;
+    padding: 10px;
+    max-width: 400px;
+    width: 90%;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+/* 제목 스타일 */
+.custom-title {
+    font-size: 1.2rem;
+    color: #333;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+/* 본문 텍스트 스타일 */
+.custom-text {
+    font-size: 0.875rem;
+    color: #444;
+    line-height: 1.5;
+    text-align: left;
+}
+
+/* 버튼 컨테이너 */
+.custom-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+/* 확인 버튼 스타일 */
+.custom-confirm-button {
+    background-color: #34D399;
+    /* gray-700 */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.custom-confirm-button:hover {
+    background-color: #34D399;
+    /* gray-800 */
+}
+
+/* 취소 버튼 스타일 */
+.custom-cancel-button {
+    background-color: #374151;
+    /* pink-500 */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.custom-cancel-button:hover {
+    background-color: #374151;
+    /* pink-600 */
+}

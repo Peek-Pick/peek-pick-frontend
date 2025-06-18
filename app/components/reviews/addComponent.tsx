@@ -8,7 +8,7 @@ import { Rating } from "~/components/reviews/rating/rating"
 import { ReviewLoading } from "~/util/loading/reviewLoading";
 import TextareaAutosize from "react-textarea-autosize";
 import Swal from "sweetalert2"
-import '~/util/customSwal.css'
+import '~/util/swal/customSwal.css'
 
 interface AddProps {
     product?: ProductDetailDTO;
@@ -70,7 +70,7 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
                     confirmButton: 'custom-confirm-button',
                 }
             }).then(() => {
-                navigate(`/reviews/product/${product?.barcode}`);
+                navigate("/reviews/user", { replace: true , state: { from: 'reviewAdd' }});
             });
         },
         onError: () => {

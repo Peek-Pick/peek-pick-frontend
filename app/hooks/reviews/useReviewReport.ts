@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { reportReview } from "~/api/reviews/reviewAPI";
 import { useState } from "react";
 import Swal from "sweetalert2"
-import '~/util/customReportSwal.css'
+import '~/util/swal/customReportSwal.css'
 
 export enum ReportReason {
     POLITICS = "POLITICS",
