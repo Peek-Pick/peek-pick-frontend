@@ -1,19 +1,22 @@
 
 interface HeaderProps {
     backgroundProfile: string;
-    // avatarImage: string;
+    avatarImage: string;
     name: string;
     email: string;
+    onClick?: () => void;
 }
 
 const AuDetailHeaderComponent: React.FC<HeaderProps> = ({
                                            backgroundProfile,
-                                           // avatarImage,
+                                           avatarImage,
                                            name,
                                            email,
+                                           onClick,
                                        }) => {
     return (
-        <div className="relative flex flex-col items-center mb-[70px] sm:mb-[205px] md:mb-[75px] px-0">
+        <div className="relative flex flex-col items-center mb-[70px] sm:mb-[205px] md:mb-[75px] px-0"
+             onClick={onClick}>
             {/* 배경 이미지 */}
             <img
                 src="/BackgroundCard1.png"
@@ -27,7 +30,7 @@ const AuDetailHeaderComponent: React.FC<HeaderProps> = ({
             >
                 <div className="flex flex-col md:flex-row items-center text-center md:text-left w-full">
                     <img
-                        src="/basicImg.jpg"
+                        src={`http://localhost/${avatarImage}`}
                         alt="Avatar"
                         className="w-[80px] h-[80px] rounded-[15px] md:mr-[22px]"
                     />

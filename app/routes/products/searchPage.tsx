@@ -1,21 +1,74 @@
-// src/routes/products/SearchPage.tsx
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useLayoutEffect } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Icon } from "@iconify/react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import ListComponent from "~/components/products/listComponent";
 import BottomNavComponent from "~/components/main/bottomNavComponent";
-import { searchProducts } from "~/api/productsAPI";
-import type { PageResponse, ProductListDTO } from "~/types/products";
+import { searchProducts } from "~/api/products/productsAPI";
+import type { PageResponseCursor, ProductListDTO } from "~/types/products";
+import { BackButton, FloatingActionButtons } from "~/util/button/FloatingActionButtons";
+
+const STORAGE_KEY = "searchPageScrollY";
+
+function isPageReload(): boolean {
+    const entries = performance.getEntriesByType("navigation") as PerformanceNavigationTiming[];
+    const last = entries.at(-1);
+    if (last && "type" in last) return last.type === "reload";
+    return performance.navigation?.type === 1;
+}
 
 export default function SearchPage() {
-    const size = 10;
+    const size = 12;
+    const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams();
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // 1) 검색창 상태
-    const [inputValue, setInputValue] = useState("");
-    const [searchKeyword, setSearchKeyword] = useState("");
+    const scrollYRef = useRef<number>(0);
+    const isRestoredRef = useRef(false);
+    const initialLoadRef = useRef(true);
 
-    // 2) 카테고리 드롭다운 상태
+    const [showFilters, setShowFilters] = useState(true);
+    const lastScrollY = useRef(0);
+
+    useEffect(() => {
+        const onScroll = () => {
+            const y = window.scrollY;
+            setShowFilters(y <= lastScrollY.current || y < 100);
+            lastScrollY.current = y;
+        };
+        window.addEventListener("scroll", onScroll, { passive: true });
+        return () => window.removeEventListener("scroll", onScroll);
+    }, []);
+
+    useLayoutEffect(() => {
+        if ("scrollRestoration" in window.history) {
+            window.history.scrollRestoration = "manual";
+        }
+        if (initialLoadRef.current) {
+            if (isPageReload()) {
+                window.scrollTo(0, 0);
+                sessionStorage.removeItem(STORAGE_KEY);
+                isRestoredRef.current = false;
+                console.log("[SearchPage] 새로고침 감지 → scrollTo(0,0)");
+            }
+            initialLoadRef.current = false;
+        }
+        return () => {
+            if ("scrollRestoration" in window.history) {
+                window.history.scrollRestoration = "auto";
+            }
+        };
+    }, []);
+
+    const keyword = searchParams.get("keyword") ?? "";
+    const initialCategoryParam = searchParams.get("category") ?? "카테고리";
+    const initialSortParam = searchParams.get("sort") ?? "likeCount,DESC";
+
+    const [inputValue, setInputValue] = useState(keyword);
+    const [categoryLabel, setCategoryLabel] = useState(initialCategoryParam);
+    const [sortParam, setSortParam] = useState(initialSortParam);
+    const [showCategoryMenu, setShowCategoryMenu] = useState(false);
+    const [showSortMenu, setShowSortMenu] = useState(false);
+
     const categories = [
         { label: "전체", emoji: "🔥" },
         { label: "과자류", emoji: "🍪" },
@@ -29,83 +82,22 @@ export default function SearchPage() {
         { label: "도시락", emoji: "🍱" },
         { label: "안주", emoji: "🍻" },
     ] as const;
-    type CategoryType = typeof categories[number]["label"];
-    const [categoryLabel, setCategoryLabel] = useState<CategoryType>("전체");
-    const [showCategoryMenu, setShowCategoryMenu] = useState(false);
 
-    // 카테고리 드롭다운 ref
-    const categoryRef = useRef<HTMLDivElement>(null);
-
-    // 3) 정렬 드롭다운 상태
     const sortOptions = [
         { label: "좋아요 순", icon: "ri:heart-fill", param: "likeCount,DESC", color: "text-red-500" },
         { label: "별점 순", icon: "ri:star-fill", param: "score,DESC", color: "text-yellow-400" },
     ] as const;
-    type SortLabelType = typeof sortOptions[number]["label"];
-    type SortParamType = typeof sortOptions[number]["param"];
-    const [sortLabel, setSortLabel] = useState<SortLabelType>("좋아요 순");
-    const [sortParam, setSortParam] = useState<SortParamType>("likeCount,DESC");
-    const [showSortMenu, setShowSortMenu] = useState(false);
 
-    // 정렬 드롭다운 ref
-    const sortRef = useRef<HTMLDivElement>(null);
+    const displayCategoryLabel =
+        categoryLabel === "카테고리"
+            ? "카테고리"
+            : `${categories.find((c) => c.label === categoryLabel)?.emoji} ${categoryLabel}`;
 
-    // 4) 스크롤 시 “올릴 때”만 검색창+필터 바가 보이도록 제어하는 로직
-    const [showFilters, setShowFilters] = useState(true);
-    const lastScrollY = useRef(0);
-    useEffect(() => {
-        const handler = () => {
-            const currentY = window.scrollY;
-            // 스크롤을 내릴 때: showFilters = false → 숨김
-            // 스크롤을 올릴 때: showFilters = true → 보임
-            if (currentY > lastScrollY.current && currentY > 100) {
-                setShowFilters(false);
-            } else {
-                setShowFilters(true);
-            }
-            lastScrollY.current = currentY;
-        };
-        window.addEventListener("scroll", handler, { passive: true });
-        return () => window.removeEventListener("scroll", handler);
-    }, []);
+    const displaySortLabel = sortOptions.find((s) => s.param === sortParam)?.label ?? "정렬";
 
-    // 5) 화면 터치/클릭 시 드롭다운 닫기 로직
-    useEffect(() => {
-        const handleClickOutside = (ev: MouseEvent | TouchEvent) => {
-            const target = ev.target as Node;
+    const categoryForQuery = categoryLabel === "카테고리" || categoryLabel === "전체" ? undefined : categoryLabel;
+    const sortKey = sortParam.split(",")[0];
 
-            // 카테고리 메뉴가 열려 있고, 클릭/터치 대상이 카테고리 영역 밖이면 닫기
-            if (
-                showCategoryMenu &&
-                categoryRef.current &&
-                !categoryRef.current.contains(target)
-            ) {
-                setShowCategoryMenu(false);
-            }
-
-            // 정렬 메뉴가 열려 있고, 클릭/터치 대상이 정렬 영역 밖이면 닫기
-            if (
-                showSortMenu &&
-                sortRef.current &&
-                !sortRef.current.contains(target)
-            ) {
-                setShowSortMenu(false);
-            }
-        };
-
-        document.addEventListener("mousedown", handleClickOutside);
-        document.addEventListener("touchstart", handleClickOutside);
-
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-            document.removeEventListener("touchstart", handleClickOutside);
-        };
-    }, [showCategoryMenu, showSortMenu]);
-
-    // 6) 카테고리 파라미터 (전체 → 빈 문자열)
-    const categoryParam = categoryLabel === "전체" ? "" : categoryLabel;
-
-    // 7) React Query: 무한 스크롤로 검색 결과 가져오기
     const {
         data,
         fetchNextPage,
@@ -113,60 +105,83 @@ export default function SearchPage() {
         isFetchingNextPage,
         isLoading,
         isError,
-        error,
-    } = useInfiniteQuery({
-        queryKey: ["productsSearch", size, sortParam, categoryParam, searchKeyword] as const,
-        queryFn: ({ pageParam = 0 }: { pageParam?: number }) =>
-            searchProducts(
-                pageParam,
+    } = useInfiniteQuery<PageResponseCursor<ProductListDTO>, Error>({
+        queryKey: ["productsSearch", size, sortParam, categoryForQuery, keyword],
+        queryFn: async ({ pageParam }) => {
+            const last = pageParam as { lastValue?: number; lastProductId?: number } | undefined;
+            return await searchProducts(
                 size,
-                sortParam,
-                categoryParam || undefined,
-                searchKeyword || undefined
-            ),
-        enabled: searchKeyword.trim() !== "",
-        getNextPageParam: (lastPage: PageResponse<ProductListDTO>) =>
-            lastPage.number + 1 < lastPage.totalPages ? lastPage.number + 1 : undefined,
-        initialPageParam: 0,
+                last?.lastValue,
+                last?.lastProductId,
+                categoryForQuery,
+                keyword,
+                sortParam
+            );
+        },
+        enabled: keyword.trim() !== "",
+        getNextPageParam: (lastPage) => {
+            const last = lastPage.content.at(-1);
+            if (!last || !lastPage.hasNext) return undefined;
+
+            const lastValue = sortKey === "score"
+                ? last.score
+                : last.likeCount ?? 0;
+
+            return {
+                lastValue,
+                lastProductId: last.productId,
+            };
+        },
+        initialPageParam: undefined,
         staleTime: 5 * 60 * 1000,
     });
 
-    // 8) 검색 실행 함수
+    useEffect(() => {
+        if (!isRestoredRef.current && data) {
+            const raw = sessionStorage.getItem(STORAGE_KEY);
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                const y = parsed.scrollY;
+                if (y > 0) {
+                    window.scrollTo(0, y);
+                    requestAnimationFrame(() => window.scrollTo(0, y));
+                }
+                sessionStorage.removeItem(STORAGE_KEY);
+            }
+            isRestoredRef.current = true;
+        }
+    }, [data]);
+
     const handleSearch = () => {
-        const kw = inputValue.trim();
-        if (kw !== "") {
-            setSearchKeyword(kw);
+        const trimmed = inputValue.trim();
+        if (trimmed) {
+            const newParams: Record<string, string> = {
+                keyword: trimmed,
+                sort: sortParam,
+            };
+            if (categoryLabel !== "카테고리") {
+                newParams.category = categoryLabel;
+            }
+            setSearchParams(newParams);
+            window.scrollTo(0, 0);
         }
     };
 
-    // 9) 필터(카테고리/정렬) 또는 검색어가 변경되면 스크롤을 최상단으로 올려주는 로직
-    useEffect(() => {
-        window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
-    }, [searchKeyword, categoryLabel, sortParam]);
+    const handleItemClick = (barcode: string) => {
+        scrollYRef.current = window.scrollY;
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ scrollY: scrollYRef.current }));
+        navigate(`/products/${barcode}`, { state: { fromSearch: true } });
+    };
 
     return (
         <div className="min-h-screen bg-gray-50">
-            {/* ───────────────────────────────────────────────────────────────────────
-              1) 검색창 + 필터 바 전체를 묶은 컨테이너
-              - showFilters가 true일 때 화면 상단에 “translate-y-0” (보임)
-              - false일 때 “-translate-y-full” (숨김)
-              - 부드러운 애니메이션 : transition-transform duration-300 ease-in-out
-         ─────────────────────────────────────────────────────────────────────── */}
-            <div
-                className={`
-          sticky top-16 z-40 bg-white transition-transform duration-300 ease-in-out
-          ${showFilters ? "translate-y-0" : "-translate-y-full"}
-        `}
-            >
-                {/* ─────────────────────────────────────────────────────────────────────
-              1-1) 검색창 (가로로 넓게)
-           ───────────────────────────────────────────────────────────────────── */}
-                <div className="px-4 py-4">
-                    <div className="relative">
+            <div className={`sticky top-[3.625rem] z-40 transition-transform duration-300 ease-in-out ${showFilters ? "translate-y-0" : "-translate-y-full"}`}>
+                <div className="px-4 py-2 bg-transparent">
+                    <div className="relative mb-2">
                         <input
                             type="text"
                             placeholder="상품명 검색"
-                            className="w-full border rounded-lg px-4 py-2 pr-12 text-base focus:outline-none focus:ring-2 focus:ring-blue-300"
+                            className="w-full border rounded-full px-3 py-1.5 pr-12 text-base focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white"
                             value={inputValue}
                             onChange={(e) => setInputValue(e.target.value)}
                             onKeyDown={(e) => {
@@ -188,30 +203,18 @@ export default function SearchPage() {
                             <Icon icon="ri:search-line" className="w-6 h-6 text-gray-600" />
                         </button>
                     </div>
-                </div>
 
-                {/* ─────────────────────────────────────────────────────────────────────
-              1-2) 검색창 아래 필터 바 (카테고리 + 정렬)
-              - 두 블럭 사이에 구분선(border) 없음
-              - 같은 줄에 카테고리, 정렬 버튼 flex로 배치
-           ───────────────────────────────────────────────────────────────────── */}
-                <div className="px-4 pb-2">
-                    <div className="flex items-center space-x-2">
-                        {/* 카테고리 드롭다운 (flex-1으로 너비 균등) */}
-                        <div ref={categoryRef} className="relative inline-block text-left flex-1">
+                    <div className="flex space-x-2">
+                        {/* 카테고리 드롭다운 */}
+                        <div className="relative inline-block text-left flex-1">
                             <button
                                 onClick={() => {
                                     setShowCategoryMenu((v) => !v);
                                     setShowSortMenu(false);
                                 }}
-                                className="w-full flex items-center justify-between px-4 py-2 bg-white border rounded-lg hover:bg-gray-100 text-sm"
+                                className="w-full flex items-center justify-between px-3 py-1.5 bg-white border rounded-full hover:bg-gray-100 text-xs"
                             >
-                <span className="flex items-center">
-                  <span className="mr-1">
-                    {categories.find((c) => c.label === categoryLabel)?.emoji}
-                  </span>
-                  <span>{categoryLabel}</span>
-                </span>
+                                <span>{displayCategoryLabel}</span>
                                 <Icon icon="ri:arrow-down-s-line" className="w-5 h-5" />
                             </button>
                             {showCategoryMenu && (
@@ -222,10 +225,17 @@ export default function SearchPage() {
                                                 onClick={() => {
                                                     setCategoryLabel(label);
                                                     setShowCategoryMenu(false);
+                                                    const newParams: Record<string, string> = {
+                                                        keyword: inputValue.trim(),
+                                                        sort: sortParam,
+                                                    };
+                                                    if (label !== "전체") {
+                                                        newParams.category = label;
+                                                    }
+                                                    setSearchParams(newParams);
+                                                    window.scrollTo(0, 0);
                                                 }}
-                                                className={`flex items-center w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
-                                                    categoryLabel === label ? "font-bold" : ""
-                                                }`}
+                                                className={`flex items-center w-full text-left px-4 py-2 text-xs hover:bg-gray-100 ${categoryLabel === label ? "font-bold" : ""}`}
                                             >
                                                 <span className="mr-2">{emoji}</span>
                                                 <span>{label}</span>
@@ -237,21 +247,19 @@ export default function SearchPage() {
                         </div>
 
                         {/* 정렬 드롭다운 */}
-                        <div ref={sortRef} className="relative inline-block text-left flex-1">
+                        <div className="relative inline-block text-left flex-1">
                             <button
                                 onClick={() => {
                                     setShowSortMenu((v) => !v);
                                     setShowCategoryMenu(false);
                                 }}
-                                className="w-full flex items-center justify-between px-4 py-2 bg-white border rounded-lg hover:bg-gray-100 text-sm"
+                                className="w-full flex items-center justify-between px-3 py-1.5 bg-white border rounded-full hover:bg-gray-100 text-xs"
                             >
-                <span className="flex items-center">
-                  <Icon
-                      icon={sortOptions.find((s) => s.label === sortLabel)!.icon}
-                      className={`w-5 h-5 mr-1 ${sortOptions.find((s) => s.label === sortLabel)!.color}`}
-                  />
-                  <span>{sortLabel}</span>
-                </span>
+                                <span className="flex items-center">
+                                    <Icon icon={sortOptions.find((s) => s.param === sortParam)?.icon ?? "ri:heart-fill"}
+                                          className={`w-5 h-5 mr-1 ${sortOptions.find((s) => s.param === sortParam)?.color ?? "text-red-500"}`} />
+                                    <span>{displaySortLabel}</span>
+                                </span>
                                 <Icon icon="ri:arrow-down-s-line" className="w-5 h-5" />
                             </button>
                             {showSortMenu && (
@@ -260,13 +268,19 @@ export default function SearchPage() {
                                         <li key={label}>
                                             <button
                                                 onClick={() => {
-                                                    setSortLabel(label);
                                                     setSortParam(param);
                                                     setShowSortMenu(false);
+                                                    const newParams: Record<string, string> = {
+                                                        keyword: inputValue.trim(),
+                                                    };
+                                                    if (categoryLabel !== "카테고리") {
+                                                        newParams.category = categoryLabel;
+                                                    }
+                                                    newParams.sort = param;
+                                                    setSearchParams(newParams);
+                                                    window.scrollTo(0, 0);
                                                 }}
-                                                className={`flex items-center w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
-                                                    sortLabel === label ? "font-bold" : ""
-                                                }`}
+                                                className={`flex items-center w-full text-left px-4 py-2 text-xs hover:bg-gray-100 ${sortParam === param ? "font-bold" : ""}`}
                                             >
                                                 <Icon icon={icon} className={`w-5 h-5 mr-2 ${color}`} />
                                                 <span>{label}</span>
@@ -280,32 +294,21 @@ export default function SearchPage() {
                 </div>
             </div>
 
-            {/* ───────────────────────────────────────────────────────────────────────
-            2) 로딩 / 에러 표시
-         ─────────────────────────────────────────────────────────────────────── */}
-            {isLoading && <div className="p-4 text-center">불러오는 중…</div>}
-            {isError && (
-                <div className="p-4 text-center text-red-500">
-                    에러: {(error as Error).message}
-                </div>
-            )}
-
-            {/* ───────────────────────────────────────────────────────────────────────
-            3) 검색 결과 리스트 (ListComponent)
-         ─────────────────────────────────────────────────────────────────────── */}
-            {data && (
+            {keyword.trim() !== "" && (
                 <ListComponent
-                    products={data.pages.flatMap((pg) => pg.content)}
+                    products={data ? data.pages.flatMap((pg) => pg.content) : []}
                     fetchNextPage={fetchNextPage}
                     hasNextPage={hasNextPage}
                     isFetchingNextPage={isFetchingNextPage}
+                    isLoading={isLoading}
+                    isError={isError}
+                    onItemClick={handleItemClick}
                 />
             )}
 
-            {/* ───────────────────────────────────────────────────────────────────────
-            4) 하단 네비게이션
-         ─────────────────────────────────────────────────────────────────────── */}
-            <BottomNavComponent />
+            {/*<BottomNavComponent />*/}
+            <BackButton />
+            <FloatingActionButtons />
         </div>
     );
 }

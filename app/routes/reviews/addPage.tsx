@@ -1,7 +1,7 @@
 import { useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import AddComponent from "~/components/reviews/addComponent";
-import { getProductDetail } from "~/api/productsAPI"
+import { getProductDetail } from "~/api/products/productsAPI"
 
 function AddPage() {
     const { barcode } = useParams()
@@ -11,7 +11,6 @@ function AddPage() {
         queryKey: ["productDetail", barcode],
         queryFn: () => getProductDetail(barcode!)
     });
-    console.log(productDetail)
 
     return (
         <div>

@@ -1,19 +1,27 @@
 import { useState } from 'react';
 import { FaCamera } from 'react-icons/fa';
 import { useTagSelector } from '~/hooks/tags/useTagSelector';
-import { useGetProfile } from '~/hooks/users/useGetProfile';
 import { usePasswordChange } from '~/hooks/users/usePasswordChange';
 import { useProfileImageUpload } from '~/hooks/users/useProfileImageUpload';
 import { PasswordChangeSection } from '~/components/users/passwordChangeSection'
-import { useNicknameChange } from '~/hooks/users/useNicknameChange';
+import { useNicknameChecker } from '~/hooks/users/useNicknameChecker';
 import { useMyPageEdit } from '~/hooks/users/useMyPageEdit';
+import {getCountryName} from "~/util/countryUtils";
+import type {ProfileReadDTO} from "~/types/users";
 
-export default function MyPageEditComponent() {
+interface EditProps {
+    profile: ProfileReadDTO;
+}
 
-    const { data: profile, loading, error } = useGetProfile()
+export default function MyPageEditComponent({profile}: EditProps) {
+
     const { selectedTags, toggleTag, groupedTags } = useTagSelector(profile.tagIdList);
     const passwordChange = usePasswordChange();
-    const {newNickname, setNewNickname, nicknameError, nicknameStatus, checkNickname,} = useNicknameChange();
+    // const {newNickname, setNewNickname, nicknameError, nicknameStatus, checkNickname,} = useNicknameChange();
+
+    const [newNickname, setNewNickname] = useState("")
+    const {isChecking, isAvailable, error:nicknameError} = useNicknameChecker(newNickname);
+
     const {handleSubmit: save} = useMyPageEdit();
 
     const [showAllTags, setShowAllTags] = useState(false);
@@ -21,11 +29,6 @@ export default function MyPageEditComponent() {
     const isSocial = profile.isSocial; // API에서 받아올 값
 
     const { file, handleFileChange, previewUrl} = useProfileImageUpload(`/${profile.profileImgUrl}`);
-
-    if (loading) return <p>로딩 중...!</p>;
-    if (error) return <p>에러 발생: {error}</p>;
-    if (!profile) return null;
-
 
     return (
         <div className="relative mb-8 max-w-2xl mx-auto">
@@ -96,18 +99,24 @@ export default function MyPageEditComponent() {
                                 onChange={(e) => setNewNickname(e.target.value)}
                             />
                             <div className="mt-3 flex items-center gap-2">
-                                <button
-                                    onClick={checkNickname}
-                                    className="text-sm text-emerald-600 hover:underline"
-                                >
-                                    Check &gt;
-                                </button>
-                                
-                                {nicknameStatus === 'success' && (
-                                    <p className="text-sm text-emerald-600">Nickname is available.</p>
-                                )}
-                                {nicknameStatus === 'fail' && (
-                                    <p className="text-sm text-red-500">{nicknameError}</p>
+                                {/*<button*/}
+                                {/*    onClick={isChecking}*/}
+                                {/*    className="text-sm text-emerald-600 hover:underline"*/}
+                                {/*>*/}
+                                {/*    Check &gt;*/}
+                                {/*</button>*/}
+                                {newNickname !== profile.nickname && (
+                                    <>
+                                        {isChecking && (
+                                            <p className="text-gray-500 text-sm mt-1">Checking...</p>
+                                        )}
+                                        {nicknameError && (
+                                            <p className="text-red-500 text-sm mt-1 ml-1">{nicknameError}</p>
+                                        )}
+                                        {isAvailable && !nicknameError && (
+                                            <p className="text-green-500 text-sm mt-1 ml-1">The nickname is available.</p>
+                                        )}
+                                    </>
                                 )}
                             </div>
                         </div>
@@ -125,7 +134,7 @@ export default function MyPageEditComponent() {
                             <label className="text-sm font-medium text-gray-600">Nationality</label>
                             <input
                                 type="text"
-                                value={profile.nationality}
+                                value={getCountryName(profile.nationality)}
                                 disabled
                                 className="w-full bg-gray-100 border rounded px-4 py-2 cursor-not-allowed"
                             />

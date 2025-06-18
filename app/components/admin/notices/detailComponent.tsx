@@ -1,97 +1,106 @@
 // src/components/admin/notices/detailComponent.tsx
 
-import type { NoticeResponseDto } from "~/types/notice";
-import { deleteNotice } from "~/api/noticeAPI";
 import { Link } from "react-router-dom";
+import type { NoticeResponseDto } from "~/types/notice";
 
-// VITE_API_URL에서 "/api/v1" 부분을 제거하여 실제 정적 파일 호스트만 남깁니다.
-const rawApi = import.meta.env.VITE_API_URL ?? "http://localhost:8080/api/v1";
+// VITE_API_URL에서 "/api/v1" 제거하여 정적 파일 호스트만 남깁니다.
+const rawApi =
+    import.meta.env.VITE_API_URL ?? "http://localhost:8080/api/v1";
 const API_URL = rawApi
     .replace("http://localhost:8080/api/v1", "http://localhost")
     .replace("https://localhost:8080/api/v1", "https://localhost");
 
 interface Props {
     notice: NoticeResponseDto;
-    navigate: (to: string) => void;
 }
 
-export default function DetailComponent({ notice, navigate }: Props) {
-    const handleDelete = async () => {
-        const ok = confirm("정말 삭제하시겠습니까?");
-        if (!ok) return;
-        await deleteNotice(notice.noticeId);
-        navigate("/admin/notices/list");
-    };
+export default function NoticeDetailComponent({ notice }: Props) {
+    const formattedDate = new Date(notice.regDate).toLocaleString();
 
-    const handleEdit = () => {
-        navigate(`/admin/notices/${notice.noticeId}/edit`);
-    };
+    const infoBlocks = [
+        { label: "제목", value: notice.title, isContent: false },
+        { label: "DATE", value: formattedDate, isContent: false },
+        { label: "내용", value: notice.content, isContent: true },
+    ];
 
     return (
-        <div className="space-y-4">
-            <h1 className="text-2xl font-bold">{notice.title}</h1>
-            <p className="text-sm text-gray-600">
-                등록: {new Date(notice.regDate).toLocaleString()} | 수정:{" "}
-                {new Date(notice.modDate).toLocaleString()}
-            </p>
-            <p>{notice.content}</p>
+        <>
+            {/* 고정 헤더 */}
+            <h2 className="text-xl font-bold mb-6 border-b pb-2">
+                공지사항
+            </h2>
 
-            {Array.isArray(notice.imgUrls) && notice.imgUrls.length > 0 && (
-                <div className="flex flex-col space-y-4">
-                    {notice.imgUrls
-                        .filter((url): url is string => typeof url === "string" && url.trim() !== "")
-                        .map((url) => {
-                            const fullUrl = url.startsWith("http") ? url : `${API_URL}${url}`;
-                            return (
-                                <div
-                                    key={url}
-                                    className="flex justify-center"
-                                    style={{ width: "100%" }}
-                                >
-                                    <a
-                                        href={fullUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="block"
-                                    >
-                                        <img
-                                            src={fullUrl}
-                                            alt="첨부 이미지"
-                                            style={{
-                                                maxWidth: "80%",
-                                                height: "auto",
-                                            }}
-                                            onError={(e) => {
-                                                e.currentTarget.src = "";
-                                            }}
-                                        />
-                                    </a>
-                                </div>
-                            );
-                        })}
-                </div>
-            )}
+            {/* 제목 / 날짜 / 내용(이미지+텍스트) 카드 */}
+            <div className="flex flex-col gap-6 mb-6 w-full">
+                {infoBlocks.map(({ label, value, isContent }, i) => (
+                    <div
+                        key={i}
+                        className="bg-white rounded-lg p-5 shadow-sm border border-gray-100 w-full"
+                        style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}
+                    >
+                        <h3 className="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wide">
+                            {label}
+                        </h3>
 
-            <div className="space-x-2">
-                <button
-                    onClick={handleEdit}
-                    className="px-4 py-2 bg-blue-600 text-white rounded"
+                        {isContent ? (
+                            <div className="space-y-4">
+                                {/* 이미지 먼저 */}
+                                {Array.isArray(notice.imgUrls) &&
+                                    notice.imgUrls
+                                        .filter((url): url is string =>
+                                            typeof url === "string" && url.trim() !== ""
+                                        )
+                                        .map((url) => {
+                                            const fullUrl = url.startsWith("http")
+                                                ? url
+                                                : `${API_URL}${url}`;
+                                            return (
+                                                <div
+                                                    key={url}
+                                                    className="flex justify-center"
+                                                >
+                                                    <img
+                                                        src={fullUrl}
+                                                        alt="공지 이미지"
+                                                        className="max-w-full h-auto rounded"
+                                                        style={{ maxWidth: "80%" }}
+                                                        onError={(e) => {
+                                                            e.currentTarget.src = "";
+                                                        }}
+                                                    />
+                                                </div>
+                                            );
+                                        })}
+
+                                {/* 그 아래 텍스트 */}
+                                <p className="text-gray-900 whitespace-pre-line leading-relaxed" style={{ fontSize: "0.9rem" }}>
+                                    {value}
+                                </p>
+                            </div>
+                        ) : (
+                            <p className="text-gray-900 font-medium">
+                                {value}
+                            </p>
+                        )}
+                    </div>
+                ))}
+            </div>
+
+            {/* 액션 버튼 */}
+            <div className="mt-8 flex gap-3 justify-end">
+                <Link
+                    to={`/admin/notices/${notice.noticeId}/edit`}
+                    className="flex items-center gap-1 rounded-md border border-blue-600 bg-white px-4 py-2 text-sm font-medium text-blue-600 shadow-sm hover:bg-blue-100 hover:text-blue-800 transition"
                 >
                     수정
-                </button>
-                <button
-                    onClick={handleDelete}
-                    className="px-4 py-2 bg-red-600 text-white rounded"
+                </Link>
+                <Link
+                    to="/admin/notices/list"
+                    className="flex items-center gap-1 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-100 hover:text-gray-800 transition"
                 >
-                    삭제
-                </button>
-            </div>
-
-            <div>
-                <Link to="/admin/notices/list" className="text-gray-600">
-                    ← 목록으로
+                    목록으로
                 </Link>
             </div>
-        </div>
+        </>
     );
 }

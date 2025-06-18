@@ -1,52 +1,53 @@
-// app/routes/products/detailPage.tsx
-//
+import { useLayoutEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import DetailComponent from "~/components/products/detailComponent";
-import { getProductDetail } from "~/api/productsAPI";
-import PreviewComponent from "~/components/reviews/previewComponent"
-import type { ProductDetailDTO } from "~/types/products";
+import PreviewComponent from "~/components/reviews/previewComponent";
 import BottomNavComponent from "~/components/main/bottomNavComponent";
+import { getProductDetail } from "~/api/products/productsAPI";
+import type { ProductDetailDTO } from "~/types/products";
+import { BackButton, FloatingActionButtons } from "~/util/button/FloatingActionButtons";
+
+const SCROLL_KEY = "rankingPageScrollY";
 
 export default function DetailPage() {
-    // URL 파라미터에서 barcode 읽기
     const { barcode } = useParams<{ barcode: string }>();
 
-    // ───────────────────────────────────────────────────────────────
-    // useQuery를 object syntax로 호출
-    // ───────────────────────────────────────────────────────────────
+    // 🚩 빈 배열로 마운트 시 무조건 실행 → F5 리로드 감지하여 스크롤 세션 삭제
+    useLayoutEffect(() => {
+        const entries = performance.getEntriesByType("navigation") as PerformanceNavigationTiming[];
+        if (entries.at(-1)?.type === "reload") {
+            sessionStorage.removeItem(SCROLL_KEY);
+        }
+    }, []);
 
     const {
-        data,         // ProductDetailDTO | undefined
+        data,
         isLoading,
         isError,
-        error,
     } = useQuery<ProductDetailDTO, Error>({
         queryKey: ["productDetail", barcode],
         queryFn: () => getProductDetail(barcode!),
-        enabled: Boolean(barcode),        // barcode가 있을 때만 실행
-        staleTime: 5 * 60 * 1000,         // 5분
+        enabled: Boolean(barcode),
+        staleTime: 5 * 60 * 1000,
     });
 
-    // 로딩·에러 처리
-    if (isLoading) {
-        return <div className="p-4 text-center">로딩 중…</div>;
-    }
-    if (isError || !data) {
-        return (
-            <div className="p-4 text-center text-red-500">
-                오류 발생: {error?.message ?? "상품을 불러올 수 없습니다."}
-            </div>
-        );
-    }
-
-    // data가 ProductDetailDTO로 정확히 인식되므로 TS2739 에러 없음
     return (
         <>
-            <DetailComponent product={data} />
-            <PreviewComponent barcode={barcode!} reviewNum={data.reviewCount!}></PreviewComponent>
-
-            <BottomNavComponent/>
+            <DetailComponent
+                product={data}
+                isLoading={isLoading}
+                isError={isError}
+            />
+            {data && (
+                <PreviewComponent
+                    barcode={barcode!}
+                    reviewNum={data.reviewCount!}
+                />
+            )}
+            {/*<BottomNavComponent />*/}
+            <BackButton />
+            <FloatingActionButtons />
         </>
     );
 }

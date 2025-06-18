@@ -1,107 +1,115 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchInquiries, deleteInquiry } from "~/api/inquiriesAPI";
-import type { InquiryResponseDTO } from "~/types/inquiries";
-import PaginationComponent from "~/components/common/PaginationComponent";
-import LoadingComponent from "../common/loadingComponent";
+import { MessageSquare, Check, Hourglass } from "lucide-react";
+import { INQUIRY_TYPES } from "~/enums/inquiries/inquiry";
 
-export default function ListComponent() {
-    const [items, setItems] = useState<InquiryResponseDTO[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [page, setPage] = useState(0); // 0-based index
-    const size = 10;
-    const [totalElements, setTotalElements] = useState(0);
+interface ListComponentProps {
+    items: InquiryResponseDTO[];
+    currentPage: number;
+    pageSize: number;
+    totalCount: number;
+}
 
+function ListComponent({ items, currentPage, pageSize, totalCount }: ListComponentProps) {
     const nav = useNavigate();
-
-    const fetchData = async () => {
-        setLoading(true);
-        try {
-            const res = await fetchInquiries(page, size); // 0-based API 처리
-            setItems(res.data.content || []);
-            setTotalElements(res.data.totalElements || 0);
-        } catch (err) {
-            console.error("데이터 조회 실패:", err);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchData();
-    }, [page]);
-
-    const handleDelete = async (id: number) => {
-        if (!confirm("삭제하시겠습니까?")) return;
-        try {
-            await deleteInquiry(id);
-            fetchData();
-        } catch (err) {
-            console.error("삭제 실패:", err);
-        }
-    };
-
-    const handleEdit = (id: number) => {
-        nav(`/inquiries/${id}/edit`);
-    };
 
     const handleDetail = (id: number) => {
         nav(`/inquiries/${id}`);
     };
 
-    if (loading) return <LoadingComponent isLoading={true} />;
+    const handleAdd = () => {
+        nav("/inquiries/add");
+    };
+
+    const formatDate = (iso: string) => {
+        const d = new Date(iso);
+        const now = new Date();
+        const pad = (n: number) => n.toString().padStart(2, "0");
+        const isToday = d.toDateString() === now.toDateString();
+        return isToday
+            ? `${pad(d.getHours())}:${pad(d.getMinutes())}`
+            : `${d.getFullYear().toString().slice(-2)}.${pad(d.getMonth() + 1)}.${pad(d.getDate())}`;
+    };
 
     return (
-        <div>
-            <button
-                onClick={() => nav("/inquiries/add")}
-                className="mb-4 px-4 py-2 bg-green-600 text-white rounded"
-            >
-                문의 추가
-            </button>
+        <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow px-4 pt-4 pb-6 relative space-y-4">
+            <div className="flex justify-between items-center mb-4 mt-1.5">
+                <h2 className="flex items-center gap-1 text-xl font-bold text-yellow-600 select-none leading-none">
+                    <MessageSquare className="w-6 h-6 leading-none ml-1.5 mt-1.5" />
+                    <span className="leading-none text-black ml-1.5">Q&A</span>
+                </h2>
+                <button
+                    onClick={handleAdd}
+                    className="px-4 py-2 rounded-md bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-semibold shadow-sm border border-white transition"
+                >
+                    + 문의하기
+                </button>
+            </div>
 
             {items.length === 0 ? (
-                <p className="text-center text-gray-500">문의사항이 없습니다.</p>
+                <div className="py-20 text-center text-yellow-300 text-base select-none">
+                    작성한 문의사항이 없습니다.
+                </div>
             ) : (
-                <ul className="space-y-2">
-                    {[...items]
-                        .sort((a, b) => new Date(b.regDate).getTime() - new Date(a.regDate).getTime())
-                        .map((item) => (
+                <ul className="flex flex-col gap-5">
+                    {items.map((item, index) => {
+                        const typeLabel = INQUIRY_TYPES.find((t) => t.value === item.type)?.label ?? item.type;
+                        const isAnswered = item.status === "ANSWERED";
+                        const statusLabel = isAnswered ? "답변 완료" : "답변 대기";
+
+                        const reversedIndex = totalCount - ((currentPage - 1) * pageSize + index);
+
+                        return (
                             <li
                                 key={item.inquiryId}
-                                className="flex justify-between items-center p-3 border rounded hover:bg-gray-50"
+                                onClick={() => handleDetail(item.inquiryId)}
+                                className="flex gap-4 p-4 rounded-lg bg-white shadow-sm hover:shadow-md cursor-pointer border border-black/10 transition"
                             >
-                                <div
-                                    className="flex-1 cursor-pointer font-medium text-blue-600"
-                                    onClick={() => handleDetail(item.inquiryId)}
-                                >
-                                    {item.title}
+                                {/* 인덱스 큰 숫자 */}
+                                <div className="flex-shrink-0 w-8 flex items-center justify-center text-yellow-500 font-extrabold text-xl select-none">
+                                    {reversedIndex}
                                 </div>
-                                <div className="space-x-2">
-                                    <button
-                                        onClick={() => handleEdit(item.inquiryId)}
-                                        className="px-2 py-1 text-sm bg-blue-500 text-white rounded"
-                                    >
-                                        수정
-                                    </button>
-                                    <button
-                                        onClick={() => handleDelete(item.inquiryId)}
-                                        className="px-2 py-1 text-sm bg-red-500 text-white rounded"
-                                    >
-                                        삭제
-                                    </button>
+
+                                {/* 컨텐츠 영역 */}
+                                <div className="flex flex-col flex-grow">
+                                    {/* [type] 레이블 */}
+                                    <div className="text-sm font-semibold text-yellow-500 mb-1 select-none">
+                                        [{typeLabel}]
+                                    </div>
+
+                                    {/* 내용 */}
+                                    {item.content && (
+                                        <div className="text-base text-black line-clamp-1 mb-4 select-text">
+                                            {item.content}
+                                        </div>
+                                    )}
+
+                                    {/* 작성일 및 상태 */}
+                                    <div className="flex justify-between items-center text-xs select-none">
+                                        <div className="text-gray-500">작성일: {formatDate(item.regDate)}</div>
+
+                                        <div
+                                            className={`inline-flex items-center gap-1 rounded-full px-3 py-1 font-semibold transition-colors ${
+                                                isAnswered
+                                                    ? "bg-yellow-400 hover:bg-yellow-500 text-white"
+                                                    : "bg-gray-100 hover:bg-gray-200 text-gray-500"
+                                            }`}
+                                        >
+                                            {isAnswered ? (
+                                                <Check className="w-4 h-4" />
+                                            ) : (
+                                                <Hourglass className="w-4 h-4" />
+                                            )}
+                                            {statusLabel}
+                                        </div>
+                                    </div>
                                 </div>
                             </li>
-                        ))}
+                        );
+                    })}
                 </ul>
             )}
-
-            <PaginationComponent
-                currentPage={page}
-                totalPages={Math.ceil(totalElements / size)}
-                onPageChange={setPage}
-                maxPageButtons={10}
-            />
         </div>
     );
 }
+
+export default ListComponent;

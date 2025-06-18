@@ -10,10 +10,16 @@ export interface ProductListDTO {
     likeCount?: number | null;
     reviewCount?: number | null;
     score?: number | null;
+    /** soft-delete 여부 */
+    isDelete?: boolean | null;
+    rank?: number;
+
+    /** 커서 기반 페이징용 필드 (favoritesPage.tsx 등에서 사용) */
+    modDate?: string;
 }
 
 /**
- * 페이지네이션 응답 공통 타입
+ * 페이지네이션 응답 공통 타입 (Offset 방식)
  */
 export interface PageResponse<T> {
     content: T[];
@@ -21,6 +27,14 @@ export interface PageResponse<T> {
     totalPages: number;
     size: number;
     number: number;
+}
+
+/**
+ * 커서 기반 응답 타입 (hasNext만 포함)
+ */
+export interface PageResponseCursor<T> {
+    content: T[];
+    hasNext: boolean;
 }
 
 /**
@@ -36,7 +50,7 @@ export interface ProductDetailDTO {
     /** 카테고리 */
     category?: string | null;
     /** 상품 설명 (세부정보) */
-    description?: string | null;    // ← 추가
+    description?: string | null;
     /** 용량 */
     volume?: string | null;
     /** 이미지 URL */
@@ -55,4 +69,6 @@ export interface ProductDetailDTO {
     score?: number | null;
     /** 로그인 사용자 좋아요 여부 */
     isLiked?: boolean | null;
+    /** soft-delete 여부 */
+    isDelete?: boolean | null;
 }

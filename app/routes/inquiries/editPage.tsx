@@ -1,60 +1,82 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import type {
-    InquiryResponseDTO,
-    InquiryRequestDTO,
-} from "~/types/inquiries";
-import { fetchInquiry, updateInquiry, uploadImages } from "~/api/inquiriesAPI";
+import { fetchInquiry, uploadImages } from "~/api/inquiriesAPI";
 import LoadingComponent from "~/components/common/loadingComponent";
 import EditComponent from "~/components/inquiries/editComponent";
+import BottomNavComponent from "~/components/main/bottomNavComponent";
+import ModalComponent from "~/components/common/modalComponent";
+import {useUpdateInquiry} from "~/hooks/inquiries/useInquiryMutation";
+import {BackButton, FloatingActionButtons} from "~/util/button/FloatingActionButtons";
 
 function EditPage() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const [data, setData] = useState<InquiryResponseDTO | null>(null);
     const [loading, setLoading] = useState(true);
+    const [showAuthModal, setShowAuthModal] = useState(false);
+    const updateInquiryMutation = useUpdateInquiry();
 
     useEffect(() => {
         if (!id) return;
         fetchInquiry(+id)
-            .then((res) => {
-                setData(res.data);
-            })
+            .then((res) => setData(res.data))
             .catch((err) => {
                 console.error("문의 조회 중 오류:", err);
-                // 필요 시 에러 화면 처리
+                if (err.response?.status === 500) {
+                    setShowAuthModal(true);
+                }
             })
             .finally(() => {
                 setLoading(false);
             });
     }, [id]);
 
-    async function handleSubmit(dto: InquiryRequestDTO, files: FileList | null) {
+    const handleSubmit = async (dto: InquiryRequestDTO, files: FileList | null) => {
         if (!id) return;
         setLoading(true);
         try {
-            // 텍스트 + 기존 imgUrls만 서버로 보냄
-            await updateInquiry(+id, dto);
-
-            // 새로 선택된 파일이 있으면 업로드
+            await updateInquiryMutation.mutateAsync({ id: +id, data: dto });
             if (files && files.length > 0) {
                 await uploadImages(+id, files);
             }
-
-            navigate("/inquiries/list");
-        } catch (err) {
+            navigate(`/inquiries/${id}`);
+        } catch (err: any) {
             console.error("문의 수정 중 오류:", err);
-            alert("문의 수정에 실패했습니다.");
+            if (err.response?.status === 500) {
+                setShowAuthModal(true);
+            } else {
+                alert("문의 수정에 실패했습니다.");
+            }
         } finally {
             setLoading(false);
         }
-    }
+    };
 
-    if (loading || !data) {
+    const handleModalClose = () => {
+        setShowAuthModal(false);
+        navigate(-1);
+    };
+
+    if (loading || (!data && !showAuthModal)) {
         return <LoadingComponent isLoading={true} />;
     }
 
-    return <EditComponent initialData={data} onSubmit={handleSubmit} />;
+    return (
+        <div>
+            {data && <EditComponent initialData={data} onSubmit={handleSubmit} />}
+
+            <div className="h-15" />
+            <BackButton />
+            <FloatingActionButtons />
+
+            {showAuthModal && (
+                <ModalComponent
+                    message={"권한이 없습니다."}
+                    onClose={handleModalClose}
+                />
+            )}
+        </div>
+    );
 }
 
 export default EditPage;

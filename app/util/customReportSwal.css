@@ -1,0 +1,86 @@
+/* 팝업의 기본 스타일을 수정 */
+.custom-popup {
+    background-color: #fff;
+    border-radius: 20px;
+    padding: 15px;
+    max-width: 400px;
+    width: 90%;
+    overflow-y: auto;
+    text-align: left;
+}
+
+/* 제목 스타일 */
+.custom-title {
+    font-size: 1.5rem;
+    color: #333;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* 버튼 컨테이너 */
+.custom-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+/* 확인 버튼 스타일 */
+.custom-confirm-button {
+    background-color: #34D399;
+    /* gray-700 */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.custom-confirm-button:hover {
+    background-color: #34D399;
+    /* gray-800 */
+}
+
+/* 취소 버튼 스타일 */
+.custom-cancel-button {
+    background-color: #374151;
+    /* pink-500 */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.custom-cancel-button:hover {
+    background-color: #374151;
+    /* pink-600 */
+}
+
+/* 라디오 버튼 전체 컨테이너: 세로 정렬 + 왼쪽 정렬 */
+.swal2-radio {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 10px;
+    text-align: left;
+    width: 100%;
+}
+
+/* 라벨 스타일: 줄바꿈 허용 + 전체 너비 정렬 */
+.swal2-radio label {
+    font-size: 1.1rem;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    user-select: none;
+    width: 100%;
+    word-break: break-word;
+    white-space: normal;
+}

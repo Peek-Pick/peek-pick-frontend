@@ -1,7 +1,7 @@
 import ProductListComponent from "~/components/reviews/productListComponent";
 import {useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
-import { getProductDetail } from "~/api/productsAPI"
+import { getProductDetail } from "~/api/products/productsAPI"
 import { getProductReviews, getProductIdByBarcode } from "~/api/reviews/reviewAPI";
 import { useState, useEffect } from "react";
 
@@ -20,7 +20,6 @@ function ProductListPage() {
         getProductIdByBarcode(barcode)
             .then((response) => {
                 setProductId(Number(response.data));
-                console.log(response.data)
             })
     }, [barcode]);
 
@@ -44,7 +43,6 @@ function ProductListPage() {
         initialPageParam: 0,
         enabled: productId !== null,
         getNextPageParam: (lastPage) => {
-            console.log(lastPage)
             const currentPage = lastPage.data.pageable.pageNumber;
             const isLast = lastPage.data.last;
             return isLast ? undefined : currentPage + 1;
@@ -54,17 +52,16 @@ function ProductListPage() {
     const allReviews = data?.pages.flatMap((page) => page.data.content) ?? [];
 
     // 상품 정보 productDetail 가져오기
-    const {data: productDetail} = useQuery({
-        queryKey: ["productDetail", barcode],
+    const {data: productData, isLoading: productLoading, isError: productError} = useQuery({
+        queryKey: ["productData", barcode],
         queryFn: () => getProductDetail(barcode!)
     });
-    console.log(productDetail)
 
     return (
         <div>
             <ProductListComponent
                 productId={Number(productId)}
-                productDetail={productDetail}
+                productData={productData}
                 reviewList={allReviews}
                 fetchNextPage={fetchNextPage}
                 hasNextPage={hasNextPage}
@@ -73,6 +70,8 @@ function ProductListPage() {
                 isError={isError}
                 sortType={sortType}
                 setSortType={setSortType}
+                productLoading={productLoading}
+                productError={productError}
             />
         </div>
     );
