@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import type { ViewHistoryResponseDTO } from "~/types/viewHistory";
-import { getBarcodeHistory } from "~/api/barcodeAPI";
+import { getBarcodeHistory } from "~/api/barcode/barcodeAPI";
 import { useNavigate } from "react-router-dom";
 import LoadingComponent from "~/components/common/loadingComponent";
+import {ReceiptText} from "lucide-react";
 
 function BarcodeHistoryComponent() {
     const [history, setHistory] = useState<ViewHistoryResponseDTO[]>([]);
@@ -36,50 +37,89 @@ function BarcodeHistoryComponent() {
     if (loading) {
         return <LoadingComponent isLoading={true} />;
     }
-    if (history.length === 0) return <div className="p-4">바코드 조회 이력이 없습니다.</div>;
+
+    if (history.length === 0) {
+        return <div className="p-4 text-center text-gray-400 text-sm">바코드 조회 이력이 없습니다.</div>;
+    }
+
+    const total = history.length;
+
+    const formatDateTime = (dateStr: string) => {
+        const date = new Date(dateStr);
+        return date.toLocaleString("ko-KR", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+        }).replace(/\. /g, ".").replace(".", ". ");
+    };
 
     return (
-        <div className="p-4 space-y-4">
-            <h2 className="text-xl font-semibold">최근 바코드 조회 내역</h2>
+        <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow px-4 pt-4 pb-6 space-y-6">
+            {/* 타이틀과 로고 */}
+            <div className="flex items-center gap-2">
+                <ReceiptText className="w-6 h-6 text-yellow-500" />
+                <h2 className="text-xl font-semibold">Recent Barcode History</h2>
+            </div>
+
             <ul className="space-y-4">
-                {history.map((item) => (
-                    <li
-                        key={item.viewId}
-                        className="flex flex-col md:flex-row md:items-center justify-between border p-4 rounded shadow-sm gap-4"
-                    >
-                        <div className="flex items-center gap-4 cursor-pointer" onClick={() => handleDetail(item.barcode)}>
-                            <img
-                                src={item.productImageUrl}
-                                alt={item.productName}
-                                className="w-16 h-16 object-cover rounded"
-                            />
-                            <div>
-                                <p className="font-semibold">{item.productName}</p>
-                                <p className="text-sm text-gray-600">
-                                    조회일시: {new Date(item.regDate).toLocaleString()}
-                                </p>
+                {history.map((item, idx) => {
+                    const reversedIndex = total - idx;
+
+                    return (
+                        <li
+                            key={item.viewId}
+                            className="flex rounded-lg shadow-sm border border-gray-200 overflow-hidden"
+                        >
+                            {/* 인덱스 */}
+                            <div className="flex-shrink-0 w-14 bg-white flex items-center justify-center text-yellow-500 font-extrabold text-xl select-none">
+                                {reversedIndex}
                             </div>
-                        </div>
-                        <div>
-                            {item.isReview ? (
-                                <button
-                                    className="bg-gray-300 text-gray-600 cursor-not-allowed px-4 py-2 rounded mt-2 md:mt-0"
-                                    disabled
+
+                            {/* 내용 */}
+                            <div className="flex-1 p-3 flex flex-col gap-2">
+                                <div
+                                    className="flex items-center gap-3 cursor-pointer"
+                                    onClick={() => handleDetail(item.barcode)}
                                 >
-                                    이미 리뷰를 작성하였습니다
-                                </button>
-                            ) : (
-                                <button
-                                    className="bg-blue-500 text-white hover:bg-blue-600 px-4 py-2 rounded mt-2 md:mt-0"
-                                    onClick={() => handleReview(item.barcode)}
-                                >
-                                    리뷰쓰기
-                                </button>
-                            )}
-                        </div>
-                    </li>
-                ))}
+                                    <img
+                                        src={item.productImageUrl}
+                                        alt={item.productName}
+                                        className="w-14 h-14 object-cover rounded-md"
+                                    />
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm text-black font-bold truncate">{item.productName}</p>
+                                        <p className="text-xs text-gray-600">{formatDateTime(item.regDate)}</p>
+                                    </div>
+                                </div>
+
+                                {item.isReview ? (
+                                    <button
+                                        className="bg-gray-200 text-gray-600 px-4 py-2 rounded w-full text-sm font-semibold border border-gray-200 cursor-not-allowed"
+                                        disabled
+                                    >
+                                        이미 리뷰를 작성하셨습니다
+                                    </button>
+                                ) : (
+                                    <button
+                                        className="bg-yellow-400 text-gray-800 hover:bg-yellow-400 px-4 py-2 rounded w-full text-sm font-semibold border border-white"
+                                        onClick={() => handleReview(item.barcode)}
+                                    >
+                                        리뷰 작성
+                                    </button>
+                                )}
+                            </div>
+                        </li>
+                    );
+                })}
             </ul>
+
+            {/* 안내 문구: 왼쪽 정렬 */}
+            <div className="mt-3 px-3 py-3 bg-gray-100 text-gray-600 rounded text-xs leading-tight text-left">
+                최근 조회된 상품은 바코드를 조회한 상품에 대하여 최대 20개까지 자동 저장됩니다.
+            </div>
         </div>
     );
 }

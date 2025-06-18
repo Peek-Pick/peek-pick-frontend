@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { type FormEvent, useState } from "react";
 import LoadingComponent from "~/components/common/loadingComponent";
-import { getAdminToken } from "~/api/authAPI";
+import { getAdminToken } from "~/api/auth/authAPI";
 
 function LoginComponent() {
     const navigate = useNavigate();

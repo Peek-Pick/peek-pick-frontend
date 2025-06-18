@@ -3,8 +3,8 @@ import {
     createInquiry, createInquiryAnswer,
     deleteInquiry, deleteInquiryAnswer,
     updateInquiry
-} from "~/api/inquiriesAPI";
-import {deleteAdminInquiry} from "~/api/inquiriesAPI";
+} from "~/api/inquiries/inquiriesAPI";
+import {deleteAdminInquiry} from "~/api/inquiries/inquiriesAPI";
 
 function invalidateInquiryQueries(queryClient: ReturnType<typeof useQueryClient>) {
     queryClient.invalidateQueries({ queryKey: ["inquiries"] });

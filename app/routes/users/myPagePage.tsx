@@ -4,15 +4,17 @@ import BottomNavComponent from "~/components/main/bottomNavComponent";
 import { getMyPage } from "~/api/users/myPageAPI";
 import { getUserReviewsCount } from "~/api/reviews/reviewAPI";
 import {getCouponCount} from "~/api/points/pointsAPI";
+import {getBarcodeHistoryCount} from "~/api/barcode/barcodeAPI";
 
 function useMyPageData() {
     return useQuery({
         queryKey: ['myPageData'],
         queryFn: async () => {
-            const [myPageResult, reviewCount, couponCount] = await Promise.all([
+            const [myPageResult, reviewCount, couponCount, barcodeHistoryCount] = await Promise.all([
                 getMyPage(),
                 getUserReviewsCount(),
                 getCouponCount(),
+                getBarcodeHistoryCount(),
             ]);
 
             return {
@@ -21,10 +23,10 @@ function useMyPageData() {
                 point: myPageResult.point,
                 reviewCount,
                 couponCount,
+                barcodeHistoryCount,
                 ...myPageResult.quickStats,
             };
-        },
-        staleTime: 3 * 60 * 1000,
+        }
     });
 }
 

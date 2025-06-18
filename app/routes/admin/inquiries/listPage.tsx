@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
 import type { PagingResponse } from "~/types/common";
-import { fetchAdminInquiries } from "~/api/inquiriesAPI";
+import { fetchAdminInquiries } from "~/api/inquiries/inquiriesAPI";
 import PaginationComponent from "~/components/common/PaginationComponent";
 import LoadingComponent from "~/components/common/loadingComponent";
 import ListComponent from "~/components/admin/inquiries/listComponent";
