@@ -6,6 +6,14 @@ export default [
     // 바코드
     route("barcode/scan", "routes/barcode/scanPage.tsx"),
 
+    // 회원가입
+    route("/signup", "layout/signupLayout.tsx", [
+        index("routes/users/signupPage.tsx"),
+        route("profile", "routes/users/signupProfilePage.tsx"),
+        route("tag", "routes/users/signupTagPage.tsx"),
+        route("google", "routes/auth/googleCallbackPage.tsx"),
+    ]),
+
     // app
     route("", "layout/appLayout.tsx", [
         //메인
@@ -13,14 +21,8 @@ export default [
 
         // 로그인
         route('/login', 'routes/auth/loginPage.tsx'),
+        route("/logout", 'routes/auth/logoutPage.tsx'),
 
-        // 회원가입
-        route("/signup", "layout/signupLayout.tsx", [
-            index("routes/users/signupPage.tsx"),
-            route("profile", "routes/users/signupProfilePage.tsx"),
-            route("tag", "routes/users/signupTagPage.tsx"),
-            route("google", "routes/auth/googleCallbackPage.tsx"),
-        ]),
 
         // 마이페이지
         route("/mypage", "routes/users/myPagePage.tsx"),
@@ -28,8 +30,8 @@ export default [
 
         // 포인트
         route("points/store/list",   "routes/points/storelistPage.tsx"), //포인트 상점
-        route("/mypage/points/history", "routes/users/pointLogsPage.tsx"), // 포인트 내역
-        route("/mypage/coupons", "routes/users/userCouponPage.tsx"), // 쿠폰함
+        route("/mypage/points/history", "routes/points/pointLogsPage.tsx"), // 포인트 내역
+        route("/mypage/coupons", "routes/points/userCouponPage.tsx"), // 쿠폰함
         route("/mypage/favorites", "routes/users/favoritesPage.tsx"), // 즐겨찾기 상품 목록
         route("/mypage/views",   "routes/users/viewsPage.tsx"), // 상품 조회 내역
         // 상품
@@ -46,10 +48,8 @@ export default [
         route("/reviews/:rid", "routes/reviews/detailPage.tsx"),
 
         // 공지
-        // route("notices/list",       "routes/notices/listPage.tsx"),
-        // route("notices/add",        "routes/notices/addPage.tsx"),
-        // route("notices/:id",        "routes/notices/detailPage.tsx"),   // <-- useParams().id
-        // route("notices/:id/edit",   "routes/notices/editPage.tsx"),
+        route("notices/list",       "routes/notices/listPage.tsx"),
+        route("notices/:id",        "routes/notices/detailPage.tsx"),   // <-- useParams().id
 
         // 문의사항
         route("inquiries/list",       "routes/inquiries/listPage.tsx"),
@@ -65,7 +65,6 @@ export default [
 
         // 내역
         route("barcode/history", "routes/barcode/barcodeHistoryPage.tsx"),
-
     ]),
 
     // admin
@@ -74,7 +73,7 @@ export default [
         route('login', 'routes/admin/auth/loginPage.tsx'),
         
         //관리자 대시보드
-        route("dashboard", "routes/admin/dashboardPage.tsx"),
+        route("dashboard", "routes/admin/dashboard/dashboardPage.tsx"),
 
         // 포인트
         route("points/list", 'routes/admin/points/listPage.tsx'),
@@ -89,10 +88,8 @@ export default [
         route("notices/:id/edit",   "routes/admin/notices/editPage.tsx"),
 
         // 문의사항
-        // route("inquiries/list",       "routes/admin/inquiries/listPage.tsx"),    // 사용자 문의목록
-        // route("inquiries/add",        "routes/admin/inquiries/addPage.tsx"),     // 답변 등록
-        // route("inquiries/:id",        "routes/admin/inquiries/detailPage.tsx"),  // 문의 상세보기
-        // route("inquiries/:id/edit",   "routes/admin/inquiries/editPage.tsx"),
+        route("inquiries/list",       "routes/admin/inquiries/listPage.tsx"),    // 사용자 문의목록
+        route("inquiries/:id",        "routes/admin/inquiries/detailPage.tsx"),  // 문의 상세보기
 
         //신고
         route("reports/list",       "routes/admin/reports/listPage.tsx"),
@@ -110,7 +107,9 @@ export default [
         // 어드민 리뷰
         route("reviews/list",       "routes/admin/reviews/listPage.tsx"),
         route("reviews/:rid",        "routes/admin/reviews/readPage.tsx"),
+    ]),
 
-    ])
+    // 챗봇
+    route("chatbot", "routes/chatbot/chatbotPage.tsx")
   
 ] satisfies RouteConfig;

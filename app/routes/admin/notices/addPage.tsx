@@ -8,7 +8,7 @@ import type {
     NoticeRequestDto,
     NoticeResponseDto,
 } from "~/types/notice";
-import { createNotice, uploadImages } from "~/api/noticeAPI";
+import { createNotice, uploadImages } from "~/api/notices/adminNoticesAPI";
 import Swal from "sweetalert2";
 import "~/util/customSwal.css";
 

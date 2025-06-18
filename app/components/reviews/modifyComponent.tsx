@@ -1,18 +1,31 @@
 import { useRef, useState, useEffect, useMemo, type FormEvent, type ChangeEvent } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { deleteReview, modifyReview } from "~/api/reviews/reviewAPI";
+import { deleteReview, modifyReview} from "~/api/reviews/reviewAPI";
 import { useNavigate } from "react-router-dom";
 import { useTagSelector } from "~/hooks/tags/useTagSelector";
 import { Rating } from "~/components/reviews/rating/rating"
+import { ReviewLoading } from "~/util/loading/reviewLoading";
 import TextareaAutosize from 'react-textarea-autosize';
 import Swal from "sweetalert2"
 import '~/util/customSwal.css'
 
 interface ModifyProps {
     review?: ReviewDetailDTO;
+    isLoading: boolean;
+    isError: boolean;
 }
 
-export default function ModifyComponent({ review }: ModifyProps ) {
+export default function ModifyComponent({ review, isLoading, isError }: ModifyProps ) {
+    if (isLoading)
+        return <ReviewLoading />;
+    if (isError || !review) {
+        return (
+            <p className="text-center p-4 text-red-500 text-base sm:text-lg">
+                Failed to load review data.
+            </p>
+        );
+    }
+
     const formRef = useRef<HTMLFormElement>(null);
     const navigate = useNavigate();
 
@@ -78,35 +91,52 @@ export default function ModifyComponent({ review }: ModifyProps ) {
 
     // 리뷰 수정 뮤테이션
     const updateMutation = useMutation({
-        mutationFn: (formData: FormData) => modifyReview(review!.reviewId, formData),
+        mutationFn: (formData: FormData) => {
+            Swal.fire({
+                title: "Updating review...",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+                customClass: {
+                    popup: 'custom-popup',
+                    title: 'custom-title',
+                    actions: 'custom-actions',
+                    confirmButton: 'custom-confirm-button',
+                }
+            });
+
+            return modifyReview(review!.reviewId, formData);
+        },
         onSuccess: () => {
             Swal.fire({
-                title: "수정이 완료되었습니다",
+                title: "Review updated successfully",
                 icon: "success",
-                confirmButtonText: "확인",
+                confirmButtonText: "OK",
                 customClass: {
                     popup: 'custom-popup',
                     title: 'custom-title',
                     actions: 'custom-actions',
                     confirmButton: 'custom-confirm-button',
-                },
-            }),
+                }
+            }).then(() => {
                 navigate(`/reviews/user`);
+            });
         },
-        onError: (error) => {
-            console.log(error)
+        onError: () => {
             Swal.fire({
-                title: "수정중 오료가 발생했습니다",
-                icon: "warning",
-                confirmButtonText: "확인",
+                title: "Failed to update review",
+                icon: "error",
+                confirmButtonText: "OK",
                 customClass: {
                     popup: 'custom-popup',
                     title: 'custom-title',
                     actions: 'custom-actions',
                     confirmButton: 'custom-confirm-button',
-                },
-            })
-        },
+                }
+            });
+        }
     });
 
     // 수정된 리뷰 제출하기
@@ -114,6 +144,25 @@ export default function ModifyComponent({ review }: ModifyProps ) {
         e.preventDefault();
         if (!review) return;
 
+        const commentValue = formRef.current?.comment.value?.trim();
+
+        // 1) 코멘트 유효성 검사
+        if (!commentValue) {
+            Swal.fire({
+                title: "Please enter your review",
+                icon: "warning",
+                confirmButtonText: "OK",
+                customClass: {
+                    popup: 'custom-popup',
+                    title: 'custom-title',
+                    actions: 'custom-actions',
+                    confirmButton: 'custom-confirm-button',
+                }
+            });
+            return;
+        }
+
+        // 2) 리뷰 데이터(JSON)만 객체로 추출
         const payload = {
             reviewId: review.reviewId,
             score,
@@ -123,11 +172,14 @@ export default function ModifyComponent({ review }: ModifyProps ) {
             newTagIds
         };
 
+        // 3) FormData 직접 생성
         const formData = new FormData();
         formData.append('review', new Blob([JSON.stringify(payload)], { type: 'application/json' }));
 
+        // 4) 이미지 파일들(files) append
         selectedFiles.forEach(file => formData.append('files', file));
 
+        // 5) 전송
         updateMutation.mutate(formData);
     };
 
@@ -136,36 +188,50 @@ export default function ModifyComponent({ review }: ModifyProps ) {
         if (!review) return;
 
         try {
+            Swal.fire({
+                title: "Deleting review...",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+                customClass: {
+                    popup: 'custom-popup',
+                    title: 'custom-title',
+                    actions: 'custom-actions',
+                    confirmButton: 'custom-confirm-button',
+                }
+            });
+
             await deleteReview(review.reviewId);
-            Swal.fire({
-                title: "삭제가 완료되었습니다",
+
+            await Swal.fire({
+                title: "Review deleted successfully",
                 icon: "success",
-                confirmButtonText: "확인",
+                confirmButtonText: "OK",
                 customClass: {
                     popup: 'custom-popup',
                     title: 'custom-title',
                     actions: 'custom-actions',
                     confirmButton: 'custom-confirm-button',
                 },
-            }),
-                navigate(`/reviews/user`);
+            });
+            navigate(`/reviews/user`);
         } catch (error) {
-            console.log(error)
-            Swal.fire({
-                title: "삭제중 오류가 발생했습니다",
-                icon: "warning",
-                confirmButtonText: "확인",
+            console.error(error);
+            await Swal.fire({
+                title: "Failed to delete review",
+                icon: "error",
+                confirmButtonText: "OK",
                 customClass: {
                     popup: 'custom-popup',
                     title: 'custom-title',
                     actions: 'custom-actions',
                     confirmButton: 'custom-confirm-button',
                 },
-            })
+            });
         }
     };
-
-    if (!review) return <p className="text-center text-gray-500">리뷰 정보를 불러오는 중입니다...</p>;
 
     return (
         <section className="py-12">
@@ -174,7 +240,7 @@ export default function ModifyComponent({ review }: ModifyProps ) {
                 <div className="flex flex-col items-center mb-8">
                     <img
                         src={review?.imageUrl || "/example.jpg"}
-                        alt={review?.name || "상품 이미지"}
+                        alt={review?.name || "Product Image"}
                         className="w-40 h-40 sm:w-40 sm:h-40 md:w-40 md:h-40 rounded-lg object-cover mb-"
                     />
                     <p className="text-base sm:text-base md:text-md font-semibold text-gray-800 text-center">
@@ -185,7 +251,7 @@ export default function ModifyComponent({ review }: ModifyProps ) {
                 {/* 별점 선택 */}
                 <div className="text-center mb-8">
                     <h3 className="font-manrope font-bold text-lg sm:text-xl text-gray-700 mb-4">
-                        상품은 어떠셨나요?
+                        How did you like the product?
                     </h3>
                     <div className="flex justify-center space-x-2">
                         {[1, 2, 3, 4, 5].map(i => (
@@ -209,14 +275,14 @@ export default function ModifyComponent({ review }: ModifyProps ) {
                         maxRows={15}
                         value={comment}
                         onChange={e => setComment(e.target.value)}
-                        placeholder="솔직한 상품 리뷰를 남겨주세요"
-                        className="w-full border text-gray-600 border-gray-300 rounded-md p-3 text-base sm:text-base focus:outline-none focus:ring-2 focus:ring-gray-300"
+                        placeholder="Please leave an honest product review."
+                        className="w-full border text-gray-600 border-gray-300 rounded-md p-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-gray-300"
                     />
 
                     {/* ----- 카테고리별 태그 ----- */}
                     <div>
-                        <p className="font-medium text-gray-700 mb-2 text-base sm:text-base">
-                            태그 선택
+                        <p className="font-medium text-gray-800 mb-2 text-base sm:text-base">
+                            Select Tags
                         </p>
                         <div className="space-y-4">
                             {Object.entries(groupedTags).map(([category, tagList]) => (
@@ -250,8 +316,8 @@ export default function ModifyComponent({ review }: ModifyProps ) {
 
                     {/* 이미지 관리 */}
                     <div>
-                        <p className="text-base sm:text-base text-gray-700 mb-2">
-                            사진 수정
+                        <p className="text-base sm:text-base text-gray-800 mb-2">
+                            Edit Photo
                         </p>
 
                         {/* 파일 업로드 버튼 */}
@@ -272,11 +338,11 @@ export default function ModifyComponent({ review }: ModifyProps ) {
                             {existingImages.map(img => (
                                 <div
                                     key={img.imgId}
-                                    className="relative w-25 h-25 sm:w-25 sm:h-25 flex-shrink-0 rounded-md overflow-hidden border"
+                                    className="relative w-25 h-25 sm:w-25 sm:h-25 flex-shrink-0 rounded-lg overflow-hidden border border-gray-300"
                                 >
                                     <img
                                         src={`http://localhost/s_${img.imgUrl}`}
-                                        alt="기존 이미지"
+                                        alt={"기존 이미지"}
                                         className="w-full h-full object-cover"
                                     />
                                     <button
@@ -315,14 +381,14 @@ export default function ModifyComponent({ review }: ModifyProps ) {
                             onClick={handleDelete}
                             className="w-full px-4 py-2 font-medium rounded-md text-sm sm:text-sm transition-colors bg-gray-400 text-white cursor-not-allowed"
                         >
-                            삭제하기
+                            Delete
                         </button>
                         <button
                             type="submit"
                             disabled={updateMutation.isPending}
                             className="w-full px-4 py-2 font-medium rounded-md text-sm sm:text-sm transition-colors bg-emerald-400 text-white hover:bg-emerald-600"
                         >
-                            리뷰 수정하기
+                            Edit Review
                         </button>
                     </div>
                 </form>

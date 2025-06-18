@@ -1,10 +1,16 @@
-import MainComponent from "~/components/main/mainComponent";
 import BottomNavComponent from "~/components/main/bottomNavComponent";
+import CarouselComponent from "~/components/main/carouselComponent";
+import MenuGrid from "~/components/main/menuGridComponent";
+import {RankingComponent} from "~/components/main/RankingComponent";
+import {RecommendComponent} from "~/components/main/RecommendComponent";
 
 function appMainPage() {
     return (
         <div>
-            <MainComponent />
+            <CarouselComponent/>
+            <MenuGrid />
+            <RankingComponent />
+            <RecommendComponent />
             <BottomNavComponent/>
         </div>
     );

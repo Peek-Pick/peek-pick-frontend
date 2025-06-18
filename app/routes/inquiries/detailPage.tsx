@@ -1,11 +1,11 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import type { InquiryResponseDTO } from "~/types/inquiries";
 import { fetchInquiry } from "~/api/inquiriesAPI";
 import DetailComponent from "~/components/inquiries/detailComponent";
 import LoadingComponent from "~/components/common/loadingComponent";
-import BottomNavComponent from "~/components/main/bottomNavComponent";
 import ModalComponent from "~/components/common/modalComponent";
+import {BackButton, FloatingActionButtons} from "~/util/button/FloatingActionButtons";
+import ReplyDetailComponent from "~/components/inquiries/reply/replyDetailComponent";
 
 function DetailPage() {
     const { id } = useParams<{ id: string }>();
@@ -24,7 +24,7 @@ function DetailPage() {
                 setInquiry(res.data);
             })
             .catch((err) => {
-                // if backend threw "권한이 없습니다" (HTTP 500 in your case)
+                // if backend threw "권한이 없습니다" (HTTP 500)
                 console.error(err);
                 setErrorModal(true);
             })
@@ -41,11 +41,13 @@ function DetailPage() {
     if (loading) return <LoadingComponent isLoading={true} />;
 
     return (
-        <div className="p-4">
+        <div>
             {inquiry && <DetailComponent inquiry={inquiry} navigate={nav} />}
-            <BottomNavComponent />
-            {/* 임시 footer 공간 */}
-            <div className="h-20" />
+            {inquiry && inquiry.status === "ANSWERED" && <ReplyDetailComponent inquiryId={inquiry.inquiryId} />}
+
+            <div className="h-15" />
+            <BackButton />
+            <FloatingActionButtons />
 
             {errorModal && (
                 <ModalComponent

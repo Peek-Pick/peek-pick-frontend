@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { FaSearchLocation } from 'react-icons/fa';
 
 interface StoreSearchProps {
     onSearch: (keyword: string) => void;
@@ -15,15 +16,20 @@ const StoreSearchComponent: React.FC<StoreSearchProps> = ({ onSearch }) => {
     };
 
     return (
-        <form onSubmit={handleSubmit} style={{ marginBottom: '10px' }}>
+        <form onSubmit={handleSubmit} className="flex items-center gap-2 mb-4">
             <input
                 type="text"
-                placeholder="편의점 이름 검색"
+                placeholder="Search stores"
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
-                style={{ width: '300px', marginRight: '10px' }}
+                className="w-full max-w-xs px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
             />
-            <button type="submit">검색</button>
+            <button
+                type="submit"
+                className="px-4 py-2 bg-yellow-300 text-white rounded-lg hover:bg-yellow-400 transition"
+            >
+                <FaSearchLocation />
+            </button>
         </form>
     );
 };

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import type { NoticeResponseDto } from "~/types/notice";
-import { fetchNotice } from "~/api/noticeAPI";
+import { fetchNotice } from "~/api/notices/adminNoticesAPI";
 import NoticeDetailComponent from "~/components/admin/notices/detailComponent";
 
 export default function DetailPage() {

@@ -98,7 +98,12 @@ export default function LogComponent() {
                                 {/* Search and Filter */}
                                 <div className="grid md:grid-cols-2 gap-3 mb-4">
                                     <div className="search-box bg-white flex items-center px-4 py-3 rounded-md border border-gray-200">
-                                        <FontAwesomeIcon icon={faSearch} className="text-muted me-2 mr-2" />
+                                        <FontAwesomeIcon
+                                            icon={faSearch}
+                                            style={{ width: '15px', height: '15px' }}
+                                            className="mr-2"
+                                        />
+
                                         <input
                                             type="text"
                                             className="border-0 w-3/4 focus:outline-none"

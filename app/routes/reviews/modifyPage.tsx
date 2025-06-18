@@ -7,14 +7,16 @@ function ModifyPage() {
     const { rid } = useParams()
 
     // 리뷰 정보 가져오기
-    const { data } = useQuery({
+    const { data, isLoading, isError } = useQuery({
         queryKey: ["review", Number(rid)],
         queryFn: () => getReview(Number(rid))
     });
 
     return (
         <div>
-            <ModifyComponent review={data?.data}></ModifyComponent>
+            <ModifyComponent review={data?.data} isLoading={isLoading} isError={isError}>
+
+            </ModifyComponent>
         </div>
     );
 }

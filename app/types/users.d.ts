@@ -9,7 +9,17 @@ export interface MyPageResponseDTO {
     profileImgUrl: string;
     nickname: string;
     point: number;
-    quickStats: quick_stats;
+    quickStats: quickStats;
+}
+
+export interface MypageData {
+    profileImgUrl: string;
+    nickname: string;
+    point: number;
+    wishlistedCount: number;
+    reviewCount: number;
+    couponCount: number;
+    barcodeHistoryCount: number;
 }
 
 export interface ProfileReadDTO {
@@ -48,7 +58,7 @@ export interface UsersDetailDTO {
 }
 
 export interface UpdateStatus {
-    status: "ACTIVE" | "BANNED" | "DELETED";
+    status: string;
     banUntil?: string; // YYYY-MM-DD
 }
 

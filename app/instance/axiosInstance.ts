@@ -1,4 +1,4 @@
-import axios, { AxiosError, type AxiosRequestConfig } from "axios";
+import axios, { AxiosError, type AxiosRequestConfig, type AxiosResponse } from "axios";
 import { refreshAccessToken } from "~/api/authAPI";
 
 // snake_case → camelCase 유틸
@@ -20,13 +20,15 @@ const keysToCamel = (obj: any): any => {
     return obj;
 };
 
-// axios 인스턴스 생성
 const instance = axios.create({
     baseURL: "http://localhost:8080/api/v1",
     withCredentials: true,
 });
 
+// 요청 대기 큐
 let isRefreshing = false;
+let refreshTokenPromise: Promise<void> | null = null;
+
 let failedQueue: {
     resolve: (value?: unknown) => void;
     reject: (error: unknown) => void;
@@ -38,15 +40,15 @@ const processQueue = (error: AxiosError | null) => {
         if (error) {
             reject(error);
         } else {
+            // instance를 통해 재요청하여 interceptor 재적용
             resolve(instance(config));
         }
     });
     failedQueue = [];
 };
 
-// 응답 인터셉터 추가
 instance.interceptors.response.use(
-    response => {
+    (response: AxiosResponse) => {
         if (response.data) {
             response.data = keysToCamel(response.data);
         }
@@ -58,26 +60,30 @@ instance.interceptors.response.use(
         if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
 
-            return new Promise((resolve, reject) => {
-                failedQueue.push({ resolve, reject, config: originalRequest });
+            if (!refreshTokenPromise) {
+                isRefreshing = true;
+                refreshTokenPromise = refreshAccessToken()
+                    .then(() => {
+                        processQueue(null);
+                    })
+                    .catch(err => {
+                        processQueue(err);
+                        if (typeof window !== "undefined") {
+                            window.location.href = "/login";
+                        }
+                    })
+                    .finally(() => {
+                        isRefreshing = false;
+                        refreshTokenPromise = null;
+                    });
+            }
 
-                if (!isRefreshing) {
-                    isRefreshing = true;
-
-                    refreshAccessToken()
-                        .then(() => {
-                            isRefreshing = false;
-                            processQueue(null);
-                        })
-                        .catch(err => {
-                            isRefreshing = false;
-                            processQueue(err);
-                            if (typeof window !== "undefined") {
-                                window.location.href = "/login";
-                            }
-                        });
-                }
-            });
+            try {
+                await refreshTokenPromise; // ✅ 토큰 갱신 완료까지 기다림
+                return instance(originalRequest); // ✅ 재요청
+            } catch (err) {
+                return Promise.reject(err);
+            }
         }
 
         return Promise.reject(error);

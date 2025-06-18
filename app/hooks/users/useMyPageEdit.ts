@@ -1,13 +1,16 @@
 import { useState } from "react"
 import '~/util/customSwal.css'
 import Swal from "sweetalert2";
-import { updateMyPage } from "~/api/myPageAPI";
+import { updateMyPage } from "~/api/users/myPageAPI";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const useMyPageEdit = () =>{
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
+
+    const queryClient = useQueryClient();
     
     const handleSubmit = async (
         password: string,
@@ -40,8 +43,17 @@ export const useMyPageEdit = () =>{
             setSuccess(false)
 
             await updateMyPage(formData)
+
+            // 캐시 무효화
+            await Promise.all([
+                queryClient.invalidateQueries({ queryKey: ['myPageEdit'] }),
+                queryClient.invalidateQueries({ queryKey: ['myPageData'] }),
+            ]);
+
             setSuccess(true)
-            console.log("file:", profileImg);
+
+            // console.log("file:", profileImg);
+
             await Swal.fire({
                 title: "수정이 완료되었습니다",
                 icon: "success",

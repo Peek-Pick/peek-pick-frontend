@@ -1,4 +1,4 @@
-export type InquiryType =
+type InquiryType =
     | "ACCOUNT"
     | "PRODUCT_ADD"
     | "POINT_REVIEW"
@@ -6,54 +6,50 @@ export type InquiryType =
     | "BUG"
     | "ETC";
 
-export type InquiryStatus = "PENDING" | "ANSWERED";
+type InquiryStatus = "PENDING" | "ANSWERED";
 
 // 클라이언트 → 서버 요청 DTO (텍스트 + imgUrls)
-export interface InquiryRequestDTO {
-    title: string;
-    content: string;
-    type: InquiryType;
-    imgUrls: string[];
+interface InquiryRequestDTO {
+    content: string,
+    type: InquiryType,
+    imgUrls: string[]
 }
 
 // 서버 → 클라이언트 응답 DTO
-export interface InquiryResponseDTO {
-    inquiryId: number;
-    userId: number;
-    userNickname: string;
-    title: string;
-    content: string;
-    type: InquiryType;
-    status: InquiryStatus;
-    regDate: string;
-    modDate: string;
-    imgUrls: string[];
+interface InquiryResponseDTO {
+    inquiryId: number,
+    userId: number,
+    userEmail: string,
+    userNickname: string,
+    userProfileImgUrl: string,
+    content: string,
+    type: InquiryType,
+    status: InquiryStatus,
+    isDelete: boolean,
+    regDate: string,
+    modDate: string,
+    imgUrls: string[]
+    reply?: {
+        replyId: number;
+        content: string;
+        modDate: string;
+    } | null;
 }
 
-// 스프링 Data JPA Page<T> 구조
-export interface PageDTO<T> {
-    content: T[];
-    pageable: {
-        pageNumber: number;
-        pageSize: number;
-        offset: number;
-        paged: boolean;
-        unpaged: boolean;
-    };
-    totalElements: number;
-    totalPages: number;
-    last: boolean;
-    first: boolean;
-    sort: {
-        sorted: boolean;
-        unsorted: boolean;
-        empty: boolean;
-    };
-    number: number;
-    size: number;
-    numberOfElements: number;
-    empty: boolean;
+interface FetchAdminInquiriesParams {
+    page: number,
+    size: number,
+    keyword?: string,       // 검색어 (선택)
+    status?: string,        // 상태 필터 (선택)
+    category?: string,      // 문의 유형 필터 (선택)
+    isDeleted?: boolean    // 삭제 여부 필터 (선택)
 }
 
-// 문의사항 페이징 응답 타입
-export type InquiryPageDTO = PageDTO<InquiryResponseDTO>;
+interface InquiryAnswerRequestDTO {
+    content: string
+}
+
+interface InquiryAnswerResponseDTO {
+    content: string,
+    regDate: string
+}

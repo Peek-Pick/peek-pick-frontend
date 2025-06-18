@@ -1,14 +1,15 @@
 import BarcodeHistoryComponent from "~/components/barcode/barcodeHistoryComponent";
-import BottomNavComponent from "~/components/main/bottomNavComponent";
+import {BackButton, FloatingActionButtons} from "~/util/button/FloatingActionButtons";
 
 
 function BarcodeHistoryPage() {
     return (
         <div>
             <BarcodeHistoryComponent/>
-            <BottomNavComponent/>
-            {/* 임시 footer 공간 */}
-            <div className="h-20" />
+
+            <div className="h-15" />
+            <BackButton />
+            <FloatingActionButtons />
         </div>
     );
 }

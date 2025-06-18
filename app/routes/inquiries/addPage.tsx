@@ -1,27 +1,45 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import type { InquiryRequestDTO } from "~/types/inquiries";
-import { createInquiry, uploadImages } from "~/api/inquiriesAPI";
+import { uploadImages, getUserEmail } from "~/api/inquiriesAPI";
 import AddComponent from "~/components/inquiries/addComponent";
-import BottomNavComponent from "~/components/main/bottomNavComponent";
+import LoadingComponent from "~/components/common/loadingComponent";
+import { useCreateInquiry } from "~/hooks/inquiries/useInquiryMutation";
+import { BackButton, FloatingActionButtons } from "~/util/button/FloatingActionButtons";
 
 function AddPage() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+    const [userEmail, setUserEmail] = useState<string | null>(null);
+    const createInquiryMutation = useCreateInquiry();
+
+    // 페이지 진입 시 사용자 이메일 조회
+    useEffect(() => {
+        async function fetchEmail() {
+            setLoading(true);
+            const email = await getUserEmail();
+            setUserEmail(email);
+            setLoading(false);
+        }
+        fetchEmail();
+    }, []);
 
     async function handleSubmit(dto: InquiryRequestDTO, files: FileList | null) {
+        if (!userEmail) {
+            alert("사용자 정보를 불러오지 못했습니다. 다시 로그인해주세요.");
+            return;
+        }
+
         setLoading(true);
         try {
-            // 1) 문의 텍스트 + 빈 imgUrls 배열로 생성
-            const res = await createInquiry(dto);
+            // 1. 텍스트 등록
+            const res = await createInquiryMutation.mutateAsync(dto);
             const newId = res.data.inquiryId;
 
-            // 2) 파일 업로드 (여러 개 가능)
+            // 2. 이미지 업로드
             if (files && files.length > 0) {
                 await uploadImages(newId, files);
             }
 
-            // 3) 완료 후 상세 페이지로 이동
             navigate(`/inquiries/${newId}`);
         } catch (error) {
             console.error("문의 등록 실패:", error);
@@ -31,10 +49,15 @@ function AddPage() {
         }
     }
 
+    if (loading) return <LoadingComponent isLoading={true} />;
+
     return (
-        <div className="p-4">
-            <AddComponent onSubmit={handleSubmit} />
-            <BottomNavComponent/>
+        <div>
+            <AddComponent onSubmit={handleSubmit} userEmail={userEmail ?? ""} />
+
+            <div className="h-15" />
+            <BackButton />
+            <FloatingActionButtons />
         </div>
     );
 }

@@ -78,6 +78,7 @@ interface AdminReviewDetailDTO {
     reportCnt: number;
     isHidden: boolean;
     name: stinrg;
+    email: string;
 }
 
 interface AdminReviewReportDTO {

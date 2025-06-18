@@ -12,10 +12,14 @@ export interface ProductListDTO {
     score?: number | null;
     /** soft-delete 여부 */
     isDelete?: boolean | null;
+    rank?: number;
+
+    /** 커서 기반 페이징용 필드 (favoritesPage.tsx 등에서 사용) */
+    modDate?: string;
 }
 
 /**
- * 페이지네이션 응답 공통 타입
+ * 페이지네이션 응답 공통 타입 (Offset 방식)
  */
 export interface PageResponse<T> {
     content: T[];
@@ -23,6 +27,14 @@ export interface PageResponse<T> {
     totalPages: number;
     size: number;
     number: number;
+}
+
+/**
+ * 커서 기반 응답 타입 (hasNext만 포함)
+ */
+export interface PageResponseCursor<T> {
+    content: T[];
+    hasNext: boolean;
 }
 
 /**

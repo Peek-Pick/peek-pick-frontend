@@ -3,21 +3,25 @@ import ReviewDetailInfo from "~/components/admin/reviews/reviewDetailInfo";
 import ReviewMetaInfo from "~/components/admin/reviews/reviewMetaInfo";
 import { useLocation, useNavigate } from "react-router-dom";
 import { deleteAdminReview, toggleAdminReview } from "~/api/reviews/adminReviewAPI";
-import { useSearchParams } from "react-router";
+import { useQueryClient } from "@tanstack/react-query";
+import LoadingComponent from "~/components/common/loadingComponent";
 
 export interface AdminReviewDetailProps {
     data: AdminReviewDetailDTO;
+    isLoading?: boolean;
+    isError?: boolean;
 }
 
-export default function ReadComponent({ data }: AdminReviewDetailProps) {
+export default function ReadComponent({ data, isLoading, isError }: AdminReviewDetailProps) {
+    const queryClient = useQueryClient();
+
     const navigate = useNavigate();
 
     // 현재 URL 정보 - 페이지, 필터링
     const location = useLocation();
 
-    // 이전 화면 (reviewList 또는 reportList)
-    const [searchParams] = useSearchParams();
-    const from = searchParams.get("from") || "reviewList";
+    // 이전 페이지가 리뷰인지 신고인지
+    const from = location.state?.from || 'reviewList';
 
     // 목록으로 버튼 경로 설정
     const backToListPath =
@@ -32,6 +36,13 @@ export default function ReadComponent({ data }: AdminReviewDetailProps) {
 
         try {
             await deleteAdminReview(data.reviewId);
+
+            // 삭제 후 리액트 쿼리 캐시 무효화
+            await Promise.all([
+                queryClient.invalidateQueries({ queryKey: ["adminReviewList"], exact: false }),
+                queryClient.invalidateQueries({ queryKey: ["adminReviewReportList"], exact: false }),
+            ]);
+
             alert("삭제가 완료되었습니다.");
             navigate(backToListPath);
         } catch (error) {
@@ -58,15 +69,20 @@ export default function ReadComponent({ data }: AdminReviewDetailProps) {
             console.error(error);
         }
     };
+    if (isLoading)
+        return <LoadingComponent isLoading />;
+    if (isError || !data)
+        return <div className="p-4 text-red-500">리뷰 정보 불러오기 실패</div>;
 
     return (
-        <div className="flex flex-col min-h-screen px-4 py-6 bg-white dark:bg-gray-900">
+        <div className="flex flex-col">
             {/* 상단 사용자 정보 */}
             <AuDetailHeaderComponent
-                backgroundProfile="/BackgroundCard1.png"
+                backgroundProfile="bg-white/80 dark:bg-gradient-to-br dark:from-white/20 dark:to-transparent"
                 avatarImage={data.profileImageUrl}
                 name={data.nickname}
-                email={`userId ${data.userId}`}
+                email={data.email}
+                onClick={() => navigate(`/admin/users/${data.userId}`)}
             />
 
             {/* 리뷰 정보 + 리뷰 내용 가로 배치 */}
@@ -80,8 +96,20 @@ export default function ReadComponent({ data }: AdminReviewDetailProps) {
                         recommendCnt={data.recommendCnt}
                         reportCnt={data.reportCnt}
                         isHidden={data.isHidden}
-                        regDate={new Date(data.regDate).toLocaleString()}
-                        modDate={new Date(data.modDate).toLocaleString()}
+                        regDate={new Date(data.regDate).toLocaleString('ko-KR', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: false})}
+                        modDate={new Date(data.regDate).toLocaleString('ko-KR', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: false})}
                         onToggleHidden={handleToggleHidden}
                     />
                 </div>
