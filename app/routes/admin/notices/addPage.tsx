@@ -10,7 +10,7 @@ import type {
 } from "~/types/notice";
 import { createNotice, uploadImages } from "~/api/notices/adminNoticesAPI";
 import Swal from "sweetalert2";
-import "~/util/customSwal.css";
+import "~/util/swal/customSwal.css";
 
 export default function AddPage() {
     const navigate = useNavigate();

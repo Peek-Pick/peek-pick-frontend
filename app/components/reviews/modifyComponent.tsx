@@ -7,7 +7,7 @@ import { Rating } from "~/components/reviews/rating/rating"
 import { ReviewLoading } from "~/util/loading/reviewLoading";
 import TextareaAutosize from 'react-textarea-autosize';
 import Swal from "sweetalert2"
-import '~/util/customSwal.css'
+import '~/util/swal/customSwal.css'
 
 interface ModifyProps {
     review?: ReviewDetailDTO;

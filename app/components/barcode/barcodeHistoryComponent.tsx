@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { ViewHistoryResponseDTO } from "~/types/viewHistory";
 import { getBarcodeHistory } from "~/api/barcode/barcodeAPI";
-import { useNavigate } from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import LoadingComponent from "~/components/common/loadingComponent";
 import {ReceiptText} from "lucide-react";
 
@@ -9,6 +9,12 @@ function BarcodeHistoryComponent() {
     const [history, setHistory] = useState<ViewHistoryResponseDTO[]>([]);
     const [loading, setLoading] = useState(true);
     const nav = useNavigate();
+
+    // 현재 URL 정보 - 페이지, 필터링
+    const location = useLocation();
+
+    // 이전 페이지가 리뷰 작성 화면인지
+    const from = location.state?.from;
 
     useEffect(() => {
         async function fetchHistory() {
