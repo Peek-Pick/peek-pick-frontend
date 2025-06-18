@@ -1,4 +1,4 @@
-import axios, {AxiosError, type AxiosRequestConfig, type AxiosResponse} from "axios";
+import axios, { AxiosError, type AxiosRequestConfig, type AxiosResponse } from "axios";
 import { refreshAccessToken } from "~/api/authAPI";
 
 // snake_case → camelCase 유틸
@@ -20,13 +20,12 @@ const keysToCamel = (obj: any): any => {
     return obj;
 };
 
-// axios 인스턴스 생성
 const instance = axios.create({
     baseURL: "http://localhost:8080/api/v1",
     withCredentials: true,
 });
 
-// 요청 큐
+// 요청 대기 큐
 let isRefreshing = false;
 let refreshTokenPromise: Promise<void> | null = null;
 
@@ -41,13 +40,13 @@ const processQueue = (error: AxiosError | null) => {
         if (error) {
             reject(error);
         } else {
-            resolve(axios(config));
+            // instance를 통해 재요청하여 interceptor 재적용
+            resolve(instance(config));
         }
     });
     failedQueue = [];
 };
 
-// 응답 인터셉터
 instance.interceptors.response.use(
     (response: AxiosResponse) => {
         if (response.data) {
@@ -65,23 +64,26 @@ instance.interceptors.response.use(
                 isRefreshing = true;
                 refreshTokenPromise = refreshAccessToken()
                     .then(() => {
-                        isRefreshing = false;
                         processQueue(null);
                     })
-                    .catch((err) => {
+                    .catch(err => {
                         processQueue(err);
                         if (typeof window !== "undefined") {
                             window.location.href = "/login";
                         }
                     })
                     .finally(() => {
+                        isRefreshing = false;
                         refreshTokenPromise = null;
                     });
             }
 
-            return new Promise((resolve, reject) => {
-                failedQueue.push({ resolve, reject, config: originalRequest });
-            });
+            try {
+                await refreshTokenPromise; // ✅ 토큰 갱신 완료까지 기다림
+                return instance(originalRequest); // ✅ 재요청
+            } catch (err) {
+                return Promise.reject(err);
+            }
         }
 
         return Promise.reject(error);
