@@ -1,6 +1,84 @@
-// src/routes/admin/products/listPage.tsx
-import AdminProductsListComponent from "~/components/admin/products/listComponent";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import { useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBox, faPlus } from "@fortawesome/free-solid-svg-icons";
 
-export default function AdminProductsListPage() {
-    return <AdminProductsListComponent />;
+import AdminProductsFilterBar from "~/components/admin/products/productFilterBar";
+import AdminProductsListComponent from "~/components/admin/products/listComponent";
+import PaginationComponent from "~/components/common/PaginationComponent";
+import LoadingComponent from "~/components/common/loadingComponent";
+import { listAdminProducts } from "~/api/products/adminProductsAPI";
+import type { PageResponse, ProductListDTO } from "~/types/products";
+
+export default function AdminProductsPage() {
+    const [searchParams, setSearchParams] = useSearchParams();
+    const navigate = useNavigate();
+
+    const page = Number(searchParams.get("page") || "0");
+    const size = 10;
+    const keyword = searchParams.get("keyword") || "";
+
+    const handleSearch = (kw: string) => {
+        const params = new URLSearchParams();
+        params.set("page", "0");
+        params.set("size", size.toString());
+        if (kw) params.set("keyword", kw);
+        setSearchParams(params);
+    };
+
+    const handlePageChange = (newPage: number) => {
+        const params = new URLSearchParams(searchParams);
+        params.set("page", newPage.toString());
+        setSearchParams(params);
+    };
+
+    const queryParams = useMemo(() => ({
+        page,
+        size,
+        keyword: keyword.trim() || undefined,
+    }), [page, size, keyword]);
+
+    const { data, isLoading, isError } = useQuery<PageResponse<ProductListDTO>>({
+        queryKey: ["adminProducts", queryParams],
+        queryFn: () => listAdminProducts(page, size, keyword),
+    });
+
+    if (isLoading) return <LoadingComponent isLoading />;
+    if (isError || !data) return <div className="p-4 text-red-500">상품 목록 불러오기 실패</div>;
+
+    return (
+        <div className="max-w-7xl mx-auto px-4">
+            {/* 헤더 */}
+            <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                <FontAwesomeIcon icon={faBox} />
+                상품 관리
+            </h3>
+
+            {/* 검색창 + 등록버튼 */}
+            <div className="flex justify-between items-center mb-2">
+                <AdminProductsFilterBar keyword={keyword} onSearch={handleSearch} />
+                <button
+                    onClick={() => navigate("/admin/products/add")}
+                    className="flex items-center gap-1 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-100 transition"
+                >
+                    <FontAwesomeIcon icon={faPlus} />
+                    새 상품 등록
+                </button>
+            </div>
+
+            {/* 상품 목록 */}
+            <AdminProductsListComponent
+                data={data.content}
+            />
+
+            {/* 페이지네이션 */}
+            <PaginationComponent
+                currentPage={page}
+                totalPages={data.totalPages}
+                onPageChange={handlePageChange}
+                maxPageButtons={10}
+            />
+        </div>
+    );
 }
