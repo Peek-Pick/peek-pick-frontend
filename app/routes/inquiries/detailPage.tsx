@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { fetchInquiry } from "~/api/inquiriesAPI";
+import { fetchInquiry } from "~/api/inquiries/inquiriesAPI";
 import DetailComponent from "~/components/inquiries/detailComponent";
 import LoadingComponent from "~/components/common/loadingComponent";
 import ModalComponent from "~/components/common/modalComponent";
@@ -42,19 +42,17 @@ function DetailPage() {
 
     return (
         <div>
-            {inquiry && <DetailComponent inquiry={inquiry} navigate={nav} />}
-            {inquiry && inquiry.status === "ANSWERED" && <ReplyDetailComponent inquiryId={inquiry.inquiryId} />}
-
-            <div className="h-15" />
-            <BackButton />
-            <FloatingActionButtons />
-
             {errorModal && (
                 <ModalComponent
                     message={"권한이 없습니다."}
                     onClose={handleModalClose}
                 />
             )}
+            <BackButton />
+            <FloatingActionButtons />
+            {inquiry && <DetailComponent inquiry={inquiry} navigate={nav} />}
+            {inquiry && inquiry.status === "ANSWERED" && <ReplyDetailComponent inquiryId={inquiry.inquiryId} />}
+            <div className="h-15" />
         </div>
     );
 }

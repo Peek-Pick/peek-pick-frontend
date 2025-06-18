@@ -5,11 +5,10 @@ import {BackButton, FloatingActionButtons} from "~/util/button/FloatingActionBut
 function BarcodeHistoryPage() {
     return (
         <div>
-            <BarcodeHistoryComponent/>
-
-            <div className="h-15" />
             <BackButton />
             <FloatingActionButtons />
+            <BarcodeHistoryComponent/>
+            <div className="h-15" />
         </div>
     );
 }

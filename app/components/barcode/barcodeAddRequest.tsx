@@ -1,8 +1,7 @@
 import ConfirmModalComponent from "~/components/common/ConfirmModalComponent";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import type { InquiryRequestDTO } from "~/types/inquiries";
-import { createInquiry } from "~/api/inquiriesAPI";
+import { createInquiry } from "~/api/inquiries/inquiriesAPI";
 
 interface BarcodeAddRequestProps {
     barcode: string;
@@ -18,8 +17,7 @@ function BarcodeAddRequest({ barcode, onClose }: BarcodeAddRequestProps) {
         setLoading(true);
 
         const dto: InquiryRequestDTO = {
-            title: `상품 추가 요청: ${barcode}`,
-            content: `${barcode}`,
+            content: `상품 추가 요청: ${barcode}`,
             type: "PRODUCT_ADD",
             imgUrls: [],
         };
