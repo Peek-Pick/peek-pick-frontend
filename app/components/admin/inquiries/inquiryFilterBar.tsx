@@ -37,8 +37,7 @@ function InquiryFilterBar({
 
     const handleSearch = () => {
         setCategory(localCategory);
-        const kw = localKeyword.trim();
-        setKeyword(kw);
+        setKeyword(localKeyword.trim());
         setSize(localSize);
         onSearch();
     };
@@ -62,8 +61,7 @@ function InquiryFilterBar({
                     className="border border-gray-300 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                     <option value="all">전체</option>
-                    <option value="title">제목</option>
-                    <option value="titleContent">제목+본문</option>
+                    <option value="content">본문</option>
                     <option value="writer">닉네임</option>
                     <option value="inquiryId">문의번호</option>
                 </select>

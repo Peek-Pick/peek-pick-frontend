@@ -3,8 +3,9 @@ import { useEffect, useState } from "react";
 import { fetchInquiry } from "~/api/inquiriesAPI";
 import DetailComponent from "~/components/inquiries/detailComponent";
 import LoadingComponent from "~/components/common/loadingComponent";
-import BottomNavComponent from "~/components/main/bottomNavComponent";
 import ModalComponent from "~/components/common/modalComponent";
+import {BackButton, FloatingActionButtons} from "~/util/button/FloatingActionButtons";
+import ReplyDetailComponent from "~/components/inquiries/reply/replyDetailComponent";
 
 function DetailPage() {
     const { id } = useParams<{ id: string }>();
@@ -42,7 +43,11 @@ function DetailPage() {
     return (
         <div>
             {inquiry && <DetailComponent inquiry={inquiry} navigate={nav} />}
-            <BottomNavComponent />
+            {inquiry && inquiry.status === "ANSWERED" && <ReplyDetailComponent inquiryId={inquiry.inquiryId} />}
+
+            <div className="h-15" />
+            <BackButton />
+            <FloatingActionButtons />
 
             {errorModal && (
                 <ModalComponent
