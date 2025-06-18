@@ -1,4 +1,4 @@
-import axiosInstance from "~/instance/axiosInstance";
+import axiosInstanceAdmin from "~/instance/axiosInstance";
 import type { PageResponse, ProductListDTO, ProductDetailDTO } from "~/types/products";
 
 const ADMIN_HOST = "http://localhost:8080/admin/products";
@@ -12,7 +12,7 @@ export async function listAdminProducts(
 ): Promise<PageResponse<ProductListDTO>> {
     const params: Record<string, unknown> = { page, size, sort };
     if (keyword && keyword.trim()) params.keyword = keyword.trim();
-    const res = await axiosInstance.get<PageResponse<ProductListDTO>>(ADMIN_HOST, { params });
+    const res = await axiosInstanceAdmin.get<PageResponse<ProductListDTO>>(ADMIN_HOST, { params });
     return res.data;
 }
 
@@ -35,7 +35,7 @@ export async function createAdminProduct(
     if (image) form.append("image", image);
     else if (imageUrl) form.append("imgUrl", imageUrl);
 
-    const res = await axiosInstance.post<ProductDetailDTO>(
+    const res = await axiosInstanceAdmin.post<ProductDetailDTO>(
         ADMIN_HOST,
         form,
         { headers: { "Content-Type": "multipart/form-data" } }
@@ -66,7 +66,7 @@ export async function updateAdminProduct(
 
     if (isDelete !== undefined) form.append("isDelete", String(isDelete));
 
-    const res = await axiosInstance.put<ProductDetailDTO>(
+    const res = await axiosInstanceAdmin.put<ProductDetailDTO>(
         `${ADMIN_HOST}/${id}`,
         form,
         { headers: { "Content-Type": "multipart/form-data" } }
@@ -76,11 +76,11 @@ export async function updateAdminProduct(
 
 /** 관리자: 상품 삭제 */
 export async function deleteAdminProduct(id: number): Promise<void> {
-    await axiosInstance.delete(`${ADMIN_HOST}/${id}`);
+    await axiosInstanceAdmin.delete(`${ADMIN_HOST}/${id}`);
 }
 
 /** 관리자: 상품 상세 조회 */
 export async function getAdminProductDetail(id: number): Promise<ProductDetailDTO> {
-    const res = await axiosInstance.get<ProductDetailDTO>(`${ADMIN_HOST}/${id}`);
+    const res = await axiosInstanceAdmin.get<ProductDetailDTO>(`${ADMIN_HOST}/${id}`);
     return res.data;
 }
