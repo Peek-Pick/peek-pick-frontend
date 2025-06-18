@@ -1,7 +1,7 @@
 import { FaGoogle } from "react-icons/fa";
 import {useNavigate} from "react-router-dom";
 import {useSignupContext} from "~/contexts/signupContext";
-import {getGoogleLoginLink} from "~/api/googleAPI";
+import {getGoogleLoginLink} from "~/api/auth/googleAPI";
 import {Link} from "react-router";
 import {SignupStepperHeader} from "~/components/users/signupStepperHeader";
 import {useEmailChecker} from "~/hooks/users/useEmailChecker";

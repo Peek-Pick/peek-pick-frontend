@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router';
-import { logout } from "~/api/authAPI";
+import { logout } from "~/api/auth/authAPI";
 import { useState } from 'react';
 
 function AuthLayout() {

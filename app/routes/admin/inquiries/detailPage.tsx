@@ -1,7 +1,7 @@
 import DetailComponent from "~/components/admin/inquiries/detailComponent";
 import {useParams} from "react-router";
 import {useQuery} from "@tanstack/react-query";
-import {fetchAdminInquiry} from "~/api/inquiriesAPI";
+import {fetchAdminInquiry} from "~/api/inquiries/inquiriesAPI";
 
 function DetailPage() {
 

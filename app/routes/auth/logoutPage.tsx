@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { logout } from '~/api/authAPI';
+import { logout } from '~/api/auth/authAPI';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 const LogoutPage = () => {

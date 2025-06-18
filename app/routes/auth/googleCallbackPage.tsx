@@ -1,4 +1,4 @@
-import {GoogleLoginHandler} from "~/api/googleAPI";
+import {GoogleLoginHandler} from "~/api/auth/googleAPI";
 import {SignupProvider} from "~/contexts/signupContext";
 
 

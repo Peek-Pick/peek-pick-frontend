@@ -31,13 +31,13 @@ export default function MyPageComponent({ myData }:MyPageProps) {
 
     const buttons = [
         { icon: IoLanguage, label: 'Language Settings', to: '' },
-        { icon: FaQuestionCircle, label: 'Support', to: '' },
+        { icon: FaQuestionCircle, label: 'Support', to: '/inquiries/list' },
         { icon: FaBell, label: 'Notifications', to: '' },
         { icon: FaUserShield, label: 'Privacy Policy', to: '' },
         { icon: FaFileContract, label: 'Terms of Service', to: '' },
         { icon: FaIdBadge, label: 'Licenses', to: '' },
-        { icon: IoLogOutOutline, label: 'Logout', to: '/logout' },
         { icon: FaUserAltSlash, label: 'Delete Account', onClick: openDeleteModal },
+        { icon: IoLogOutOutline, label: 'Logout', to: '/logout' },
     ];
 
     return (
