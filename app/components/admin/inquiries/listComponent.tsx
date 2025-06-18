@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import {INQUIRY_STATUS_LABELS, INQUIRY_TYPES} from "~/enums/inquiries/inquiry";
+import { INQUIRY_STATUS_LABELS, INQUIRY_TYPES } from "~/enums/inquiries/inquiry";
 
 interface AdminInquiryListComponentProps {
     items: InquiryResponseDTO[];
@@ -22,12 +22,10 @@ function ListComponent({ items }: AdminInquiryListComponentProps) {
         return `${d.getFullYear()}/${pad(d.getMonth() + 1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
     };
 
-    // 기본 필터: 답변 대기 여부로 필터링
     const filteredItems = showPendingOnly
         ? items.filter((item) => item.status === "PENDING")
         : items;
 
-    // 문의번호 내림차순 정렬 (큰 번호가 먼저)
     const displayItems = [...filteredItems].sort((a, b) => b.inquiryId - a.inquiryId);
 
     return (
@@ -36,13 +34,17 @@ function ListComponent({ items }: AdminInquiryListComponentProps) {
                 <div className="overflow-x-auto">
                     <table className="min-w-full text-sm divide-y divide-gray-200 table-fixed">
                         <colgroup>
-                            <col className="w-16"/><col className="w-24"/><col className="w-80"/>
-                            <col className="w-36"/><col className="w-36"/><col className="w-32"/>
-                            <col className="w-24"/><col className="w-24"/>
+                            <col className="w-16" />
+                            <col className="w-24" />
+                            <col className="w-36" />
+                            <col className="w-36" />
+                            <col className="w-32" />
+                            <col className="w-24" />
+                            <col className="w-24" />
                         </colgroup>
                         <thead className="bg-gray-100">
                         <tr>
-                            {['ID','유형','제목','작성일','수정일','닉네임','상태','삭제여부'].map((col) => (
+                            {['ID', '유형', '작성일', '수정일', '닉네임', '상태', '삭제여부'].map((col) => (
                                 <th key={col} className="px-4 py-2 text-left text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">
                                     {col}
                                 </th>
@@ -52,7 +54,7 @@ function ListComponent({ items }: AdminInquiryListComponentProps) {
                         <tbody className="bg-white divide-y divide-gray-200">
                         {displayItems.length === 0 ? (
                             <tr>
-                                <td colSpan={8} className="px-4 py-4 text-center text-gray-500">
+                                <td colSpan={7} className="px-4 py-4 text-center text-gray-500">
                                     조회된 문의가 없습니다.
                                 </td>
                             </tr>
@@ -68,24 +70,11 @@ function ListComponent({ items }: AdminInquiryListComponentProps) {
                                         onClick={() => handleRowClick(item.inquiryId)}
                                         className="hover:bg-gray-100 cursor-pointer text-gray-800"
                                     >
-                                        <td className="px-4 py-3.5">
-                                            <div className="overflow-hidden whitespace-nowrap truncate">{item.inquiryId}</div>
-                                        </td>
-                                        <td className="px-4 py-3.5">
-                                            <div className="overflow-hidden whitespace-nowrap truncate">{typeLabel}</div>
-                                        </td>
-                                        <td className="px-4 py-3.5">
-                                            <div className="overflow-hidden whitespace-nowrap truncate max-w-[320px]">{item.title}</div>
-                                        </td>
-                                        <td className="px-4 py-3.5">
-                                            <div className="overflow-hidden whitespace-nowrap truncate">{formatDate(item.regDate)}</div>
-                                        </td>
-                                        <td className="px-4 py-3.5">
-                                            <div className="overflow-hidden whitespace-nowrap truncate">{isSameDate ? "" : formatDate(item.modDate)}</div>
-                                        </td>
-                                        <td className="px-4 py-3.5">
-                                            <div className="overflow-hidden whitespace-nowrap truncate max-w-[128px]">{item.userNickname}</div>
-                                        </td>
+                                        <td className="px-4 py-3.5">{item.inquiryId}</td>
+                                        <td className="px-4 py-3.5">{typeLabel}</td>
+                                        <td className="px-4 py-3.5">{formatDate(item.regDate)}</td>
+                                        <td className="px-4 py-3.5">{isSameDate ? "" : formatDate(item.modDate)}</td>
+                                        <td className="px-4 py-3.5 truncate max-w-[128px]">{item.userNickname}</td>
                                         <td className="px-4 py-3.5">
                                             <div
                                                 className={`inline-block px-2 py-1 text-xs font-semibold rounded-full whitespace-nowrap truncate ${
@@ -98,7 +87,7 @@ function ListComponent({ items }: AdminInquiryListComponentProps) {
                                             </div>
                                         </td>
                                         <td className="px-4 py-3.5">
-                                            <div className="overflow-hidden whitespace-nowrap truncate">{item.isDelete && <span className="text-red-500 font-semibold">삭제됨</span>}</div>
+                                            {item.isDelete && <span className="text-red-500 font-semibold">삭제됨</span>}
                                         </td>
                                     </tr>
                                 );
@@ -112,4 +101,4 @@ function ListComponent({ items }: AdminInquiryListComponentProps) {
     );
 }
 
-export default ListComponent
+export default ListComponent;

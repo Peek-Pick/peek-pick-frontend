@@ -6,6 +6,7 @@ import EditComponent from "~/components/inquiries/editComponent";
 import BottomNavComponent from "~/components/main/bottomNavComponent";
 import ModalComponent from "~/components/common/modalComponent";
 import {useUpdateInquiry} from "~/hooks/inquiries/useInquiryMutation";
+import {BackButton, FloatingActionButtons} from "~/util/button/FloatingActionButtons";
 
 function EditPage() {
     const { id } = useParams<{ id: string }>();
@@ -63,7 +64,11 @@ function EditPage() {
     return (
         <div>
             {data && <EditComponent initialData={data} onSubmit={handleSubmit} />}
-            <BottomNavComponent />
+
+            <div className="h-15" />
+            <BackButton />
+            <FloatingActionButtons />
+
             {showAuthModal && (
                 <ModalComponent
                     message={"권한이 없습니다."}

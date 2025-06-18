@@ -6,7 +6,6 @@ import {useNavigate} from "react-router-dom";
 import {useDeleteAdminInquiry} from "~/hooks/inquiries/useInquiryMutation";
 import ReplyAddInfo from "~/components/admin/inquiries/replyAddInfo";
 import ReplyEditInfo from "~/components/admin/inquiries/replyEditInfo";
-import {useEffect} from "react";
 
 export interface AdminInquiryDetailProps {
     data?: InquiryResponseDTO;
