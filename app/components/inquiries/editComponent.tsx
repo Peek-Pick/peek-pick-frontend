@@ -1,6 +1,6 @@
 import { type ChangeEvent, type FormEvent, useEffect, useRef, useState } from "react";
 import { Edit2 } from "lucide-react";
-import { deleteImages } from "~/api/inquiriesAPI";
+import { deleteImages } from "~/api/inquiries/inquiriesAPI";
 import { useQueryClient } from "@tanstack/react-query";
 import { INQUIRY_TYPES } from "~/enums/inquiries/inquiry";
 

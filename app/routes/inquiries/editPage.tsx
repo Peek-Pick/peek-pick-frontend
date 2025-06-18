@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { fetchInquiry, uploadImages } from "~/api/inquiriesAPI";
+import { fetchInquiry, uploadImages } from "~/api/inquiries/inquiriesAPI";
 import LoadingComponent from "~/components/common/loadingComponent";
 import EditComponent from "~/components/inquiries/editComponent";
 import BottomNavComponent from "~/components/main/bottomNavComponent";
@@ -63,18 +63,17 @@ function EditPage() {
 
     return (
         <div>
-            {data && <EditComponent initialData={data} onSubmit={handleSubmit} />}
-
-            <div className="h-15" />
-            <BackButton />
-            <FloatingActionButtons />
-
             {showAuthModal && (
                 <ModalComponent
                     message={"권한이 없습니다."}
                     onClose={handleModalClose}
                 />
             )}
+
+            <BackButton />
+            <FloatingActionButtons />
+            {data && <EditComponent initialData={data} onSubmit={handleSubmit} />}
+            <div className="h-15" />
         </div>
     );
 }

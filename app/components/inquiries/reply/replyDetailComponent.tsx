@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchInquiryAnswer } from "~/api/inquiriesAPI";
+import { fetchInquiryAnswer } from "~/api/inquiries/inquiriesAPI";
 
 interface ReplyDetailProps {
     inquiryId: number;

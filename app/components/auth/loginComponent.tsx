@@ -1,7 +1,7 @@
 import {type FormEvent, useState} from 'react';
-import {getToken} from "~/api/authAPI";
+import {getToken} from "~/api/auth/authAPI";
 import {Link, useNavigate} from "react-router-dom";
-import {getGoogleLoginLink} from "~/api/googleAPI";
+import {getGoogleLoginLink} from "~/api/auth/googleAPI";
 import LoadingComponent from "~/components/common/loadingComponent";
 
 

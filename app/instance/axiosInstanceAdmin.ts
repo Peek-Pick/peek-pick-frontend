@@ -1,5 +1,5 @@
 import axios, { AxiosError, type AxiosRequestConfig, type AxiosResponse } from "axios";
-import { refreshAccessToken } from "~/api/authAPI";
+import { refreshAccessToken } from "~/api/auth/authAPI";
 
 // snake_case → camelCase 유틸
 const toCamel = (s: string) =>
@@ -69,7 +69,7 @@ instance.interceptors.response.use(
                     .catch(err => {
                         processQueue(err);
                         if (typeof window !== "undefined") {
-                            window.location.href = "/login";
+                            window.location.href = "/admin/login";
                         }
                     })
                     .finally(() => {

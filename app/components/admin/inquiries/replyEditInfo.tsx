@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { fetchInquiryAnswer, updateInquiryAnswer } from "~/api/inquiriesAPI";
+import { fetchInquiryAnswer, updateInquiryAnswer } from "~/api/inquiries/inquiriesAPI";
 import { useDeleteInquiryAnswer } from "~/hooks/inquiries/useInquiryMutation";
 
 interface ReplyEditInfoProps {

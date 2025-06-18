@@ -47,7 +47,6 @@ export const useMyPageEdit = () =>{
             // 캐시 무효화
             await Promise.all([
                 queryClient.invalidateQueries({ queryKey: ['myPageEdit'] }),
-                queryClient.invalidateQueries({ queryKey: ['myPageData'] }),
             ]);
 
             setSuccess(true)

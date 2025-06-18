@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { uploadImages, getUserEmail } from "~/api/inquiriesAPI";
+import { uploadImages, getUserEmail } from "~/api/inquiries/inquiriesAPI";
 import AddComponent from "~/components/inquiries/addComponent";
 import LoadingComponent from "~/components/common/loadingComponent";
 import { useCreateInquiry } from "~/hooks/inquiries/useInquiryMutation";
@@ -53,11 +53,11 @@ function AddPage() {
 
     return (
         <div>
-            <AddComponent onSubmit={handleSubmit} userEmail={userEmail ?? ""} />
 
-            <div className="h-15" />
             <BackButton />
             <FloatingActionButtons />
+            <AddComponent onSubmit={handleSubmit} userEmail={userEmail ?? ""} />
+            <div className="h-15" />
         </div>
     );
 }
