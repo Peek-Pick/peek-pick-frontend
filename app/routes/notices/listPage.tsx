@@ -1,5 +1,4 @@
-// src/routes/notices/listPage.tsx
-import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchNotices } from "~/api/notices/noticesAPI";
 import type { NoticePageDTO } from "~/types/notice";
@@ -9,7 +8,9 @@ import LoadingComponent from "~/components/common/loadingComponent";
 import BottomNavComponent from "~/components/main/bottomNavComponent";
 
 export default function NoticeListPage() {
-    const [page, setPage] = useState(0);
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    const page = Number(searchParams.get("page") || "0");
     const size = 10;
 
     const { data, isLoading, isError } = useQuery<NoticePageDTO>({
@@ -17,6 +18,12 @@ export default function NoticeListPage() {
         queryFn: () => fetchNotices(page, size),
         staleTime: 1000 * 60 * 10,
     });
+
+    const handlePageChange = (newPage: number) => {
+        const params = new URLSearchParams(searchParams);
+        params.set("page", newPage.toString());
+        setSearchParams(params);
+    };
 
     if (isLoading) return <LoadingComponent isLoading />;
     if (isError || !data)
@@ -27,15 +34,14 @@ export default function NoticeListPage() {
         );
 
     return (
-        // 모바일: pb-0 유지, PC(md 이상): pb-24 추가
-        <div className="bg-gray-50 flex justify-center pb-0 md:pb-24">
-            <div className="bg-white rounded-2xl shadow-lg w-full max-w-5xl px-6 md:px-8 py-6">
+        <div className="bg-gray-50 flex justify-center pb-20">
+            <div className="bg-white rounded-2xl shadow-lg w-full max-w-5xl px-4 md:px-8 py-6">
                 <NoticeListComponent items={data.content} />
                 <div className="mt-6">
                     <PaginationComponent
                         currentPage={data.number}
                         totalPages={data.totalPages}
-                        onPageChange={setPage}
+                        onPageChange={handlePageChange}
                         maxPageButtons={5}
                     />
                 </div>
