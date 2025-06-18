@@ -1,4 +1,3 @@
-// src/routes/products/detailPage.tsx
 import { useLayoutEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -7,6 +6,7 @@ import PreviewComponent from "~/components/reviews/previewComponent";
 import BottomNavComponent from "~/components/main/bottomNavComponent";
 import { getProductDetail } from "~/api/products/productsAPI";
 import type { ProductDetailDTO } from "~/types/products";
+import { BackButton, FloatingActionButtons } from "~/util/button/FloatingActionButtons";
 
 const SCROLL_KEY = "rankingPageScrollY";
 
@@ -15,13 +15,11 @@ export default function DetailPage() {
 
     // 🚩 빈 배열로 마운트 시 무조건 실행 → F5 리로드 감지하여 스크롤 세션 삭제
     useLayoutEffect(() => {
-        const entries = performance.getEntriesByType(
-            "navigation"
-        ) as PerformanceNavigationTiming[];
+        const entries = performance.getEntriesByType("navigation") as PerformanceNavigationTiming[];
         if (entries.at(-1)?.type === "reload") {
             sessionStorage.removeItem(SCROLL_KEY);
         }
-    }, []); // <- 여기를 빈 배열로 고정합니다
+    }, []);
 
     const {
         data,
@@ -47,7 +45,9 @@ export default function DetailPage() {
                     reviewNum={data.reviewCount!}
                 />
             )}
-            <BottomNavComponent />
+            {/*<BottomNavComponent />*/}
+            <BackButton />
+            <FloatingActionButtons />
         </>
     );
 }

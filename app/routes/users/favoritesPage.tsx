@@ -1,5 +1,3 @@
-// src/routes/products/favoritesPage.tsx
-
 import { useRef, useLayoutEffect, useEffect } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useNavigate, useNavigationType } from "react-router-dom";
@@ -7,6 +5,7 @@ import ListComponent from "~/components/products/listComponent";
 import BottomNavComponent from "~/components/main/bottomNavComponent";
 import { getMyPageFavorite } from "~/api/users/myPageAPI";
 import type { PageResponseCursor, ProductListDTO } from "~/types/products";
+import { BackButton, FloatingActionButtons } from "~/util/button/FloatingActionButtons";
 
 const STORAGE_KEY = "favoritesPageScrollY";
 
@@ -108,7 +107,9 @@ export default function FavoritesPage() {
                 isError={isError}
                 onItemClick={handleItemClick}
             />
-            <BottomNavComponent />
+            {/*<BottomNavComponent />*/}
+            <BackButton />
+            <FloatingActionButtons />
         </>
     );
 }
