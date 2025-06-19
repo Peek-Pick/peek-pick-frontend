@@ -69,6 +69,9 @@ export default [
 
     // admin
     route("/admin", "layout/adminLayout.tsx", [
+
+        index("routes/indexAdmin.tsx"),
+
         // 로그인
         route('login', 'routes/admin/auth/loginPage.tsx'),
         
