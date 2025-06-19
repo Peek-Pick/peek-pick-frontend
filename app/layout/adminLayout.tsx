@@ -106,17 +106,24 @@ export default function AdminLayout() {
                     ))}
                 </nav>
 
-                <div className="mt-auto p-4 border-t border-white/10">
-                    <div className="flex items-center">
-                        <img src="https://randomuser.me/api/portraits/women/70.jpg" alt="Profile" className="h-10 w-10 rounded-full" />
-                        {!collapsed && (
-                            <div className="ml-3">
-                                <h6 className="text-white mb-0 text-sm">이근황</h6>
-                                <small className="text-gray-400">Admin</small>
-                            </div>
-                        )}
+                {isLoggedIn && (
+                    <div className="mt-auto p-4 border-t border-white/10">
+                        <div className="flex items-center">
+                            <img
+                                src="/icons/admin_icon_img.png"
+                                alt="삼각김밥 마스코트"
+                                className="w-11 h-11 pt-0.5 pl-1 rounded-full object-cover overflow-visible bg-gray-400 border border-gray-100"
+                            />
+                            {!collapsed && (
+                                <div className="ml-3 leading-tight">
+                                    <h6 className="text-white text-sm font-bold">
+                                        삼각김밥 관리자 🍙
+                                    </h6>
+                                </div>
+                            )}
+                        </div>
                     </div>
-                </div>
+                )}
             </aside>
 
             {/* 메인 콘텐츠 */}
