@@ -1,4 +1,4 @@
-import { NavLink, Outlet, useLocation } from "react-router-dom";
+import {NavLink, Outlet, useLocation, useNavigate} from "react-router-dom";
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -11,15 +11,24 @@ import {
     faBullhorn,
     faCartShopping,
     faChevronRight,
-    faChevronLeft,
-    faBell,
-    faUserCircle,
+    faChevronLeft, faRightFromBracket, faRightToBracket,
 } from '@fortawesome/free-solid-svg-icons'
 
 export default function AdminLayout() {
     const [collapsed, setCollapsed] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
     const location = useLocation();
+    const navigate = useNavigate();
 
+    // 로그아웃 핸들러
+    const handleLogout = () => {
+        navigate("/admin/login");
+    };
+
+    // 로그인 핸들러
+    const handleLogin = () => {
+        navigate("/admin/login");
+    };
 
     //실시간 시간 처리
     const [currentTime, setCurrentTime] = useState(
@@ -68,6 +77,7 @@ export default function AdminLayout() {
 
         // 다른 정적 경로가 필요하다면 여기에 추가
     };
+
     // ② 상품명을 담을 로컬 상태
     const [dynamicTitle, setDynamicTitle] = useState<string>("");
 
@@ -184,26 +194,26 @@ export default function AdminLayout() {
                         {/* 시간 */}
                         <span>{currentTime}</span>
 
-                        {/* 알림 버튼 */}
-                        <button
-                            className="relative text-gray-600 hover:text-blue-600 focus:outline-none"
-                            aria-label="Notifications"
-                        >
-                            <FontAwesomeIcon icon={faBell} size="lg" />
-                            {/* 알림 뱃지 예시 */}
-                            <span className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full text-xs w-4 h-4 flex items-center justify-center">
-                                3
-                            </span>
-                        </button>
-
-                        {/* 관리자 계정 버튼 */}
-                        <button
-                            className="text-gray-600 hover:text-blue-600 focus:outline-none flex items-center gap-1"
-                            aria-label="Account settings"
-                        >
-                            <FontAwesomeIcon icon={faUserCircle} size="lg" />
-                            <span className="hidden sm:inline text-gray-800 font-medium">Admin</span>
-                        </button>
+                        {/* 관리자 로그인/로그아웃 버튼 */}
+                        {isLoggedIn ? (
+                            <button
+                                onClick={handleLogout}
+                                aria-label="Logout"
+                                className="flex items-center gap-1 text-gray-600 hover:text-red-600 leading-none"
+                            >
+                                <FontAwesomeIcon icon={faRightFromBracket} size="lg" className="align-middle" />
+                                <span className="hidden sm:inline font-medium">Logout</span>
+                            </button>
+                        ) : (
+                            <button
+                                onClick={handleLogin}
+                                aria-label="Login"
+                                className="flex items-center gap-1 text-gray-600 hover:text-blue-600 leading-none"
+                            >
+                                <FontAwesomeIcon icon={faRightToBracket} size="lg" className="align-middle" />
+                                <span className="hidden sm:inline font-medium">Login</span>
+                            </button>
+                        )}
                     </div>
                 </header>
 

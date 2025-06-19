@@ -25,11 +25,10 @@ export default function ListComponent({ products, page, category, keyword, hidde
     return (
         <div>
             <div className="overflow-x-auto bg-white shadow rounded-lg">
-                <div className="overflow-x-auto bg-white shadow rounded-lg">
-                    <table className="min-w-full text-sm divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
+                <table className="min-w-full text-sm divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
                         <tr>
-                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">상품번호</th>
+                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
                             <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">이미지</th>
                             <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">상품명</th>
                             <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">가격</th>
@@ -65,8 +64,7 @@ export default function ListComponent({ products, page, category, keyword, hidde
                             ))
                         )}
                         </tbody>
-                    </table>
-                </div>
+                </table>
             </div>
         </div>
     );

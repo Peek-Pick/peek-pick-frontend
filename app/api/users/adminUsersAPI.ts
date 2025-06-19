@@ -1,4 +1,4 @@
-import axiosInstance from "~/instance/axiosInstance";
+import axiosInstanceAdmin from "~/instance/axiosInstanceAdmin";
 import type Long from "@zxing/library/es2015/core/util/Long";
 import type {UpdateStatus} from "~/types/users";
 
@@ -16,13 +16,13 @@ export async function getUserList(page: number, category?: string, keyword?: str
     if (status) params.status = status;
     if (social !== undefined) params.social = String(social);
 
-    const response = await axiosInstance.get(`${host}/list`, {params});
+    const response = await axiosInstanceAdmin.get(`${host}/list`, {params});
     return response.data;
 }
 
 // 사용자 디테일 조회
 export async function getUserDetail( userId:Long) {
-    const res = await axiosInstance.get(`${host}/${userId}`)
+    const res = await axiosInstanceAdmin.get(`${host}/${userId}`)
     return res.data
 }
 
@@ -32,17 +32,17 @@ export const getAdminUserReviews = async (userId: number, page: number) => {
         page: String(page),
         userId: String(userId),
     });
-    return await axiosInstance.get(`${host}?${params.toString()}`);
+    return await axiosInstanceAdmin.get(`${host}?${params.toString()}`);
 }
 
 // 사용자별 리뷰 개수 조회
 export const getAdminUserReviewsCount = async (userId: number): Promise<number> => {
-    const response = await axiosInstance.get(`${host}/count?userId=${userId}`);
+    const response = await axiosInstanceAdmin.get(`${host}/count?userId=${userId}`);
     return response.data;
 };
 
 // 사용자 상태 수정
 export const updateAdminUserStatus = async (userId: number, payload: UpdateStatus) => {
-    const response = await axiosInstance.patch(`${host}/${userId}/status`, payload)
+    const response = await axiosInstanceAdmin.patch(`${host}/${userId}/status`, payload)
     return response.data
 }

@@ -23,7 +23,6 @@ export default [
         route('/login', 'routes/auth/loginPage.tsx'),
         route("/logout", 'routes/auth/logoutPage.tsx'),
 
-
         // 마이페이지
         route("/mypage", "routes/users/myPagePage.tsx"),
         route("/mypage/edit", "routes/users/myPageEditPage.tsx"),

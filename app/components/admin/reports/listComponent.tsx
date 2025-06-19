@@ -34,17 +34,16 @@ export default function ListComponent({data, isLoading, isError, page, category,
 
     return (
         <div>
-            <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
-                <div className="max-w-full overflow-x-auto">
-                    <table className="min-w-full text-sm divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
+            <div className="overflow-x-auto bg-white shadow rounded-lg">
+                <table className="min-w-full text-sm divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
                         <tr>
-                            <th className="w-1/7 px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                            <th className="w-1/7 px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">리뷰번호</th>
-                            <th className="w-1/7 px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">작성자번호</th>
-                            <th className="w-1/7 px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">신고자번호</th>
-                            <th className="w-1/7 px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">신고사유</th>
-                            <th className="w-2/7 px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">신고일</th>
+                            <th className="w-1/8 px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                            <th className="w-1/8 px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">리뷰번호</th>
+                            <th className="w-1/8 px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">작성자번호</th>
+                            <th className="w-1/8 px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">신고자번호</th>
+                            <th className="w-2/8 px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">신고사유</th>
+                            <th className="w-2/8 px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">신고일</th>
                         </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
@@ -84,8 +83,7 @@ export default function ListComponent({data, isLoading, isError, page, category,
                             ))
                         )}
                         </tbody>
-                    </table>
-                </div>
+                </table>
             </div>
         </div>
     );

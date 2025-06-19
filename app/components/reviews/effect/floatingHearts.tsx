@@ -22,7 +22,7 @@ export default function FloatingHearts({ x, y }: FloatingHeartProps) {
             style={{ left: x, top: y }}
         >
             <DotLottieReact
-                src="https://lottie.host/aba4b68b-eb72-4487-a9d7-53343bd4b640/zrDbRR0n8E.lottie"
+                src="/effect/lottie_heart_effect.lottie"
                 loop={false}
                 autoplay
                 speed={1.5}

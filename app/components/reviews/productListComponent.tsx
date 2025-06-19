@@ -83,9 +83,9 @@ export default function ProductListComponent({aiReview, productData, productId, 
     // AI 모델 설명 모달
     const handleInfoClick = () => {
         Swal.fire({
-            title: 'AI 리뷰 요약이란?',
+            title: 'What is AI Review Summary?',
             icon: 'info',
-            text: 'GPT한테 니가 물어봐.',
+            text: 'Ask GPT if you have any questions.',
             confirmButtonText: "OK",
             customClass: {
                 popup: 'custom-popup',
@@ -117,18 +117,18 @@ export default function ProductListComponent({aiReview, productData, productId, 
                                 <div className="flex items-center gap-2">
                                     <span className="w-12 h-12">
                                         <DotLottieReact
-                                            src="https://lottie.host/9b4eefb1-14a0-423e-9a10-129243fcdb18/fkQiFQX5Rh.lottie"
+                                            src="/loading/lottie_ai_review.lottie"
                                             loop
                                             autoplay
                                             speed={1.5}
                                         />
                                     </span>
                                     <p className="text-sm font-semibold text-gray-800 flex items-center gap-1">
-                                        AI가 요약했어요!
+                                        AI Summarized It!
                                         <button
                                             onClick={handleInfoClick}
-                                            aria-label="AI 리뷰 요약 정보 보기"
-                                            className="text-gray-400 hover:text-gray-600 transition-colors text-lg leading-none select-none"
+                                            aria-label="View AI review summary information"
+                                            className="text-gray-400 hover:text-gray-600 transition-colors text-lg leading-none select-none mt-0.5"
                                         >
                                             <Info className="w-4 h-4" />
                                         </button>
@@ -137,7 +137,7 @@ export default function ProductListComponent({aiReview, productData, productId, 
 
                                 {/* 긍정 리뷰 비율 */}
                                 <p className="text-sm text-red-400 flex items-center gap-1">
-                                    <span className="text-sm">긍정리뷰</span>
+                                    <span className="text-sm">Positive</span>
                                     <span className="font-semibold text-lg">{aiReview.percent}%</span>
                                 </p>
                             </div>
@@ -154,7 +154,7 @@ export default function ProductListComponent({aiReview, productData, productId, 
                                         }`}
                                         onClick={() => setIsNegative(false)}
                                     >
-                                        긍정리뷰
+                                        Positive Review
                                     </button>
                                     <button
                                         className={`w-1/2 py-2 text-sm font-medium transition-colors ${
@@ -164,7 +164,7 @@ export default function ProductListComponent({aiReview, productData, productId, 
                                         }`}
                                         onClick={() => setIsNegative(true)}
                                     >
-                                        부정리뷰
+                                        Negative Review
                                     </button>
                                 </div>
 
@@ -296,7 +296,7 @@ function ReviewItem({review, productId}: ReviewItemProps) {
                         {review.images.map((img) => (
                             <img
                                 key={img.imgId}
-                                src={`http://localhost/s_${img.imgUrl}`}
+                                src={`http://localhost/reviews/s_${img.imgUrl}`}
                                 alt="Review Image"
                                 className="w-25 h-25 sm:w-25 sm:h-25 rounded-lg object-cover flex-shrink-0 border-1 border-gray-300 "
                             />
