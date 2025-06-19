@@ -1,5 +1,5 @@
 import axios, { AxiosError, type AxiosRequestConfig, type AxiosResponse } from "axios";
-import { refreshAccessToken } from "~/api/auth/authAPI";
+import {refreshAccessTokenAdmin} from "~/api/auth/authAPI";
 
 // snake_case → camelCase 유틸
 const toCamel = (s: string) =>
@@ -62,7 +62,7 @@ instance.interceptors.response.use(
 
             if (!refreshTokenPromise) {
                 isRefreshing = true;
-                refreshTokenPromise = refreshAccessToken()
+                refreshTokenPromise = refreshAccessTokenAdmin()
                     .then(() => {
                         processQueue(null);
                     })

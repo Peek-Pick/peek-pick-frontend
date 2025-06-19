@@ -1,6 +1,5 @@
 import axios from "axios";
 import axiosInstance from "~/instance/axiosInstance";
-import {text} from "@fortawesome/fontawesome-svg-core";
 
 const host = "http://localhost:8080/api/v1";
 
@@ -26,9 +25,13 @@ export const logout = async () => {
 };
 
 export const refreshAccessToken = async () => {
-    await axios.get(`${host}/auth/refresh`, {
+    const res = await axios.get(`${host}/auth/refresh`, {
         withCredentials: true,
     });
+
+    if (res.status !== 200) {
+        throw new Error("Access token refresh failed");
+    }
 };
 
 // 어드민 로그인
@@ -45,3 +48,13 @@ export async function getAdminToken(aid: string, apw: string) {
         if (!res.ok) throw new Error("로그인 실패");
     });
 }
+
+export const refreshAccessTokenAdmin = async () => {
+    const res = await axios.get(`${host}/admin/auth/refresh`, {
+        withCredentials: true,
+    });
+
+    if (res.status !== 200) {
+        throw new Error("Access token refresh failed");
+    }
+};
