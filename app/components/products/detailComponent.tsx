@@ -59,7 +59,7 @@ export default function DetailComponent({ product, isLoading, isError }: Props) 
             <div className="flex justify-center">
                 {product.imgUrl && (
                     <img
-                        src={product.imgUrl}
+                        src={`http://localhost${product.imgUrl}`}
                         alt={product.name}
                         className="w-full max-w-sm h-auto object-cover rounded-lg border border-gray-200"
                     />

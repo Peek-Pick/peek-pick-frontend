@@ -1,7 +1,7 @@
-import axiosInstanceAdmin from "~/instance/axiosInstance";
+import axiosInstanceAdmin from "~/instance/axiosInstanceAdmin";
 import type { PageResponse, ProductListDTO, ProductDetailDTO } from "~/types/products";
 
-const ADMIN_HOST = "http://localhost:8080/admin/products";
+const ADMIN_HOST = "http://localhost:8080/api/v1/admin/products";
 
 /** 관리자: 상품 목록 조회 */
 export async function listAdminProducts(

@@ -93,9 +93,9 @@ export default function ListComponent({
 
                     <figure className="bg-[#F9F9F9] rounded-[12px] p-2 mb-4 overflow-hidden">
                         <div className="relative w-full" style={{ paddingBottom: "100%" }}>
-                            {p.imgUrl && (
+                            {p.imgThumbUrl && (
                                 <img
-                                    src={p.imgUrl}
+                                    src={`http://localhost${p.imgThumbUrl}`}
                                     alt={p.name}
                                     className="absolute top-0 left-0 w-full h-full object-contain object-center"
                                 />

@@ -41,9 +41,9 @@ export default function AdminProductsListComponent({ data }: Props) {
                             {/* 이미지 셀: 수평+수직 가운데 정렬 */}
                             <td className="px-4 py-3 align-middle">
                                 <div className="flex justify-center items-center w-full h-full">
-                                    {p.imgUrl ? (
+                                    {p.imgThumbUrl ? (
                                         <img
-                                            src={p.imgUrl}
+                                            src={`http://localhost${p.imgThumbUrl}`}
                                             alt={p.name}
                                             className="w-20 h-20 object-cover rounded"
                                         />
