@@ -18,7 +18,7 @@ export default function AdminProductDetailComponent({ product }: Props) {
             <div className="flex justify-center mb-6">
                 {product.imgUrl ? (
                     <img
-                        src={product.imgUrl}
+                        src={`http://localhost${product.imgUrl}`}
                         alt={product.name}
                         className="max-w-full h-auto object-cover rounded-lg border border-gray-100"
                         style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}

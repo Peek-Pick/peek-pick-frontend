@@ -39,8 +39,8 @@ export function RecommendComponent() {
                             onClick={() => navigate(`/products/${item.barcode}`)}
                         >
                             <div className="w-[140px] h-[140px] mb-3 bg-[#F9F9F9] rounded-md overflow-hidden flex items-center justify-center">
-                                {item.imgUrl ? (
-                                    <img src={item.imgUrl} alt={item.name} className="w-full h-full object-contain" />
+                                {item.imgThumbUrl ? (
+                                    <img src={`http://localhost${item.imgThumbUrl}`} alt={item.name} className="w-full h-full object-contain" />
                                 ) : (
                                     <div className="text-gray-300 text-sm">No Image</div>
                                 )}

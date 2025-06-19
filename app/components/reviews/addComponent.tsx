@@ -153,7 +153,7 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
                 {/* 상품 이미지 + 정보 */}
                 <div className="flex flex-col items-center mb-8">
                     <img
-                        src={product?.imgUrl || "/example.jpg"}
+                        src={`http://localhost${product?.imgUrl || "/example.jpg"}`}
                         alt={product?.name || "Product Image"}
                         className="w-40 h-40 sm:w-40 sm:h-40 md:w-40 md:h-40 rounded-lg object-cover mb-"
                     />
