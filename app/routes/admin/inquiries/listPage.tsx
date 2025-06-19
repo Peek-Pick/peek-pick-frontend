@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -13,35 +13,38 @@ import InquiryFilterBar from "~/components/admin/inquiries/inquiryFilterBar";
 function ListPage() {
     const [searchParams, setSearchParams] = useSearchParams();
 
-    const [page, setPage] = useState(Number(searchParams.get("page") || 0));
-    const [size, setSize] = useState(searchParams.get("size") || "10");
-    const [keyword, setKeyword] = useState(searchParams.get("keyword") || "");
-    const [category, setCategory] = useState(searchParams.get("category") || "all");
-    const [includeDeleted, setIncludeDeleted] = useState(searchParams.get("includeDeleted") === "true");
-    const [waitingAnswerOnly, setWaitingAnswerOnly] = useState(searchParams.get("status") === "PENDING");
+    const [page, setPage] = useState(0);
+    const [keyword, setKeyword] = useState("");
+    const [category, setCategory] = useState("all");
+    const [includeDeleted, setIncludeDeleted] = useState(false);
+    const [waitingAnswerOnly, setWaitingAnswerOnly] = useState(false);
 
+    // URL 쿼리 → 상태로 동기화 (뒤로가기 대응)
     useEffect(() => {
+        setPage(Math.max(0, Number(searchParams.get("page")) || 0));
+        setKeyword(searchParams.get("keyword") || "");
+        setCategory(searchParams.get("category") || "all");
+        setIncludeDeleted(searchParams.get("includeDeleted") === "true");
+        setWaitingAnswerOnly(searchParams.get("status") === "PENDING");
+    }, [searchParams]);
+
+    const applyFiltersToURL = (pageOverride?: number) => {
         const params = new URLSearchParams();
-
-        params.set("page", String(page));
-        params.set("size", size);
-
+        params.set("page", String(pageOverride ?? page));
         if (category !== "all") params.set("category", category);
         if (keyword.trim() !== "") params.set("keyword", keyword.trim());
         if (includeDeleted) params.set("includeDeleted", "true");
         if (waitingAnswerOnly) params.set("status", "PENDING");
-
         setSearchParams(params);
-    }, [page, size, category, keyword, includeDeleted, waitingAnswerOnly]);
+    };
 
     const queryParams = useMemo(() => ({
         page,
-        size: Number(size),
         keyword: keyword.trim() || undefined,
         category: category !== "all" ? category : undefined,
         includeDeleted,
         status: waitingAnswerOnly ? "PENDING" : undefined,
-    }), [page, size, keyword, category, includeDeleted, waitingAnswerOnly]);
+    }), [page, keyword, category, includeDeleted, waitingAnswerOnly]);
 
     const { data, isLoading, isError } = useQuery<PagingResponse<InquiryResponseDTO>>({
         queryKey: ["admin-inquiries", queryParams],
@@ -49,20 +52,21 @@ function ListPage() {
         staleTime: 1000 * 60 * 10,
     });
 
-    const handlePageChange = (newPage: number) => setPage(newPage);
-    const handleSizeChange = (newSize: number) => {
-        setSize(String(newSize));
-        setPage(0);
+    const handlePageChange = (newPage: number) => {
+        setPage(newPage);
+        applyFiltersToURL(newPage);
     };
 
     const handleWaitingAnswerChange = (checked: boolean) => {
         setWaitingAnswerOnly(checked);
         setPage(0);
+        applyFiltersToURL(0);
     };
 
     const handleIncludeDeletedChange = (checked: boolean) => {
         setIncludeDeleted(checked);
         setPage(0);
+        applyFiltersToURL(0);
     };
 
     if (isLoading) return <LoadingComponent isLoading />;
@@ -80,11 +84,6 @@ function ListPage() {
                 setCategory={setCategory}
                 keyword={keyword}
                 setKeyword={setKeyword}
-                size={size}
-                setSize={(val: string) => {
-                    const numSize = Number(val);
-                    if (!isNaN(numSize)) handleSizeChange(numSize);
-                }}
                 waitingAnswerOnly={waitingAnswerOnly}
                 setWaitingAnswerOnly={handleWaitingAnswerChange}
                 includeDeleted={includeDeleted}
@@ -94,8 +93,7 @@ function ListPage() {
 
             <ListComponent
                 items={data.content}
-                size={Number(size)}
-                onSizeChange={handleSizeChange}
+                waitingAnswerOnly={waitingAnswerOnly}
             />
 
             <PaginationComponent

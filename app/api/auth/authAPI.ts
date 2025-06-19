@@ -1,5 +1,6 @@
 import axios from "axios";
 import axiosInstance from "~/instance/axiosInstance";
+import axiosInstanceAdmin from "~/instance/axiosInstanceAdmin";
 
 const host = "http://localhost:8080/api/v1";
 
@@ -19,7 +20,7 @@ export async function getToken(email: string, password: string) {
 }
 
 export const logout = async () => {
-    await axiosInstance.post(`${host}/auth/logout`, null, {
+    await axiosInstance.post(`/auth/logout`, null, {
         withCredentials: true,
     });
 };
@@ -33,6 +34,7 @@ export const refreshAccessToken = async () => {
         throw new Error("Access token refresh failed");
     }
 };
+
 
 // 어드민 로그인
 export async function getAdminToken(aid: string, apw: string) {
@@ -49,6 +51,12 @@ export async function getAdminToken(aid: string, apw: string) {
     });
 }
 
+export const logoutAdmin = async () => {
+    await axiosInstanceAdmin.post(`/auth/logout`, null, {
+        withCredentials: true,
+    });
+};
+
 export const refreshAccessTokenAdmin = async () => {
     const res = await axios.get(`${host}/admin/auth/refresh`, {
         withCredentials: true,
@@ -58,3 +66,4 @@ export const refreshAccessTokenAdmin = async () => {
         throw new Error("Access token refresh failed");
     }
 };
+

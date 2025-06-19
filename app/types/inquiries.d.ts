@@ -37,8 +37,7 @@ interface InquiryResponseDTO {
 }
 
 interface FetchAdminInquiriesParams {
-    page: number,
-    size: number,
+    page?: number,
     keyword?: string,       // 검색어 (선택)
     status?: string,        // 상태 필터 (선택)
     category?: string,      // 문의 유형 필터 (선택)

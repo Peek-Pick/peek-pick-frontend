@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { fetchInquiryAnswer, updateInquiryAnswer } from "~/api/inquiries/inquiriesAPI";
+import {fetchAdminInquiryAnswer, fetchInquiryAnswer, updateInquiryAnswer} from "~/api/inquiries/inquiriesAPI";
 import { useDeleteInquiryAnswer } from "~/hooks/inquiries/useInquiryMutation";
 
 interface ReplyEditInfoProps {
@@ -21,7 +21,7 @@ const ReplyEditInfo = ({ inquiryId, onSuccess }: ReplyEditInfoProps) => {
             setIsLoading(true);
             setLoadError(null);
             try {
-                const data = await fetchInquiryAnswer(inquiryId);
+                const data = await fetchAdminInquiryAnswer(inquiryId);
                 setContent(data?.content ?? "");
             } catch (error: any) {
                 setLoadError(error.message || "알 수 없는 오류가 발생했습니다.");

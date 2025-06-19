@@ -54,6 +54,10 @@ export async function deleteImages(inquiryId: number, urls: string[]) {
         }
     });
 }
+export async function fetchInquiryAnswer(inquiryId: number): Promise<InquiryAnswerResponseDTO> {
+    const response = await axiosInstance.get<InquiryAnswerResponseDTO>(`/inquiries/${inquiryId}/reply`);
+    return response.data;
+}
 
 
 // 어드민
@@ -79,7 +83,7 @@ export async function updateInquiryAnswer(inquiryId: number, data: InquiryAnswer
     await axiosInstanceAdmin.put(`/admin/inquiries/${inquiryId}/reply`, data);
 }
 
-export async function fetchInquiryAnswer(inquiryId: number): Promise<InquiryAnswerResponseDTO> {
+export async function fetchAdminInquiryAnswer(inquiryId: number): Promise<InquiryAnswerResponseDTO> {
     const response = await axiosInstanceAdmin.get<InquiryAnswerResponseDTO>(`/admin/inquiries/${inquiryId}/reply`);
     return response.data;
 }
