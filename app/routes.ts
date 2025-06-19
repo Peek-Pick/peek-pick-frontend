@@ -73,6 +73,7 @@ export default [
 
         // 로그인
         route('login', 'routes/admin/auth/loginPage.tsx'),
+        route("logout", 'routes/admin/auth/logoutPage.tsx'),
         
         //관리자 대시보드
         route("dashboard", "routes/admin/dashboard/dashboardPage.tsx"),

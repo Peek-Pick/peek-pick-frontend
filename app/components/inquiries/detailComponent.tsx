@@ -5,7 +5,7 @@ import { Edit, MoreVertical, Trash, Check, Hourglass } from "lucide-react";
 import { useDeleteInquiry } from "~/hooks/inquiries/useInquiryMutation";
 import { INQUIRY_TYPES } from "~/enums/inquiries/inquiry";
 
-const API_URL = import.meta.env.VITE_API_URL?.replace("/api/v1", "") ?? "http://localhost:8080";
+const API_URL = import.meta.env.VITE_API_URL?.replace("/api/v1", "") ?? "http://localhost";
 
 interface Props {
     inquiry: InquiryResponseDTO & { userNickname: string };
@@ -119,7 +119,7 @@ function DetailComponent({ inquiry, navigate: navigateProp }: Props) {
                     <img
                         src={`http://localhost/${inquiry.userProfileImgUrl}`}
                         alt="프로필"
-                        className="w-10 h-10 rounded-full object-cover border border-gray-300"
+                        className="w-11 h-11 rounded-full object-cover border border-gray-300"
                     />
                     <span className="font-semibold text-base ml-0.5">{inquiry.userNickname}</span>
                 </div>
