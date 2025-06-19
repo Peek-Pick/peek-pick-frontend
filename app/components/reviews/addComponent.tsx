@@ -9,6 +9,7 @@ import { ReviewLoading } from "~/util/loading/reviewLoading";
 import TextareaAutosize from "react-textarea-autosize";
 import Swal from "sweetalert2"
 import '~/util/swal/customSwal.css'
+import {BackButton} from "~/util/button/FloatingActionButtons";
 
 interface AddProps {
     product?: ProductDetailDTO;
@@ -54,7 +55,7 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
                     actions: 'custom-actions',
                     confirmButton: 'custom-confirm-button',
                 }
-            });
+            }).then();
 
             return addReview(formData);
         },
@@ -70,7 +71,7 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
                     confirmButton: 'custom-confirm-button',
                 }
             }).then(() => {
-                navigate("/reviews/user", { replace: true , state: { from: 'reviewAdd' }});
+                navigate("/reviews/user", { replace: true });
             });
         },
         onError: () => {
@@ -84,7 +85,7 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
                     actions: 'custom-actions',
                     confirmButton: 'custom-confirm-button',
                 }
-            });
+            }).then();
         }
     });
 
@@ -119,7 +120,7 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
                     actions: 'custom-actions',
                     confirmButton: 'custom-confirm-button',
                 }
-            });
+            }).then();
             return;
         }
 
@@ -296,6 +297,8 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
                         </button>
                     </form>
                 )}
+                {/* 조이스틱 */}
+                <BackButton />
             </div>
         </section>
     );

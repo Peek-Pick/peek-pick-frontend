@@ -5,6 +5,7 @@ import { Rating20 } from "~/components/reviews/rating/rating"
 import { ReviewLoading } from "~/util/loading/reviewLoading";
 import { useLikeClick } from "~/hooks/reviews/useLikeClick";
 import FloatingHearts from "~/components/reviews/effect/floatingHearts";
+import {BackButton } from "~/util/button/FloatingActionButtons";
 
 export interface ReviewProps {
     review?: ReviewDetailDTO;
@@ -33,7 +34,7 @@ export default function DetailComponent({review, isLoading, isError }: ReviewPro
     const toggleLikeMutation = useMutation({
         mutationFn: (reviewId: number) => toggleReview(reviewId),
         onSuccess: () => {
-            queryClient.invalidateQueries({queryKey: ["review", review.reviewId]});
+            queryClient.invalidateQueries({queryKey: ["review", review.reviewId]}).then();
         },
         onError: (error) => {
             console.error("toggleLikeMutation failed: ", error);
@@ -81,7 +82,7 @@ export default function DetailComponent({review, isLoading, isError }: ReviewPro
                                     {review.images.map((img) => (
                                         <img
                                             key={img.imgId}
-                                            src={`http://localhost/s_${img.imgUrl}`}
+                                            src={`http://localhost/reviews/s_${img.imgUrl}`}
                                             alt="Review Image"
                                             className="w-25 h-25 sm:w-25 sm:h-25 rounded-lg object-cover flex-shrink-0 border-1 border-gray-300 "
                                         />
@@ -127,6 +128,9 @@ export default function DetailComponent({review, isLoading, isError }: ReviewPro
                                 </button>
                             </div>
                         </div>
+
+                        {/* 조이스틱 */}
+                        <BackButton />
                     </div>
                     {/* 하트 이펙트 - 반드시 relative 컨테이너 안에서 렌더 */}
                     {hearts.map((heart) => (

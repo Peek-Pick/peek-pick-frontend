@@ -2,8 +2,8 @@ import type { FetchNextPageOptions, InfiniteQueryObserverResult } from "@tanstac
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Rating20 } from "~/components/reviews/rating/rating"
-import {ReviewLoading, ReviewInfiniteLoading} from "~/util/loading/reviewLoading";
-import {BackButton, FloatingActionButtons} from "~/util/button/FloatingActionButtons";
+import { ReviewLoading, ReviewInfiniteLoading } from "~/util/loading/reviewLoading";
+import { BackParamButton, FloatingActionButtons } from "~/util/button/FloatingActionButtons";
 
 export interface ReviewListComponentProps {
     reviewCount: number;
@@ -34,7 +34,7 @@ export default function UserListComponent({reviewCount, reviewList, fetchNextPag
         const observer = new IntersectionObserver(
             ([entry]) => {
                 if (entry.isIntersecting && !isFetchingNextPage) {
-                    fetchNextPage();
+                    fetchNextPage().then();
                 }
             },
             {
@@ -111,7 +111,7 @@ export default function UserListComponent({reviewCount, reviewList, fetchNextPag
 
                         {/* 조이스틱 */}
                         <FloatingActionButtons />
-                        <BackButton />
+                        <BackParamButton where={"/mypage"}/>
 
                         {/* 무한 스크롤 디텍터 */}
                         {hasNextPage && <div ref={bottomRef} className="h-1"/>}

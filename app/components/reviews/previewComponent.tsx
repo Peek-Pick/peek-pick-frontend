@@ -87,7 +87,7 @@ function ReviewItem({ review, productId }: ReviewItemProps) {
     const toggleLikeMutation = useMutation({
         mutationFn: (reviewId: number) => toggleReview(reviewId),
         onSuccess: () => {
-            queryClient.invalidateQueries({queryKey: ["previews", productId]});
+            queryClient.invalidateQueries({queryKey: ["previews", productId]}).then();
         },
         onError: (error) => {
             console.error("toggleLikeMutation failed: ", error);
@@ -139,7 +139,7 @@ function ReviewItem({ review, productId }: ReviewItemProps) {
                     {review.images.map((img) => (
                         <img
                             key={img.imgId}
-                            src={`http://localhost/s_${img.imgUrl}`}
+                            src={`http://localhost/reviews/s_${img.imgUrl}`}
                             alt="Review Image"
                             className="w-25 h-25 sm:w-25 sm:h-25 rounded-lg object-cover flex-shrink-0 border-1 border-gray-300 "
                         />

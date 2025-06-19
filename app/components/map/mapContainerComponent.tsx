@@ -4,7 +4,7 @@ import { GoogleMap, Marker, useLoadScript} from '@react-google-maps/api';
 import StoreSearchComponent from "~/components/map/storeSearchComponent";
 import { EyeSlashIcon, BuildingStorefrontIcon } from '@heroicons/react/24/outline';
 import StoreInfoWindowComponent from "~/components/map/storeInfoWindowComponent";
-import MapLoadingComponent from "~/components/map/mapLoadingComponent";
+import MapLoadingComponent from "~/util/loading/mapLoadingComponent";
 import usePolyline from "~/hooks/map/usePolyline";
 import {getDirections} from "~/api/mapAPI";
 import {useMapSearch} from "~/hooks/map/useMapSearch";

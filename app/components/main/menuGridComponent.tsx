@@ -6,32 +6,32 @@ const MenuGrid: React.FC = () => {
 
     const menus = [
         {
-            icon: 'https://img.icons8.com/?size=100&id=13124&format=png&color=000000',
+            icon: '/icons/main_barcode.png',
             label: 'Barcode',
             to: '/barcode/scan',
         },
         {
-            icon: 'https://www.gstatic.com/android/keyboard/emojikitchen/20230821/u1fa77/u1fa77_u1fa84.png',
+            icon: '/icons/main_favorite.png',
             label: 'WishList',
             to: '/mypage/favorites',
         },
         {
-            icon: 'https://www.gstatic.com/android/keyboard/emojikitchen/20240206/u1f48c/u1f48c_u1f30c.png',
+            icon: '/icons/main_event.png',
             label: 'Event',
             to: '/notices/list',
         },
         {
-            icon: 'https://img.icons8.com/?size=100&id=ZInIxVkif7vO&format=png&color=000000',
+            icon: '/icons/main_map.png',
             label: 'Nearby Stores',
             to: '/map',
         },
         {
-            icon: 'https://img.icons8.com/?size=100&id=108832&format=png&color=000000',
+            icon: '/icons/main_chatbot.png',
             label: 'AI ChatBot',
             to: '/chatbot',
         },
         {
-            icon: 'https://img.icons8.com/?size=100&id=O713QAUVtMnH&format=png&color=000000',
+            icon: '/icons/main_ranking.png',
             label: 'Ranking',
             to: '/products/ranking',
         },

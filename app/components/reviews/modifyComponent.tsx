@@ -6,6 +6,7 @@ import { useTagSelector } from "~/hooks/tags/useTagSelector";
 import { Rating } from "~/components/reviews/rating/rating"
 import { ReviewLoading } from "~/util/loading/reviewLoading";
 import TextareaAutosize from 'react-textarea-autosize';
+import { BackButton } from "~/util/button/FloatingActionButtons";
 import Swal from "sweetalert2"
 import '~/util/swal/customSwal.css'
 
@@ -105,7 +106,7 @@ export default function ModifyComponent({ review, isLoading, isError }: ModifyPr
                     actions: 'custom-actions',
                     confirmButton: 'custom-confirm-button',
                 }
-            });
+            }).then();
 
             return modifyReview(review!.reviewId, formData);
         },
@@ -121,7 +122,7 @@ export default function ModifyComponent({ review, isLoading, isError }: ModifyPr
                     confirmButton: 'custom-confirm-button',
                 }
             }).then(() => {
-                navigate(`/reviews/user`);
+                navigate(`/reviews/${review.reviewId}`, { replace: true });
             });
         },
         onError: () => {
@@ -135,7 +136,7 @@ export default function ModifyComponent({ review, isLoading, isError }: ModifyPr
                     actions: 'custom-actions',
                     confirmButton: 'custom-confirm-button',
                 }
-            });
+            }).then();
         }
     });
 
@@ -158,7 +159,7 @@ export default function ModifyComponent({ review, isLoading, isError }: ModifyPr
                     actions: 'custom-actions',
                     confirmButton: 'custom-confirm-button',
                 }
-            });
+            }).then();
             return;
         }
 
@@ -179,13 +180,47 @@ export default function ModifyComponent({ review, isLoading, isError }: ModifyPr
         // 4) 이미지 파일들(files) append
         selectedFiles.forEach(file => formData.append('files', file));
 
-        // 5) 전송
-        updateMutation.mutate(formData);
+        // 5) SweetAlert로 최종 확인 후 전송
+        Swal.fire({
+            title: "Are you sure you want to update your review?",
+            text: "Once updated, the changes cannot be undone.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Update",
+            cancelButtonText: "Cancel",
+            customClass: {
+                popup: 'custom-popup',
+                title: 'custom-title',
+                actions: 'custom-actions',
+                confirmButton: 'custom-confirm-button',
+                cancelButton: 'custom-cancel-button',
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                updateMutation.mutate(formData);
+            }
+        });
     };
 
     // 리뷰 삭제하기
     const handleDelete = async () => {
-        if (!review) return;
+        const result =await Swal.fire({
+            title: "Are you sure you want to delete this review?",
+            text: "Once deleted, the changes cannot be undone.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Delete",
+            cancelButtonText: "Cancel",
+            customClass: {
+                popup: 'custom-popup',
+                title: 'custom-title',
+                actions: 'custom-actions',
+                confirmButton: 'custom-confirm-button',
+                cancelButton: 'custom-cancel-button',
+            }
+        });
+
+        if (!result.isConfirmed) return;
 
         try {
             Swal.fire({
@@ -216,7 +251,7 @@ export default function ModifyComponent({ review, isLoading, isError }: ModifyPr
                     confirmButton: 'custom-confirm-button',
                 },
             });
-            navigate(`/reviews/user`);
+            navigate(`/reviews/user`,  { replace: true });
         } catch (error) {
             console.error(error);
             await Swal.fire({
@@ -341,7 +376,7 @@ export default function ModifyComponent({ review, isLoading, isError }: ModifyPr
                                     className="relative w-25 h-25 sm:w-25 sm:h-25 flex-shrink-0 rounded-lg overflow-hidden border border-gray-300"
                                 >
                                     <img
-                                        src={`http://localhost/s_${img.imgUrl}`}
+                                        src={`http://localhost/reviews/s_${img.imgUrl}`}
                                         alt={"기존 이미지"}
                                         className="w-full h-full object-cover"
                                     />
@@ -392,6 +427,9 @@ export default function ModifyComponent({ review, isLoading, isError }: ModifyPr
                         </button>
                     </div>
                 </form>
+
+                {/* 조이스틱 */}
+                <BackButton />
             </div>
         </section>
     );
