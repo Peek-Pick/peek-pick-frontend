@@ -62,7 +62,7 @@ const LoginComponent = () => {
                             placeholder="you@example.com"
                             required
                         />
-                        </div>
+                    </div>
 
                     <div>
                         <label htmlFor="password" className="block text-sm font-semibold mb-2">비밀번호</label>

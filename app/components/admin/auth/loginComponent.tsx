@@ -35,7 +35,7 @@ function LoginComponent() {
             <div className="bg-[#fefefe] relative flex flex-col items-center justify-start" style={{ fontFamily: "'Quicksand', sans-serif" }}>
                 <img src="/BackgroundCard1.png" alt="Profile Background" className="w-full h-[250px] object-cover rounded-[20px]" />
 
-                <div className="absolute top-[200px] w-[550px] max-w-2xl bg-white/70 backdrop-blur-[40px] border-2 border-white/80 dark:border-white/30 rounded-[16px] shadow-xl p-8 z-10">
+                <div className="absolute top-[150px] w-[550px] max-w-2xl bg-white/70 backdrop-blur-[40px] border-2 border-white/80 dark:border-white/30 rounded-[16px] shadow-xl p-8 z-10">
                     <h2 className="text-3xl font-semibold text-center text-[#1e3a8a] mb-8">관리자 로그인</h2>
 
                     <form onSubmit={handleSubmit} className="space-y-6 text-gray-800 pb-2">
