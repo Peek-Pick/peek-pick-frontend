@@ -1,12 +1,11 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { INQUIRY_STATUS_LABELS, INQUIRY_TYPES } from "~/enums/inquiries/inquiry";
 
-interface AdminInquiryListComponentProps {
+interface ListComponentProps extends FetchAdminInquiriesParams {
     items: InquiryResponseDTO[];
-    waitingAnswerOnly: boolean;
 }
 
-function ListComponent({ items }: AdminInquiryListComponentProps) {
+function ListComponent({ items }: { items: InquiryResponseDTO[] } & FetchAdminInquiriesParams) {
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -23,20 +22,21 @@ function ListComponent({ items }: AdminInquiryListComponentProps) {
 
     const displayItems = [...items].sort((a, b) => b.inquiryId - a.inquiryId);
 
-    const headers = ['ID', '유형', '작성일', '수정일', '닉네임', '상태', '삭제여부'];
+    const headers = ['ID', '유형', '내용', '작성일', '수정일', '닉네임', '상태', '삭제여부'];
 
     return (
         <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow">
             <div className="overflow-x-auto">
                 <table className="min-w-full text-sm divide-y divide-gray-200 table-fixed">
                     <colgroup>
-                        <col className="w-16" />
-                        <col className="w-24" />
-                        <col className="w-36" />
-                        <col className="w-36" />
-                        <col className="w-32" />
-                        <col className="w-24" />
-                        <col className="w-24" />
+                        <col className="w-16" />  {/* ID */}
+                        <col className="w-24" />  {/* 유형 */}
+                        <col className="w-48" />  {/* 내용 */}
+                        <col className="w-36" />  {/* 작성일 */}
+                        <col className="w-36" />  {/* 수정일 */}
+                        <col className="w-32" />  {/* 닉네임 */}
+                        <col className="w-24" />  {/* 상태 */}
+                        <col className="w-24" />  {/* 삭제여부 */}
                     </colgroup>
                     <thead className="bg-gray-50">
                     <tr>
@@ -69,6 +69,7 @@ function ListComponent({ items }: AdminInquiryListComponentProps) {
                                 >
                                     <td className="px-4 py-3.5">{item.inquiryId}</td>
                                     <td className="px-4 py-3.5">{typeLabel}</td>
+                                    <td className="px-4 py-3.5 truncate max-w-[12rem]"> {item.content} </td>
                                     <td className="px-4 py-3.5">{formatDate(item.regDate)}</td>
                                     <td className="px-4 py-3.5">{isSameDate ? "" : formatDate(item.modDate)}</td>
                                     <td className="px-4 py-3.5 truncate max-w-[128px]">{item.userNickname}</td>

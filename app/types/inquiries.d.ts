@@ -26,6 +26,7 @@ interface InquiryResponseDTO {
     type: InquiryType,
     status: InquiryStatus,
     isDelete: boolean,
+    isWaiting: boolean,
     regDate: string,
     modDate: string,
     imgUrls: string[]
@@ -41,7 +42,8 @@ interface FetchAdminInquiriesParams {
     keyword?: string,       // 검색어 (선택)
     status?: string,        // 상태 필터 (선택)
     category?: string,      // 문의 유형 필터 (선택)
-    isDeleted?: boolean    // 삭제 여부 필터 (선택)
+    isDeleted?: boolean     // 삭제 여부 필터 (선택)
+    isWaiting?: boolean     // 답변 여부 필터 (선택)
 }
 
 interface InquiryAnswerRequestDTO {

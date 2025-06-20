@@ -19,13 +19,13 @@ function ListPage() {
     const [includeDeleted, setIncludeDeleted] = useState(false);
     const [waitingAnswerOnly, setWaitingAnswerOnly] = useState(false);
 
-    // URL 쿼리 → 상태로 동기화 (뒤로가기 대응)
+    // URL → 상태 동기화 부분
     useEffect(() => {
         setPage(Math.max(0, Number(searchParams.get("page")) || 0));
         setKeyword(searchParams.get("keyword") || "");
         setCategory(searchParams.get("category") || "all");
         setIncludeDeleted(searchParams.get("includeDeleted") === "true");
-        setWaitingAnswerOnly(searchParams.get("status") === "PENDING");
+        setWaitingAnswerOnly(searchParams.get("isWaiting") === "true");  // isWaiting 쿼리명 맞춤
     }, [searchParams]);
 
     const applyFiltersToURL = (pageOverride?: number) => {
@@ -43,7 +43,7 @@ function ListPage() {
         keyword: keyword.trim() || undefined,
         category: category !== "all" ? category : undefined,
         includeDeleted,
-        status: waitingAnswerOnly ? "PENDING" : undefined,
+        isWaiting: waitingAnswerOnly || undefined,
     }), [page, keyword, category, includeDeleted, waitingAnswerOnly]);
 
     const { data, isLoading, isError } = useQuery<PagingResponse<InquiryResponseDTO>>({
@@ -93,7 +93,6 @@ function ListPage() {
 
             <ListComponent
                 items={data.content}
-                waitingAnswerOnly={waitingAnswerOnly}
             />
 
             <PaginationComponent
