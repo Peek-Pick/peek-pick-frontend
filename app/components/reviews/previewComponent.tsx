@@ -7,6 +7,9 @@ import { Rating20 } from "~/components/reviews/rating/rating"
 import { useNavigate } from "react-router-dom";
 import { useLikeClick } from "~/hooks/reviews/useLikeClick";
 import FloatingHearts from "~/components/reviews/effect/floatingHearts";
+import HiddenOrNot from "~/components/reviews/effect/hiddenOrNot";
+import {TranslatingLoader} from "~/components/reviews/effect/animatedTypingText";
+import {translateReview} from "~/api/reviews/reviewTranslateAPI";
 
 interface PreviewProps {
     barcode: string;
@@ -83,6 +86,11 @@ function ReviewItem({ review, productId }: ReviewItemProps) {
     // 숨김 리뷰 오버레이
     const [showHidden, setShowHidden] = useState(false);
 
+    // 리뷰 번역 여부, 번역 텍스트, 로딩
+    const [isTranslated, setIsTranslated] = useState(false);
+    const [translatedText, setTranslatedText] = useState<string | null>(null);
+    const [isLoadingTranslation, setIsLoadingTranslation] = useState(false);
+
     // 리뷰 좋아요
     const toggleLikeMutation = useMutation({
         mutationFn: (reviewId: number) => toggleReview(reviewId),
@@ -97,38 +105,90 @@ function ReviewItem({ review, productId }: ReviewItemProps) {
     // 좋아요 클릭 핸들러, 애니메이션
     const {handleLikeClick, containerRef, hearts} = useLikeClick(toggleLikeMutation.mutate, review);
 
+    // 리뷰 번역 핸들러
+    const handleTranslateClick = async () => {
+        if (isTranslated) {
+            // 번역된 상태라면 다시 원문 보기
+            setIsTranslated(false);
+            return;
+        }
+
+        try {
+            setIsLoadingTranslation(true);
+            const res = await translateReview(review.reviewId);
+
+            // 번역중 타임아웃
+            await new Promise(resolve => setTimeout(resolve, 1200));
+
+            setTranslatedText(res.data);
+            setIsTranslated(true);
+        } catch (err) {
+            console.error("번역 실패", err);
+        } finally {
+            setIsLoadingTranslation(false);
+        }
+    };
+
     return (
         <div className="relative" ref={containerRef}>
-        <div
-            className={`bg-white rounded-md p-5 shadow-md mb-2 transition-opacity duration-200 ${
+        <div className={`bg-white rounded-xl p-5 shadow-md mb-2 transition-opacity duration-200 ${
                 review.isHidden && !showHidden ? "opacity-50" : "opacity-100"
             }`}
         >
             {/* 작성자 정보와 작성일*/}
             <div className="flex sm:items-center flex-col min-[400px]:flex-row justify-between gap-5 mb-3">
-                <div className="flex items-center gap-3">
-                    <img src={review.profileImageUrl ? `http://localhost/${review.profileImageUrl}` : "/default.png"}
-                         alt="profile image" className="w-14 h-14 rounded-full object-cover"/>
-                    <h6 className="font-semibold text-md leading-8 text-gray-600">{review.nickname ?? "테스트"}</h6>
-                </div>
-                <div className="flex items-center gap-3">
-                    <p className="font-normal text-sm sm:text-sm leading-5 text-gray-400">{new Date(review.regDate).toLocaleDateString()}</p>
+                <div className="flex items-center justify-between gap-3">
+                    {/* 왼쪽: 프로필 이미지 + 닉네임 */}
+                    <div className="flex items-center gap-3">
+                        <img
+                            src={`http://localhost/${review.profileImageUrl}`}
+                            alt="profile image"
+                            className="w-14 h-14 rounded-full object-cover"
+                        />
+                        <h6 className="font-semibold text-md leading-8 text-gray-600">
+                            {review.nickname ?? "User"}
+                        </h6>
+                    </div>
+
+                    {/* 오른쪽 끝: 번역 버튼 */}
+                    <button
+                        onClick={handleTranslateClick}
+                        disabled={isLoadingTranslation}
+                        className={`flex items-center gap-1 text-xs px-3 py-1.5 rounded-full transition-all shadow-sm bg-blue-50 text-blue-500 hover:bg-blue-100`}>
+                        <span>{isTranslated ? "↩" : "🌐"}</span>
+                        <span>{isTranslated ? "Original" : "Translate"}</span>
+                    </button>
                 </div>
             </div>
 
-            {/* 별점 */}
-            <div className="flex items-center gap-2 mb-4">
-                {Array.from({length: 5}).map((_, i) => (
-                    <Rating20 key={i} filled={i < review.score}/>
-                ))}
+            {/* 별점과 작성일 */}
+            <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                        <Rating20 key={i} filled={i < review.score} />
+                    ))}
+                </div>
+                <p className="font-normal text-sm sm:text-sm text-gray-400">
+                    {new Date(review.regDate).toLocaleDateString()}
+                </p>
             </div>
 
             {/* 리뷰 텍스트 */}
-            <p className="font-normal text-sm sm:text-sm leading-6 text-gray-600 max-xl:text-justify mb-2"
-               style={{ whiteSpace: 'pre-line' }}
-            >
-                {review.comment}
-            </p>
+            <div className="relative mb-4">
+                <p className={`text-sm text-gray-700 whitespace-pre-line transition-opacity duration-300 ${
+                    isLoadingTranslation ? "opacity-20 blur-[1px]" : "opacity-100"
+                }`}
+                >
+                    {isTranslated ? translatedText : review.comment}
+                </p>
+
+                {/* 번역 중 로딩 오버레이 */}
+                {isLoadingTranslation && (
+                    <div className="absolute inset-0 flex items-center justify-center z-10">
+                        <TranslatingLoader />
+                    </div>
+                )}
+            </div>
 
             {/* 이미지 */}
             {review.images?.length > 0 && (
@@ -192,19 +252,7 @@ function ReviewItem({ review, productId }: ReviewItemProps) {
         </div>
             {/* 리뷰 볼래 말래 */}
             {review.isHidden && !showHidden && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center rounded-md z-10">
-                    <div className="absolute inset-0 bg-yellow-100/50 backdrop-blur-md rounded-md border border-yellow-300 shadow-inner"></div>
-                    <div className="relative flex flex-col items-center text-center px-4">
-                        <span className="text-3xl mb-2">🙈</span>
-                        <p className="mb-3 text-yellow-800 font-semibold">This review is hidden!</p>
-                        <button
-                            onClick={() => setShowHidden(true)}
-                            className="px-4 py-2 font-semibold bg-yellow-400 text-white rounded-full hover:bg-yellow-500 transition-all shadow-md"
-                        >
-                            Show Anyway 👀
-                        </button>
-                    </div>
-                </div>
+                <HiddenOrNot onReveal={() => setShowHidden(true)} />
             )}
         </div>
     );

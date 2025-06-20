@@ -33,6 +33,7 @@ export default [
         route("/mypage/coupons", "routes/points/userCouponPage.tsx"), // 쿠폰함
         route("/mypage/favorites", "routes/users/favoritesPage.tsx"), // 즐겨찾기 상품 목록
         route("/mypage/views",   "routes/users/viewsPage.tsx"), // 상품 조회 내역
+
         // 상품
         route("products/ranking",    "routes/products/rankingPage.tsx"),
         route("products/:barcode",   "routes/products/detailPage.tsx"),
@@ -58,9 +59,6 @@ export default [
 
         // 지도
         route("map", "routes/map/mapPage.tsx"),
-
-        // 검색
-        // route("search", "routes/search/searchPage.tsx"),
 
         // 내역
         route("barcode/history", "routes/barcode/barcodeHistoryPage.tsx"),
