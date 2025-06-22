@@ -65,3 +65,9 @@ export const getTags = async () => {
 export const getProductIdByBarcode = async (barcode: string) => {
     return await axiosInstance.get(`${host}/barcode`, {params: { barcode }});
 }
+
+export const getReviewSummary = async (productId: number): Promise<aiReviewDTO> => {
+    const response=  await axiosInstance.get(`${host}/summary/${productId}`);
+    console.log("ai response Data : ", response.data)
+    return response.data;
+}

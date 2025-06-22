@@ -92,6 +92,6 @@ interface AdminReviewReportDTO {
 
 interface aiReviewDTO {
     percent: number;
-    goodComment: string;
-    badComment: string;
+    positiveSummary: string;
+    negativeSummary: string;
 }

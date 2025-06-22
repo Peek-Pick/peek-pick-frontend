@@ -170,7 +170,7 @@ export default function ProductListComponent({aiReview, productData, productId, 
 
                                 {/* 실제 요약 내용 */}
                                 <div className="text-sm text-gray-700 bg-gray-100 rounded-b-xl p-4 leading-relaxed shadow-sm">
-                                    {isNegative ? (aiReview.badComment) : (aiReview.goodComment)}
+                                    {isNegative ? (aiReview.negativeSummary) : (aiReview.positiveSummary)}
                                 </div>
                             </div>
                         </div>
