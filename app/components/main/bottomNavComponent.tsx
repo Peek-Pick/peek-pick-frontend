@@ -15,10 +15,8 @@ export default function BottomNavComponent() {
     return (
         <>
             <div className="h-20" />
-            <nav className="fixed bottom-0 left-0 w-full h-14 bg-transparent backdrop-blur-md shadow-2xl flex justify-around items-center z-50"
-                 style={{
-                     boxShadow: "0 -4px 12px rgba(0, 0, 0, 0.1)",
-                 }}
+            <nav className="fixed bottom-0 left-0 w-full h-15 bg-transparent backdrop-blur-md shadow-2xl flex justify-around items-center z-50"
+                 style={{boxShadow: "0 -4px 12px rgba(0, 0, 0, 0.1)",}}
             >
                 {navItems.map(({ label, icon: Icon, path }) => {
                     const isActive = pathname === path;

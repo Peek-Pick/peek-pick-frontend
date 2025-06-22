@@ -16,9 +16,9 @@ export default function AIChatBot() {
 
     if (isLoading) {
         return (
-            <div className="flex w-full items-center bg-white justify-center h-screen w-full bg-amber-50">
+            <div className="flex w-full items-center bg-white justify-center h-screen">
                 <img
-                    src="chatbotLoading.gif"
+                    src="/loading/chatbotLoading.gif"
                     alt="Loading..."
                     className="w-32 h-32 animate-spin"
                 />

@@ -104,3 +104,12 @@ export async function getRecommendedProducts(
     });
     return res.data;
 }
+
+/**
+ * 사용자 상품 좋아요 개수 조회
+ * @param userId 유저 아이디
+ */
+export const getWishlistCount = async (): Promise<number> => {
+    const response = await axiosInstance.get(`${host}/wishCount`);
+    return response.data;
+};

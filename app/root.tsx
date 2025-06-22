@@ -1,12 +1,8 @@
-import {
-    Links,
-    Meta,
-    Scripts,
-    ScrollRestoration,
-} from "react-router";
-import { Outlet } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {Links, Meta, Scripts, ScrollRestoration,} from "react-router";
+import {Outlet} from "react-router-dom";
+import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import "./app.css";
+import {AdminAuthProvider} from "~/contexts/AdminAuthContext";
 
 const queryClient = new QueryClient();
 
@@ -33,9 +29,11 @@ export function Document({ children }: { children: React.ReactNode }) {
 export default function App() {
     return (
         <QueryClientProvider client={queryClient}>
-            <Document>
-                <Outlet />
-            </Document>
+            <AdminAuthProvider>
+                <Document>
+                    <Outlet />
+                </Document>
+            </AdminAuthProvider>
         </QueryClientProvider>
     );
 }

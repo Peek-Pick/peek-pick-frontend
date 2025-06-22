@@ -2,7 +2,7 @@ import AuDetailHeaderComponent from "~/components/admin/users/auDetailHeaderComp
 import LoadingComponent from "~/components/common/loadingComponent";
 import InquiryMetaInfo from "~/components/admin/inquiries/inquiryMetaInfo";
 import InquiryDetailInfo from "~/components/admin/inquiries/inquiryDetailInfo";
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import {useDeleteAdminInquiry} from "~/hooks/inquiries/useInquiryMutation";
 import ReplyAddInfo from "~/components/admin/inquiries/replyAddInfo";
 import ReplyEditInfo from "~/components/admin/inquiries/replyEditInfo";
@@ -16,6 +16,12 @@ export interface AdminInquiryDetailProps {
 function DetailComponent({ data, isLoading, isError }: AdminInquiryDetailProps) {
     const navigate = useNavigate();
     const deleteAdminInquiryMutation = useDeleteAdminInquiry();
+
+    // 현재 URL 정보 - 페이지, 필터링
+    const location = useLocation();
+
+    // 목록으로 버튼 경로 설정
+    const backToListPath = `/admin/inquiries/list${location.search}`;
 
     const handleDeleteOrRestore = async () => {
         if (!data) return;
@@ -96,7 +102,7 @@ function DetailComponent({ data, isLoading, isError }: AdminInquiryDetailProps) 
                     {data.isDelete ? "문의 복구" : "문의 삭제"}
                 </button>
                 <button
-                    onClick={() => navigate(-1)}
+                    onClick={() => navigate(backToListPath)}
                     className="bg-gray-300 hover:bg-gray-400 text-gray-800 py-1.5 px-4 rounded-lg"
                 >
                     목록으로

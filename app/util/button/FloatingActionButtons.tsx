@@ -1,6 +1,6 @@
 // src/components/common/FloatingActionButtons.tsx
 
-import { ArrowUp, ArrowDown, ArrowLeft } from "lucide-react";
+import { ArrowUp, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export function BackButton() {
@@ -17,9 +17,21 @@ export function BackButton() {
     );
 }
 
-export function FloatingActionButtons() {
+export function BackParamButton({ where }: { where: string}) {
     const navigate = useNavigate();
 
+    return (
+        <button
+            onClick={() => navigate(where)}
+            className="fixed bottom-6 left-4 bg-white hover:bg-gray-100 text-gray-600 rounded-full p-3 shadow-md ring-1 ring-gray-300 transition-all duration-200 opacity-90 hover:opacity-100 z-50"
+            aria-label="뒤로가기"
+        >
+            <ArrowLeft size={20} />
+        </button>
+    );
+}
+
+export function FloatingActionButtons() {
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: "smooth" });
     };

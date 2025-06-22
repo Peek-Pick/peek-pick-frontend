@@ -6,7 +6,7 @@ export interface ProductListDTO {
     barcode: string;
     name: string;
     category?: string | null;
-    imgUrl?: string | null;
+    imgThumbUrl?: string | null;
     likeCount?: number | null;
     reviewCount?: number | null;
     score?: number | null;

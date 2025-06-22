@@ -16,7 +16,7 @@ export interface MypageData {
     profileImgUrl: string;
     nickname: string;
     point: number;
-    wishlistedCount: number;
+    wishlistCount: number;
     reviewCount: number;
     couponCount: number;
     barcodeHistoryCount: number;

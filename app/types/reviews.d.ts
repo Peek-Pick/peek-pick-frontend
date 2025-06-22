@@ -89,3 +89,9 @@ interface AdminReviewReportDTO {
     reason: ReportReason;
     regDate: string;
 }
+
+interface aiReviewDTO {
+    percent: number;
+    goodComment: string;
+    badComment: string;
+}

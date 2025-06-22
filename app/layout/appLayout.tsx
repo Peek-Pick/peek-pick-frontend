@@ -28,6 +28,7 @@ export default function AppLayout() {
         "/inquiries/list": "문의사항",
         "/inquiries/add": "문의사항",
         "/barcode/history": "바코드 내역",
+        "/login": "Peek & Pick",
         // 다른 정적 경로가 필요하다면 여기에 추가
     };
 

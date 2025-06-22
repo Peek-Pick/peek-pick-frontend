@@ -8,7 +8,8 @@ import { Rating } from "~/components/reviews/rating/rating"
 import { ReviewLoading } from "~/util/loading/reviewLoading";
 import TextareaAutosize from "react-textarea-autosize";
 import Swal from "sweetalert2"
-import '~/util/customSwal.css'
+import '~/util/swal/customSwal.css'
+import {BackButton} from "~/util/button/FloatingActionButtons";
 
 interface AddProps {
     product?: ProductDetailDTO;
@@ -54,7 +55,7 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
                     actions: 'custom-actions',
                     confirmButton: 'custom-confirm-button',
                 }
-            });
+            }).then();
 
             return addReview(formData);
         },
@@ -70,7 +71,7 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
                     confirmButton: 'custom-confirm-button',
                 }
             }).then(() => {
-                navigate(`/reviews/product/${product?.barcode}`);
+                navigate("/reviews/user", { replace: true });
             });
         },
         onError: () => {
@@ -84,7 +85,7 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
                     actions: 'custom-actions',
                     confirmButton: 'custom-confirm-button',
                 }
-            });
+            }).then();
         }
     });
 
@@ -119,7 +120,7 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
                     actions: 'custom-actions',
                     confirmButton: 'custom-confirm-button',
                 }
-            });
+            }).then();
             return;
         }
 
@@ -153,7 +154,7 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
                 {/* 상품 이미지 + 정보 */}
                 <div className="flex flex-col items-center mb-8">
                     <img
-                        src={product?.imgUrl || "/example.jpg"}
+                        src={`http://localhost${product?.imgUrl || "/example.jpg"}`}
                         alt={product?.name || "Product Image"}
                         className="w-40 h-40 sm:w-40 sm:h-40 md:w-40 md:h-40 rounded-lg object-cover mb-"
                     />
@@ -296,6 +297,8 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
                         </button>
                     </form>
                 )}
+                {/* 조이스틱 */}
+                <BackButton />
             </div>
         </section>
     );

@@ -19,7 +19,15 @@ function EditComponent({ initialData, onSubmit }: EditComponentProps) {
     const [agree, setAgree] = useState(true); // 수정 시에는 이미 동의했다고 간주
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-    const API_URL = import.meta.env.VITE_API_URL?.replace("/api/v1", "") ?? "http://localhost:8080";
+    const API_URL = import.meta.env.VITE_API_URL?.replace("/api/v1", "") ?? "http://localhost";
+
+    useEffect(() => {
+        const textarea = textareaRef.current;
+        if (textarea) {
+            textarea.style.height = "auto";
+            textarea.style.height = `${textarea.scrollHeight}px`;
+        }
+    }, [content]);
 
     useEffect(() => {
         const textarea = textareaRef.current;

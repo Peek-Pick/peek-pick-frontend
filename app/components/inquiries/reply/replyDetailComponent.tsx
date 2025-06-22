@@ -40,7 +40,11 @@ function ReplyDetailComponent({ inquiryId }: ReplyDetailProps) {
             {/* 답변 상단 정보 + 작성일 */}
             <div className="relative flex justify-between items-center mb-2.5">
                 <div className="flex items-center gap-2">
-                    <div className="w-10 h-10 rounded-full bg-yellow-500 text-white font-bold flex items-center justify-center text-xs">Admin</div>
+                    <img
+                        src="/icons/admin_icon_img.png"
+                        alt="프로필"
+                        className="w-11 h-11 pt-0.5 pl-1 rounded-full object-cover overflow-visible bg-yellow-500 border border-gray-300"
+                    />
                     <span className="font-semibold text-base ml-0.5">관리자</span>
                 </div>
 

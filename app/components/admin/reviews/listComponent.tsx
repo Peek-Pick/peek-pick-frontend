@@ -26,10 +26,9 @@ export default function ListComponent({data, isLoading, isError, page, category,
 
     return (
         <div>
-            <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
-                <div className="max-w-full overflow-x-auto">
-                    <table className="min-w-full text-sm divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
+            <div className="overflow-x-auto bg-white shadow rounded-lg">
+                <table className="min-w-full text-sm divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
                         <tr>
                             <th className="w-1/9 px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
                             <th className="w-1/9 px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">상품번호</th>
@@ -72,7 +71,6 @@ export default function ListComponent({data, isLoading, isError, page, category,
                         </tbody>
                     </table>
                 </div>
-            </div>
         </div>
     );
 }

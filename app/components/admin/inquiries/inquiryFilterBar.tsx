@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 export interface InquiryFilterBarProps {
     category: string;
     setCategory: (value: string) => void;
     keyword: string;
     setKeyword: (value: string) => void;
-    size: string;
-    setSize: (value: string) => void;
     waitingAnswerOnly: boolean;
     setWaitingAnswerOnly: (value: boolean) => void;
     includeDeleted: boolean;
@@ -19,8 +18,6 @@ function InquiryFilterBar({
                               setCategory,
                               keyword,
                               setKeyword,
-                              size,
-                              setSize,
                               waitingAnswerOnly,
                               setWaitingAnswerOnly,
                               includeDeleted,
@@ -29,26 +26,53 @@ function InquiryFilterBar({
                           }: InquiryFilterBarProps) {
     const [localCategory, setLocalCategory] = useState(category);
     const [localKeyword, setLocalKeyword] = useState(keyword);
-    const [localSize, setLocalSize] = useState(size);
+
+    const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
 
     useEffect(() => setLocalCategory(category), [category]);
     useEffect(() => setLocalKeyword(keyword), [keyword]);
-    useEffect(() => setLocalSize(size), [size]);
 
-    const handleSearch = () => {
+    const updateSearchParams = (updateFn: (params: URLSearchParams) => void) => {
+        const newParams = new URLSearchParams(searchParams);
+        updateFn(newParams);
+        navigate(`?${newParams.toString()}`, { replace: false });
+    };
+
+    const handleSearchClick = () => {
         setCategory(localCategory);
-        setKeyword(localKeyword.trim());
-        setSize(localSize);
+        setKeyword(localKeyword);
+        updateSearchParams((params) => {
+            params.set('category', localCategory);
+            params.set('keyword', localKeyword);
+            params.set('page', '0');
+        });
         onSearch();
     };
 
     const handleWaitingChange = (checked: boolean) => {
         setWaitingAnswerOnly(checked);
+        updateSearchParams((params) => {
+            if (checked) {
+                params.set('isWaiting', 'true');
+            } else {
+                params.delete('isWaiting');
+            }
+            params.set('page', '0');
+        });
         onSearch();
     };
 
     const handleIncludeDeletedChange = (checked: boolean) => {
         setIncludeDeleted(checked);
+        updateSearchParams((params) => {
+            if (checked) {
+                params.set("includeDeleted", "true");
+            } else {
+                params.delete("includeDeleted");
+            }
+            params.set("page", "0");
+        });
         onSearch();
     };
 
@@ -61,7 +85,7 @@ function InquiryFilterBar({
                     className="border border-gray-300 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                     <option value="all">전체</option>
-                    <option value="content">본문</option>
+                    <option value="content">내용</option>
                     <option value="writer">닉네임</option>
                     <option value="inquiryId">문의번호</option>
                 </select>
@@ -75,7 +99,7 @@ function InquiryFilterBar({
                 />
 
                 <button
-                    onClick={handleSearch}
+                    onClick={handleSearchClick}
                     className="bg-blue-600 text-white px-5 py-1.5 rounded-lg hover:bg-blue-700 transition"
                 >
                     검색
@@ -83,35 +107,23 @@ function InquiryFilterBar({
             </div>
 
             <div className="flex items-center gap-4">
-                <select
-                    value={localSize}
-                    onChange={(e) => setLocalSize(e.target.value)}
-                    className="border border-gray-300 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                    <option value="10">10개</option>
-                    <option value="20">20개</option>
-                    <option value="50">50개</option>
-                </select>
+                <label className="flex items-center gap-1 text-gray-700">
+                    <input
+                        type="checkbox"
+                        checked={waitingAnswerOnly}
+                        onChange={(e) => handleWaitingChange(e.target.checked)}
+                    />
+                    답변 대기만 보기
+                </label>
 
-                <div className="flex items-center gap-4">
-                    <label className="flex items-center gap-1 text-gray-700">
-                        <input
-                            type="checkbox"
-                            checked={waitingAnswerOnly}
-                            onChange={(e) => handleWaitingChange(e.target.checked)}
-                        />
-                        답변 대기만 보기
-                    </label>
-
-                    <label className="flex items-center gap-1 text-gray-700">
-                        <input
-                            type="checkbox"
-                            checked={!includeDeleted}
-                            onChange={(e) => handleIncludeDeletedChange(!e.target.checked)}
-                        />
-                        삭제된 문의 제외
-                    </label>
-                </div>
+                <label className="flex items-center gap-1 text-gray-700">
+                    <input
+                        type="checkbox"
+                        checked={includeDeleted}             // 상태 그대로 바인딩
+                        onChange={(e) => handleIncludeDeletedChange(e.target.checked)} // 상태 그대로 변경
+                    />
+                    삭제된 문의 보기
+                </label>
             </div>
         </div>
     );

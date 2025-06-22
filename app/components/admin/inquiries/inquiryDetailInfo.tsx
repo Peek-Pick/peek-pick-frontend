@@ -5,7 +5,7 @@ interface InquiryDetailInfoProps {
     data?: InquiryResponseDTO;
 }
 
-const API_URL = import.meta.env.VITE_API_URL?.replace("/api/v1", "") ?? "http://localhost:8080";
+const API_URL = import.meta.env.VITE_API_URL?.replace("/api/v1", "") ?? "http://localhost";
 
 const InquiryDetailInfo = ({ data }: InquiryDetailInfoProps) => {
     const [modalImage, setModalImage] = useState<string | null>(null);
