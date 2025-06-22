@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import AdminProductDetailComponent from "~/components/admin/products/detailComponent";
 import { getAdminProductDetail } from "~/api/products/adminProductsAPI";
 import type { ProductDetailDTO } from "~/types/products";
+import {ProductLoading} from "~/util/loading/productLoading";
 
 export default function AdminProductDetailPage() {
     const { id } = useParams<{ id: string }>();
@@ -18,7 +19,7 @@ export default function AdminProductDetailPage() {
     });
 
     if (isLoading) {
-        return <p className="p-6 text-gray-500">로딩 중...</p>;
+        return <ProductLoading />;
     }
     if (isError || !product) {
         return <p className="p-6 text-red-500">상세 정보를 불러오는 중 오류 발생: {error?.message}</p>;

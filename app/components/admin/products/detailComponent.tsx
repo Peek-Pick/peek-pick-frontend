@@ -8,6 +8,11 @@ interface Props {
 }
 
 export default function AdminProductDetailComponent({ product }: Props) {
+    // 🚩 product 또는 productId가 없으면 잘못된 접근으로 간주
+    if (!product || !product.productId) {
+        return <div className="text-red-500">잘못된 상품 정보입니다.</div>;
+    }
+
     return (
         <>
             <h2 className="text-xl font-bold mb-6 border-b pb-2">
@@ -49,8 +54,8 @@ export default function AdminProductDetailComponent({ product }: Props) {
                             className="w-5 h-5 text-yellow-400"
                         />
                         <span className="font-medium">
-              {product.score?.toFixed(1) ?? "0.0"} ({product.reviewCount ?? 0})
-            </span>
+                            {product.score?.toFixed(1) ?? "0.0"} ({product.reviewCount ?? 0})
+                        </span>
                     </div>
                 </div>
             </div>

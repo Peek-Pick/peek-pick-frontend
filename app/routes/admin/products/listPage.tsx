@@ -1,19 +1,18 @@
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBox, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faBox } from "@fortawesome/free-solid-svg-icons";
 
 import AdminProductsFilterBar from "~/components/admin/products/productFilterBar";
 import AdminProductsListComponent from "~/components/admin/products/listComponent";
 import PaginationComponent from "~/components/common/PaginationComponent";
-import LoadingComponent from "~/components/common/loadingComponent";
 import { listAdminProducts } from "~/api/products/adminProductsAPI";
 import type { PageResponse, ProductListDTO } from "~/types/products";
+import { ProductLoading } from "~/util/loading/productLoading";
 
 export default function AdminProductsPage() {
     const [searchParams, setSearchParams] = useSearchParams();
-    const navigate = useNavigate();
 
     const page = Number(searchParams.get("page") || "0");
     const size = 10;
@@ -44,8 +43,12 @@ export default function AdminProductsPage() {
         queryFn: () => listAdminProducts(page, size, keyword),
     });
 
-    if (isLoading) return <LoadingComponent isLoading />;
-    if (isError || !data) return <div className="p-4 text-red-500">상품 목록 불러오기 실패</div>;
+    if (isLoading) {
+        return <ProductLoading />;
+    }
+    if (isError || !data) {
+        return <div className="p-4 text-red-500">상품 목록 불러오기 실패</div>;
+    }
 
     return (
         <div className="max-w-7xl mx-auto px-4">
@@ -55,22 +58,11 @@ export default function AdminProductsPage() {
                 상품 관리
             </h3>
 
-            {/* 검색창 + 등록버튼 */}
-            <div className="flex justify-between items-center mb-2">
-                <AdminProductsFilterBar keyword={keyword} onSearch={handleSearch} />
-                <button
-                    onClick={() => navigate("/admin/products/add")}
-                    className="flex items-center gap-1 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-100 transition"
-                >
-                    <FontAwesomeIcon icon={faPlus} />
-                    새 상품 등록
-                </button>
-            </div>
+            {/* 검색창 + 상품 추가 버튼 포함된 필터바 */}
+            <AdminProductsFilterBar keyword={keyword} onSearch={handleSearch} />
 
             {/* 상품 목록 */}
-            <AdminProductsListComponent
-                data={data.content}
-            />
+            <AdminProductsListComponent data={data.content} />
 
             {/* 페이지네이션 */}
             <PaginationComponent
