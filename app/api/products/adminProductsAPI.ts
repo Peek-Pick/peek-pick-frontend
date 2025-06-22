@@ -48,8 +48,8 @@ export async function updateAdminProduct(
     id: number,
     payload: Omit<ProductDetailDTO, "productId" | "likeCount" | "reviewCount" | "score" | "isLiked">,
     image?: File | null,
-    imageUrl?: string | null,
-    isDelete?: boolean
+    isDelete?: boolean, // 🔁 순서 바꿈
+    imageUrl?: string | null // 🔁 마지막으로 보냄
 ): Promise<ProductDetailDTO> {
     const form = new FormData();
     form.append("barcode", payload.barcode);
@@ -62,7 +62,7 @@ export async function updateAdminProduct(
     if (payload.nutrition) form.append("nutrition", payload.nutrition);
 
     if (image) form.append("image", image);
-    else if (imageUrl) form.append("imgUrl", imageUrl);
+    // else if (imageUrl) form.append("imgUrl", imageUrl);
 
     if (isDelete !== undefined) form.append("isDelete", String(isDelete));
 
