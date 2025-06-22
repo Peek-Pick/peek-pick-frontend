@@ -19,7 +19,7 @@ interface ReviewSimpleDTO {
     nickname: string;
     isLiked: boolean;
     name: string;
-    imageUrl: string;
+    imageThumbUrl: string;
 }
 
 interface ReviewDetailDTO {
