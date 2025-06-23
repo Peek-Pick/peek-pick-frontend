@@ -274,7 +274,7 @@ export default function ModifyComponent({ review, isLoading, isError }: ModifyPr
                 {/* 상품 이미지 + 정보 */}
                 <div className="flex flex-col items-center mb-8">
                     <img
-                        src={review?.imageUrl || "/example.jpg"}
+                        src={`http://localhost${review?.imageUrl}` || "/example.jpg"}
                         alt={review?.name || "Product Image"}
                         className="w-40 h-40 sm:w-40 sm:h-40 md:w-40 md:h-40 rounded-lg object-cover mb-"
                     />

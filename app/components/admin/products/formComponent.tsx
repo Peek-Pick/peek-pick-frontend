@@ -1,4 +1,12 @@
-import { useState, useEffect, type FormEvent, type ReactNode } from "react";
+import {
+    useState,
+    useEffect,
+    type FormEvent,
+    type ReactNode,
+    useRef,
+} from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faImage } from "@fortawesome/free-solid-svg-icons";
 
 export interface ProductFormValues {
     name: string;
@@ -14,13 +22,21 @@ export interface ProductFormValues {
 interface Props {
     initial?: ProductFormValues;
     onSubmit: (values: ProductFormValues) => void;
-    children?: ReactNode;
+    onFileChange?: (file: File | null) => void;
+    fileLabel?: string;
+    showDeleteCheckbox?: boolean;
+    isDelete?: boolean;
+    onToggleDelete?: () => void;
 }
 
 export default function ProductFormComponent({
                                                  initial,
                                                  onSubmit,
-                                                 children,
+                                                 onFileChange,
+                                                 fileLabel = "이미지 필수",
+                                                 showDeleteCheckbox = false,
+                                                 isDelete = false,
+                                                 onToggleDelete,
                                              }: Props) {
     const [values, setValues] = useState<ProductFormValues>({
         name: "",
@@ -33,7 +49,8 @@ export default function ProductFormComponent({
         nutrition: "",
     });
 
-    // initial prop이 바뀔 때마다 폼 값 업데이트
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
     useEffect(() => {
         if (initial) {
             setValues({
@@ -58,6 +75,13 @@ export default function ProductFormComponent({
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
         onSubmit(values);
+    };
+
+    const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0] ?? null;
+        if (onFileChange) {
+            onFileChange(file);
+        }
     };
 
     return (
@@ -87,6 +111,37 @@ export default function ProductFormComponent({
                     onChange={handleChange("barcode")}
                     required
                     className="w-full border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+            </div>
+
+            {/* 이미지 업로드 */}
+            <div>
+                <label className="block text-xs font-semibold text-gray-400 mb-2 uppercase">
+                    이미지 파일
+                </label>
+                <div className="flex items-center gap-3">
+                    <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="flex items-center gap-1 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-100 transition"
+                    >
+                        <FontAwesomeIcon icon={faImage} />
+                        이미지 선택
+                    </button>
+                    <span
+                        className={`truncate max-w-xs ${
+                            fileLabel === "이미지 필수" ? "text-red-500" : "text-gray-600"
+                        }`}
+                    >
+                        {fileLabel}
+                    </span>
+                </div>
+                <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    ref={fileInputRef}
+                    onChange={handleImageFileChange}
                 />
             </div>
 
@@ -165,8 +220,21 @@ export default function ProductFormComponent({
                 </div>
             </div>
 
-            {/* 폼 액션 버튼 */}
-            {children}
+            {/* 삭제 여부 토글 */}
+            {showDeleteCheckbox && (
+                <div className="flex items-center gap-2">
+                    <input
+                        id="isDeleteToggle"
+                        type="checkbox"
+                        checked={isDelete}
+                        onChange={onToggleDelete}
+                        className="w-4 h-4"
+                    />
+                    <label htmlFor="isDeleteToggle" className="text-sm text-gray-700">
+                        삭제 처리 여부
+                    </label>
+                </div>
+            )}
         </form>
     );
 }
