@@ -64,13 +64,6 @@ function ProductListPage() {
         enabled: productId !== null,
     });
 
-    // 더미 데이터
-    // const aiReview: aiReviewDTO = {
-    //     percent: 98,
-    //     goodComment: "이 제품은 용량이 많아서 부족함 없이 편리하게 사용할 수 있어요. 아이들이 좋아하는 간식으로 자주 구매하고, 품질이 좋아 만족스러운 제품이에요. 바나나킥의 달콤하고 바삭한 맛을 즐기며 행복한 시간을 보낼 수 있어요. 가격 대비 만족도도 높아요!",
-    //     badComment: "제품의 맛이 예전 같지 않고 너무 달아서 부담스러웠어요. 바삭함도 덜해져서 재구매는 고민이 되는 수준이었습니다. 같은 가격이면 그냥 피카츄냐냐 먹을래요. 요즘 누가 바나나킥 돈주고 사먹냐?"
-    // };
-
     return (
         <div>
             <ProductListComponent

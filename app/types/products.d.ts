@@ -2,7 +2,7 @@
  * 상품 목록 조회 시 반환되는 DTO
  */
 export interface ProductListDTO {
-    productId: number;
+    productId?: number;
     barcode: string;
     name: string;
     category?: string | null;
