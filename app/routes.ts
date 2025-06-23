@@ -115,6 +115,9 @@ export default [
     ]),
 
     // 챗봇
-    route("chatbot", "routes/chatbot/chatbotPage.tsx")
+    route("chatbot", "routes/chatbot/chatbotPage.tsx"),
+
+    // 🔥 404 fallback route - 반드시 마지막에 있어야 함
+    route("*", "routes/notFoundPage.tsx"),
   
 ] satisfies RouteConfig;
