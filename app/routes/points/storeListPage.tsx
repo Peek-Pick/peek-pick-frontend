@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { listCoupon, redeemCoupon } from "~/api/points/pointsAPI";
 import StoreListComponent from "~/components/points/storeListComponent";
-import CouponModal from "~/routes/points/couponModal";
+import CouponModal from "~/components/points/couponModal";
 import type { PointStoreDTO, PointStoreListDTO } from "~/types/points";
 import { PointProductType } from "~/enums/points/points";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

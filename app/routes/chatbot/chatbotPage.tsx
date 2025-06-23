@@ -1,8 +1,9 @@
 import ChatComponent from "~/components/chatbot/chatComponent";
 import { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
+import axiosInstance from "~/instance/axiosInstance";
 
-export default function AIChatBot() {
+export default function ChatbotPage() {
     const navigate = useNavigate()
 
     // 로딩 스피너 보여주기용 타임아웃

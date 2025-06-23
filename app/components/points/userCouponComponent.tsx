@@ -28,7 +28,7 @@ export default function UserCouponComponent({ coupons, header }: Props) {
                             {/* 이미지 */}
                             <div className="w-65 h-48 sm:h-48 rounded-lg overflow-hidden mb-3">
                                 <img
-                                    src={`http://localhost:8080/points/${coupon.couponImg}`}
+                                    src={`http://localhost/points/${coupon.couponImg}`}
                                     alt={coupon.itemName}
                                     className="w-full h-full object-cover rounded-lg"
                                 />
