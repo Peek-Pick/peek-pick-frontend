@@ -3,16 +3,13 @@ import StatsCardComponent from "~/components/admin/dashboard/statsCardComponent"
 import PeriodDropdownComponent from "~/components/admin/dashboard/periodDropdownComponent";
 import LogComponent from "~/components/admin/dashboard/logComponent";
 
-import {
-    faShoppingCart,
-    faUsers,
-    faStar,
-    faDollarSign,
-    faArrowUp,
-    faArrowDown,
-    faCalendarAlt,
-    faChevronRight
-} from "@fortawesome/free-solid-svg-icons";
+import {faShoppingCart, faUsers, faStar, faDollarSign,} from "@fortawesome/free-solid-svg-icons";
+import {useQuery} from "@tanstack/react-query";
+import type {PagingResponse} from "~/types/common";
+import {getAdminReviewList} from "~/api/reviews/adminReviewAPI";
+
+// 요청사항 필터 타입
+type Category = "전체" | "신고" | "문의";
 
 export default function DashboardComponent() {
     const [period, setPeriod] = useState("This Month");
@@ -60,12 +57,19 @@ export default function DashboardComponent() {
         },
     ];
 
+    const [filter, setFilter] = useState<Category>("전체");
+
+    // 요청사항 리스트
+    const { data, isLoading, isError } = useQuery<PagingResponse<AdminReviewSimpleDTO>>({
+        queryKey: ["adminRequestList", 0, filter],
+        queryFn: () => getAdminRequestList(0, filter),
+        staleTime: 1000 * 60 * 5,
+    });
 
     return (
         <div className="container mx-auto p-4">
             {/* 드롭다운 */}
             <div className="flex justify-between items-center mb-4">
-                <h4 className="text-lg font-semibold">Dashboard</h4>
                 <PeriodDropdownComponent period={period} setPeriod={setPeriod} />
             </div>
 
@@ -76,7 +80,7 @@ export default function DashboardComponent() {
                 ))}
             </div>
 
-            {/* 활동 로그? */}
+            {/* 요청사항 - 문의, 신고 */}
             <LogComponent />
 
             <div>사용자 관련 통계 - !활성 사용자 수</div>
