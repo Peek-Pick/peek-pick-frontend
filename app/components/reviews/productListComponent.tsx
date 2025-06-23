@@ -16,6 +16,8 @@ import '~/util/swal/customAISwal.css'
 import HiddenOrNot from "~/components/reviews/effect/hiddenOrNot";
 import { translateReview } from "~/api/reviews/reviewTranslateAPI";
 import { TranslatingLoader } from "~/components/reviews/effect/animatedTypingText";
+import AISummarySection from "~/components/reviews/aiSummarySection";
+import AverageRatingSection from "~/components/reviews/averageRatingSection";
 
 export interface ReviewListComponentProps {
     aiReview?: aiReviewDTO;
@@ -47,9 +49,6 @@ export default function ProductListComponent({aiReview, productData, productId, 
     }
 
     const queryClient = useQueryClient();
-
-    // 긍정 리뷰, 부정 리뷰 상태
-    const [isNegative, setIsNegative] = useState(false);
 
     // 무한 스크롤 감지 요소
     const bottomRef = useRef<HTMLDivElement | null>(null);
@@ -83,100 +82,21 @@ export default function ProductListComponent({aiReview, productData, productId, 
         }
     };
 
-    // AI 모델 설명 모달
-    const handleInfoClick = () => {
-        Swal.fire({
-            title: 'What is AI Review Summary?',
-            icon: 'info',
-            text: 'Ask GPT if you have any questions.',
-            confirmButtonText: "OK",
-            customClass: {
-                popup: 'custom-popup',
-                title: 'custom-title',
-                actions: 'custom-actions',
-                confirmButton: 'custom-confirm-button',
-            }
-        }).then();
-    };
-
     return (
         <div>
             <section className="relative">
                 <div className="w-full max-w-7xl md:px-5 lg-6 mx-auto">
                     <div className="w-full">
                         {/* 상품 평균 별점 */}
-                        <div className="grid grid-cols-1 xl:grid-cols-1 pb-2 border-gray-100 w-full mb-2">
-                            <div className="p-6 bg-yellow-50 rounded-3xl flex items-center justify-center flex-col">
-                                <h2 className="font-manrope font-bold text-3xl text-amber-400 mb-2">{productData?.score}</h2>
-                                <AverageRating score={productData?.score ?? 5}/>
-                                <p className="font-semibold leading-4 text-gray-700 text-center">{productData?.reviewCount} Ratings</p>
-                            </div>
-                        </div>
+                        <AverageRatingSection
+                            score={productData.score ?? 5}
+                            reviewCount={productData.reviewCount}
+                        />
 
                         {/* AI 리뷰 요약 */}
-                        <div className="relative">
-                            {/* AI 리뷰 헤더 */}
-                            <div className="flex items-center justify-between mb-2">
-                                <div className="flex items-center gap-2">
-                                    <span className="w-16 h-14">
-                                        <DotLottieReact
-                                            src="/loading/lottie_ai_review.lottie"
-                                            loop
-                                            autoplay
-                                            speed={1.5}
-                                        />
-                                    </span>
-                                    <p className="text-sm font-semibold text-gray-800 flex items-center gap-1">
-                                        AI Summarized It!
-                                        <button
-                                            onClick={handleInfoClick}
-                                            aria-label="View AI review summary information"
-                                            className="text-gray-400 hover:text-gray-600 transition-colors text-lg leading-none select-none mt-0.5"
-                                        >
-                                            <Info className="w-4 h-4" />
-                                        </button>
-                                    </p>
-                                </div>
-
-                                {/* 긍정 리뷰 비율 */}
-                                <p className="text-sm text-red-400 flex items-center gap-1">
-                                    <span className="text-sm">Positive</span>
-                                    <span className="font-semibold text-lg">{aiReview.percent}%</span>
-                                </p>
-                            </div>
-
-                            {/* 요약 내용 */}
-                            <div className="text-sm rounded-xl mb-4 bg-gray-50">
-                                {/* 탭 토글 */}
-                                <div className="flex text-sm justify-center rounded-t-xl shadow-sm">
-                                    <button
-                                        className={`w-1/2 py-2 text-sm font-medium transition-colors ${
-                                            !isNegative
-                                                ? "text-red-500 border-b-2 border-red-500 font-bold"
-                                                : "text-gray-400 hover:text-gray-600"
-                                        }`}
-                                        onClick={() => setIsNegative(false)}
-                                    >
-                                        Positive Review
-                                    </button>
-                                    <button
-                                        className={`w-1/2 py-2 text-sm font-medium transition-colors ${
-                                            isNegative
-                                                ? "text-blue-500 border-b-2 border-blue-500 font-bold"
-                                                : "text-gray-400 hover:text-gray-600"
-                                        }`}
-                                        onClick={() => setIsNegative(true)}
-                                    >
-                                        Negative Review
-                                    </button>
-                                </div>
-
-                                {/* 실제 요약 내용 */}
-                                <div className="text-sm text-gray-700 bg-gray-100 rounded-b-xl p-4 leading-relaxed shadow-sm">
-                                    {isNegative ? (aiReview.negativeSummary) : (aiReview.positiveSummary)}
-                                </div>
-                            </div>
-                        </div>
+                        {aiReview &&
+                            <AISummarySection aiReview={aiReview} />
+                        }
 
                         {/* 정렬 탭 */}
                         <div

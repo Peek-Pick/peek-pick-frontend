@@ -7,6 +7,10 @@ import BottomNavComponent from "~/components/main/bottomNavComponent";
 import { getProductDetail } from "~/api/products/productsAPI";
 import type { ProductDetailDTO } from "~/types/products";
 import { BackButton, FloatingActionButtons } from "~/util/button/FloatingActionButtons";
+import DetailComponent2 from "~/components/products/detailComponent2";
+import {getReviewSummary} from "~/api/reviews/reviewAPI";
+import AISummarySection from "~/components/reviews/aiSummarySection";
+import AverageRatingSection from "~/components/reviews/averageRatingSection";
 
 const SCROLL_KEY = "rankingPageScrollY";
 
@@ -32,13 +36,29 @@ export default function DetailPage() {
         staleTime: 5 * 60 * 1000,
     });
 
+    // AI 요약 리뷰 가져오기
+    const { data: aiReview, isLoading: aiReviewLoading, isError: aiReviewError } = useQuery<aiReviewDTO>({
+        queryKey: ["reviewSummary", data?.productId],
+        queryFn: () => getReviewSummary(data?.productId!), // productId는 null 체크 후 실행됨
+        enabled: data?.productId !== null,
+    });
+
     return (
         <>
-            <DetailComponent
+            <DetailComponent2
                 product={data}
                 isLoading={isLoading}
                 isError={isError}
             />
+            {data && (
+                <AverageRatingSection
+                    score={data.score ?? 5}
+                    reviewCount={data.reviewCount}
+                />
+            )}
+            {aiReview &&
+                <AISummarySection aiReview={aiReview} />
+            }
             {data && (
                 <PreviewComponent
                     barcode={barcode!}
