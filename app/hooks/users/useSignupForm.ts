@@ -9,8 +9,8 @@ export function useSignupForm() {
     // signup2
     const [birthDate, setBirthDate] = useState('2000-01-01')
     const [nickname, setNickname] = useState('')
-    const [gender, setGender] = useState('')
-    const [nationality, setNationality] = useState('')
+    const [gender, setGender] = useState('DEFAULT')
+    const [nationality, setNationality] = useState('DEFAULT')
 
     // signup3
     const [tags, setTags] = useState<number[]>([])

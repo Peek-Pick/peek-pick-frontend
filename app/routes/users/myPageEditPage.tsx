@@ -3,6 +3,8 @@ import BottomNavComponent from "~/components/main/bottomNavComponent";
 import {useQuery} from "@tanstack/react-query";
 import {getMyPageEdit} from "~/api/users/myPageAPI";
 import {BackButton, FloatingActionButtons} from "~/util/button/FloatingActionButtons";
+import {UserLoading} from "~/util/loading/userLoading";
+import {ErrorComponent} from "~/util/loading/errorComponent";
 
 function useGetProfile ()  {
     return useQuery({
@@ -17,11 +19,10 @@ function MyPageEditPage() {
 
     const {data: profile, isLoading, isError } = useGetProfile();
 
-    // if (isLoading) return <Loading />;
-    // if (isError || !profile) return <ErrorComponent />;
-
-    if (isLoading) return <p>로딩 중...!</p>;
-    if (isError || !profile) return <p>에러 발생!</p>;
+    if (isLoading)
+        return <UserLoading />;
+    if (isError || !profile)
+        return <ErrorComponent />;
 
     return (
         <div>

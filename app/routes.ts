@@ -16,6 +16,10 @@ export default [
 
     // app
     route("", "layout/appLayout.tsx", [
+        // 접근 불가
+        route("access-denied", "routes/accessDeniedPage.tsx"),
+
+
         //메인
         route("main", "routes/appMainPage.tsx"),
 
