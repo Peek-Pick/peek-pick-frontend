@@ -1,28 +1,22 @@
-import axios from "axios";
+
+import axiosInstance from "~/instance/axiosInstance";
 
 // ChatGPT 질문 보내기 (OpenAI API 직접 호출)
-export const question = async (question: string): Promise<any> => {
-    // ✅ 여기 본인의 OpenAI API 키를 넣으세요 (테스트용)
-    const apiKey = '';
+export const question = async (userMessage: string) => {
 
-    const response = await axios.post(
-        'https://api.openai.com/v1/chat/completions',
-        {
-            model: 'gpt-3.5-turbo',
-            messages: [{ role: 'user', content: question }],
-            temperature: 0.7,
-        },
+    const response = await axiosInstance.post(
+        'chatbot/ask',
+        userMessage,
         {
             headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${apiKey}`,
+                'Content-Type': 'text/plain',
             },
+            responseType: 'text'  // 명시적으로 text 받기
         }
     );
-
-    return {
-        response: {
-            answer: response.data.choices[0].message.content.trim(),
-        },
-    };
+    try {
+        return JSON.parse(response.data); // JSON 형식이면 객체로
+    } catch {
+        return response.data; // JSON 아니면 그냥 문자열 반환
+    }
 };

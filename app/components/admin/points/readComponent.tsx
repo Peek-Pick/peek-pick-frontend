@@ -16,7 +16,7 @@ export default function ReadComponent({ data }: Props) {
                 {/* 이미지 영역 */}
                 <div className="w-full max-w-sm flex justify-center">
                     <img
-                        src={`http://localhost:8080/points/${data.imgUrl}`}
+                        src={`http://localhost/points/${data.imgUrl}`}
                         alt={data.item}
                         className="w-full object-cover rounded-xl border border-gray-200 shadow-md"
                     />

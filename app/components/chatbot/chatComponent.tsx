@@ -1,11 +1,13 @@
-import { useState, useEffect, useRef } from 'react';
+import {useState, useEffect, useRef } from 'react';
+import type { JSX } from 'react';
 import { FiSend } from 'react-icons/fi';
 import { question } from "~/api/chatbot/chatbotAPI";
 import WelcomeComponent from "~/components/chatbot/welcomeComponent";
+import ProductRecommendComponent from "~/components/chatbot/productRecommendComponent";
 
 export default function ChatComponent() {
     // 챗봇 답변 텍스트
-    const [messages, setMessages] = useState<{ content: string; isFromChatbot: boolean }[]>([]);
+    const [messages, setMessages] = useState<{ content: string | JSX.Element; isFromChatbot: boolean }[]>([]);
 
     // 사용자 입력 텍스트
     const [inputValue, setInputValue] = useState<string>('');
@@ -34,20 +36,27 @@ export default function ChatComponent() {
             // 가장 최근 메세지 - 챗봇 응답
             const lastMessage = messages[messages.length - 1];
 
-            let currentDisplayed = '';
+            if (typeof lastMessage.content === 'string') {
+                const fullText = lastMessage.content;
+                let currentDisplayed = '';
 
-            const interval = setInterval(() => {
-                if (currentDisplayed.length < lastMessage.content.length) {
-                    // 아직 전체 메시지를 다 표시하지 않은 경우
-                    currentDisplayed += lastMessage.content[currentDisplayed.length];
-                    setDisplayedMessage(currentDisplayed);
-                } else {
-                    // 다 표시되면 애니메이션 종료
-                    clearInterval(interval);
-                    setIsTyping(false);
-                }
-            }, 30); // 30ms 간격
-            return () => clearInterval(interval);
+                const interval = setInterval(() => {
+                    if (currentDisplayed.length < fullText.length) {
+                        // 아직 전체 메시지를 다 표시하지 않은 경우
+                        currentDisplayed += lastMessage.content[currentDisplayed.length];
+                        setDisplayedMessage(currentDisplayed);
+                    } else {
+                        // 다 표시되면 애니메이션 종료
+                        clearInterval(interval);
+                        setIsTyping(false);
+                    }
+                }, 30); // 30ms 간격
+                return () => clearInterval(interval);
+            } else {
+                // JSX인 경우는 그냥 한 번에 보여주기 (애니메이션 생략)
+                setDisplayedMessage('');
+                setIsTyping(false);
+            }
         }
     }, [isTyping, messages]);
 
@@ -64,10 +73,20 @@ export default function ChatComponent() {
         try {
             // api 호출
             const response = await question(trimmed);
-            const botReply = response.response.answer || '답변을 불러올 수 없습니다.';
 
-            // 대화 내역에 답변 추가하기
-            setMessages((prev) => [...prev, { content: botReply, isFromChatbot: true }]);
+            const botReply = response || '답변을 불러올 수 없습니다.';
+
+            if (typeof botReply === 'string') {
+                // 그냥 문자열 답변 (예: 에러 메시지 등)
+                setMessages((prev) => [...prev, { content: botReply, isFromChatbot: true }]);
+            } else {
+                // JSON 객체일 경우 React 컴포넌트로 렌더링
+                setMessages((prev) => [
+                    ...prev,
+                    { content: <ProductRecommendComponent product={response} />, isFromChatbot: true },
+                ]);
+            }
+
             setDisplayedMessage('');
             setIsTyping(true);
         } catch (error) {

@@ -33,7 +33,7 @@ export default function CouponModal({ product, onClose, onBuy }: Props) {
 
                 {/* 이미지 */}
                 <img
-                    src={`http://localhost:8080/points/${product.imgUrl}`}
+                    src={`http://localhost/points/${product.imgUrl}`}
                     alt={product.item}
                     className="w-full h-36 sm:h-44 object-cover rounded-lg mb-3"
                 />

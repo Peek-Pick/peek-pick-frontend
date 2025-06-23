@@ -22,7 +22,7 @@ export default function StoreListComponent({ products, onProductClick }: Props) 
                     >
                         <div className="relative">
                             <img
-                                src={`http://localhost:8080/points/${product.imgUrl}`}
+                                src={`http://localhost/points/${product.imgUrl}`}
                                 alt={product.item}
                                 className="w-full h-28 object-cover rounded-t-lg"
                             />
