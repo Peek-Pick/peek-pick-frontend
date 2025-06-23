@@ -6,6 +6,8 @@ import { getUserReviewsCount } from "~/api/reviews/reviewAPI";
 import { getCouponCount } from "~/api/points/pointsAPI";
 import { getWishlistCount } from "~/api/products/productsAPI";
 import { getBarcodeHistoryCount } from "~/api/barcode/barcodeAPI";
+import {UserLoading} from "~/util/loading/userLoading";
+import {ErrorComponent} from "~/util/loading/errorComponent";
 
 function useMyPageData() {
     return useQuery({
@@ -36,8 +38,10 @@ function useMyPageData() {
 function MyPagePage() {
     const { data: myData, isLoading, isError } = useMyPageData();
 
-    if (isLoading) return <div className="p-4">불러오는 중...</div>;
-    if (isError || !myData) return <div className="p-4">불러오기 실패</div>;
+    if (isLoading)
+        return <UserLoading />;
+    if (isError || !myData)
+        return <ErrorComponent />;
 
     return (
         <div>

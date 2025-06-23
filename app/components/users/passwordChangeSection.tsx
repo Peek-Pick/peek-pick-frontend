@@ -23,7 +23,7 @@ export function PasswordChangeSection({ isSocial,
                                    setConfirmPassword,
                                    error,
                                    checkCurrentPassword,
-                                   checkNewPassword }: PasswordChangeSectionProps) {
+                                   }: PasswordChangeSectionProps) {
     if (isSocial) {
         return <p className="text-sm text-gray-500">
             Password changes are not available for social accounts.

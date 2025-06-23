@@ -1,10 +1,11 @@
 import { useSignupContext } from "~/contexts/signupContext";
-import { useState } from "react";
+import {useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {SignupForm} from "~/api/users/signupAPI";
 import { useTagSelector } from "~/hooks/tags/useTagSelector";
 import {SignupStepperHeader} from "~/components/users/signupStepperHeader";
 import {fireConfetti} from "~/util/fireConfetti";
+import {TagLoading} from "~/util/loading/tagLoading";
 
 export default function SignupTagComponent() {
 
@@ -13,6 +14,14 @@ export default function SignupTagComponent() {
     const { email, password, nickname, birthDate, gender, nationality, tags, setTags } = useSignupContext();
     const { groupedTags, loading } = useTagSelector(tags)
     const [isSubmitting, setIsSubmitting] = useState(false)
+
+    // 주소창 직접 접근 차단
+    useEffect(() => {
+        const isProfileStepValid = nickname && birthDate && gender && nationality;
+        if (!isProfileStepValid) {
+            navigate("/access-denied", { replace: true });
+        }
+    }, [nickname, birthDate, gender, nationality, navigate]);
 
     // 태그를 클릭하면 해당 tag가 배열에 있는지 확인하고 추가하거나 제거
     const selectTag = (tagId: number) => {
@@ -43,11 +52,11 @@ export default function SignupTagComponent() {
             const response = await SignupForm(data);
 
             fireConfetti();
-            console.log("회원가입 완료", response);
+            // console.log("회원가입 완료", response);
             navigate('/main');
         } catch (error) {
             console.error("회원가입 실패", error);
-            alert("회원가입 실패. 다시 시도해주세요.");
+            alert("Something went wrong during signup. Please try again.");
             navigate('/signup');
         } finally {
             setIsSubmitting(false);
@@ -55,7 +64,8 @@ export default function SignupTagComponent() {
     };
 
     // loading
-    if (loading) return <p className="text-center mt-10">태그 목록 불러오는 중...</p>;
+    if (loading)
+        return <TagLoading />;
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-yellow-200 to-green-300 px-4">
@@ -89,7 +99,6 @@ export default function SignupTagComponent() {
                         </div>
                     ))}
                 </div>
-
 
                 <button
                     id="Fire"

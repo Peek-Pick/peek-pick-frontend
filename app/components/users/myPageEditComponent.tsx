@@ -17,7 +17,6 @@ export default function MyPageEditComponent({profile}: EditProps) {
 
     const { selectedTags, toggleTag, groupedTags } = useTagSelector(profile.tagIdList);
     const passwordChange = usePasswordChange();
-    // const {newNickname, setNewNickname, nicknameError, nicknameStatus, checkNickname,} = useNicknameChange();
 
     const [newNickname, setNewNickname] = useState("")
     const {isChecking, isAvailable, error:nicknameError} = useNicknameChecker(newNickname);
@@ -99,12 +98,6 @@ export default function MyPageEditComponent({profile}: EditProps) {
                                 onChange={(e) => setNewNickname(e.target.value)}
                             />
                             <div className="mt-3 flex items-center gap-2">
-                                {/*<button*/}
-                                {/*    onClick={isChecking}*/}
-                                {/*    className="text-sm text-emerald-600 hover:underline"*/}
-                                {/*>*/}
-                                {/*    Check &gt;*/}
-                                {/*</button>*/}
                                 {newNickname !== profile.nickname && (
                                     <>
                                         {isChecking && (

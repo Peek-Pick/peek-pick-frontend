@@ -29,6 +29,14 @@ function EditComponent({ initialData, onSubmit }: EditComponentProps) {
         }
     }, [content]);
 
+    useEffect(() => {
+        const textarea = textareaRef.current;
+        if (textarea) {
+            textarea.style.height = "auto";
+            textarea.style.height = `${textarea.scrollHeight}px`;
+        }
+    }, [content]);
+
     const handleDeleteImage = async (url: string) => {
         if (!confirm("해당 이미지를 삭제하시겠습니까?")) return;
         try {

@@ -1,6 +1,6 @@
 import { useSignupContext } from "~/contexts/signupContext";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import {useEffect, useState} from "react";
 import { useLocation } from "react-router";
 import { countryCodeMap } from "~/util/countryUtils";
 import { SignupStepperHeader } from "~/components/users/signupStepperHeader";
@@ -14,7 +14,8 @@ export default function SignupProfileComponent() {
         birthDate, setBirthDate,
         gender, setGender,
         nationality, setNationality,
-        setEmail, setPassword
+        email, setEmail,
+        setPassword
     } = useSignupContext();
 
     // 닉네임 중복 확인 커스텀 훅
@@ -24,7 +25,25 @@ export default function SignupProfileComponent() {
         error: nicknameError,
     } = useNicknameChecker(nickname);
 
+    // 자동 닉네임 생성
     const { generateUniqueNickname } = useAutoNickname();
+
+    const [nextAvailable, setNextAvailable] = useState(false)
+    useEffect(() => {
+        console.log("isAvailable:", isAvailable);
+        console.log("gender:", gender);
+        console.log("nationality:", nationality);
+
+        if (
+            isAvailable &&
+            gender !== "DEFAULT" &&
+            nationality !== "DEFAULT"
+        ) {
+            setNextAvailable(true);
+        } else {
+            setNextAvailable(false); // 조건 안 맞으면 false로 명확하게 세팅
+        }
+    }, [isAvailable, gender, nationality]);
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -32,23 +51,24 @@ export default function SignupProfileComponent() {
     // 이전 페이지의 이메일/비밀번호 초기화
     useEffect(() => {
         const emailFromState = location.state?.email;
+
         if (emailFromState) {
             setEmail(emailFromState);
             setPassword(null);
         }
-    }, [location.state, setEmail]);
+
+        // 주소창 직접 접근 차단
+        if (!email) {
+            navigate("/access-denied", { replace: true });
+        }
+
+    }, [location.state, setEmail, setPassword, navigate]);
 
     // 자동 닉네임 생성 버튼 핸들러
     const handleAutoNickname = async () => {
         const autoNick = await generateUniqueNickname();
         setNickname(autoNick)
     };
-
-    // gender와 nationality가 초기 null이면 기본값 설정
-    // useEffect(() => {
-    //     if (!gender) setGender("MALE");
-    //     if (!nationality) setNationality("KOR");
-    // }, []);
 
     // 페이지 이동 핸들러
     const moveToTagPage = (e: React.FormEvent) => {
@@ -76,7 +96,7 @@ export default function SignupProfileComponent() {
                                 placeholder="Enter your nickname"
                                 required
                             />
-                            {/* 자동 닉네임 생성 아이콘 버튼 (input 내부 오른쪽) */}
+                            {/* 자동 닉네임 생성 아이콘 버튼 */}
                             <button
                                 type="button"
                                 onClick={handleAutoNickname}
@@ -113,6 +133,7 @@ export default function SignupProfileComponent() {
                             className="w-full px-4 py-3 mt-1 rounded-[15px] border border-gray-300 text-sm"
                             required
                         >
+                            <option value="DEFAULT" disabled>Select gender</option>
                             <option value="MALE">Male</option>
                             <option value="FEMALE">Female</option>
                             <option value="OTHER">Other</option>
@@ -128,6 +149,7 @@ export default function SignupProfileComponent() {
                             className="w-full px-4 py-3 mt-1 rounded-[15px] border border-gray-300 text-sm"
                             required
                         >
+                            <option value="DEFAULT" disabled>Select nationality</option>
                             {Object.entries(countryCodeMap).map(([code, name]) => (
                                 <option key={code} value={code}>
                                     {name}
@@ -136,13 +158,14 @@ export default function SignupProfileComponent() {
                         </select>
                     </div>
 
+
                     {/* Next 버튼 */}
                     <button
                         type="submit"
-                        disabled={!isAvailable}
+                        disabled={!nextAvailable}
                         className={`
                             w-full h-11 rounded-md font-bold text-sm transition
-                            ${isAvailable
+                            ${nextAvailable
                             ? "bg-amber-300 hover:bg-amber-400 active:bg-amber-200 text-white"
                             : "bg-gray-300 text-gray-500 cursor-not-allowed"}
                         `}
