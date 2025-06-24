@@ -3,20 +3,43 @@ import { useQuery } from "@tanstack/react-query";
 import type { ProductListDTO, PageResponseCursor } from "~/types/products";
 import { listProducts } from "~/api/products/productsAPI";
 import { Icon } from "@iconify/react";
+import { useEffect, useRef } from "react";
 
 export function RankingComponent() {
     const navigate = useNavigate();
+    const containerRef = useRef<HTMLDivElement>(null);
 
-    const size = 12;
+    const size = 10;
     const sortParam = "score,DESC";
 
     const { data, isLoading, isError } = useQuery<PageResponseCursor<ProductListDTO>>({
         queryKey: ["productsRanking", size, sortParam],
-        queryFn: () => listProducts(size, undefined, undefined), // 커서 X, 카테고리도 undefined
+        queryFn: () => listProducts(size, undefined, undefined),
         staleTime: 1000 * 60 * 5,
     });
 
     const ranking = data?.content ?? [];
+
+    // 자동 슬라이드 기능
+    useEffect(() => {
+        const container = containerRef.current;
+        if (!container) return;
+
+        const scrollAmount = (160 + 8) * 2; // item width + gap (min-w-[160px] + gap-2 => 0.5rem = 8px)
+
+        const interval = setInterval(() => {
+            if (!container) return;
+
+            const maxScrollLeft = container.scrollWidth - container.clientWidth;
+            if (container.scrollLeft + scrollAmount >= maxScrollLeft) {
+                container.scrollTo({ left: 0, behavior: "smooth" }); // 처음으로
+            } else {
+                container.scrollBy({ left: scrollAmount, behavior: "smooth" });
+            }
+        }, 2000);
+
+        return () => clearInterval(interval);
+    }, []);
 
     return (
         <section className="px-4 py-4 bg-white">
@@ -30,7 +53,11 @@ export function RankingComponent() {
                 </button>
             </div>
 
-            <div className="overflow-x-auto no-scrollbar" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+            <div
+                ref={containerRef}
+                className="overflow-x-auto no-scrollbar"
+                style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            >
                 <div className="flex gap-2">
                     {ranking.map((item, index) => (
                         <div
