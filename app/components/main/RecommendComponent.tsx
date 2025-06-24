@@ -15,6 +15,7 @@ export function RecommendComponent() {
         queryFn: () => getRecommendedProducts(size, undefined, undefined, "score"),
         staleTime: 1000 * 60 * 5,
     });
+    console.log(data)
 
     const recommend = data?.content ?? [];
 

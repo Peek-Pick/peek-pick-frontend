@@ -32,7 +32,7 @@ const ReviewDetailInfo = ({ title, score, comment, images, tags }: {
                         images.map((img, index) => (
                             <img
                                 key={index}
-                                src={`http://localhost/${img.imgUrl}`}
+                                src={`http://localhost/reviews/${img.imgUrl}`}
                                 alt={`리뷰 이미지 ${index + 1}`}
                                 className="w-24 h-24 object-cover rounded-lg shadow"
                             />

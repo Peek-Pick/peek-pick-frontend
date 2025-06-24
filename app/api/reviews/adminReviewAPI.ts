@@ -1,4 +1,3 @@
-import axiosInstance from "~/instance/axiosInstance";
 import axiosInstanceAdmin from "~/instance/axiosInstanceAdmin";
 
 export const getAdminReviewList = async (page: number, category?: string, keyword?: string, hidden?: boolean) => {

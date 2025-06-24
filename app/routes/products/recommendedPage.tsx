@@ -82,6 +82,8 @@ export default function RecommendedPage() {
         staleTime: 5 * 60 * 1000,
     });
 
+    console.log(data)
+
     const handleItemClick = (barcode: string) => {
         sessionStorage.setItem(
             STORAGE_KEY,

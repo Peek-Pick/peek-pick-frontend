@@ -18,6 +18,9 @@
     "@iconify/react": "^6.0.0",
     "@lottiefiles/dotlottie-react": "^0.14.0",
     "@mapbox/polyline": "^1.2.1",
+    "@nivo/core": "^0.99.0",
+    "@nivo/line": "^0.99.0",
+    "@nivo/pie": "^0.99.0",
     "@react-google-maps/api": "^2.20.6",
     "@react-router/node": "^7.5.3",
     "@react-router/serve": "^7.5.3",
@@ -42,6 +45,7 @@
     "react-router": "^7.5.3",
     "react-router-dom": "^7.6.0",
     "react-textarea-autosize": "^8.5.9",
+    "recharts": "^3.0.0",
     "sweetalert2": "^11.22.0",
     "swiper": "^11.2.8",
     "zustand": "^5.0.4"
