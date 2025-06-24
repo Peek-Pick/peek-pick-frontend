@@ -1,95 +1,138 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import StatsCardComponent from "~/components/admin/dashboard/statsCardComponent";
 import PeriodDropdownComponent from "~/components/admin/dashboard/periodDropdownComponent";
 import LogComponent from "~/components/admin/dashboard/logComponent";
-
-import {faShoppingCart, faUsers, faStar, faDollarSign,} from "@fortawesome/free-solid-svg-icons";
-import {useQuery} from "@tanstack/react-query";
-import type {PagingResponse} from "~/types/common";
-import {getAdminReviewList} from "~/api/reviews/adminReviewAPI";
-
-// 요청사항 필터 타입
-type Category = "전체" | "신고" | "문의";
+import {
+    type Category, getAdminDashboardChartNationality,
+    getAdminDashboardChartReview, getAdminDashboardChartUser,
+    getAdminDashboardInquiryList,
+    getAdminDashboardReportList, getAdminDashboardStatus
+} from "~/api/dashboardAPI";
+import TrendChartComponent from "~/components/admin/dashboard/TrendChartComponent";
+import type { PagingResponse } from "~/types/common";
+import PaginationComponent from "~/components/common/PaginationComponent";
 
 export default function DashboardComponent() {
     const [period, setPeriod] = useState("This Month");
 
-    const stats = [
-        {
-            id: 1,
-            title: "총 상품 수",
-            value: "24,589",
-            icon: faShoppingCart,
-            iconBg: "bg-blue-100 text-blue-600",
-            trend: { up: true, percent: "12.5%" },
-            progress: "w-3/4",
-            progressColor: "bg-blue-600",
-        },
-        {
-            id: 2,
-            title: "사용자 수",
-            value: "14,789",
-            icon: faUsers,
-            iconBg: "bg-green-100 text-green-600",
-            trend: { up: false, percent: "5.2%" },
-            progress: "w-2/3",
-            progressColor: "bg-green-600",
-        },
-        {
-            id: 3,
-            title: "리뷰 수",
-            value: "1,589",
-            icon: faStar,
-            iconBg: "bg-yellow-100 text-yellow-600",
-            trend: { up: true, percent: "8.4%" },
-            progress: "w-5/6",
-            progressColor: "bg-yellow-600",
-        },
-        {
-            id: 4,
-            title: "Revenue",
-            value: "$45,289",
-            icon: faDollarSign,
-            iconBg: "bg-cyan-100 text-cyan-600",
-            trend: { up: true, percent: "15.7%" },
-            progress: "w-9/10",
-            progressColor: "bg-cyan-600",
-        },
-    ];
+    // 페이지 상태 관리
+    const [page, setPage] = useState(0);
 
-    const [filter, setFilter] = useState<Category>("전체");
+    // 페이지네이션 핸들러
+    const handlePage = (page: number) => {
+        setPage(page);
+    };
 
-    // 요청사항 리스트
-    const { data, isLoading, isError } = useQuery<PagingResponse<AdminReviewSimpleDTO>>({
-        queryKey: ["adminRequestList", 0, filter],
-        queryFn: () => getAdminRequestList(0, filter),
+    // 요청사항 필터 상태
+    const [category, setCategory] = useState<Category>("문의");
+
+    // 통계 토글 상태
+    const [selectedTab, setSelectedTab] = useState<"리뷰 추이" | "회원 추이" | "국적 분포">("국적 분포");
+
+    // 요청사항 리스트 -  타입 유추
+    const { data: requestData, isLoading: requestLoading, isError: requestError } = useQuery<PagingResponse<AdminDashInquiryDTO | AdminDashReportDTO>>({
+        queryKey: ["adminDashRequestList", page, category],
+        queryFn: () => {
+            if (category === "문의") {
+                return getAdminDashboardInquiryList(page);
+            } else {
+                return getAdminDashboardReportList(page);
+            }
+        },
+        staleTime: 1000 * 60 * 5,
+        enabled: !!category,
+    });
+
+    // 통계 데이터 - 리뷰
+    const { data: rawReviewData } = useQuery<AdminDashChart[]>({
+        queryKey: ["adminDashChartReview"],
+        queryFn: () => getAdminDashboardChartReview(),
         staleTime: 1000 * 60 * 5,
     });
 
+    // 통계 데이터 - 사용자
+    const { data: rawUserData } = useQuery<AdminDashChart[]>({
+        queryKey: ["adminDashChartUser"],
+        queryFn: () => getAdminDashboardChartUser(),
+        staleTime: 1000 * 60 * 5,
+    });
+
+    // 통계 데이터 - 국적
+    const { data: rawNationalityData } = useQuery<AdminDashChart[]>({
+        queryKey: ["adminDashChartNationality"],
+        queryFn: () => getAdminDashboardChartNationality(),
+        staleTime: 1000 * 60 * 5,
+    });
+
+    // 이번달 데이터, 증가율 - 상품, 사용자, 리뷰
+    const { data: statusData } = useQuery<[number[], number[]]>({
+        queryKey: ["adminDashStatusData"],
+        queryFn: () => getAdminDashboardStatus(),
+        staleTime: 1000 * 60 * 5,
+    });
+
+    // 이번달 데이터 - 상품, 사용자, 리뷰
+    const values = statusData ? statusData[0] : [];
+
+    // 저번달 대비 증가율 - 상품, 사용자, 리뷰
+    const percents = statusData ? statusData[1] : [];
+
+    // 이번달 목표값 - 상품, 사용자, 리뷰
+    const goals = [1000, 5000, 10000];
+
     return (
-        <div className="container mx-auto p-4">
+        <div className="container mx-auto p-2">
             {/* 드롭다운 */}
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex justify-between items-center mb-2">
                 <PeriodDropdownComponent period={period} setPeriod={setPeriod} />
             </div>
 
             {/* 통계 카드 */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {stats.map((s) => (
-                    <StatsCardComponent key={s.id} {...s} />
-                ))}
+            <div className="grid gap-6">
+                <StatsCardComponent values={values} goals={goals} percents={percents}/>
             </div>
 
-            {/* 요청사항 - 문의, 신고 */}
-            <LogComponent />
+            {/* 요청사항 - 문의, 신고 + 그래프  */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* 왼쪽: 요청사항 로그 */}
+                <div className="bg-light min-h-screen">
+                    <div className="container py-5">
+                        <div className="flex justify-center">
+                            <div className="w-full max-w-6xl">
+                                <div className="bg-white shadow-sm rounded-lg border-0 py-2">
+                                    <LogComponent data={requestData} isLoading={requestLoading} isError={requestError}
+                                                  category={category} setCategory={setCategory} setPage={setPage}
+                                    />
 
-            <div>사용자 관련 통계 - !활성 사용자 수</div>
-            <div>상품 관련 통계 - !등록된 전체 상품 수 , !인기상품(별점 높은 상품)</div>
-            <div>리뷰 관련 통계 - !리뷰 작성 수 추이(일별, 주별, 월별), 리뷰별 태그 빈도(맛, 등등..)</div>
-            <div>신고 및 문의 현황 - !신고 접수 건수 및 처리 현황(시간별, 종류별)</div>
-            <div>위치 기반 서비스 관련 통계 - 위치 기반 편의점 안내 사용 횟수, 사용자 위치 분포(지역별 사용자 수)</div>
+                                    {/* 페이지네이션 컴포넌트 추가 */}
+                                        <PaginationComponent
+                                            currentPage={page}
+                                            totalPages={requestData?.totalPages}
+                                            onPageChange={handlePage}
+                                            maxPageButtons={10}
+                                        />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-
+                {/* 오른쪽: 통계 그래프 */}
+                <div className="bg-light min-h-screen">
+                    <div className="container py-5">
+                        <div className="flex justify-center">
+                            <div className="w-full max-w-6xl">
+                                <div className="bg-white shadow-sm rounded-lg border-0 py-2">
+                                    <TrendChartComponent selectedTab={selectedTab} setSelectedTab={setSelectedTab}
+                                                         rawReviewData={rawReviewData} rawUserData={rawUserData}
+                                                         rawNationalityData={rawNationalityData}/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

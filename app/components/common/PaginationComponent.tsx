@@ -40,7 +40,7 @@ function PaginationComponent({
     }
 
     return (
-        <nav aria-label="Page navigation" className="mt-8">
+        <nav aria-label="Page navigation" className="mt-4">
             <ul className="flex flex-wrap justify-center gap-2 sm:space-x-3">
                 {/* 이전 그룹 버튼 */}
                 {canGoPrevSet && (

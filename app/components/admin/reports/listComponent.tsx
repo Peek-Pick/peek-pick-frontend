@@ -22,6 +22,13 @@ export default function ListComponent({data, isLoading, isError, page, category,
         [ReportReason.PROFANITY]: "bg-purple-100 text-purple-800",
     };
 
+    const ReportReasonLabelMap: Record<ReportReason, string> = {
+        POLITICS: "정치",
+        HATE: "혐오",
+        DEFAMATION: "비방",
+        PROFANITY: "욕설",
+    };
+
     if (isLoading)
         return <LoadingComponent isLoading />;
     if (isError || !data)
@@ -38,12 +45,12 @@ export default function ListComponent({data, isLoading, isError, page, category,
                 <table className="min-w-full text-sm divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                         <tr>
-                            <th className="w-1/8 px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                            <th className="w-1/8 px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">리뷰번호</th>
-                            <th className="w-1/8 px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">작성자번호</th>
-                            <th className="w-1/8 px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">신고자번호</th>
-                            <th className="w-2/8 px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">신고사유</th>
-                            <th className="w-2/8 px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">신고일</th>
+                            <th className="w-1/7 px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                            <th className="w-1/7 px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">리뷰번호</th>
+                            <th className="w-1/7 px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">작성자번호</th>
+                            <th className="w-1/7 px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">신고자번호</th>
+                            <th className="w-1/7 px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">신고사유</th>
+                            <th className="w-2/7 px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">신고일</th>
                         </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
@@ -68,7 +75,7 @@ export default function ListComponent({data, isLoading, isError, page, category,
                                         <span className={`px-2 py-1.5 rounded-md text-xs font-medium ${
                                             reasonColorMap[report.reason as ReportReason] || "bg-gray-100 text-gray-800"}`}
                                         >
-                                            {ReportReasonDescriptions[report.reason as ReportReason] || report.reason}
+                                            {ReportReasonLabelMap[report.reason as ReportReason]}
                                         </span>
                                     </td>
                                     <td className="px-4 py-3.5 text-left">{new Date(report.regDate).toLocaleString('ko-KR', {
