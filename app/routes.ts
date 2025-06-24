@@ -39,10 +39,10 @@ export default [
         route("/mypage/views",   "routes/users/viewsPage.tsx"), // 상품 조회 내역
 
         // 상품
-        route("products/ranking",    "routes/products/rankingPage.tsx"),
+        route("products/ranking",    "routes/products/rankingPage2.tsx"),
         route("products/:barcode",   "routes/products/detailPage.tsx"),
         route("products/recommended",   "routes/products/recommendedPage.tsx"), // 상품 추천
-        route("products/search",   "routes/products/searchPage.tsx"), // 상품 추천
+        route("products/search",   "routes/products/searchPage2.tsx"), // 상품 추천
 
         // 리뷰
         route("/reviews/product/:barcode", "routes/reviews/productListPage.tsx"),
