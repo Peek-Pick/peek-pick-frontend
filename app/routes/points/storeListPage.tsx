@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { listCoupon, redeemCoupon } from "~/api/points/pointsAPI";
+import {listCoupon, readCoupon, redeemCoupon} from "~/api/points/pointsAPI";
 import StoreListComponent from "~/components/points/storeListComponent";
 import CouponModal from "~/components/points/couponModal";
 import type { PointStoreDTO, PointStoreListDTO } from "~/types/points";
 import { PointProductType } from "~/enums/points/points";
 import PaginationComponent from "~/components/common/PaginationComponent";
 import type {PagingResponse} from "~/types/common";
-import {readCoupon} from "~/api/points/adminPointsAPI";
 import {BackButton} from "~/util/button/FloatingActionButtons";
 import { ShoppingBag} from "lucide-react";
 
