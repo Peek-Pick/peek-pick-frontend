@@ -12,6 +12,7 @@ import {
 import TrendChartComponent from "~/components/admin/dashboard/TrendChartComponent";
 import type { PagingResponse } from "~/types/common";
 import PaginationComponent from "~/components/common/PaginationComponent";
+import LoadingComponent from "~/components/common/loadingComponent";
 
 export default function DashboardComponent() {
     const [period, setPeriod] = useState("This Month");
@@ -29,20 +30,6 @@ export default function DashboardComponent() {
 
     // 통계 토글 상태
     const [selectedTab, setSelectedTab] = useState<"리뷰 추이" | "회원 추이" | "국적 분포">("국적 분포");
-
-    // 요청사항 리스트 -  타입 유추
-    const { data: requestData, isLoading: requestLoading, isError: requestError } = useQuery<PagingResponse<AdminDashInquiryDTO | AdminDashReportDTO>>({
-        queryKey: ["adminDashRequestList", page, category],
-        queryFn: () => {
-            if (category === "문의") {
-                return getAdminDashboardInquiryList(page);
-            } else {
-                return getAdminDashboardReportList(page);
-            }
-        },
-        staleTime: 1000 * 60 * 5,
-        enabled: !!category,
-    });
 
     // 통계 데이터 - 리뷰
     const { data: rawReviewData } = useQuery<AdminDashChart[]>({
@@ -66,7 +53,7 @@ export default function DashboardComponent() {
     });
 
     // 이번달 데이터, 증가율 - 상품, 사용자, 리뷰
-    const { data: statusData } = useQuery<[number[], number[]]>({
+    const { data: statusData, isLoading: statusLoading, isError: statusError} = useQuery<[number[], number[]]>({
         queryKey: ["adminDashStatusData"],
         queryFn: () => getAdminDashboardStatus(),
         staleTime: 1000 * 60 * 5,
@@ -80,6 +67,25 @@ export default function DashboardComponent() {
 
     // 이번달 목표값 - 상품, 사용자, 리뷰
     const goals = [1000, 5000, 10000];
+
+    // 요청사항 리스트 -  타입 유추
+    const { data: requestData, isLoading: requestLoading, isError: requestError } = useQuery<PagingResponse<AdminDashInquiryDTO | AdminDashReportDTO>>({
+        queryKey: ["adminDashRequestList", page, category],
+        queryFn: () => {
+            if (category === "문의") {
+                return getAdminDashboardInquiryList(page);
+            } else {
+                return getAdminDashboardReportList(page);
+            }
+        },
+        staleTime: 1000 * 60 * 5,
+        enabled: !!category,
+    });
+
+    if (requestLoading || statusLoading)
+        return <LoadingComponent isLoading />;
+    if (requestError || statusError)
+        return <div className="p-4 text-red-500">대시보드 데이터 불러오기 실패</div>;
 
     return (
         <div className="container mx-auto p-2">
@@ -101,9 +107,7 @@ export default function DashboardComponent() {
                         <div className="flex justify-center">
                             <div className="w-full max-w-6xl">
                                 <div className="bg-white shadow-sm rounded-lg border-0 py-2">
-                                    <LogComponent data={requestData} isLoading={requestLoading} isError={requestError}
-                                                  category={category} setCategory={setCategory} setPage={setPage}
-                                    />
+                                    <LogComponent data={requestData} category={category} setCategory={setCategory} setPage={setPage}/>
 
                                     {/* 페이지네이션 컴포넌트 추가 */}
                                         <PaginationComponent

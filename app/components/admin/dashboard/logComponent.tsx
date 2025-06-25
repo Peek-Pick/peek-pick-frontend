@@ -43,14 +43,12 @@ const ReportReasonLabelMap: Record<ReportReason, string> = {
 
 export interface LogComponentProps<C extends Category = Category> {
     data?: PagingResponse<CategoryDataMap[C]>;
-    isLoading?: boolean;
-    isError?: boolean;
     category: C;
     setCategory: (C) => void;
     setPage: (pageNum: number) => void;
 }
 
-export default function LogComponent({data, isLoading, isError, category, setCategory, setPage}: LogComponentProps) {
+export default function LogComponent({data, category, setCategory, setPage}: LogComponentProps) {
     // 필터 토글
     const toggleFilter = (label: Category) => {
         setCategory(label);
@@ -58,11 +56,6 @@ export default function LogComponent({data, isLoading, isError, category, setCat
 
     // 네비게이션
     const navigate = useNavigate();
-
-    if (isLoading)
-        return <p className="text-center p-4 text-base sm:text-lg">Loading...</p>;
-    if (isError)
-        return<p className="text-center p-4 text-red-500 text-base sm:text-lg">Failed to load dashboard data.</p>
 
     return (
         <div className="p-4">
@@ -72,7 +65,7 @@ export default function LogComponent({data, isLoading, isError, category, setCat
                     📬 요청 사항
                 </h4>
                 <button className="flex items-center gap-1 px-3 py-1.5 border rounded text-sm hover:bg-gray-100">
-                    <FontAwesomeIcon icon={faDownload} />
+                    <FontAwesomeIcon icon={faDownload} style={{ width: '15px', height: '15px' }} />
                     Export
                 </button>
             </div>

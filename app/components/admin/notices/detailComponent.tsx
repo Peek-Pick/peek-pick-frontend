@@ -2,6 +2,7 @@
 
 import { Link } from "react-router-dom";
 import type { NoticeResponseDto } from "~/types/notice";
+import LoadingComponent from "~/components/common/loadingComponent";
 
 // VITE_API_URL에서 "/api/v1" 제거하여 정적 파일 호스트만 남깁니다.
 const rawApi =
@@ -12,9 +13,11 @@ const API_URL = rawApi
 
 interface Props {
     notice: NoticeResponseDto;
+    isLoading: boolean;
+    error: string;
 }
 
-export default function NoticeDetailComponent({ notice }: Props) {
+export default function NoticeDetailComponent({ notice, isLoading, error }: Props) {
     const formattedDate = new Date(notice.regDate).toLocaleString();
 
     const infoBlocks = [
@@ -22,6 +25,13 @@ export default function NoticeDetailComponent({ notice }: Props) {
         { label: "DATE", value: formattedDate, isContent: false },
         { label: "내용", value: notice.content, isContent: true },
     ];
+
+    if (isLoading)
+        return <LoadingComponent isLoading />;
+    if (error)
+        return <p className="p-6 text-red-500">{error}</p>;
+    if (!notice)
+        return <p className="p-6">공지 정보 불러오기 실패</p>;
 
     return (
         <>

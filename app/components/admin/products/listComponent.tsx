@@ -2,18 +2,26 @@ import { useNavigate } from "react-router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart, faStar } from "@fortawesome/free-solid-svg-icons";
 import type { ProductListDTO } from "~/types/products";
+import LoadingComponent from "~/components/common/loadingComponent";
 
 interface Props {
-    data: ProductListDTO[];
+    data?: ProductListDTO[];
+    isLoading?: boolean;
+    isError?: boolean;
 }
 
-export default function AdminProductsListComponent({ data }: Props) {
+export default function AdminProductsListComponent({ data, isLoading, isError }: Props) {
     const navigate = useNavigate();
+
+    if (isLoading)
+        return <LoadingComponent isLoading />;
+    if (isError || !data)
+        return <div className="p-4 text-red-500">상품 목록 불러오기 실패</div>;
 
     return (
         <div className="overflow-x-auto bg-white shadow rounded-lg">
-            <table className="min-w-full text-sm divide-y divide-gray-200 text-center">
-                <thead className="bg-gray-50 text-center">
+            <table className="min-w-full text-sm divide-y divide-gray-200">
+                <thead className="bg-gray-50">
                 <tr>
                     <th className="px-4 py-2 text-xs font-medium text-gray-500 align-middle">#</th>
                     <th className="px-4 py-2 text-xs font-medium text-gray-500 align-middle">이미지</th>

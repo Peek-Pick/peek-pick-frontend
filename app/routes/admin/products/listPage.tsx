@@ -10,6 +10,7 @@ import PaginationComponent from "~/components/common/PaginationComponent";
 import { listAdminProducts } from "~/api/products/adminProductsAPI";
 import type { PageResponse, ProductListDTO } from "~/types/products";
 import { ProductLoading } from "~/util/loading/productLoading";
+import LoadingComponent from "~/components/common/loadingComponent";
 
 export default function AdminProductsPage() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -43,18 +44,11 @@ export default function AdminProductsPage() {
         queryFn: () => listAdminProducts(page, size, keyword),
     });
 
-    if (isLoading) {
-        return <ProductLoading />;
-    }
-    if (isError || !data) {
-        return <div className="p-4 text-red-500">상품 목록 불러오기 실패</div>;
-    }
-
     return (
-        <div className="max-w-7xl mx-auto px-4">
+        <div>
             {/* 헤더 */}
             <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                <FontAwesomeIcon icon={faBox} />
+                <FontAwesomeIcon icon={faBox} style={{ width: '20px', height: '20px' }}/>
                 상품 관리
             </h3>
 
@@ -62,12 +56,12 @@ export default function AdminProductsPage() {
             <AdminProductsFilterBar keyword={keyword} onSearch={handleSearch} />
 
             {/* 상품 목록 */}
-            <AdminProductsListComponent data={data.content} />
+            <AdminProductsListComponent data={data?.content} isLoading={isLoading} isError={isError}/>
 
             {/* 페이지네이션 */}
             <PaginationComponent
                 currentPage={page}
-                totalPages={data.totalPages}
+                totalPages={data?.totalPages}
                 onPageChange={handlePageChange}
                 maxPageButtons={10}
             />

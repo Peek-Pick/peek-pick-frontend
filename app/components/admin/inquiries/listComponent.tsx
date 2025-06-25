@@ -22,10 +22,10 @@ function ListComponent({ items }: { items: InquiryResponseDTO[] } & FetchAdminIn
 
     const displayItems = [...items].sort((a, b) => b.inquiryId - a.inquiryId);
 
-    const headers = ['ID', '유형', '내용', '작성일', '수정일', '닉네임', '상태', '삭제여부'];
+    const headers = ['#', '유형', '내용', '작성일', '수정일', '닉네임', '상태', '삭제여부'];
 
     return (
-        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow">
+        <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow">
             <div className="overflow-x-auto">
                 <table className="min-w-full text-sm divide-y divide-gray-200 table-fixed">
                     <colgroup>
@@ -42,7 +42,7 @@ function ListComponent({ items }: { items: InquiryResponseDTO[] } & FetchAdminIn
                     <tr>
                         {headers.map((col) => (
                             <th key={col}
-                                className="px-4 py-2 text-left text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                                className="px-4 py-2 text-left text-xs font-normal text-gray-500 uppercase tracking-wider whitespace-nowrap">
                                 {col}
                             </th>
                         ))}

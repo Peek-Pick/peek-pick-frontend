@@ -18,8 +18,7 @@ export default function ChatbotPage() {
     if (isLoading) {
         return (
             <div className="flex w-full items-center bg-white justify-center h-screen">
-                <img
-                    src="/loading/chatbotLoading.gif"
+                <img src="/loading/chatbotLoading.gif"
                     alt="Loading..."
                     className="w-32 h-32 animate-spin"
                 />

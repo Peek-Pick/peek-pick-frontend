@@ -59,8 +59,8 @@ export default function TrendChartComponent({ selectedTab, setSelectedTab, rawRe
                 <h4 className="text-lg font-bold text-gray-800 border-b-2 border-gray-300 pb-1">
                     📊 데이터 통계
                 </h4>
-                <button className="flex items-center gap-2 px-3 py-1.5 border rounded text-sm text-gray-600 hover:bg-gray-100 transition">
-                    <FontAwesomeIcon icon={faDownload} />
+                <button className="flex items-center gap-1 px-3 py-1.5 border rounded text-sm hover:bg-gray-100">
+                    <FontAwesomeIcon icon={faDownload} style={{ width: '15px', height: '15px' }}/>
                     <span>Export</span>
                 </button>
             </div>
