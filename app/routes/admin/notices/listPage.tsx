@@ -47,14 +47,11 @@ export default function ListPage() {
         staleTime: 1000 * 60 * 10,
     });
 
-    if (isLoading) return <div className="p-4 text-gray-600">불러오는 중...</div>;
-    if (isError || !data) return <div className="p-4 text-red-500">공지사항을 불러오는 중 오류 발생</div>;
-
     return (
         <div>
             {/* 📄 타이틀 */}
             <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                <FontAwesomeIcon icon={faBullhorn} />
+                <FontAwesomeIcon icon={faBullhorn} style={{ width: '20px', height: '20px' }}/>
                 공지사항 관리
             </h3>
 
@@ -68,17 +65,19 @@ export default function ListPage() {
 
             {/* 📋 리스트 */}
             <NoticeListComponent
-                notices={data.content}
+                notices={data?.content}
+                isLoading={isLoading}
+                isError={isError}
                 page={page}
                 size={Number(size)}
-                totalElements={data.totalElements}
+                totalElements={data?.totalElements}
                 setPage={handlePageChange}
             />
 
             {/* 📦 페이지네이션 */}
             <PaginationComponent
                 currentPage={page}
-                totalPages={data.totalPages}
+                totalPages={data?.totalPages}
                 onPageChange={handlePageChange}
             />
         </div>

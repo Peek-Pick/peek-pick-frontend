@@ -2,12 +2,21 @@ import { Link } from "react-router-dom";
 import type { ProductDetailDTO } from "~/types/products";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart, faStar } from "@fortawesome/free-solid-svg-icons";
+import {ProductLoading} from "~/util/loading/productLoading";
+import LoadingComponent from "~/components/common/loadingComponent";
 
 interface Props {
-    product: ProductDetailDTO;
+    product?: ProductDetailDTO;
+    isLoading?: boolean;
+    isError?: boolean;
 }
 
-export default function AdminProductDetailComponent({ product }: Props) {
+export default function AdminProductDetailComponent({ product, isLoading, isError }: Props) {
+    if (isLoading)
+        return <LoadingComponent isLoading />;
+    if (isError)
+        return <div className="p-4 text-red-500">상세 정보를 불러오는 중 오류 발생</div>;
+
     // 🚩 product 또는 productId가 없으면 잘못된 접근으로 간주
     if (!product || !product.productId) {
         return <div className="text-red-500">잘못된 상품 정보입니다.</div>;

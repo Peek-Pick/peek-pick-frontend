@@ -9,7 +9,7 @@ import {ProductLoading} from "~/util/loading/productLoading";
 export default function AdminProductDetailPage() {
     const { id } = useParams<{ id: string }>();
 
-    const { data: product, isLoading, isError, error } = useQuery<
+    const { data: product, isLoading, isError } = useQuery<
         ProductDetailDTO,
         Error
     >({
@@ -18,16 +18,9 @@ export default function AdminProductDetailPage() {
         enabled: Boolean(id),
     });
 
-    if (isLoading) {
-        return <ProductLoading />;
-    }
-    if (isError || !product) {
-        return <p className="p-6 text-red-500">상세 정보를 불러오는 중 오류 발생: {error?.message}</p>;
-    }
-
     return (
         <div className="bg-white shadow-md rounded-lg p-6 text-gray-800 max-w-4xl mx-auto">
-            <AdminProductDetailComponent product={product} />
+            <AdminProductDetailComponent product={product} isLoading={isLoading} isError={isError}/>
         </div>
     );
 }

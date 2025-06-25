@@ -3,9 +3,12 @@
 import { useNavigate } from "react-router";
 import type { NoticeResponseDto } from "~/types/notice";
 import PaginationComponent from "~/components/common/PaginationComponent";
+import LoadingComponent from "~/components/common/loadingComponent";
 
 interface Props {
-    notices: NoticeResponseDto[];
+    notices?: NoticeResponseDto[];
+    isLoading?: boolean;
+    isError?: boolean;
     page: number;
     size: number;
     totalElements: number;
@@ -14,6 +17,8 @@ interface Props {
 
 export default function NoticeListComponent({
                                                 notices,
+                                                isLoading,
+                                                isError,
                                                 page,
                                                 size,
                                                 totalElements,
@@ -30,6 +35,11 @@ export default function NoticeListComponent({
         if (newPage < 0 || newPage >= totalPages) return;
         setPage(newPage);
     };
+
+    if (isLoading)
+        return <LoadingComponent isLoading />;
+    if (isError || !notices)
+        return <div className="p-4 text-red-500">공지 목록 불러오기 실패</div>;
 
     return (
         <div>

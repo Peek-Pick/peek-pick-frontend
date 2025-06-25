@@ -7,15 +7,14 @@ import { Icon } from "@iconify/react";
 export function RecommendComponent() {
     const navigate = useNavigate();
 
-    const size = 10;
+    const size = 12;
     const sortParam = "score,DESC";
 
     const { data, isLoading, isError } = useQuery<PageResponseCursor<ProductListDTO>>({
         queryKey: ["productsRecommend", size, sortParam],
-        queryFn: () => getRecommendedProducts(size, undefined, undefined, "score"),
+        queryFn: () => getRecommendedProducts(size, undefined, undefined),
         staleTime: 1000 * 60 * 5,
     });
-    console.log(data)
 
     const recommend = data?.content ?? [];
 

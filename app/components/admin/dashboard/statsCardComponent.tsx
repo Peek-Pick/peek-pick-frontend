@@ -1,5 +1,12 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {faArrowUp, faArrowDown, faShoppingCart, faUsers, faStar} from "@fortawesome/free-solid-svg-icons";
+import {
+    faArrowUp,
+    faArrowDown,
+    faShoppingCart,
+    faUsers,
+    faStar,
+    faChevronRight, faChevronLeft
+} from "@fortawesome/free-solid-svg-icons";
 
 interface StatusCardProps {
     values?: number[],
@@ -66,7 +73,7 @@ export default function StatsCardComponent({values, goals, percents}: StatusCard
                 >
                     <div className="flex items-center mb-2 relative">
                         <div className={`w-10 h-10 flex items-center justify-center rounded-xl ${iconBg}`}>
-                            <FontAwesomeIcon icon={icon} className="text-xl"/>
+                            <FontAwesomeIcon icon={icon} className="w-4 h-4"/>
                         </div>
                         <span
                             className={`absolute top-2 right-2 inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${

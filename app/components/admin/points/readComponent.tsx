@@ -1,12 +1,18 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router";
 import type { PointStoreDTO } from "~/types/points";
+import LoadingComponent from "~/components/common/loadingComponent";
 
 interface Props {
-    data: PointStoreDTO;
+    data?: PointStoreDTO;
+    isLoading?: boolean;
+    isError?: boolean;
 }
-export default function ReadComponent({ data }: Props) {
-    console.log(data);
+export default function ReadComponent({ data, isLoading, isError }: Props) {
+    if (isLoading)
+        return <LoadingComponent isLoading />;
+    if (isError)
+        return <div className="p-4 text-red-500">쿠폰 정보를 불러오는 중 오류 발생</div>;
 
     return (
         <div className="bg-white shadow-md rounded-lg p-6 text-gray-800 max-w-4xl mx-auto">

@@ -27,13 +27,9 @@ export default function DetailPage() {
             });
     }, [id]);
 
-    if (loading) return <p className="p-6 text-gray-500">로딩 중...</p>;
-    if (error) return <p className="p-6 text-red-500">{error}</p>;
-    if (!notice) return <p className="p-6">존재하지 않는 공지사항입니다.</p>;
-
     return (
         <div className="bg-white shadow-md rounded-lg p-6 text-gray-800 max-w-4xl mx-auto">
-            <NoticeDetailComponent notice={notice} />
+            <NoticeDetailComponent notice={notice} isLoading={loading} error={error}/>
         </div>
     );
 }

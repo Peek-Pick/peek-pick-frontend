@@ -1,6 +1,6 @@
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
-const ProductLoading = () => {
+const LogoutLoading = () => {
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-white z-50">
             <div className="w-50 h-50">
@@ -13,3 +13,5 @@ const ProductLoading = () => {
         </div>
     );
 };
+
+export {LogoutLoading};
