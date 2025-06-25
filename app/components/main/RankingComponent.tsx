@@ -10,11 +10,11 @@ export function RankingComponent() {
     const containerRef = useRef<HTMLDivElement>(null);
 
     const size = 10;
-    const sortParam = "score,DESC";
+    const sortKey = "score,DESC";
 
     const { data, isLoading, isError } = useQuery<PageResponseCursor<ProductListDTO>>({
-        queryKey: ["productsRanking", size, sortParam],
-        queryFn: () => listProducts(size, undefined, undefined),
+        queryKey: ["productsRanking", size, sortKey],
+        queryFn: () => listProducts(size, undefined, undefined, undefined, sortKey),
         staleTime: 1000 * 60 * 5,
     });
 

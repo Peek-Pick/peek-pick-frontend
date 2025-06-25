@@ -6,7 +6,7 @@ import ListComponent from "~/components/products/listComponent";
 import BottomNavComponent from "~/components/main/bottomNavComponent";
 import { searchProducts } from "~/api/products/productsAPI";
 import type { PageResponseCursor, ProductListDTO } from "~/types/products";
-import { BackButton, FloatingActionButtons } from "~/util/button/FloatingActionButtons";
+import {BackParamButton, FloatingActionButtons} from "~/util/button/FloatingActionButtons";
 
 const STORAGE_KEY = "searchPageScrollY";
 
@@ -72,21 +72,25 @@ export default function SearchPage2() {
     const categories = [
         { label: "전체", emoji: "🔥" },
         { label: "과자류", emoji: "🍪" },
-        { label: "김밥", emoji: "🍙" },
+        { label: "삼각김밥/김밥", emoji: "🍙" },
         { label: "면류", emoji: "🍜" },
-        { label: "빵, 디저트", emoji: "🥐" },
+        { label: "빵/디저트", emoji: "🥐" },
         { label: "아이스크림", emoji: "🍦" },
-        { label: "캔디류", emoji: "🍬" },
+        { label: "캔디/껌", emoji: "🍬" },
         { label: "음료", emoji: "🥤" },
-        { label: "샌드위치-햄버거", emoji: "🥪" },
+        { label: "샌드위치/햄버거", emoji: "🥪" },
         { label: "도시락", emoji: "🍱" },
-        { label: "안주", emoji: "🍻" },
+        { label: "과일/샐러드", emoji: "🍎" },
+        { label: "즉석섭취식품", emoji: "😡" },
+        { label: "즉석조리식품", emoji: "🍲" },
+        { label: "식재료", emoji: "🧂" },
+        { label: "건강식품", emoji: "💪" },
     ] as const;
 
     const sortOptions = [
+        { label: "Match", icon: "ri:sparkling-2-fill", param: "productId,DESC", color: "text-green-500" },
         { label: "Likes", icon: "ri:heart-fill", param: "likeCount,DESC", color: "text-red-500" },
         { label: "Rated", icon: "ri:star-fill", param: "score,DESC", color: "text-yellow-400" },
-        { label: "Match", icon: "ri:sparkling-2-fill", param: "productId,DESC", color: "text-green-500" },
     ] as const;
 
     const displayCategoryLabel =
@@ -289,7 +293,7 @@ export default function SearchPage2() {
             )}
 
             {/*<BottomNavComponent />*/}
-            <BackButton/>
+            <BackParamButton where="/main" />
             <FloatingActionButtons/>
         </div>
     );

@@ -5,7 +5,7 @@ import { useNavigate, useSearchParams, useNavigationType } from "react-router-do
 import ListComponent from "~/components/products/listComponent";
 import { listProducts } from "~/api/products/productsAPI";
 import type { PageResponseCursor, ProductListDTO } from "~/types/products";
-import { BackButton, FloatingActionButtons } from "~/util/button/FloatingActionButtons";
+import {BackButton, BackParamButton, FloatingActionButtons} from "~/util/button/FloatingActionButtons";
 
 const STORAGE_KEY = "rankingPageScrollY";
 
@@ -55,15 +55,19 @@ export default function RankingPage() {
     const categories = [
         { label: "전체", emoji: "🔥" },
         { label: "과자류", emoji: "🍪" },
-        { label: "김밥", emoji: "🍙" },
+        { label: "삼각김밥/김밥", emoji: "🍙" },
         { label: "면류", emoji: "🍜" },
-        { label: "빵, 디저트", emoji: "🥐" },
+        { label: "빵/디저트", emoji: "🥐" },
         { label: "아이스크림", emoji: "🍦" },
-        { label: "캔디류", emoji: "🍬" },
+        { label: "캔디/껌", emoji: "🍬" },
         { label: "음료", emoji: "🥤" },
-        { label: "샌드위치-햄버거", emoji: "🥪" },
+        { label: "샌드위치/햄버거", emoji: "🥪" },
         { label: "도시락", emoji: "🍱" },
-        { label: "안주", emoji: "🍻" },
+        { label: "과일/샐러드", emoji: "🍎" },
+        { label: "즉석섭취식품", emoji: "😡" },
+        { label: "즉석조리식품", emoji: "🍲" },
+        { label: "식재료", emoji: "🧂" },
+        { label: "건강식품", emoji: "💪" },
     ] as const;
 
     type CategoryType = typeof categories[number]["label"] | "카테고리";
@@ -74,16 +78,16 @@ export default function RankingPage() {
     // const [showCategoryMenu, setShowCategoryMenu] = useState(false);
 
     const sortOptions = [
-        { label: "Likes", icon: "ri:heart-fill", param: "likeCount,DESC", color: "text-red-500" },
         { label: "Rated", icon: "ri:star-fill", param: "score,DESC", color: "text-yellow-400" },
-        { label: "Match", icon: "ri:sparkling-2-fill", param: "productId,DESC", color: "text-green-500" },
+        { label: "Likes", icon: "ri:heart-fill", param: "likeCount,DESC", color: "text-red-500" },
+        // { label: "Match", icon: "ri:sparkling-2-fill", param: "productId,DESC", color: "text-green-500" },
     ] as const;
 
     // type SortLabelType = typeof sortOptions[number]["label"];
     type SortParamType = typeof sortOptions[number]["param"];
 
     const [sortParam, setSortParam] = useState<SortParamType>(
-        (searchParams.get("sort") as SortParamType) ?? "likeCount,DESC"
+        (searchParams.get("sort") as SortParamType) ?? "score,DESC"
     );
 
     // const sortLabel: SortLabelType = sortOptions.find((s) => s.param === sortParam)?.label ?? "좋아요 순";
@@ -178,7 +182,7 @@ export default function RankingPage() {
                                 value={categoryLabel}
                                 onChange={(e) => {
                                     const label = e.target.value;
-                                    setCategoryLabel(label);
+                                    setCategoryLabel(label as CategoryType);
                                     const newParams: Record<string, string> = {
                                         sort: sortParam,
                                     };
@@ -257,7 +261,8 @@ export default function RankingPage() {
             />
 
             {/*<BottomNavComponent />*/}
-            <BackButton />
+            <BackParamButton where="/main" />
+
             <FloatingActionButtons />
         </div>
     );

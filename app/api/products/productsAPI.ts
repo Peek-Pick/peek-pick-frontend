@@ -90,18 +90,15 @@ export async function getRecommendedProducts(
     size: number,
     lastValue?: number,
     lastProductId?: number,
-    sortParam: string = "likeCount,DESC"
 ): Promise<PageResponseCursor<ProductListDTO>> {
-    const sortKey = sortParam.split(",")[0];
 
-    console.log(size, lastValue, lastProductId, sortParam)
+    console.log(size, lastValue, lastProductId)
 
     const res = await axiosInstance.get<PageResponseCursor<ProductListDTO>>(`${host}/recommended`, {
         params: {
             size,
             ...(lastValue !== undefined && { lastValue }),
             ...(lastProductId !== undefined && { lastProductId }),
-            sort: sortKey,
         },
     });
     return res.data;

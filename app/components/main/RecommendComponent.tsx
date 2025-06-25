@@ -8,11 +8,10 @@ export function RecommendComponent() {
     const navigate = useNavigate();
 
     const size = 12;
-    const sortParam = "score,DESC";
 
     const { data, isLoading, isError } = useQuery<PageResponseCursor<ProductListDTO>>({
-        queryKey: ["productsRecommend", size, sortParam],
-        queryFn: () => getRecommendedProducts(size, undefined, undefined),
+        queryKey: ["productsRecommend", size],
+        queryFn: () => getRecommendedProducts(size, undefined),
         staleTime: 1000 * 60 * 5,
     });
 
