@@ -1,5 +1,6 @@
 
 import axiosInstance from "~/instance/axiosInstance";
+import type {PointStoreDTO} from "~/types/points";
 
 
 // 쿠폰 목록 조회(사용자)
@@ -11,6 +12,12 @@ export async function listCoupon(page: number, size: number, sort:string, type?:
 
     const response = await axiosInstance.get(`/points/store`, { params });
 
+    return response.data;
+}
+
+// 쿠폰 단건 조회(사용자)
+export async function readCoupon(pointstoreId: number | null): Promise<PointStoreDTO> {
+    const response = await axiosInstance.get(`/points/${pointstoreId}`);
     return response.data;
 }
 
