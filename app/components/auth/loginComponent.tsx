@@ -1,10 +1,11 @@
-import {type FormEvent, useState} from "react";
+import {type FormEvent, useEffect, useState} from "react";
 import {getToken} from "~/api/auth/authAPI";
 import {Link, useNavigate} from "react-router-dom";
 import {FaGoogle} from "react-icons/fa";
 import LoadingComponent from "~/components/common/loadingComponent";
 import {getGoogleLoginLink} from "~/api/auth/googleAPI";
 import {useAdminAuth} from "~/contexts/AdminAuthContext";
+import {LoginLoading} from "~/util/loading/loginLoading";
 
 const LoginComponent = () => {
     const navigate = useNavigate();
@@ -18,7 +19,10 @@ const LoginComponent = () => {
         setIsLoading(true);
 
         try {
-            await getToken(mem, mpw);
+            await Promise.all([
+                getToken(mem, mpw),
+                new Promise(res => setTimeout(res, 1500)),
+            ]);
             logout();
             navigate('/main');
         } catch (error) {
@@ -31,20 +35,24 @@ const LoginComponent = () => {
 
     const handleGoogleLogin = () => {
         setIsLoading(true);
-        const googleLink = getGoogleLoginLink();
-        window.location.href = googleLink; // 링크 이동
+        setTimeout(() => {
+            const googleLink = getGoogleLoginLink();
+            window.location.href = googleLink;
+        }, 1500);   // 1.5초 타임아웃
     };
+
+    if (isLoading)
+        return <LoginLoading />
 
     return (
         <div
             className="max-w-2xl mx-auto shadow-xl relative rounded-[20px] flex flex-col items-center justify-start"
             style={{fontFamily: "'Quicksand', sans-serif"}}
         >
-            <LoadingComponent isLoading={isLoading} />
 
             {/* 로그인 카드 */}
             <div
-                className="absolute top-32 w-[90%] max-w-xl bg-white/70 backdrop-blur-[40px] border-2 border-white/80 rounded-2xl shadow-xl p-8 z-10"
+                className="absolute top-20 w-[90%] max-w-xl bg-white/70 backdrop-blur-[40px] border-2 border-white/80 rounded-2xl shadow-xl p-8 z-10"
             >
                 <h2 className="text-3xl font-semibold tracking-wide text-center text-gray-800 mb-8 leading-snug">
                     로그인

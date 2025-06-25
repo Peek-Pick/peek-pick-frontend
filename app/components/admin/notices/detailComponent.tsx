@@ -12,18 +12,18 @@ const API_URL = rawApi
     .replace("https://localhost:8080/api/v1", "https://localhost");
 
 interface Props {
-    notice: NoticeResponseDto;
-    isLoading: boolean;
-    error: string;
+    notice?: NoticeResponseDto;
+    isLoading?: boolean;
+    error?: string;
 }
 
 export default function NoticeDetailComponent({ notice, isLoading, error }: Props) {
-    const formattedDate = new Date(notice.regDate).toLocaleString();
+    const formattedDate = new Date(notice?.regDate).toLocaleString();
 
     const infoBlocks = [
-        { label: "제목", value: notice.title, isContent: false },
+        { label: "제목", value: notice?.title, isContent: false },
         { label: "DATE", value: formattedDate, isContent: false },
-        { label: "내용", value: notice.content, isContent: true },
+        { label: "내용", value: notice?.content, isContent: true },
     ];
 
     if (isLoading)

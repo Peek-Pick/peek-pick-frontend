@@ -19,16 +19,18 @@ export default function AppLayout() {
         "/main": "Peek & Pick",
         "/mypage": "My Page",
         "/mypage/edit": "Edit Profile",
-        "/mypage/favorites": "찜한 상품",
-        "/reviews/user": "My Review List",
-        "/products/ranking": "상품 랭킹",
-        "/products/search": "상품 검색",
-        "/products/recommended": "상품 추천",
-        "/notices/list": "공지사항/이벤트",
-        "/inquiries/list": "문의사항",
-        "/inquiries/add": "문의사항",
-        "/barcode/history": "바코드 내역",
+        "/mypage/favorites": "WishList",
+        "/reviews/user": "My Reviews",
+        "/products/ranking": "Product Ranking",
+        "/products/search": "Product Search",
+        "/products/recommended": "Product Recommend",
+        "/notices/list": "Notice & Event",
+        "/inquiries/list": "My Q&A",
+        "/inquiries/add": "Inquiry",
+        "/barcode/history": "Barcode History",
         "/login": "Peek & Pick",
+        "/mypage/coupons": "My Coupons",
+        "/points/store/list": "Point Store"
         // 다른 정적 경로가 필요하다면 여기에 추가
     };
 
@@ -43,7 +45,7 @@ export default function AppLayout() {
 
         // /notices/:id 패턴 확인
         if (/^\/notices\/\d+$/.test(location.pathname)) {
-            setDynamicTitle("공지사항/이벤트");
+            setDynamicTitle("Notice & Event");
             return;
         }
 
@@ -61,18 +63,18 @@ export default function AppLayout() {
 
         // /inquiries/:id 패턴 확인
         if (/^\/inquiries\/\d+$/.test(location.pathname)) {
-            setDynamicTitle("문의사항");
+            setDynamicTitle("Inquiry");
             return;
         }
 
         // /inquiries/:id/edit 패턴 확인
         if (/^\/inquiries\/\d+\/edit$/.test(location.pathname)) {
-            setDynamicTitle("문의사항");
+            setDynamicTitle("Notice");
             return;
         }
 
         // ④ /products/:barcode 패턴 확인
-        const productMatch = location.pathname.match(/^\/(products|reviews\/product)\/([^/]+)$/);
+        const productMatch = location.pathname.match(/^\/(products|reviews\/add)\/([^/]+)$/);
         if (productMatch) {
             const barcode = productMatch[2];
             // API 호출하여 상품명을 가져와 dynamicTitle에 저장

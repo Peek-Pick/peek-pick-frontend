@@ -5,6 +5,7 @@ import AddComponent from "~/components/inquiries/addComponent";
 import LoadingComponent from "~/components/common/loadingComponent";
 import { useCreateInquiry } from "~/hooks/inquiries/useInquiryMutation";
 import { BackButton, FloatingActionButtons } from "~/util/button/FloatingActionButtons";
+import Swal from "sweetalert2";
 
 function AddPage() {
     const navigate = useNavigate();
@@ -20,16 +21,29 @@ function AddPage() {
             setUserEmail(email);
             setLoading(false);
         }
-        fetchEmail();
+        fetchEmail().then();
     }, []);
 
     async function handleSubmit(dto: InquiryRequestDTO, files: FileList | null) {
         if (!userEmail) {
-            alert("사용자 정보를 불러오지 못했습니다. 다시 로그인해주세요.");
             return;
         }
 
-        setLoading(true);
+        Swal.fire({
+            title: "문의 등록 중입니다...",
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: () => {
+                Swal.showLoading();
+            },
+            customClass: {
+                popup: 'custom-popup',
+                title: 'custom-title',
+                actions: 'custom-actions',
+                confirmButton: 'custom-confirm-button',
+            }
+        });
+
         try {
             // 1. 텍스트 등록
             const res = await createInquiryMutation.mutateAsync(dto);
@@ -40,12 +54,35 @@ function AddPage() {
                 await uploadImages(newId, files);
             }
 
-            navigate(`/inquiries/${newId}`);
+            // 3. 완료 후 알림
+            await Swal.fire({
+                title: "문의가 등록되었습니다",
+                icon: "success",
+                confirmButtonText: "확인",
+                customClass: {
+                    popup: 'custom-popup',
+                    title: 'custom-title',
+                    actions: 'custom-actions',
+                    confirmButton: 'custom-confirm-button',
+                }
+            });
+
+            // 4. 페이지 이동 (히스토리 남기지 않음)
+            navigate(`/inquiries/${newId}`, { replace: true });
+
         } catch (error) {
             console.error("문의 등록 실패:", error);
-            alert("문의 등록 중 오류가 발생했습니다.");
-        } finally {
-            setLoading(false);
+            await Swal.fire({
+                title: "문의 등록 중 오류가 발생했습니다",
+                icon: "error",
+                confirmButtonText: "확인",
+                customClass: {
+                    popup: 'custom-popup',
+                    title: 'custom-title',
+                    actions: 'custom-actions',
+                    confirmButton: 'custom-confirm-button',
+                }
+            });
         }
     }
 
@@ -53,7 +90,6 @@ function AddPage() {
 
     return (
         <div>
-
             <BackButton />
             <FloatingActionButtons />
             <AddComponent onSubmit={handleSubmit} userEmail={userEmail ?? ""} />

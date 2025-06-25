@@ -18,6 +18,7 @@ import { translateReview } from "~/api/reviews/reviewTranslateAPI";
 import { TranslatingLoader } from "~/components/reviews/effect/animatedTypingText";
 import AISummarySection from "~/components/reviews/aiSummarySection";
 import AverageRatingSection from "~/components/reviews/averageRatingSection";
+import ImageModalComponent from "~/components/common/ImageModalComponent";
 
 export interface ReviewListComponentProps {
     aiReview?: aiReviewDTO;
@@ -172,6 +173,9 @@ function ReviewItem({review, productId}: ReviewItemProps) {
     const [translatedText, setTranslatedText] = useState<string | null>(null);
     const [isLoadingTranslation, setIsLoadingTranslation] = useState(false);
 
+    // 리뷰 이미지 확대 모달
+    const [modalImage, setModalImage] = useState<string | null>(null);
+
     // 리뷰 좋아요
     const toggleLikeMutation = useMutation({
         mutationFn: (reviewId: number) => toggleReview(reviewId),
@@ -276,10 +280,19 @@ function ReviewItem({review, productId}: ReviewItemProps) {
                                 key={img.imgId}
                                 src={`http://localhost/reviews/s_${img.imgUrl}`}
                                 alt="Review Image"
+                                onClick={() => setModalImage(`http://localhost/reviews/${img.imgUrl}`) }
                                 className="w-25 h-25 sm:w-25 sm:h-25 rounded-lg object-cover flex-shrink-0 border-1 border-gray-300 "
                             />
                         ))}
                     </div>
+                )}
+
+                {/* 리뷰 이미지 확대 모달 */}
+                {modalImage && (
+                    <ImageModalComponent
+                        src={modalImage}
+                        onClose={() => setModalImage(null)}
+                    />
                 )}
 
                 {/* 태그 */}

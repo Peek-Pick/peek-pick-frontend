@@ -10,6 +10,7 @@ import FloatingHearts from "~/components/reviews/effect/floatingHearts";
 import HiddenOrNot from "~/components/reviews/effect/hiddenOrNot";
 import {TranslatingLoader} from "~/components/reviews/effect/animatedTypingText";
 import {translateReview} from "~/api/reviews/reviewTranslateAPI";
+import ImageModalComponent from "~/components/common/ImageModalComponent";
 
 interface PreviewProps {
     barcode: string;
@@ -90,6 +91,9 @@ function ReviewItem({ review, productId }: ReviewItemProps) {
     const [isTranslated, setIsTranslated] = useState(false);
     const [translatedText, setTranslatedText] = useState<string | null>(null);
     const [isLoadingTranslation, setIsLoadingTranslation] = useState(false);
+
+    // 리뷰 이미지 확대 모달
+    const [modalImage, setModalImage] = useState<string | null>(null);
 
     // 리뷰 좋아요
     const toggleLikeMutation = useMutation({
@@ -201,10 +205,19 @@ function ReviewItem({ review, productId }: ReviewItemProps) {
                             key={img.imgId}
                             src={`http://localhost/reviews/s_${img.imgUrl}`}
                             alt="Review Image"
+                            onClick={() => setModalImage(`http://localhost/reviews/${img.imgUrl}`) }
                             className="w-25 h-25 sm:w-25 sm:h-25 rounded-lg object-cover flex-shrink-0 border-1 border-gray-300 "
                         />
                     ))}
                 </div>
+            )}
+
+            {/* 리뷰 이미지 확대 모달 */}
+            {modalImage && (
+                <ImageModalComponent
+                    src={modalImage}
+                    onClose={() => setModalImage(null)}
+                />
             )}
 
             {/* 태그 */}

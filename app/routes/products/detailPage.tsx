@@ -40,7 +40,7 @@ export default function DetailPage() {
     const { data: aiReview, isLoading: aiReviewLoading, isError: aiReviewError } = useQuery<aiReviewDTO>({
         queryKey: ["reviewSummary", data?.productId],
         queryFn: () => getReviewSummary(data?.productId!), // productId는 null 체크 후 실행됨
-        enabled: data?.productId !== null,
+        enabled: data?.productId !== null && data?.productId !== undefined,
     });
 
     return (

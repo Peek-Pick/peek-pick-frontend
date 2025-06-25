@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 import FormComponent from "~/components/admin/notices/formComponent";
 import type {
     NoticeRequestDto,
@@ -22,6 +22,8 @@ export default function EditPage() {
     const [initialData, setInitialData] = useState<NoticeResponseDto | null>(null);
     const [pendingFiles, setPendingFiles] = useState<FileList | null>(null);
 
+    const queryClient = useQueryClient();
+
     // 기존 공지 로드
     useEffect(() => {
         if (!id) return;
@@ -36,27 +38,27 @@ export default function EditPage() {
     >({
         mutationFn: (dto) =>
             updateNotice(Number(id), dto).then((res) => res.data),
-        onSuccess: (updated) => {
-            Swal.fire("수정 완료", "", "success").then(() => {
-                if (pendingFiles && updated.noticeId) {
-                    uploadImages(updated.noticeId, pendingFiles)
-                        .then(() =>
-                            navigate(`/admin/notices/${updated.noticeId}`)
-                        )
-                        .catch((e) => {
-                            console.error(e);
-                            Swal.fire("이미지 업로드 실패", "", "error").then(() =>
-                                navigate(`/admin/notices/${updated.noticeId}`)
-                            );
-                        });
-                } else {
-                    navigate(`/admin/notices/${updated.noticeId}`);
-                }
-            });
+        onSuccess: async (updated) => {
+            await queryClient.invalidateQueries({ queryKey: ["admin-notices"], exact: false });
+
+            alert("수정 완료되었습니다.");
+            if (pendingFiles && updated.noticeId) {
+                uploadImages(updated.noticeId, pendingFiles)
+                    .then(() =>
+                        navigate(`/admin/notices/${updated.noticeId}`)
+                    )
+                    .catch((e) => {
+                        console.error(e);
+                        alert("이미지 업로드에 실패했습니다.");
+                        navigate(`/admin/notices/${updated.noticeId}`);
+                    });
+            } else {
+                navigate(`/admin/notices/${updated.noticeId}`);
+            }
         },
         onError: (err: Error) => {
             console.error(err);
-            Swal.fire("수정 실패", "", "error");
+            alert("수정에 실패했습니다.");
         },
     });
 
@@ -72,13 +74,23 @@ export default function EditPage() {
         dto: NoticeRequestDto,
         files?: FileList | null
     ) => {
+        const confirmed = window.confirm("정말 수정하시겠습니까?");
+        if (!confirmed) return;
+
         setPendingFiles(files ?? null);
         updateMut.mutate(dto);
     };
 
     const handleDelete = () => {
         if (confirm("정말 삭제하시겠습니까?")) {
-            deleteMut.mutate();
+            deleteMut.mutate(undefined, {
+                onSuccess: async () => {
+                    await queryClient.invalidateQueries({ queryKey: ["admin-notices"], exact: false });
+                },
+                onError: (err) => {
+                    console.error(err);
+                },
+            });
         }
     };
 

@@ -44,8 +44,14 @@ export default function AdminProductEditPage() {
     const updateMut = useMutation<ProductDetailDTO, Error, ProductFormValues>({
         mutationFn: (values) =>
             updateAdminProduct(idNum, values, imageFile ?? undefined, isDelete),
-        onSuccess: (data) => navigate(`/admin/products/${data.productId}`),
-        onError: (err) => alert("수정 중 오류 발생: " + err.message),
+        onSuccess: (data) => {
+            alert("상품이 성공적으로 수정되었습니다.");
+            navigate(`/admin/products/${data.productId}`);
+        },
+        onError: (err) => {
+            console.error(err);
+            alert("수정 중 오류 발생: " + err.message);
+        },
     });
 
     const handleSubmit = (values: ProductFormValues) => {
@@ -53,6 +59,10 @@ export default function AdminProductEditPage() {
             alert("이미지를 반드시 첨부해야 합니다.");
             return;
         }
+
+        const confirmed = window.confirm("정말 수정하시겠습니까?");
+        if (!confirmed) return;
+
         updateMut.mutate(values);
     };
 
