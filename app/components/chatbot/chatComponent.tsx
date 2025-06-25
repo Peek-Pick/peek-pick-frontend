@@ -76,7 +76,7 @@ export default function ChatComponent() {
 
             const botReply = response || '답변을 불러올 수 없습니다.';
 
-            if (typeof botReply === 'string') {
+            if (typeof botReply === 'string' || botReply === null || Object.keys(botReply).length === 0) {
                 // 그냥 문자열 답변 (예: 에러 메시지 등)
                 setMessages((prev) => [...prev, { content: botReply, isFromChatbot: true }]);
             } else {
