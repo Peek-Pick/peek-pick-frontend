@@ -5,7 +5,7 @@ import type { NoticePageDTO } from "~/types/notice";
 import NoticeListComponent from "~/components/notices/listComponent";
 import PaginationComponent from "~/components/common/PaginationComponent";
 import LoadingComponent from "~/components/common/loadingComponent";
-import BottomNavComponent from "~/components/main/bottomNavComponent";
+import { BackButton } from "~/util/button/FloatingActionButtons";
 
 export default function NoticeListPage() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -34,19 +34,17 @@ export default function NoticeListPage() {
         );
 
     return (
-        <div className="bg-gray-50 flex justify-center pb-20">
-            <div className="bg-white rounded-2xl shadow-lg w-full max-w-5xl px-4 md:px-8 py-6">
-                <NoticeListComponent items={data.content} />
-                <div className="mt-6">
-                    <PaginationComponent
-                        currentPage={data.number}
-                        totalPages={data.totalPages}
-                        onPageChange={handlePageChange}
-                        maxPageButtons={5}
-                    />
-                </div>
-            </div>
-            <BottomNavComponent />
+        <div>
+            <NoticeListComponent items={data.content} />
+
+            <PaginationComponent
+                currentPage={data.number}
+                totalPages={data.totalPages}
+                onPageChange={handlePageChange}
+                maxPageButtons={5}
+            />
+
+            <BackButton />
         </div>
     );
 }

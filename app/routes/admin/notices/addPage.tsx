@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 import FormComponent from "~/components/admin/notices/formComponent";
 import type {
     NoticeRequestDto,
@@ -16,6 +16,8 @@ export default function AddPage() {
     const navigate = useNavigate();
     const [pendingFiles, setPendingFiles] = useState<FileList | null>(null);
 
+    const queryClient = useQueryClient();
+
     const mutation = useMutation<
         NoticeResponseDto,
         Error,
@@ -23,19 +25,24 @@ export default function AddPage() {
     >({
         mutationFn: (dto) =>
             createNotice(dto).then((res) => res.data),
-        onSuccess: (newNotice) => {
-            Swal.fire("공지 등록 완료", "", "success").then(() => {
-                if (pendingFiles && newNotice.noticeId) {
-                    uploadImages(newNotice.noticeId, pendingFiles)
-                        .finally(() => navigate("/admin/notices/list"));
-                } else {
-                    navigate("/admin/notices/list");
-                }
+        onSuccess: async (newNotice) => {
+            await queryClient.invalidateQueries({
+                queryKey: ["admin-notices"],
+                exact: false,
             });
+
+            alert("공지 등록이 완료되었습니다.");
+
+            if (pendingFiles && newNotice.noticeId) {
+                uploadImages(newNotice.noticeId, pendingFiles)
+                    .finally(() => navigate("/admin/notices/list"));
+            } else {
+                navigate("/admin/notices/list");
+            }
         },
         onError: (err: Error) => {
             console.error(err);
-            Swal.fire("공지 등록 실패", "", "error");
+            alert("공지 등록에 실패했습니다.");
         },
     });
 
@@ -43,6 +50,9 @@ export default function AddPage() {
         dto: NoticeRequestDto,
         files?: FileList | null
     ) => {
+        const confirmed = window.confirm("이 공지를 등록하시겠습니까?");
+        if (!confirmed) return;
+
         setPendingFiles(files ?? null);
         mutation.mutate(dto);
     };

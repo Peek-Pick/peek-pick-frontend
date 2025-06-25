@@ -5,11 +5,11 @@ import StoreListComponent from "~/components/points/storeListComponent";
 import CouponModal from "~/components/points/couponModal";
 import type { PointStoreDTO, PointStoreListDTO } from "~/types/points";
 import { PointProductType } from "~/enums/points/points";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStore } from "@fortawesome/free-solid-svg-icons";
 import PaginationComponent from "~/components/common/PaginationComponent";
 import type {PagingResponse} from "~/types/common";
 import {readCoupon} from "~/api/points/adminPointsAPI";
+import {BackButton} from "~/util/button/FloatingActionButtons";
+import { ShoppingBag} from "lucide-react";
 
 
 function StoreListPage() {
@@ -55,10 +55,13 @@ function StoreListPage() {
 
 
     return (
-        <div className="max-w-4xl mx-auto bg-white rounded-2xl p-6 shadow-lg">
-            <h3 className="text-xl font-bold text-center text-gray-800 mb-6">
-                <FontAwesomeIcon icon={faStore} /> Point Store
-            </h3>
+        <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow px-4 pt-4 pb-6 relative space-y-4">
+            <div className="flex justify-between items-center mb-4 mt-1.5">
+                <h2 className="flex items-center gap-1 text-xl font-bold text-yellow-500 select-none leading-none">
+                    <ShoppingBag className="w-6 h-6 leading-none ml-1.5" />
+                    <span className="leading-none text-black ml-1.5">Point Store</span>
+                </h2>
+            </div>
 
             {/*필터링버튼*/}
             <div className="border-b border-gray-300 mb-6 px-4 sm:px-0">
@@ -128,6 +131,8 @@ function StoreListPage() {
                     />
                 )}
             </div>
+            {/*<BottomNavComponent />*/}
+            <BackButton />
         </div>
     );
 }

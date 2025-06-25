@@ -91,7 +91,7 @@ function BarcodeHistoryComponent() {
                                     onClick={() => handleDetail(item.barcode)}
                                 >
                                     <img
-                                        src={item.productImageUrl}
+                                        src={`http://localhost${item.productImageUrl}`}
                                         alt={item.productName}
                                         className="w-14 h-14 object-cover rounded-md"
                                     />

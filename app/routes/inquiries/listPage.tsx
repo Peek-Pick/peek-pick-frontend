@@ -6,6 +6,7 @@ import LoadingComponent from "~/components/common/loadingComponent";
 import ListComponent from "~/components/inquiries/listComponent";
 import BottomNavComponent from "~/components/main/bottomNavComponent";
 import { fetchInquiries } from "~/api/inquiries/inquiriesAPI";
+import {BackButton} from "~/util/button/FloatingActionButtons";
 
 const FIXED_PAGE_SIZE = 5;
 
@@ -41,7 +42,9 @@ function ListPage() {
                 onPageChange={handlePageChange}
                 maxPageButtons={5}
             />
-            <BottomNavComponent />
+
+            {/*<BottomNavComponent />*/}
+            <BackButton />
         </div>
     );
 }
