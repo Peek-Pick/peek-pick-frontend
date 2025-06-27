@@ -23,14 +23,16 @@ export default function AppLayout() {
         "/reviews/user": "My Reviews",
         "/products/ranking": "Product Ranking",
         "/products/search": "Product Search",
-        "/products/recommended": "Product Recommend",
-        "/notices/list": "Notice & Event",
-        "/inquiries/list": "My Q&A",
-        "/inquiries/add": "Inquiry",
+        "/products/recommended": "Recommended Products",
+        "/notices/list": "Announcements",
+        "/inquiries/list": "Support History",
+        "/inquiries/add": "Submit an Inquiry",
         "/barcode/history": "Barcode History",
-        "/login": "Peek & Pick",
+        "/login": "Login",
         "/mypage/coupons": "My Coupons",
-        "/points/store/list": "Point Store"
+        "/points/store/list": "Point Store",
+        "/mypage/points/history": "Point History",
+
         // 다른 정적 경로가 필요하다면 여기에 추가
     };
 
