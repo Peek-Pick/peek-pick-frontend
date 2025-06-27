@@ -59,3 +59,10 @@ export async function userPointLogs(page: number, size: number, sort:string) {
     return response.data;
 }
 
+// 사용자 포인트양 조회
+export async function getUserPointAmount() {
+
+    const response = await axiosInstance.get(`/points/amount`);
+    return response.data;
+}
+

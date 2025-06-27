@@ -32,7 +32,7 @@ export default [
         route("/mypage/edit", "routes/users/myPageEditPage.tsx"),
 
         // 포인트
-        route("points/store/list",   "routes/points/storelistPage.tsx"), //포인트 상점
+        route("points/store/list",   "routes/points/storeListPage.tsx"), //포인트 상점
         route("/mypage/points/history", "routes/points/pointLogsPage.tsx"), // 포인트 내역
         route("/mypage/coupons", "routes/points/userCouponPage.tsx"), // 쿠폰함
         route("/mypage/favorites", "routes/users/favoritesPage.tsx"), // 즐겨찾기 상품 목록
