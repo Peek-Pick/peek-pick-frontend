@@ -58,7 +58,10 @@ instance.interceptors.response.use(
     async (error: AxiosError) => {
         const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
 
-        if (error.response?.status === 401 && !originalRequest._retry) {
+        const status = error.response?.status;
+
+        // 인증 실패 → 토큰 갱신
+        if (status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
 
             if (!refreshTokenPromise) {
@@ -83,6 +86,16 @@ instance.interceptors.response.use(
             }
         }
 
+        // 권한 없음 → 즉시 로그인 페이지 이동
+        if (status === 403) {
+            console.warn("권한이 없습니다. 관리자 로그인이 필요합니다.");
+            if (typeof window !== "undefined") {
+                window.location.href = "/admin/login";
+            }
+            return Promise.reject(error);
+        }
+
+        // 기타 에러
         return Promise.reject(error);
     }
 );
