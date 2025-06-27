@@ -112,7 +112,7 @@ export default function AppLayout() {
                 {/* 왼쪽: 로고 + 페이지 이름 */}
                 <button className="flex items-center gap-2"
                         onClick={() => navigate("/main")}>
-                    <img src="/icons/icon_clean.png" alt="Logo" className="h-8.5 w-10" />
+                    <img src="/icons/icon_clean.png" alt="Logo" className="h-10 w-10" />
                     <span className="text-lg font-semibold">{pageTitle}</span>
                 </button>
 
