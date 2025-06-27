@@ -71,6 +71,7 @@ function ListPage() {
 
     console.log("API 응답 확인:", data);
 
+    // 로딩, 에러처리
     if (isLoading) return <LoadingComponent isLoading />;
     if (isError || !data) return <div className="p-4 text-red-500">에러 발생</div>;
 

@@ -1,6 +1,8 @@
 import type {PointStoreDTO} from "~/types/points";
 import Swal from "sweetalert2";
 import {useNavigate} from "react-router-dom";
+import PointsLoading from "~/util/loading/pointsLoading";
+import {ErrorComponent} from "~/util/loading/errorComponent";
 
 
 interface Props {
@@ -12,9 +14,8 @@ interface Props {
 //쿠폰 구매 모달
 export default function CouponModal({ product, onClose, onBuy }: Props) {
 
-    console.log(product);
-
     const navigate = useNavigate();
+
 
     return (
         <div className="fixed inset-0 bg-[rgba(0,0,0,0.3)] flex items-center justify-center z-50 p-4">

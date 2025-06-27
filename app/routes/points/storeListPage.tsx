@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import { useQuery } from "@tanstack/react-query";
 import {listCoupon, readCoupon, redeemCoupon} from "~/api/points/pointsAPI";
 import StoreListComponent from "~/components/points/storeListComponent";
@@ -9,6 +9,7 @@ import PaginationComponent from "~/components/common/PaginationComponent";
 import type {PagingResponse} from "~/types/common";
 import {BackButton} from "~/util/button/FloatingActionButtons";
 import { ShoppingBag} from "lucide-react";
+import PointsLoading from "~/util/loading/pointsLoading";
 
 
 function StoreListPage() {
@@ -29,15 +30,31 @@ function StoreListPage() {
     });
 
     // 쿠폰 상세정보 불러오기 - 모달에서 보여 줄 정보
-    const { data: selectedProductDetail,} = useQuery<PointStoreDTO>({
+    const {
+        data: selectedProductDetail,
+        isLoading: detailIsLoading,
+        isError: detailIsError
+    } = useQuery<PointStoreDTO>({
         queryKey: ["pointDetail", selectedProductId],
         queryFn: () =>
             selectedProductId !== null ? readCoupon(selectedProductId) : Promise.reject(),
         enabled: selectedProductId !== null,
     });
 
-    if (isLoading) return <div className="p-4 text-gray-600">Loading...</div>;
-    if (isError || !data) return <div className="p-4 text-red-500">An error occurred</div>;
+    // 최소 1.6초 동안 로딩 스피너 표시
+    const [fakeLoading, setFakeLoading] = useState(true);
+    useEffect(() => {
+        const timer = setTimeout(() => setFakeLoading(false), 1600);
+        return () => clearTimeout(timer);
+    }, []);
+
+    // 로딩, 에러 처리
+    if (isLoading || detailIsLoading || fakeLoading) return <PointsLoading />;
+    if (isError || detailIsError || !data) return (
+        <p className="text-center p-4 text-red-500 text-base sm:text-lg">
+            Failed to load points data.
+        </p>
+    );
 
     const handleBuy = async (product: PointStoreDTO) => {
         try {

@@ -5,6 +5,8 @@ import {userPointLogs} from "~/api/points/pointsAPI";
 import PointLogsComponent from "~/components/points/pointLogsComponent";
 import type {PagingResponse} from "~/types/common";
 import PaginationComponent from "~/components/common/PaginationComponent";
+import PointsLoading from "~/util/loading/pointsLoading";
+import {ErrorComponent} from "~/util/loading/errorComponent";
 
 
 function PointLogPage() {
@@ -17,10 +19,9 @@ function PointLogPage() {
         queryFn: () => userPointLogs(page, size, sort),
     });
 
-    if (isLoading) return <div className="p-4 text-gray-600">Loading...</div>;
-    if (isError || !data) return <div className="p-4 text-red-500">An error occurred</div>;
-
-    console.log("포인트 내역 데이터", data);
+    // 로딩, 에러 처리
+    if (isLoading) return <PointsLoading />;
+    if (isError || !data) return "Error";
 
     return (
         <>
