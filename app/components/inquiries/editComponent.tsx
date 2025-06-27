@@ -3,20 +3,25 @@ import { Edit2 } from "lucide-react";
 import { deleteImages } from "~/api/inquiries/inquiriesAPI";
 import { useQueryClient } from "@tanstack/react-query";
 import { INQUIRY_TYPES } from "~/enums/inquiries/inquiry";
+import { InquiryLoading } from "~/util/loading/inquiryLoading";
+import Swal from "sweetalert2";
 
 interface EditComponentProps {
     initialData: InquiryResponseDTO;
     onSubmit: (dto: InquiryRequestDTO, files: FileList | null) => Promise<void>;
+    isLoading: boolean;
 }
 
-function EditComponent({ initialData, onSubmit }: EditComponentProps) {
+function EditComponent({ initialData, onSubmit, isLoading }: EditComponentProps) {
+    if (isLoading) return <InquiryLoading />;
+
     const queryClient = useQueryClient();
 
     const [content, setContent] = useState(initialData.content);
     const [type, setType] = useState<InquiryType>(initialData.type);
     const [existingUrls, setExistingUrls] = useState<string[]>([...initialData.imgUrls]);
     const [files, setFiles] = useState<FileList | null>(null);
-    const [agree, setAgree] = useState(true); // 수정 시에는 이미 동의했다고 간주
+    const [agree, setAgree] = useState(true);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     const API_URL = import.meta.env.VITE_API_URL?.replace("/api/v1", "") ?? "http://localhost";
@@ -29,23 +34,18 @@ function EditComponent({ initialData, onSubmit }: EditComponentProps) {
         }
     }, [content]);
 
-    useEffect(() => {
-        const textarea = textareaRef.current;
-        if (textarea) {
-            textarea.style.height = "auto";
-            textarea.style.height = `${textarea.scrollHeight}px`;
-        }
-    }, [content]);
-
     const handleDeleteImage = async (url: string) => {
-        if (!confirm("해당 이미지를 삭제하시겠습니까?")) return;
         try {
             await deleteImages(initialData.inquiryId, [url]);
             setExistingUrls((prev) => prev.filter((img) => img !== url));
             await queryClient.invalidateQueries({ queryKey: ["inquiries"] });
         } catch (err) {
-            console.error("이미지 삭제 실패:", err);
-            alert("이미지 삭제에 실패했습니다.");
+            console.error("Failed to delete image:", err);
+            await Swal.fire({
+                title: "Failed to delete image.",
+                icon: "error",
+                confirmButtonText: "OK",
+            });
         }
     };
 
@@ -53,7 +53,11 @@ function EditComponent({ initialData, onSubmit }: EditComponentProps) {
         e.preventDefault();
 
         if (!agree) {
-            alert("개인정보 수집 및 이용에 동의해 주세요.");
+            await Swal.fire({
+                title: "Please agree to the privacy policy.",
+                icon: "warning",
+                confirmButtonText: "OK",
+            });
             return;
         }
 
@@ -66,8 +70,12 @@ function EditComponent({ initialData, onSubmit }: EditComponentProps) {
         try {
             await onSubmit(dto, files);
         } catch (err) {
-            console.error("문의 수정 중 오류:", err);
-            alert("문의 수정에 실패했습니다.");
+            console.error("Failed to update inquiry:", err);
+            await Swal.fire({
+                title: "Failed to update inquiry.",
+                icon: "error",
+                confirmButtonText: "OK",
+            });
         }
     };
 
@@ -76,7 +84,7 @@ function EditComponent({ initialData, onSubmit }: EditComponentProps) {
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="flex items-center space-x-2 mb-4 mt-1.5">
                     <Edit2 className="text-yellow-500" />
-                    <h2 className="text-xl font-semibold text-gray-800">문의 수정</h2>
+                    <h2 className="text-xl font-semibold text-gray-800">Edit Inquiry</h2>
                 </div>
 
                 <div className="bg-white border rounded-2xl shadow-md px-4 py-6 space-y-4 w-full sm:min-h-[50vh]">
@@ -96,7 +104,7 @@ function EditComponent({ initialData, onSubmit }: EditComponentProps) {
                         ref={textareaRef}
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
-                        placeholder="문의 내용을 작성해주세요"
+                        placeholder="Write your inquiry here"
                         className="w-full border border-gray-300 p-3 rounded resize-none focus:outline-none focus:ring-2 focus:ring-yellow-400 overflow-hidden leading-relaxed"
                         rows={1}
                         style={{ minHeight: "300px" }}
@@ -111,7 +119,7 @@ function EditComponent({ initialData, onSubmit }: EditComponentProps) {
                                     <div key={url} className="relative w-24 h-24 rounded overflow-hidden border border-gray-300 shadow-sm">
                                         <img
                                             src={imgSrc}
-                                            alt="첨부 이미지"
+                                            alt="Attached image"
                                             className="w-full h-full object-cover"
                                             onError={(e) => {
                                                 e.currentTarget.src = "";
@@ -131,7 +139,7 @@ function EditComponent({ initialData, onSubmit }: EditComponentProps) {
                     )}
 
                     <div>
-                        <label className="text-sm text-gray-600 mb-1 block">새 이미지 첨부</label>
+                        <label className="text-sm text-gray-600 mb-1 block">Add new images</label>
                         <input
                             type="file"
                             multiple
@@ -152,15 +160,16 @@ function EditComponent({ initialData, onSubmit }: EditComponentProps) {
                             className="rounded border-gray-300 text-yellow-500 focus:ring-yellow-400"
                             required
                         />
-                        <span>개인정보 수집 및 이용동의 (필수)</span>
+                        <span>Agree to the privacy policy (required)</span>
                     </label>
 
                     <div
                         className="mt-2 w-full p-3 border border-gray-300 rounded bg-gray-100 text-gray-600 text-xs font-sans leading-relaxed whitespace-pre-line select-none"
                         style={{ userSelect: "none", pointerEvents: "none", boxShadow: "none" }}
                     >
-                        문의 처리를 위해 이메일, 문의내용에 포함된 개인정보를 수집하며, 개인정보처리방침에 따라 3년후 파기됩니다.
-                        개인정보 수집 및 이용을 거부할 수 있으며, 거부할 경우 문의가 불가합니다.
+                        To process your inquiry, we collect your email and any personal information included in your message.
+                        This data is retained for 3 years and then discarded in accordance with our privacy policy.
+                        You may choose not to agree, but in that case, you will not be able to submit an inquiry.
                     </div>
                 </div>
 
@@ -171,7 +180,7 @@ function EditComponent({ initialData, onSubmit }: EditComponentProps) {
                         className={`w-full px-8 py-3 rounded-full font-semibold text-white transition 
                             ${agree ? "bg-yellow-500 hover:bg-yellow-600 cursor-pointer" : "bg-gray-300 cursor-not-allowed"}`}
                     >
-                        수정 완료하기
+                        Submit Edit
                     </button>
                 </div>
             </form>

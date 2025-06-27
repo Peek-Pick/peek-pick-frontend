@@ -4,6 +4,8 @@ import { getBarcodeHistory } from "~/api/barcode/barcodeAPI";
 import {useLocation, useNavigate} from "react-router-dom";
 import LoadingComponent from "~/components/common/loadingComponent";
 import {ReceiptText} from "lucide-react";
+import {ReviewLoading} from "~/util/loading/reviewLoading";
+import {BarcodeLoading} from "~/util/loading/barcodeLoading";
 
 function BarcodeHistoryComponent() {
     const [history, setHistory] = useState<ViewHistoryResponseDTO[]>([]);
@@ -41,7 +43,7 @@ function BarcodeHistoryComponent() {
     };
 
     if (loading) {
-        return <LoadingComponent isLoading={true} />;
+        return <BarcodeLoading />;
     }
 
     if (history.length === 0) {

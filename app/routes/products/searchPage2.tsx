@@ -7,6 +7,7 @@ import BottomNavComponent from "~/components/main/bottomNavComponent";
 import { searchProducts } from "~/api/products/productsAPI";
 import type { PageResponseCursor, ProductListDTO } from "~/types/products";
 import { BackButton, FloatingActionButtons } from "~/util/button/FloatingActionButtons";
+import {ProductLoading} from "~/util/loading/productLoading";
 
 const STORAGE_KEY = "searchPageScrollY";
 
@@ -28,6 +29,9 @@ export default function SearchPage2() {
 
     const [showFilters, setShowFilters] = useState(true);
     const lastScrollY = useRef(0);
+
+    // 초기 로딩 타임아웃 상태
+    const [showLoading, setShowLoading] = useState(true);
 
     useEffect(() => {
         const onScroll = () => {
@@ -173,6 +177,19 @@ export default function SearchPage2() {
         sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ scrollY: scrollYRef.current }));
         navigate(`/products/${barcode}`, { state: { fromSearch: true } });
     };
+
+    // 로딩 스피너 보여주기용 timeOut
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setShowLoading(false);
+        }, 800);
+        return () => clearTimeout(timer);
+    }, []);
+
+    // 첫 진입시 로딩 스피너 보여줌
+    if (isLoading || showLoading) {
+        return <ProductLoading />;
+    }
 
     return (
         <div className="min-h-screen bg-gray-50 ">

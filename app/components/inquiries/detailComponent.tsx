@@ -4,15 +4,27 @@ import ImageModalComponent from "~/components/common/ImageModalComponent";
 import { Edit, MoreVertical, Trash, Check, Hourglass } from "lucide-react";
 import { useDeleteInquiry } from "~/hooks/inquiries/useInquiryMutation";
 import { INQUIRY_TYPES } from "~/enums/inquiries/inquiry";
+import { InquiryLoading } from "~/util/loading/inquiryLoading";
+import Swal from "sweetalert2";
+import '~/util/swal/customSwal.css'
 
 const API_URL = import.meta.env.VITE_API_URL?.replace("/api/v1", "") ?? "http://localhost";
 
 interface Props {
-    inquiry: InquiryResponseDTO & { userNickname: string };
+    inquiry?: InquiryResponseDTO & { userNickname: string };
     navigate: (to: string) => void;
+    isLoading: boolean;
 }
 
-function DetailComponent({ inquiry, navigate: navigateProp }: Props) {
+function DetailComponent({ inquiry, navigate: navigateProp, isLoading }: Props) {
+    if (isLoading) return <InquiryLoading />;
+    if (!inquiry)
+        return (
+            <p className="text-center p-4 text-red-500 text-base sm:text-lg">
+                Failed to load inquiry data.
+            </p>
+        );
+
     const [modalImage, setModalImage] = useState<string | null>(null);
     const [menuOpen, setMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
@@ -20,12 +32,51 @@ function DetailComponent({ inquiry, navigate: navigateProp }: Props) {
     const navigate = useNavigate();
 
     const handleDelete = async () => {
-        if (!confirm("정말 삭제하시겠습니까?")) return;
+        const result =
+            await Swal.fire({
+                title: "Are you sure you want to delete your inquiry?",
+                text: "Once deleted, the changes cannot be undone.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Delete",
+                cancelButtonText: "Cancel",
+                    customClass: {
+                        popup: "custom-popup",
+                        title: "custom-title",
+                        actions: "custom-actions",
+                        confirmButton: "custom-confirm-button",
+                    },
+            });
+
+        if (!result.isConfirmed) return;
+
         try {
             await deleteInquiryMutation.mutateAsync(inquiry.inquiryId);
+            await Swal.fire({
+                title: "Inquiry deleted successfully",
+                icon: "success",
+                confirmButtonText: "OK",
+                customClass: {
+                    popup: 'custom-popup',
+                    title: 'custom-title',
+                    actions: 'custom-actions',
+                    confirmButton: 'custom-confirm-button',
+                },
+            });
             navigate("/inquiries/list");
-        } catch {
-            alert("삭제 중 오류가 발생했습니다.");
+        } catch (error) {
+            console.error("Delete failed:", error);
+            await Swal.fire({
+                title: "Failed to delete inquiry",
+                icon: "error",
+                confirmButtonText: "OK",
+                customClass: {
+                    popup: 'custom-popup',
+                    title: 'custom-title',
+                    actions: 'custom-actions',
+                    confirmButton: 'custom-confirm-button',
+                },
+            });
         }
     };
 
@@ -57,18 +108,14 @@ function DetailComponent({ inquiry, navigate: navigateProp }: Props) {
     };
 
     const isAnswered = inquiry.status === "ANSWERED";
-    const statusLabel = isAnswered ? "답변 완료" : "답변 대기";
+    const statusLabel = isAnswered ? "Answered" : "Waiting";
 
     return (
         <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow px-4 pt-4 pb-6 space-y-4 relative">
             {modalImage && (
-                <ImageModalComponent
-                    src={modalImage}
-                    alt="첨부 이미지"
-                    onClose={() => setModalImage(null)}
-                />
+                <ImageModalComponent src={modalImage} alt="Attached Image" onClose={() => setModalImage(null)} />
             )}
-            {/* 상단 네비 영역 */}
+            {/* Top Navigation */}
             <div className="flex items-center justify-between text-gray-600">
                 <button
                     onClick={() => {
@@ -76,21 +123,23 @@ function DetailComponent({ inquiry, navigate: navigateProp }: Props) {
                         else navigate("/inquiries/list");
                     }}
                     className="text-yellow-500 hover:text-yellow-600 p-1"
-                    aria-label="뒤로가기"
+                    aria-label="Back"
                 >
                     <svg className="w-6 h-6 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                     </svg>
                 </button>
 
-                {/* 중앙 문의 유형 (노랑) */}
-                <div className="flex-1 text-center text-sm text-yellow-500 font-semibold truncate py-0.5">
-                    {typeLabel}
-                </div>
+                {/* Center: Inquiry Type */}
+                <div className="flex-1 text-center text-sm text-yellow-500 font-semibold truncate py-0.5">{typeLabel}</div>
 
-                {/* 우측 더보기 메뉴 */}
+                {/* Right: More Menu */}
                 <div className="relative" ref={menuRef}>
-                    <button onClick={() => setMenuOpen((prev) => !prev)} className="text-yellow-500 hover:text-yellow-600 p-1">
+                    <button
+                        onClick={() => setMenuOpen((prev) => !prev)}
+                        className="text-yellow-500 hover:text-yellow-600 p-1"
+                        aria-label="More options"
+                    >
                         <MoreVertical className="w-6 h-6" />
                     </button>
                     {menuOpen && (
@@ -100,25 +149,26 @@ function DetailComponent({ inquiry, navigate: navigateProp }: Props) {
                                 onClick={() => navigate(`/inquiries/${inquiry.inquiryId}/edit`)}
                             >
                                 <Edit className="w-4 h-4" />
-                                수정
+                                Modify
                             </button>
                             <button
                                 className="w-full px-3 py-2 text-left hover:bg-gray-100 text-red-600 flex items-center gap-2"
                                 onClick={handleDelete}
                             >
                                 <Trash className="w-4 h-4" />
-                                삭제
+                                Delete
                             </button>
                         </div>
                     )}
                 </div>
             </div>
-            {/* 1줄: 프로필 + 닉네임 + 상태 */}
+
+            {/* Profile, Nickname & Status */}
             <div className="flex justify-between items-center mb-1.5">
                 <div className="flex items-center gap-2">
                     <img
                         src={`http://localhost/${inquiry.userProfileImgUrl}`}
-                        alt="프로필"
+                        alt="Profile"
                         className="w-11 h-11 rounded-full object-cover border border-gray-300"
                     />
                     <span className="font-semibold text-base ml-0.5">{inquiry.userNickname}</span>
@@ -130,31 +180,29 @@ function DetailComponent({ inquiry, navigate: navigateProp }: Props) {
                             : "bg-gray-100 hover:bg-gray-200 text-gray-500"
                     }`}
                 >
-                    {isAnswered ? <Check className="w-3.5 h-3.5" /> : <Hourglass className="w-3.5 h-3.5" />}
+          {isAnswered ? <Check className="w-3.5 h-3.5" /> : <Hourglass className="w-3.5 h-3.5" />}
                     {statusLabel}
-                </span>
+        </span>
             </div>
 
-            {/* 2줄: 작성일, 수정일 */}
+            {/* Created and Modified Dates */}
             <div className="flex justify-end text-xs text-gray-500 mb-2.5 gap-2 leading-none">
-                <span>
-                    작성일:<span className="bg-gray-100 px-0.5 py-0.5 text-gray-700">{formatDate(inquiry.regDate)}</span>
-                </span>
+        <span>
+          Created: <span className="bg-gray-100 px-0.5 py-0.5 text-gray-700">{formatDate(inquiry.regDate)}</span>
+        </span>
                 {inquiry.modDate !== inquiry.regDate && (
                     <span>
-                        수정일:<span className="bg-gray-100 px-0.5 py-0.5 text-gray-700">{formatDate(inquiry.modDate)}</span>
-                    </span>
+            Modified: <span className="bg-gray-100 px-0.5 py-0.5 text-gray-700">{formatDate(inquiry.modDate)}</span>
+          </span>
                 )}
             </div>
 
             <hr className="border-t border-gray-200" />
 
-            {/* 본문 */}
-            <div className="text-gray-800 whitespace-pre-line leading-relaxed mt-4">
-                {inquiry.content}
-            </div>
+            {/* Content */}
+            <div className="text-gray-800 whitespace-pre-line leading-relaxed mt-4">{inquiry.content}</div>
 
-            {/* 이미지 영역 */}
+            {/* Images */}
             {inquiry.imgUrls?.length > 0 && (
                 <>
                     <hr className="border-t border-dashed border-gray-300 my-4" />
@@ -169,7 +217,7 @@ function DetailComponent({ inquiry, navigate: navigateProp }: Props) {
                                 >
                                     <img
                                         src={src}
-                                        alt="첨부 이미지"
+                                        alt="Attached Image"
                                         className="w-full h-full object-cover"
                                         onError={(e) => {
                                             e.currentTarget.src = "";

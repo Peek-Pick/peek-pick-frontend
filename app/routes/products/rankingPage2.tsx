@@ -177,7 +177,7 @@ export default function RankingPage() {
                             <select
                                 value={categoryLabel}
                                 onChange={(e) => {
-                                    const label = e.target.value;
+                                    const label = e.target.value as CategoryType;;
                                     setCategoryLabel(label);
                                     const newParams: Record<string, string> = {
                                         sort: sortParam,

@@ -23,16 +23,14 @@ export default function AppLayout() {
         "/reviews/user": "My Reviews",
         "/products/ranking": "Product Ranking",
         "/products/search": "Product Search",
-        "/products/recommended": "Recommended Products",
-        "/notices/list": "Announcements",
-        "/inquiries/list": "Support History",
-        "/inquiries/add": "Submit an Inquiry",
+        "/products/recommended": "Product Recommend",
+        "/notices/list": "Notice & Event",
+        "/inquiries/list": "My Q&A",
+        "/inquiries/add": "Inquiry",
         "/barcode/history": "Barcode History",
-        "/login": "Login",
+        "/login": "Peek & Pick",
         "/mypage/coupons": "My Coupons",
-        "/points/store/list": "Point Store",
-        "/mypage/points/history": "Point History",
-
+        "/points/store/list": "Point Store"
         // 다른 정적 경로가 필요하다면 여기에 추가
     };
 
@@ -76,7 +74,7 @@ export default function AppLayout() {
         }
 
         // ④ /products/:barcode 패턴 확인
-        const productMatch = location.pathname.match(/^\/(products|reviews\/add)\/([^/]+)$/);
+        const productMatch = location.pathname.match(/^\/(products|reviews\/add|reviews\/product)\/([^/]+)$/);
         if (productMatch) {
             const barcode = productMatch[2];
             // API 호출하여 상품명을 가져와 dynamicTitle에 저장
