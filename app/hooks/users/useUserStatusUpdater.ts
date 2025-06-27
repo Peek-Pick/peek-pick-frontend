@@ -20,7 +20,7 @@ export function useUserStatusUpdater() {
 
                 return true;
         } catch (err: any) {
-            setError(err.response?.data?.message || "상태 변경 중 오류 발생")
+            setError(err.response?.data?.message || "There was an error while updating the status.")
         } finally {
             setLoading(false)
         }
