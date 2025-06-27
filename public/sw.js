@@ -1,79 +1,150 @@
 const CACHE_NAME = 'peek-and-pick-cache-v1';
-const URLS_TO_CACHE = [
-    '/',                // 첫 시작화면 ( 홈화면 대체? ) 추후 없앨지 회의
-    '/home',            // 홈화면 만들어야함
-    '/app/app.css',
+
+const STATIC_ASSETS = [
+    '/offline.html',
     '/manifest.json',
     '/favicon.ico',
-    '/offline.html',    // 여기까지 필수 캐시
-    '/login',
+    '/app/app.css',
+    '/icons/admin_icon_img.png',
     '/icons/icon-192.png',
     '/icons/icon-512.png',
-    '/barcode/scan'
-    // 필요시 이미지나 폰트 등도 추가
+    '/icons/icon_clean.png',
+    '/icons/main_barcode.png',
+    '/icons/main_chatbot.png',
+    '/icons/main_event.png',
+    '/icons/main_favorite.png',
+    '/icons/main_map.png',
+    '/icons/main_ranking.png',
+    '/icons/map_directions_marker.png',
+    '/icons/map_shop.png',
+    '/carousel/best_photo_review.png',
+    '/carousel/bingsu.png',
+    '/carousel/invitation.png',
+    '/carousel/review_event.png',
+    '/carousel/summer_event.png',
+    '/default.png',
+    '/',
+    '/login',
+    '/signup',
+    '/main',
+    '/mypage',
+    '/barcode/scan',
+    '/access-denied',
+    '/points/store/list',
+    '/mypage/coupons',
+    '/mypage/favorites',
+    '/products/search',
+    '/reviews/user',
+    '/notices/list',
+    '/inquiries/list',
+    '/barcode/history',
 ];
 
-// install 단계에서 캐시 저장
+// Install - Precache
 self.addEventListener('install', (event) => {
-    console.log('[Service Worker] Installing');
     event.waitUntil(
-        caches.open(CACHE_NAME).then(async (cache) => {
-            for (const url of URLS_TO_CACHE) {
-                try {
-                    await cache.add(url);
-                    console.log(`[Service Worker] Cached: ${url}`);
-                } catch (err) {
-                    console.warn(`[Service Worker] Failed to cache: ${url}`, err);
-                }
-            }
-        })
+        caches.open(CACHE_NAME).then(cache => cache.addAll(STATIC_ASSETS))
     );
     self.skipWaiting();
 });
 
-// activate 단계에서 오래된 캐시 제거
+// Activate - Delete old caches
 self.addEventListener('activate', (event) => {
-    console.log('[Service Worker] Activating');
     event.waitUntil(
-        caches.keys().then((keyList) =>
+        caches.keys().then(keys =>
             Promise.all(
-                keyList.map((key) => {
-                    if (key !== CACHE_NAME) {
-                        return caches.delete(key);
-                    }
-                })
+                keys.filter(key => key !== CACHE_NAME)
+                    .map(key => caches.delete(key))
             )
         )
     );
     self.clients.claim();
 });
 
-// fetch 단계에서 네트워크 실패 시 캐시로 fallback
+// Fetch handler
 self.addEventListener('fetch', (event) => {
+    const url = new URL(event.request.url);
+
+    if (url.protocol.startsWith('ws')) return;
     if (event.request.method !== 'GET') return;
 
-    event.respondWith(
-        fetch(event.request)
-            .then(async (response) => {
-                // 네트워크 응답이 유효하면 캐시 저장 시도
-                if (response && response.status === 200) {
-                    const cache = await caches.open(CACHE_NAME);
-                    try {
-                        await cache.put(event.request, response.clone());
-                    } catch (err) {
-                        console.warn('[Service Worker] Cache put failed:', err);
+    const isStaticAsset = STATIC_ASSETS.includes(url.pathname);
+    const isHTMLRequest = event.request.mode === 'navigate' ||
+        event.request.headers.get('accept')?.includes('text/html');
+    const isImageRequest = event.request.destination === 'image';
+
+    // React Router manifest 및 내부 API 요청 대응 (필요 시 경로 추가)
+    if (
+        url.pathname.startsWith('/routes-manifest') ||
+        url.pathname.startsWith('/_routes') ||
+        url.pathname.startsWith('/_app')
+    ) {
+        event.respondWith(
+            caches.match(event.request).then(cached => {
+                if (cached) return cached;
+                return fetch(event.request).catch(() => caches.match('/offline.html'));
+            })
+        );
+        return;
+    }
+
+    // HTML 요청 - Network First + Cache fallback
+    if (isHTMLRequest) {
+        event.respondWith(
+            fetch(event.request)
+                .then(async (res) => {
+                    if (!res || !res.ok) {
+                        return caches.match('/offline.html');
                     }
-                }
-                return response;
+                    const cache = await caches.open(CACHE_NAME);
+                    cache.put(event.request, res.clone());
+                    return res;
+                })
+                .catch(() => caches.match(event.request).then(res => res || caches.match('/offline.html')))
+        );
+        return;
+    }
+
+    // Static assets - Cache First, fallback to network + cache update
+    if (isStaticAsset) {
+        event.respondWith(
+            caches.match(event.request).then(cached => {
+                if (cached) return cached;
+
+                return fetch(event.request)
+                    .then(async response => {
+                        if (!response || !response.ok) {
+                            if (isImageRequest) {
+                                return caches.match('/default.png');
+                            }
+                            return caches.match('/offline.html');
+                        }
+                        const cache = await caches.open(CACHE_NAME);
+                        cache.put(event.request, response.clone());
+                        return response;
+                    })
+                    .catch(() => {
+                        if (isImageRequest) {
+                            return caches.match('/default.png');
+                        }
+                        return caches.match('/offline.html');
+                    });
             })
-            .catch(async () => {
-                // 네트워크 실패 시 캐시에서 찾아보고 없으면 offline.html 반환
-                const cachedResponse = await caches.match(event.request);
-                if (cachedResponse) {
-                    return cachedResponse;
-                } else if (event.request.headers.get('accept')?.includes('text/html')) {
-                    return caches.match('/offline.html');
-                }
-            })
+        );
+        return;
+    }
+
+    // 기타 요청 - 기본 fetch 시도 후 실패 시 fallback
+    event.respondWith(
+        fetch(event.request).catch(() => {
+            if (isImageRequest) {
+                return caches.match('/default.png');
+            }
+            if (isHTMLRequest) {
+                return caches.match('/offline.html');
+            }
+            // 네트워크 오류시 빈 200 응답 또는 offline.html 반환
+            return caches.match('/offline.html') || new Response('', { status: 200 });
+        })
     );
 });

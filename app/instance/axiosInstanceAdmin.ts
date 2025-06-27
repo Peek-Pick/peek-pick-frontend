@@ -1,52 +1,53 @@
 import axios, { AxiosError, type AxiosRequestConfig, type AxiosResponse } from "axios";
-import {refreshAccessTokenAdmin} from "~/api/auth/authAPI";
+import { refreshAccessTokenAdmin } from "~/api/auth/authAPI";
 
-// snake_case → camelCase 유틸
+// snake_case → camelCase 변환
 const toCamel = (s: string) =>
     s.replace(/([-_][a-z])/g, group => group.toUpperCase().replace('-', '').replace('_', ''));
 
-const isObject = (obj: any) => obj === Object(obj) && !Array.isArray(obj) && typeof obj !== "function";
+const isObject = (obj: any) =>
+    obj === Object(obj) && !Array.isArray(obj) && typeof obj !== "function";
 
 const keysToCamel = (obj: any): any => {
     if (isObject(obj)) {
-        const n: any = {};
-        Object.keys(obj).forEach(k => {
-            n[toCamel(k)] = keysToCamel(obj[k]);
-        });
-        return n;
+        return Object.entries(obj).reduce((acc, [key, value]) => {
+            acc[toCamel(key)] = keysToCamel(value);
+            return acc;
+        }, {} as any);
     } else if (Array.isArray(obj)) {
         return obj.map(i => keysToCamel(i));
     }
     return obj;
 };
 
+// Axios 인스턴스
 const instance = axios.create({
     baseURL: "http://localhost:8080/api/v1",
     withCredentials: true,
 });
 
-// 요청 대기 큐
-let isRefreshing = false;
+// 요청 실패 대기 큐
 let refreshTokenPromise: Promise<void> | null = null;
 
-let failedQueue: {
+const failedQueue: {
     resolve: (value?: unknown) => void;
     reject: (error: unknown) => void;
     config: AxiosRequestConfig;
 }[] = [];
 
+// 큐 처리
 const processQueue = (error: AxiosError | null) => {
     failedQueue.forEach(({ resolve, reject, config }) => {
         if (error) {
             reject(error);
         } else {
-            // instance를 통해 재요청하여 interceptor 재적용
             resolve(instance(config));
         }
     });
-    failedQueue = [];
+    failedQueue.length = 0;
 };
 
+// 응답 인터셉터
 instance.interceptors.response.use(
     (response: AxiosResponse) => {
         if (response.data) {
@@ -61,26 +62,22 @@ instance.interceptors.response.use(
             originalRequest._retry = true;
 
             if (!refreshTokenPromise) {
-                isRefreshing = true;
                 refreshTokenPromise = refreshAccessTokenAdmin()
-                    .then(() => {
-                        processQueue(null);
-                    })
-                    .catch(err => {
+                    .then(() => processQueue(null))
+                    .catch((err) => {
                         processQueue(err);
                         if (typeof window !== "undefined") {
                             window.location.href = "/admin/login";
                         }
                     })
                     .finally(() => {
-                        isRefreshing = false;
                         refreshTokenPromise = null;
                     });
             }
 
             try {
-                await refreshTokenPromise; // 토큰 갱신 완료까지 기다림
-                return instance(originalRequest); // 재요청
+                await refreshTokenPromise;
+                return instance(originalRequest);
             } catch (err) {
                 return Promise.reject(err);
             }
