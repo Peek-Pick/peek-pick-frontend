@@ -1,11 +1,11 @@
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
-const UserLoading = () => {
+const Loading = () => {
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-white">
-            <div className="w-40 h-40">
+            <div className="w-70 h-70">
                 <DotLottieReact
-                    src="/loading/lottie_user_profile.lottie"
+                    src="/loading/lottie_points.lottie"
                     loop
                     autoplay
                 />
@@ -14,4 +14,4 @@ const UserLoading = () => {
     );
 };
 
-export {UserLoading};
+export default Loading;

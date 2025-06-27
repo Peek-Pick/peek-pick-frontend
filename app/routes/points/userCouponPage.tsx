@@ -8,6 +8,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTicket } from '@fortawesome/free-solid-svg-icons';
 import type {PagingResponse} from "~/types/common";
 import PaginationComponent from "~/components/common/PaginationComponent";
+import PointsLoading from "~/util/loading/pointsLoading";
+import {ErrorComponent} from "~/util/loading/errorComponent";
 
 
 function UserCouponPage() {
@@ -21,8 +23,9 @@ function UserCouponPage() {
         queryFn: () => userCouponList(page, size, sort, filter),
     });
 
-    if (isLoading) return <div>Loading...</div>;
-    if (isError || !data) return <div>An error occurred.</div>;
+    // 로딩, 에러 처리
+    if (isLoading) return <PointsLoading />;
+    if (isError || !data) return "Error";
 
     return (
         <>

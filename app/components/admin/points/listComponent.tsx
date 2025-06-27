@@ -20,8 +20,6 @@ export default function ListComponent({ products, page, category, keyword, hidde
             state: { from: 'pointsList' }});
     };
 
-    console.log(products);
-
     return (
         <div>
             <div className="overflow-x-auto bg-white shadow rounded-lg">
