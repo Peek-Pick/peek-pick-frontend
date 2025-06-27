@@ -6,7 +6,6 @@ import PointLogsComponent from "~/components/points/pointLogsComponent";
 import type {PagingResponse} from "~/types/common";
 import PaginationComponent from "~/components/common/PaginationComponent";
 import PointsLoading from "~/util/loading/pointsLoading";
-import {ErrorComponent} from "~/util/loading/errorComponent";
 
 
 function PointLogPage() {

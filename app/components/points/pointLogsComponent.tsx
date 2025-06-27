@@ -1,8 +1,6 @@
 import type { PointLogsDTO } from "~/types/points";
 import {PointLogsDesc, PointLogsType} from "~/enums/points/points";
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChartLine } from '@fortawesome/free-solid-svg-icons'
+import { History } from "lucide-react";
 
 interface Props {
     pointLogs: PointLogsDTO[];
@@ -20,16 +18,20 @@ export default function PointLogsComponent({ pointLogs }: Props) {
     };
 
     return (
-        <div className="max-w-3xl mx-auto p-6 bg-white rounded-2xl shadow-md">
-            <h3 className="text-xl font-bold text-center text-gray-800 mb-6">
-                <FontAwesomeIcon icon={faChartLine} /> Point History
-            </h3>
+        <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow px-4 pt-4 pb-6 relative space-y-4">
+            <div className="flex justify-between items-center mb-4 mt-1.5">
+                <h2 className="flex items-center gap-1 text-xl font-bold text-yellow-500 select-none leading-none">
+                    <History className="w-6 h-6 leading-none ml-1.5" />
+                    <span className="leading-none text-black ml-1.5">Point History</span>
+                </h2>
+            </div>
 
             <ul className="space-y-4">
                 {pointLogs.length === 0 ? (
                     <li className="text-center text-gray-400 text-sm sm:text-base">
                         No point history available.
                     </li>
+
                 ) : (
                     pointLogs.map((log) => (
                         <li

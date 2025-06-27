@@ -2,11 +2,8 @@ import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import type { PagingResponse } from "~/types/common";
 import PaginationComponent from "~/components/common/PaginationComponent";
-import LoadingComponent from "~/components/common/loadingComponent";
 import ListComponent from "~/components/inquiries/listComponent";
-import BottomNavComponent from "~/components/main/bottomNavComponent";
 import { fetchInquiries } from "~/api/inquiries/inquiriesAPI";
-import {BackButton} from "~/util/button/FloatingActionButtons";
 
 const FIXED_PAGE_SIZE = 5;
 
@@ -24,27 +21,22 @@ function ListPage() {
         setSearchParams({ page: String(newPage) });
     };
 
-    if (isLoading) return <LoadingComponent isLoading />;
-    if (isError || !data)
-        return <div className="p-4 text-red-500">데이터를 불러오지 못했습니다.</div>;
-
     return (
         <div>
             <ListComponent
-                items={data.content}
+                items={data?.content}
+                isLoading={isLoading}
+                isError={isError}
                 currentPage={page + 1}
                 pageSize={FIXED_PAGE_SIZE}
-                totalCount={data.totalElements}
+                totalCount={data?.totalElements}
             />
             <PaginationComponent
                 currentPage={page}
-                totalPages={data.totalPages}
+                totalPages={data?.totalPages}
                 onPageChange={handlePageChange}
                 maxPageButtons={5}
             />
-
-            {/*<BottomNavComponent />*/}
-            <BackButton />
         </div>
     );
 }

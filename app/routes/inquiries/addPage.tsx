@@ -6,6 +6,7 @@ import LoadingComponent from "~/components/common/loadingComponent";
 import { useCreateInquiry } from "~/hooks/inquiries/useInquiryMutation";
 import { BackButton, FloatingActionButtons } from "~/util/button/FloatingActionButtons";
 import Swal from "sweetalert2";
+import '~/util/swal/customSwal.css'
 
 function AddPage() {
     const navigate = useNavigate();
@@ -30,7 +31,7 @@ function AddPage() {
         }
 
         Swal.fire({
-            title: "문의 등록 중입니다...",
+            title: "Submitting inquiry...",
             allowOutsideClick: false,
             allowEscapeKey: false,
             didOpen: () => {
@@ -56,9 +57,9 @@ function AddPage() {
 
             // 3. 완료 후 알림
             await Swal.fire({
-                title: "문의가 등록되었습니다",
+                title: "Inquiry submitted successfully",
                 icon: "success",
-                confirmButtonText: "확인",
+                confirmButtonText: "OK",
                 customClass: {
                     popup: 'custom-popup',
                     title: 'custom-title',
@@ -71,11 +72,11 @@ function AddPage() {
             navigate(`/inquiries/${newId}`, { replace: true });
 
         } catch (error) {
-            console.error("문의 등록 실패:", error);
+            console.error("Failed to submit inquiry");
             await Swal.fire({
-                title: "문의 등록 중 오류가 발생했습니다",
+                title: "Failed to submit inquiry",
                 icon: "error",
-                confirmButtonText: "확인",
+                confirmButtonText: "OK",
                 customClass: {
                     popup: 'custom-popup',
                     title: 'custom-title',
@@ -86,13 +87,11 @@ function AddPage() {
         }
     }
 
-    if (loading) return <LoadingComponent isLoading={true} />;
-
     return (
         <div>
             <BackButton />
             <FloatingActionButtons />
-            <AddComponent onSubmit={handleSubmit} userEmail={userEmail ?? ""} />
+            <AddComponent onSubmit={handleSubmit} userEmail={userEmail ?? ""} isLoading={loading}/>
             <div className="h-15" />
         </div>
     );

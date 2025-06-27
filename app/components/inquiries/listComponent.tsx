@@ -1,15 +1,24 @@
 import { useNavigate } from "react-router-dom";
 import { MessageSquare, Check, Hourglass } from "lucide-react";
 import { INQUIRY_TYPES } from "~/enums/inquiries/inquiry";
+import {InquiryLoading} from "~/util/loading/inquiryLoading";
+import {BackButton} from "~/util/button/FloatingActionButtons";
 
 interface ListComponentProps {
-    items: InquiryResponseDTO[];
+    items?: InquiryResponseDTO[];
+    isLoading?: boolean;
+    isError?: boolean
     currentPage: number;
     pageSize: number;
     totalCount: number;
 }
 
-function ListComponent({ items, currentPage, pageSize, totalCount }: ListComponentProps) {
+function ListComponent({ items, isLoading, isError, currentPage, pageSize, totalCount }: ListComponentProps) {
+    if (isLoading)
+        return <InquiryLoading />;
+    if (isError)
+        return <p className="text-center p-4 text-red-500 text-base sm:text-lg">Failed to load inquiry data.</p>;
+
     const nav = useNavigate();
 
     const handleDetail = (id: number) => {
@@ -41,20 +50,20 @@ function ListComponent({ items, currentPage, pageSize, totalCount }: ListCompone
                     onClick={handleAdd}
                     className="px-4 py-2 rounded-md bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-semibold shadow-sm border border-white transition"
                 >
-                    + 문의하기
+                    + New Inquiry
                 </button>
             </div>
 
             {items.length === 0 ? (
                 <div className="py-20 text-center text-yellow-300 text-base select-none">
-                    작성한 문의사항이 없습니다.
+                    You have not submitted any inquiries yet.
                 </div>
             ) : (
                 <ul className="flex flex-col gap-5">
                     {items.map((item, index) => {
                         const typeLabel = INQUIRY_TYPES.find((t) => t.value === item.type)?.label ?? item.type;
                         const isAnswered = item.status === "ANSWERED";
-                        const statusLabel = isAnswered ? "답변 완료" : "답변 대기";
+                        const statusLabel = isAnswered ? "Answered" : "Waiting";
 
                         const reversedIndex = totalCount - ((currentPage - 1) * pageSize + index);
 
@@ -85,7 +94,7 @@ function ListComponent({ items, currentPage, pageSize, totalCount }: ListCompone
 
                                     {/* 작성일 및 상태 */}
                                     <div className="flex justify-between items-center text-xs select-none">
-                                        <div className="text-gray-500">작성일: {formatDate(item.regDate)}</div>
+                                        <div className="text-gray-500">regDate: {formatDate(item.regDate)}</div>
 
                                         <div
                                             className={`inline-flex items-center gap-1 rounded-full px-3 py-1 font-semibold transition-colors ${
@@ -108,6 +117,8 @@ function ListComponent({ items, currentPage, pageSize, totalCount }: ListCompone
                     })}
                 </ul>
             )}
+            {/*<BottomNavComponent />*/}
+            <BackButton />
         </div>
     );
 }
