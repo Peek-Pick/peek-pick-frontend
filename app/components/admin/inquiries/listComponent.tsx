@@ -29,14 +29,14 @@ function ListComponent({ items }: { items: InquiryResponseDTO[] } & FetchAdminIn
             <div className="overflow-x-auto">
                 <table className="min-w-full text-sm divide-y divide-gray-200 table-fixed">
                     <colgroup>
-                        <col className="w-16" />  {/* ID */}
-                        <col className="w-24" />  {/* 유형 */}
-                        <col className="w-48" />  {/* 내용 */}
-                        <col className="w-36" />  {/* 작성일 */}
-                        <col className="w-36" />  {/* 수정일 */}
-                        <col className="w-32" />  {/* 닉네임 */}
-                        <col className="w-24" />  {/* 상태 */}
-                        <col className="w-24" />  {/* 삭제여부 */}
+                        <col className="w-16" />
+                        <col className="w-24" />
+                        <col className="w-48" />
+                        <col className="w-36" />
+                        <col className="w-36" />
+                        <col className="w-32" />
+                        <col className="w-24" />
+                        <col className="w-24" />
                     </colgroup>
                     <thead className="bg-gray-50">
                     <tr>
