@@ -70,7 +70,7 @@ export default function FavoritesPage() {
             };
         },
         initialPageParam: undefined,
-        staleTime: 5 * 60 * 1000,
+        // staleTime: 5 * 60 * 1000,
     });
 
     const handleItemClick = (barcode: string) => {

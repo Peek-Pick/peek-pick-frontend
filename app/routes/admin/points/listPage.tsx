@@ -66,7 +66,7 @@ function ListPage() {
     const { data, isLoading, isError } = useQuery<PagingResponse<PointStoreListDTO>>({
         queryKey: ["pointsList", page, category, keyword, hidden],
         queryFn: () => listAdminCoupon(page, category, keyword, hidden),
-        staleTime: 1000 * 60 * 5
+        // staleTime: 1000 * 60 * 5
     });
 
     console.log("API 응답 확인:", data);

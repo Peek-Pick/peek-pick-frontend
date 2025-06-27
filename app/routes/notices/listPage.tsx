@@ -16,7 +16,7 @@ export default function NoticeListPage() {
     const { data, isLoading, isError } = useQuery<NoticePageDTO>({
         queryKey: ["notices", page],
         queryFn: () => fetchNotices(page, size),
-        staleTime: 1000 * 60 * 10,
+        // staleTime: 1000 * 60 * 10,
     });
 
     const handlePageChange = (newPage: number) => {
