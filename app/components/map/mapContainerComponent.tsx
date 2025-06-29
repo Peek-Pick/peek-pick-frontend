@@ -8,6 +8,7 @@ import MapLoadingComponent from "~/util/loading/mapLoadingComponent";
 import usePolyline from "~/hooks/map/usePolyline";
 import {getDirections} from "~/api/mapAPI";
 import {useMapSearch} from "~/hooks/map/useMapSearch";
+import {ErrorComponent} from "~/util/loading/errorComponent";
 
 
 // 사용할 라이브러리
@@ -158,7 +159,7 @@ const MapContainerComponent: React.FC = () => {
     }, []);
 
     // 로드 에러 또는 로딩 중인 경우 처리
-    if (loadError) return <div>지도를 불러오는 중 오류가 발생했습니다.</div>;
+    if (loadError) return <ErrorComponent />;
 
     if (!isLoaded || !currentPosition) {
         return (

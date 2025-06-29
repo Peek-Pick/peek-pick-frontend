@@ -49,7 +49,6 @@ function ListPage() {
     const { data, isLoading, isError } = useQuery<PagingResponse<InquiryResponseDTO>>({
         queryKey: ["admin-inquiries", queryParams],
         queryFn: () => fetchAdminInquiries(queryParams).then(res => res.data),
-        staleTime: 1000 * 60 * 10,
     });
 
     const handlePageChange = (newPage: number) => {

@@ -78,7 +78,7 @@ function AdminUsersListPage() {
     const { data, isLoading, isError } = useQuery<PagingResponse<UsersListDTO>>({
         queryKey: ["adminUserList", page, category, keyword, userStatus, social ],
         queryFn: () => getUserList(page, category, keyword, userStatus, social),
-        staleTime: 5 * 60 * 1000,
+        // staleTime: 5 * 60 * 1000,
     });
 
     return (

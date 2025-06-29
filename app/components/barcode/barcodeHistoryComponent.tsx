@@ -4,6 +4,8 @@ import { getBarcodeHistory } from "~/api/barcode/barcodeAPI";
 import {useLocation, useNavigate} from "react-router-dom";
 import LoadingComponent from "~/components/common/loadingComponent";
 import {ReceiptText} from "lucide-react";
+import {ReviewLoading} from "~/util/loading/reviewLoading";
+import {BarcodeLoading} from "~/util/loading/barcodeLoading";
 
 function BarcodeHistoryComponent() {
     const [history, setHistory] = useState<ViewHistoryResponseDTO[]>([]);
@@ -21,9 +23,16 @@ function BarcodeHistoryComponent() {
             setLoading(true);
             try {
                 const response = await getBarcodeHistory();
-                setHistory(response);
+                // 배열인지 확인 후 상태 설정 (방어적 코딩)
+                if (Array.isArray(response)) {
+                    setHistory(response);
+                } else {
+                    console.warn("getBarcodeHistory: 응답이 배열이 아닙니다.", response);
+                    setHistory([]);
+                }
             } catch (error) {
                 console.error("바코드 조회 이력 불러오기 실패:", error);
+                setHistory([]); // 에러 시 빈 배열로 초기화
             } finally {
                 setLoading(false);
             }
@@ -41,7 +50,7 @@ function BarcodeHistoryComponent() {
     };
 
     if (loading) {
-        return <LoadingComponent isLoading={true} />;
+        return <BarcodeLoading />;
     }
 
     if (history.length === 0) {

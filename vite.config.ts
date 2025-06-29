@@ -9,6 +9,7 @@ export default defineConfig({
     reactRouter(),
     tsconfigPaths()
   ],
+  base: '/',
   esbuild: {
     jsxInject: `import React from 'react'`,
   },

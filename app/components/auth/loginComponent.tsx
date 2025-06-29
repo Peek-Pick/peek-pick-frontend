@@ -54,13 +54,16 @@ const LoginComponent = () => {
             <div
                 className="absolute top-20 w-[90%] max-w-xl bg-white/70 backdrop-blur-[40px] border-2 border-white/80 rounded-2xl shadow-xl p-8 z-10"
             >
-                <h2 className="text-3xl font-semibold tracking-wide text-center text-gray-800 mb-8 leading-snug">
-                    로그인
-                </h2>
+                <h1 className="text-xl font-semibold tracking-wide text-center text-gray-500 mb leading-snug">
+                    Log In to
+                </h1>
+                <h1 className="text-3xl font-semibold tracking-wide text-center text-yellow-500 mb-8 leading-snug">
+                    Peek&Pick
+                </h1>
 
                 <form onSubmit={handleSubmit} className="space-y-6 text-gray-800 pb-2">
                     <div>
-                        <label htmlFor="email" className="block text-sm font-semibold mb-2">이메일</label>
+                        <label htmlFor="email" className="block text-sm font-semibold mb-2">Email</label>
                         <input
                             id="email"
                             type="email"
@@ -73,14 +76,14 @@ const LoginComponent = () => {
                     </div>
 
                     <div>
-                        <label htmlFor="password" className="block text-sm font-semibold mb-2">비밀번호</label>
+                        <label htmlFor="password" className="block text-sm font-semibold mb-2">Password</label>
                         <input
                             id="password"
                             type="password"
                             value={mpw}
                             onChange={(e) => setMpw(e.target.value)}
                             className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 text-sm"
-                            placeholder="••••••••"
+                            placeholder="••••"
                             required
                         />
                     </div>
@@ -90,14 +93,14 @@ const LoginComponent = () => {
                         disabled={isLoading}
                         className="w-full bg-yellow-400 hover:bg-yellow-500 active:bg-yellow-300 text-white py-3 rounded-md shadow-md transition duration-300 ease-in-out text-base font-bold tracking-wide disabled:opacity-50"
                     >
-                        로그인
+                        Login
                     </button>
                 </form>
 
                 <div className="text-center text-sm mt-4">
-                    계정이 없으신가요?
+                    Don’t have an account?
                     <Link to="/signup" className="text-yellow-500 font-bold ml-1">
-                        회원가입
+                        Sign up here
                     </Link>
                 </div>
 
@@ -110,10 +113,10 @@ const LoginComponent = () => {
                         className={`w-full flex items-center justify-center gap-3 px-4 py-3 rounded-lg border-2 text-sm font-medium transition
                             ${isLoading
                             ? "bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed"
-                            : "bg-white text-yellow-500 border-yellow-400 hover:border-yellow-500 hover:text-yellow-600 hover:bg-yellow-50 active:border-yellow-600"}
+                            : "bg-white text-gray-500 border-gray-400 active:border-yellow-400 active:text-yellow-500"}
                             `}>
                         <FaGoogle className="w-5 h-5"/>
-                        Google 로그인
+                        Continue with Google
                     </button>
                 </div>
             </div>

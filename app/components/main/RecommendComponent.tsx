@@ -3,9 +3,11 @@ import { useQuery } from "@tanstack/react-query";
 import type { ProductListDTO, PageResponseCursor } from "~/types/products";
 import { getRecommendedProducts } from "~/api/products/productsAPI";
 import { Icon } from "@iconify/react";
+import {useEffect, useRef} from "react";
 
 export function RecommendComponent() {
     const navigate = useNavigate();
+    const containerRef = useRef<HTMLDivElement>(null);
 
     const size = 12;
 
@@ -16,6 +18,27 @@ export function RecommendComponent() {
     });
 
     const recommend = data?.content ?? [];
+
+    // 자동 슬라이드 기능
+    useEffect(() => {
+        const container = containerRef.current;
+        if (!container) return;
+
+        const scrollAmount = (160 + 8) * 2; // item width + gap (min-w-[160px] + gap-2 => 0.5rem = 8px)
+
+        const interval = setInterval(() => {
+            if (!container) return;
+
+            const maxScrollLeft = container.scrollWidth - container.clientWidth;
+            if (container.scrollLeft + scrollAmount >= maxScrollLeft) {
+                container.scrollTo({ left: 0, behavior: "smooth" }); // 처음으로
+            } else {
+                container.scrollBy({ left: scrollAmount, behavior: "smooth" });
+            }
+        }, 2000);
+
+        return () => clearInterval(interval);
+    }, []);
 
     return (
         <section className="px-4 py-4 bg-white">
@@ -29,7 +52,11 @@ export function RecommendComponent() {
                 </button>
             </div>
 
-            <div className="overflow-x-auto no-scrollbar" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+            <div
+                ref={containerRef}
+                className="overflow-x-auto no-scrollbar"
+                style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            >
                 <div className="flex gap-2">
                     {recommend.map((item, index) => (
                         <div
@@ -37,6 +64,9 @@ export function RecommendComponent() {
                             className="min-w-[160px] flex-shrink-0 bg-white border border-[#eee] rounded-xl shadow-md p-2 cursor-pointer transition hover:shadow-lg"
                             onClick={() => navigate(`/products/${item.barcode}`)}
                         >
+                            <div className="absolute top-2 left-2 w-6 h-6 flex items-center justify-center rounded-full bg-[#ff5e5e] text-white text-xs font-bold z-10">
+                                {index + 1}
+                            </div>
                             <div className="w-[140px] h-[140px] mb-3 bg-[#F9F9F9] rounded-md overflow-hidden flex items-center justify-center">
                                 {item.imgThumbUrl ? (
                                     <img src={`http://localhost${item.imgThumbUrl}`} alt={item.name} className="w-full h-full object-contain" />

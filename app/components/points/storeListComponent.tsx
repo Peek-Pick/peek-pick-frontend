@@ -2,14 +2,14 @@ import type { PointStoreListDTO } from "~/types/points";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faShoppingBag } from '@fortawesome/free-solid-svg-icons'
+import PointsLoading from "~/util/loading/pointsLoading";
 
 interface Props {
     products: PointStoreListDTO[];
     onProductClick: (product: PointStoreListDTO) => void;
 }
 
-export default function StoreListComponent({ products, onProductClick }: Props) {
-
+export default function StoreListComponent({ products, onProductClick}: Props) {
 
     return (
         <div className="container mx-auto">

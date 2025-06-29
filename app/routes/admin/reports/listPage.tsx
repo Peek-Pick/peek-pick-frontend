@@ -63,7 +63,7 @@ function ListPage() {
     const { data, isLoading, isError } = useQuery<PagingResponse<AdminReviewReportDTO>>({
         queryKey: ["adminReviewReportList", page, category, keyword, hidden],
         queryFn: () => getAdminReviewReportList(page, category, keyword, hidden),
-        staleTime: 1000 * 60 * 5
+        // staleTime: 1000 * 60 * 5
     });
 
     return (

@@ -8,9 +8,9 @@ export function useAccountDelete() {
         mutationFn: softDeleteAccount,
         onSuccess: () => {
             Swal.fire({
-                title: "계정이 삭제되었습니다.",
+                title: "Your account has been successfully deleted.",
                 icon: "success",
-                confirmButtonText: "확인",
+                confirmButtonText: "OK",
                 customClass: {
                     popup: 'custom-popup',
                     title: 'custom-title',
@@ -23,9 +23,9 @@ export function useAccountDelete() {
         },
         onError: () => {
             Swal.fire({
-                title: "계정 삭제 실패",
+                title: "Account Deletion Failed",
                 icon: "error",
-                confirmButtonText: "확인",
+                confirmButtonText: "OK",
                 customClass: {
                     popup: 'custom-popup',
                     title: 'custom-title',
@@ -37,20 +37,14 @@ export function useAccountDelete() {
     });
 
     const openDeleteModal = () => {
-        // const inputOptions = Object.entries(ReportReasonDescriptions).reduce<
-        //     Record<string, string>
-        // >((acc, [key, value]) => {
-        //     acc[key] = value;
-        //     return acc;
-        // }, {});
 
         Swal.fire({
-            title: "정말 탈퇴하시겠어요?",
-            text: "계정은 복구되지 않습니다.",
+            title: "Are You Sure You Want to Delete Your Account?",
+            text: "This action is permanent and cannot be undone.",
             icon: "warning",
             showCancelButton: true,
-            confirmButtonText: "탈퇴하기",
-            cancelButtonText: "취소",
+            confirmButtonText: "Delete Account",
+            cancelButtonText: "Cancel",
             customClass: {
                 popup: "custom-popup",
                 title: "custom-title",

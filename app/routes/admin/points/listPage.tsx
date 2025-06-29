@@ -66,11 +66,12 @@ function ListPage() {
     const { data, isLoading, isError } = useQuery<PagingResponse<PointStoreListDTO>>({
         queryKey: ["pointsList", page, category, keyword, hidden],
         queryFn: () => listAdminCoupon(page, category, keyword, hidden),
-        staleTime: 1000 * 60 * 5
+        // staleTime: 1000 * 60 * 5
     });
 
     console.log("API 응답 확인:", data);
 
+    // 로딩, 에러처리
     if (isLoading) return <LoadingComponent isLoading />;
     if (isError || !data) return <div className="p-4 text-red-500">에러 발생</div>;
 

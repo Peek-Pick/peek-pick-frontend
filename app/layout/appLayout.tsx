@@ -74,7 +74,7 @@ export default function AppLayout() {
         }
 
         // ④ /products/:barcode 패턴 확인
-        const productMatch = location.pathname.match(/^\/(products|reviews\/add)\/([^/]+)$/);
+        const productMatch = location.pathname.match(/^\/(products|reviews\/add|reviews\/product)\/([^/]+)$/);
         if (productMatch) {
             const barcode = productMatch[2];
             // API 호출하여 상품명을 가져와 dynamicTitle에 저장
@@ -112,7 +112,7 @@ export default function AppLayout() {
                 {/* 왼쪽: 로고 + 페이지 이름 */}
                 <button className="flex items-center gap-2"
                         onClick={() => navigate("/main")}>
-                    <img src="/icons/icon_clean.png" alt="Logo" className="h-8.5 w-10" />
+                    <img src="/icons/icon_clean.png" alt="Logo" className="h-10 w-10" />
                     <span className="text-lg font-semibold">{pageTitle}</span>
                 </button>
 
