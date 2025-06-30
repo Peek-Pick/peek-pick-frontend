@@ -35,6 +35,13 @@ export const refreshAccessToken = async () => {
     }
 };
 
+export const checkLoginAPI = async () => {
+    const res = await axiosInstance.get(`${host}/auth/check`, {
+        withCredentials: true, // ✅ 쿠키 전송
+    });
+    console.log("res.data: ",res.data)
+    return res.data; // true 또는 false
+};
 
 // 어드민 로그인
 export async function getAdminToken(aid: string, apw: string) {
