@@ -96,14 +96,14 @@ export default function ChatComponent() {
             setIsWaitingForReply(false);
         }
     };
-    
+
     return (
         <>
             {/* 웰컴 카드 영역 */}
             {messages.length === 0 && (
                 <WelcomeComponent handleSendMessage={handleSendMessage} />
             )}
-            
+
             {/* 메시지 영역 */}
             <main className="w-full flex flex-col overflow-y-auto p-4 scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-blue-100"
                   ref={scrollRef} style={{ height: 'calc(86vh)' }}>
