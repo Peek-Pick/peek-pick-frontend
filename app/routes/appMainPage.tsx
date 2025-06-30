@@ -5,28 +5,57 @@ import {RankingComponent} from "~/components/main/RankingComponent";
 import {RecommendComponent} from "~/components/main/RecommendComponent";
 import {useEffect, useState} from "react";
 import {MainLoading} from "~/util/loading/mainLoading";
+import {useAuthContext} from "~/hooks/auth/useAuthContext";
+import RecommendSkeleton from "~/components/main/RecommendSkeleton";
 
 function appMainPage() {
 
-    // const [isLoading, setIsLoading] = useState(true);
-    //
-    // useEffect(() => {
-    //     const timer = setTimeout(() => {
-    //         setIsLoading(false);
-    //     }, 1500); // 1.5초 로딩 예시
-    //
-    //     return () => clearTimeout(timer);
-    // }, []);
-    //
-    // if (isLoading) {
-    //     return <MainLoading />;
-    // }
+    const [showLoading, setShowLoading] = useState(true);
+
+    const { isLoggedIn, isLoading:checkingLogged } = useAuthContext();
+
+    // 세션 스토리지를 체크해서 최초 방문이면 스피너 보여주기
+    useEffect(() => {
+        // window가 존재하는지 확인
+        // SSR 환경에서는 window가 undefined일 수 있어서 확인 필요
+        if (typeof window !== "undefined") {
+
+            const hasVisited = sessionStorage.getItem("hasVisitedMain");
+
+            if (hasVisited) {
+                setShowLoading(false);
+            } else {
+                // 최초 방문이면 스피너를 보여주고, 이후엔 다시 안 보이도록 세션스토리지에 기록
+                sessionStorage.setItem("hasVisitedMain", "true");
+
+                const timer = setTimeout(() => setShowLoading(false), 1200);
+
+                return () => clearTimeout(timer);
+            }
+        }
+    }, []);
+
+    // 로딩 상태일 때 스피너 표시
+    if (showLoading) {
+        return (
+            <MainLoading />
+        );
+    }
+
+    console.log(isLoggedIn)
     return (
         <div>
             <CarouselComponent/>
             <MenuGrid />
             <RankingComponent />
-            <RecommendComponent />
+
+            {checkingLogged ? (
+                <RecommendSkeleton />
+            ) : isLoggedIn ? (
+                <RecommendComponent />
+            ) : (
+                <RecommendSkeleton />
+            )}
             <BottomNavComponent/>
         </div>
     );

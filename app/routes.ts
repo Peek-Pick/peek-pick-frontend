@@ -19,7 +19,6 @@ export default [
         // 접근 불가
         route("access-denied", "routes/accessDeniedPage.tsx"),
 
-
         //메인
         route("main", "routes/appMainPage.tsx"),
 
