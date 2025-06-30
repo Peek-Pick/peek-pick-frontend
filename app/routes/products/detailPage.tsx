@@ -1,9 +1,7 @@
 import { useLayoutEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import DetailComponent from "~/components/products/detailComponent";
 import PreviewComponent from "~/components/reviews/previewComponent";
-import BottomNavComponent from "~/components/main/bottomNavComponent";
 import { getProductDetail } from "~/api/products/productsAPI";
 import type { ProductDetailDTO } from "~/types/products";
 import { BackButton, FloatingActionButtons } from "~/util/button/FloatingActionButtons";

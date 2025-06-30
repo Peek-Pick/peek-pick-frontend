@@ -76,7 +76,7 @@ export default function CouponModal({ product, onClose, onBuy }: Props) {
 
                                 if (result.success) {
                                     await Swal.fire({
-                                        title: "Purchase completed",
+                                        title: "Purchase completed.",
                                         icon: "success",
                                         confirmButtonText: "OK",
                                         customClass: {
@@ -91,7 +91,7 @@ export default function CouponModal({ product, onClose, onBuy }: Props) {
                                     });
                                 } else {
                                     await Swal.fire({
-                                        title: "Purchase failed",
+                                        title: "Purchase failed.",
                                         html: `<p style="font-size: 0.9rem; color: #f43f5e; margin-top: 8px;">Insufficient balance.</p>`,
                                         icon: "error",
                                         confirmButtonText: "OK",
@@ -105,8 +105,8 @@ export default function CouponModal({ product, onClose, onBuy }: Props) {
                                 }
                             } catch {
                                 await Swal.fire({
-                                    title: "Error",
-                                    icon: "warning",
+                                    title: "An error occurred during the purchase.",
+                                    icon: "error",
                                     confirmButtonText: "OK",
                                     customClass: {
                                         popup: "custom-popup",

@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { GoogleMap, Marker, useLoadScript} from '@react-google-maps/api';
 import StoreSearchComponent from "~/components/map/storeSearchComponent";
@@ -50,7 +49,7 @@ const MapContainerComponent: React.FC = () => {
                     });
                 },
                 () => {
-                    console.error('위치 정보를 가져오지 못했습니다.');
+                    console.error('Failed to retrieve your current location.');
                 }
             );
         }
@@ -111,7 +110,7 @@ const MapContainerComponent: React.FC = () => {
             bounds.extend(result[result.length - 1]); // 도착지
             mapRef?.fitBounds(bounds);
         } else {
-            alert("길찾기 경로를 가져올 수 없습니다.");
+            alert("Unable to retrieve the directions.");
         }
     };
 
@@ -130,7 +129,7 @@ const MapContainerComponent: React.FC = () => {
             },
             (error) => {
                 // 위치 정보 가져오다가 에러 발생 시 콘솔에 출력
-                console.error('현재 위치를 추적하는 중 오류 발생:', error);
+                console.error('An error occurred while tracking the current location:', error);
             },
             {
                 enableHighAccuracy: true, // GPS 등 정확한 위치 사용 권장
@@ -215,7 +214,7 @@ const MapContainerComponent: React.FC = () => {
                                                 lng: detailedPlace.geometry?.location?.lng() || 0,
                                             });
                                         } else {
-                                            alert('상세정보를 불러올 수 없습니다.');
+                                            alert('Failed to load place details.');
                                         }
                                     }
                                 );
@@ -248,7 +247,7 @@ const MapContainerComponent: React.FC = () => {
                                     url: "https://img.icons8.com/office/40/000000/marker.png",
                                     scaledSize: new google.maps.Size(40, 40),
                                 }}
-                                title="출발지"
+                                title="Starting Point"
                             />
                         )}
 
@@ -259,7 +258,7 @@ const MapContainerComponent: React.FC = () => {
                                     url: "/icons/map_directions_marker.png",
                                     scaledSize: new google.maps.Size(60, 95),
                                 }}
-                                title="내 위치"
+                                title="Your Location"
                                 animation={google.maps.Animation.DROP}
                             />
                         )}
@@ -272,7 +271,7 @@ const MapContainerComponent: React.FC = () => {
                                     scaledSize: new google.maps.Size(40, 40),
                                 }}
                                 animation={google.maps.Animation.DROP}
-                                title="도착지"
+                                title="Destination"
                             />
                         )}
                     </>
@@ -301,7 +300,7 @@ const MapContainerComponent: React.FC = () => {
                         {showNearbyStores ? <EyeSlashIcon /> : <BuildingStorefrontIcon />}
                     </button>
                 )}
-                
+
             </GoogleMap>
 
 

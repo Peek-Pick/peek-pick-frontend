@@ -29,7 +29,7 @@ export default function NoticeListPage() {
     if (isError || !data)
         return (
             <div className="p-4 text-red-500">
-                공지사항을 불러오는 중 오류가 발생했습니다.
+                An error occurred while fetching the notices.
             </div>
         );
 
