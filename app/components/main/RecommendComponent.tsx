@@ -62,7 +62,7 @@ export function RecommendComponent() {
                     {recommend.map((item, index) => (
                         <div
                             key={item.productId}
-                            className="min-w-[160px] flex-shrink-0 bg-white border border-[#eee] rounded-xl shadow-md p-2 cursor-pointer transition hover:shadow-lg"
+                            className="min-w-[160px] flex-shrink-0 bg-white border border-[#eee] rounded-xl shadow-md p-2 cursor-pointer transition hover:shadow-lg relative"
                             onClick={() => navigate(`/products/${item.barcode}`)}
                         >
                             <div className="absolute top-2 left-2 w-6 h-6 flex items-center justify-center rounded-full bg-[#ff5e5e] text-white text-xs font-bold z-10">
@@ -70,21 +70,27 @@ export function RecommendComponent() {
                             </div>
                             <div className="w-[140px] h-[140px] mb-3 bg-[#F9F9F9] rounded-md overflow-hidden flex items-center justify-center">
                                 {item.imgThumbUrl ? (
-                                    <img src={`http://localhost${item.imgThumbUrl}`} alt={item.name} className="w-full h-full object-contain" />
+                                    <img
+                                        src={`http://localhost${item.imgThumbUrl}`}
+                                        alt={item.name}
+                                        className="w-full h-full object-contain"
+                                    />
                                 ) : (
                                     <div className="text-gray-300 text-sm">No Image</div>
                                 )}
                             </div>
-                            <h3 className="text-sm font-semibold text-gray-800 line-clamp-2 mb-1">{item.name}</h3>
+                            <h3 className="text-sm font-semibold text-gray-800 line-clamp-2 mb-1">
+                                {item.name}
+                            </h3>
                             <div className="flex items-center text-xs text-gray-600 space-x-3 mb-1">
+        <span className="flex items-center">
+          <Icon icon="ri:heart-fill" className="text-red-500 w-4 h-4 mr-1" />
+            {item.likeCount ?? 0}
+        </span>
                                 <span className="flex items-center">
-                                    <Icon icon="ri:heart-fill" className="text-red-500 w-4 h-4 mr-1" />
-                                    {item.likeCount ?? 0}
-                                </span>
-                                <span className="flex items-center">
-                                    <Icon icon="ri:star-fill" className="text-yellow-400 w-4 h-4 mr-1" />
+          <Icon icon="ri:star-fill" className="text-yellow-400 w-4 h-4 mr-1" />
                                     {item.score?.toFixed(1) ?? "0.0"}
-                                </span>
+        </span>
                             </div>
                             <div className="text-[12px] text-gray-400 mb-1">
                                 {item.reviewCount ?? 0} reviews
@@ -96,7 +102,13 @@ export function RecommendComponent() {
                             )}
                         </div>
                     ))}
+
+                    {/* 홀수일 경우 placeholder 추가 */}
+                    {recommend.length % 2 !== 0 && (
+                        <div className="min-w-[320px] flex-shrink-0 bg-transparent" />
+                    )}
                 </div>
+
             </div>
         </section>
     );
