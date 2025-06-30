@@ -6,6 +6,7 @@ import PointLogsComponent from "~/components/points/pointLogsComponent";
 import type {PagingResponse} from "~/types/common";
 import PaginationComponent from "~/components/common/PaginationComponent";
 import PointsLoading from "~/util/loading/pointsLoading";
+import {BackButton, FloatingActionButtons} from "~/util/button/FloatingActionButtons";
 
 
 function PointLogPage() {
@@ -35,6 +36,11 @@ function PointLogPage() {
                 onPageChange={setPage}
                 maxPageButtons={5}
             />
+
+            {/*<BottomNavComponent />*/}
+            <BackButton />
+
+            <FloatingActionButtons />
         </>
     );
 }

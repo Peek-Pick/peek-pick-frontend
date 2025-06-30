@@ -8,7 +8,7 @@ import {
     getAdminDashboardChartReview, getAdminDashboardChartUser,
     getAdminDashboardInquiryList,
     getAdminDashboardReportList, getAdminDashboardStatus
-} from "~/api/dashboardAPI";
+} from "~/api/dashboard/dashboardAPI";
 import TrendChartComponent from "~/components/admin/dashboard/TrendChartComponent";
 import type { PagingResponse } from "~/types/common";
 import PaginationComponent from "~/components/common/PaginationComponent";
