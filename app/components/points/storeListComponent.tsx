@@ -2,7 +2,6 @@ import type { PointStoreListDTO } from "~/types/points";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faShoppingBag } from '@fortawesome/free-solid-svg-icons'
-import PointsLoading from "~/util/loading/pointsLoading";
 
 interface Props {
     products: PointStoreListDTO[];
@@ -18,6 +17,7 @@ export default function StoreListComponent({ products, onProductClick}: Props) {
                 {products.map((product) => (
                     <div
                         key={product.pointstoreId}
+                        onClick={() => onProductClick(product)}
                         className="cursor-pointer bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 relative"
                     >
                         <div className="relative">
@@ -28,7 +28,6 @@ export default function StoreListComponent({ products, onProductClick}: Props) {
                             />
                             {/* 구매 버튼 */}
                             <button
-                                onClick={() => onProductClick(product)}
                                 className="absolute top-2 right-2 bg-white bg-opacity-90 rounded-full p-1.5 shadow hover:bg-blue-100 transition"
                             >
                                 <FontAwesomeIcon icon={faShoppingBag} style={{ color: '#6b7280' }} />
