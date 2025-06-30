@@ -28,7 +28,7 @@ function appMainPage() {
                 // 최초 방문이면 스피너를 보여주고, 이후엔 다시 안 보이도록 세션스토리지에 기록
                 sessionStorage.setItem("hasVisitedMain", "true");
 
-                const timer = setTimeout(() => setShowLoading(false), 1200);
+                const timer = setTimeout(() => setShowLoading(false), 3000);
 
                 return () => clearTimeout(timer);
             }
@@ -47,14 +47,23 @@ function appMainPage() {
         <div>
             <CarouselComponent/>
             <MenuGrid />
-            <RankingComponent />
+
 
             {checkingLogged ? (
-                <RecommendSkeleton />
+                <>
+                    <RecommendSkeleton msg={"Top Ranking"} />
+                    <RecommendSkeleton msg={"Top Picks for you"} />
+                </>
             ) : isLoggedIn ? (
+                <>
+                <RankingComponent />
                 <RecommendComponent />
+                </>
             ) : (
-                <RecommendSkeleton />
+                <>
+                <RecommendSkeleton msg={"Top Ranking"} />
+                <RecommendSkeleton msg={"Top Picks for you"} />
+                </>
             )}
             <BottomNavComponent/>
         </div>
