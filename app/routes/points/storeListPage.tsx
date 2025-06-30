@@ -27,7 +27,7 @@ function StoreListPage() {
     const { data, isLoading, isError } = useQuery<PagingResponse<PointStoreListDTO>>({
         queryKey: ["points", page, size, filter],
         queryFn: () => listCoupon(page, size, sort, filter),
-        staleTime: 1000 * 60 * 5
+        // staleTime: 1000 * 60 * 5
     });
 
     // 쿠폰 상세정보 불러오기 - 모달에서 보여 줄 정보

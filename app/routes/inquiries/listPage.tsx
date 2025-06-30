@@ -14,7 +14,7 @@ function ListPage() {
     const { data, isLoading, isError } = useQuery<PagingResponse<InquiryResponseDTO>>({
         queryKey: ["inquiries", page],
         queryFn: () => fetchInquiries({ page, size: FIXED_PAGE_SIZE }),
-        staleTime: 1000 * 60 * 10,
+        // staleTime: 1000 * 60 * 10,
     });
 
     const handlePageChange = (newPage: number) => {
