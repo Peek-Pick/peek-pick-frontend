@@ -8,19 +8,19 @@ export default function WelcomeComponent({ handleSendMessage }: WelcomeProps) {
     // 웰컴 카드
     const faqSlides = [
         {
-            title: '자주 묻는 질문',
-            subtitle: '챗봇추천, 똑똑하게 리뷰하자!',
-            items: ['리뷰 작성 방법', '별점 수정하기', '리뷰 삭제는 어떻게?'],
+            title: 'Barcode & Product',
+            subtitle: 'Check product info and Request registration',
+            items: ['Check product info by barcode', 'Request product registration', 'Troubleshoot barcode recognition'],
         },
         {
-            title: '도전! 미션',
-            subtitle: '리뷰 미션 참여하고 포인트 적립',
-            items: ['오늘의 미션', '주간 랭킹', '리뷰 꿀팁'],
+            title: 'Reviews & Points',
+            subtitle: 'Point accumulation and Review management',
+            items: ['How to write a review', 'Earn points with reviews', 'Report a review'],
         },
         {
-            title: '이벤트',
-            subtitle: '지금 진행 중인 이벤트',
-            items: ['포토리뷰 챌린지', '베스트 리뷰어', '꿀템 추천'],
+            title: 'Convenience Features',
+            subtitle: 'Chatbot, Map, Account management',
+            items: ['How to use the AI chatbot', 'Find nearby convenience stores', 'Sign up and withdraw account'],
         },
     ];
 
@@ -35,9 +35,9 @@ export default function WelcomeComponent({ handleSendMessage }: WelcomeProps) {
                     className="flex justify-between items-start px-6 pt-10 pb-6"
                 >
                     <div className="leading-loose text-xl">
-                        <p>안녕하세요, <span className="text-yellow-600 font-bold">포빙빙</span>님!</p>
-                        <p className="mb-4">Peek&Pick 챗봇입니다.</p>
-                        <p className="text-sm text-gray-600">어떤 도움이 필요하신가요?</p>
+                        <p>Hello, <span className="text-yellow-600 font-bold">포빙빙</span>!</p>
+                        <p className="text-sm font-semibold">I am Peek&Pick chatbot.</p>
+                        <p className="text-sm text-gray-600">How can I assist you today?</p>
                     </div>
 
                     {/* 마스코트 자리 */}
