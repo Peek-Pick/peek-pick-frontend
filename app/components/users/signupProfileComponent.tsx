@@ -58,7 +58,7 @@ export default function SignupProfileComponent() {
         }
 
         // 주소창 직접 접근 차단
-        if (!email) {
+        if (!emailFromState && !email) {
             navigate("/access-denied", { replace: true });
         }
 
