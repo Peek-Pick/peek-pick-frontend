@@ -7,7 +7,7 @@ import type { PointStoreDTO, PointStoreListDTO } from "~/types/points";
 import { PointProductType } from "~/enums/points/points";
 import PaginationComponent from "~/components/common/PaginationComponent";
 import type {PagingResponse} from "~/types/common";
-import {BackButton} from "~/util/button/FloatingActionButtons";
+import {BackButton, FloatingActionButtons} from "~/util/button/FloatingActionButtons";
 import { ShoppingBag} from "lucide-react";
 import PointsLoading from "~/util/loading/pointsLoading";
 import type {int} from "@zxing/library/es2015/customTypings";
@@ -93,20 +93,12 @@ function StoreListPage() {
 
             {/*필터링버튼*/}
             <div className="border-b border-gray-300 mb-6 px-4 sm:px-0">
-                <nav className="flex justify-start sm:justify-center space-x-3 sm:space-x-6 overflow-x-auto no-scrollbar px-5 sm:px-0"
-                     style={{scrollbarWidth: "none", msOverflowStyle: "none"}}>
-                    {(["ALL", "CU", "GS25", "SEVEN_ELEVEN", "EMART24", "OTHERS"] as (
-                        | keyof typeof PointProductType
-                        | "ALL"
-                        )[]).map((type) => {
-                        const labels = {
-                            ALL: "ALL",
-                            CU: "CU",
-                            GS25: "GS25",
-                            SEVEN_ELEVEN: "SEVEN-ELEVEN",
-                            EMART24: "EMART24",
-                            OTHERS: "OTHERS",
-                        };
+                <nav
+                    className="flex justify-start sm:justify-center space-x-3 sm:space-x-6 overflow-x-auto no-scrollbar px-5 sm:px-0"
+                    style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+                >
+                    {(["ALL", ...Object.keys(PointProductType)] as (keyof typeof PointProductType | "ALL")[]).map((type) => {
+                        const label = type === "ALL" ? "ALL" : PointProductType[type as keyof typeof PointProductType];
                         const isActive = filter === type;
                         return (
                             <button
@@ -121,9 +113,9 @@ function StoreListPage() {
                                         : "font-normal text-gray-500 hover:text-yellow-400"
                                 }`}
                             >
-                                {labels[type]}
+                                {label}
                                 {isActive && (
-                                    <span className="absolute -bottom-0 left-0 right-0 h-0.5 bg-yellow-400 "></span>
+                                    <span className="absolute -bottom-0 left-0 right-0 h-0.5 bg-yellow-400"></span>
                                 )}
                             </button>
                         );
@@ -162,6 +154,8 @@ function StoreListPage() {
             </div>
             {/*<BottomNavComponent />*/}
             <BackButton />
+
+            <FloatingActionButtons />
         </div>
     );
 }

@@ -6,7 +6,7 @@ import { EyeSlashIcon, BuildingStorefrontIcon } from '@heroicons/react/24/outlin
 import StoreInfoWindowComponent from "~/components/map/storeInfoWindowComponent";
 import MapLoadingComponent from "~/util/loading/mapLoadingComponent";
 import usePolyline from "~/hooks/map/usePolyline";
-import {getDirections} from "~/api/mapAPI";
+import {getDirections} from "~/api/map/mapAPI";
 import {useMapSearch} from "~/hooks/map/useMapSearch";
 import {ErrorComponent} from "~/util/loading/errorComponent";
 

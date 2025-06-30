@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faQuestionCircle, faFlag, faDownload } from '@fortawesome/free-solid-svg-icons';
-import type {Category, CategoryDataMap} from "~/api/dashboardAPI";
+import type {Category, CategoryDataMap} from "~/api/dashboard/dashboardAPI";
 import type {PagingResponse} from "~/types/common";
 import {ReportReason} from "~/hooks/reviews/useReviewReport";
 import {useNavigate} from "react-router-dom";

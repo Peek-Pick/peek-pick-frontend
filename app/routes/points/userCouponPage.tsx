@@ -10,6 +10,7 @@ import type {PagingResponse} from "~/types/common";
 import PaginationComponent from "~/components/common/PaginationComponent";
 import PointsLoading from "~/util/loading/pointsLoading";
 import {ErrorComponent} from "~/util/loading/errorComponent";
+import {BackButton, FloatingActionButtons} from "~/util/button/FloatingActionButtons";
 
 
 function UserCouponPage() {
@@ -33,9 +34,10 @@ function UserCouponPage() {
                 coupons={data.content}
                 header={(
                     <>
-                        <h3 className="text-xl font-bold text-center text-gray-800 mb-6">
-                            <FontAwesomeIcon icon={faTicket} /> My Coupons
-                        </h3>
+                        <h2 className="flex items-center gap-1 text-xl font-bold text-yellow-500 select-none leading-none pb-5">
+                            <FontAwesomeIcon icon={faTicket} />
+                            <span className="leading-none text-black ml-1.5">My Coupons</span>
+                        </h2>
 
                         <div className="flex justify-center gap-2 flex-wrap">
                             {(["ALL", "AVAILABLE", "USED", "EXPIRED"] as (keyof typeof CouponStatus | "ALL")[]).map((status) => {
@@ -77,6 +79,11 @@ function UserCouponPage() {
                 onPageChange={setPage}
                 maxPageButtons={5}
             />
+
+            {/*<BottomNavComponent />*/}
+            <BackButton />
+
+            <FloatingActionButtons />
         </>
     );
 }
