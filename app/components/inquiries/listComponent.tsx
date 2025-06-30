@@ -94,7 +94,7 @@ function ListComponent({ items, isLoading, isError, currentPage, pageSize, total
 
                                     {/* 작성일 및 상태 */}
                                     <div className="flex justify-between items-center text-xs select-none">
-                                        <div className="text-gray-500">regDate: {formatDate(item.regDate)}</div>
+                                        <div>Posted on: {item.regDate.slice(0, 10).replace(/-/g, ".")}</div>
 
                                         <div
                                             className={`inline-flex items-center gap-1 rounded-full px-3 py-1 font-semibold transition-colors ${

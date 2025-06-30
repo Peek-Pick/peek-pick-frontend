@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { uploadImages, getUserEmail } from "~/api/inquiries/inquiriesAPI";
 import AddComponent from "~/components/inquiries/addComponent";
-import LoadingComponent from "~/components/common/loadingComponent";
 import { useCreateInquiry } from "~/hooks/inquiries/useInquiryMutation";
 import { BackButton, FloatingActionButtons } from "~/util/button/FloatingActionButtons";
 import Swal from "sweetalert2";

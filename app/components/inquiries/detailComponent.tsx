@@ -53,7 +53,7 @@ function DetailComponent({ inquiry, navigate: navigateProp, isLoading }: Props) 
         try {
             await deleteInquiryMutation.mutateAsync(inquiry.inquiryId);
             await Swal.fire({
-                title: "Inquiry deleted successfully",
+                title: "Inquiry deleted successfully.",
                 icon: "success",
                 confirmButtonText: "OK",
                 customClass: {
@@ -67,7 +67,7 @@ function DetailComponent({ inquiry, navigate: navigateProp, isLoading }: Props) 
         } catch (error) {
             console.error("Delete failed:", error);
             await Swal.fire({
-                title: "Failed to delete inquiry",
+                title: "Failed to delete inquiry.",
                 icon: "error",
                 confirmButtonText: "OK",
                 customClass: {
@@ -180,20 +180,20 @@ function DetailComponent({ inquiry, navigate: navigateProp, isLoading }: Props) 
                             : "bg-gray-100 hover:bg-gray-200 text-gray-500"
                     }`}
                 >
-          {isAnswered ? <Check className="w-3.5 h-3.5" /> : <Hourglass className="w-3.5 h-3.5" />}
+                    {isAnswered ? <Check className="w-3.5 h-3.5" /> : <Hourglass className="w-3.5 h-3.5" />}
                     {statusLabel}
-        </span>
+                </span>
             </div>
 
             {/* Created and Modified Dates */}
-            <div className="flex justify-end text-xs text-gray-500 mb-2.5 gap-2 leading-none">
-        <span>
-          Created: <span className="bg-gray-100 px-0.5 py-0.5 text-gray-700">{formatDate(inquiry.regDate)}</span>
-        </span>
+            <div className="flex flex-col items-end text-xs text-gray-500 mb-2.5 gap-1 leading-none">
+                <span>
+                    Posted on: <span className="bg-gray-100 px-0.5 py-0.5 text-gray-700">{inquiry.regDate.slice(0, 16).replace("T", " ").replace(/-/g, ".")}</span>
+                </span>
                 {inquiry.modDate !== inquiry.regDate && (
                     <span>
-            Modified: <span className="bg-gray-100 px-0.5 py-0.5 text-gray-700">{formatDate(inquiry.modDate)}</span>
-          </span>
+                        Updated on: <span className="bg-gray-100 px-0.5 py-0.5 text-gray-700">{inquiry.modDate.slice(0, 16).replace("T", " ").replace(/-/g, ".")}</span>
+                    </span>
                 )}
             </div>
 

@@ -26,7 +26,7 @@ const BarcodeScannerComponent = () => {
 
             const handleChange = () => {
                 if (result.state === "denied" || result.state === "prompt") {
-                    setPermissionError("카메라 접근 권한이 필요합니다.");
+                    setPermissionError("Camera access permission is required.");
                     localStorage.removeItem("reloadedAfterPermissionGranted");
                 } else if (result.state === "granted") {
                     setPermissionError(null);
@@ -74,7 +74,7 @@ const BarcodeScannerComponent = () => {
                     });
                 }
             } catch {
-                setPermissionError("카메라 접근 권한이 필요합니다.");
+                setPermissionError("Camera access permission is required for scanning.");
             }
         })();
 
@@ -149,7 +149,7 @@ const BarcodeScannerComponent = () => {
             `}</style>
 
             {/* 뒤로가기 버튼 */}
-            <button aria-label="뒤로가기" className="back-button" onClick={() => navigate(-1)}>
+            <button aria-label="Go back" className="back-button" onClick={() => navigate(-1)}>
                 <ChevronLeft/>
             </button>
 

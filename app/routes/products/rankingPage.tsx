@@ -3,7 +3,6 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { Icon } from "@iconify/react";
 import { useNavigate, useSearchParams, useNavigationType } from "react-router-dom";
 import ListComponent from "~/components/products/listComponent";
-import BottomNavComponent from "~/components/main/bottomNavComponent";
 import { listProducts } from "~/api/products/productsAPI";
 import type { PageResponseCursor, ProductListDTO } from "~/types/products";
 import { BackButton, FloatingActionButtons } from "~/util/button/FloatingActionButtons";

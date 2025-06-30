@@ -29,22 +29,22 @@ export default function DetailReadMoreModal({ product, onClose }: Props) {
                     </div>
 
                     <div className="block mb-4">
-                        <h3 className="text-sm text-gray-900 font-semibold mb-2">용량</h3>
+                        <h3 className="text-sm text-gray-900 font-semibold mb-2">volume</h3>
                         <p className="text-gray-600 text-sm">{product.volume ?? "-"}</p>
                     </div>
 
                     <div className="block mb-4">
-                        <h3 className="text-sm text-gray-900 font-semibold mb-2">원재료</h3>
+                        <h3 className="text-sm text-gray-900 font-semibold mb-2">ingredients</h3>
                         <p className="text-gray-600 text-sm">{product.ingredients ?? "-"}</p>
                     </div>
 
                     <div className="block mb-4">
-                        <h3 className="text-sm text-gray-900 font-semibold mb-2">알레르기 정보</h3>
+                        <h3 className="text-sm text-gray-900 font-semibold mb-2">알allergens</h3>
                         <p className="text-gray-600 text-sm">{product.allergens ?? "-"}</p>
                     </div>
 
                     <div className="block mb-4">
-                        <h3 className="text-sm text-gray-900 font-semibold mb-2">영양 성분</h3>
+                        <h3 className="text-sm text-gray-900 font-semibold mb-2">nutrition</h3>
                         <p className="text-gray-600 text-sm">{product.nutrition ?? "-"}</p>
                     </div>
                 </div>

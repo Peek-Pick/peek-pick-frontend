@@ -45,13 +45,13 @@ function ReplyDetailComponent({ inquiryId }: ReplyDetailProps) {
                         alt="프로필"
                         className="w-11 h-11 pt-0.5 pl-1 rounded-full object-cover overflow-visible bg-yellow-500 border border-gray-300"
                     />
-                    <span className="font-semibold text-base ml-0.5">관리자</span>
+                    <span className="font-semibold text-base ml-0.5">Admin</span>
                 </div>
 
                 {/* 작성일을 오른쪽 하단에 위치 */}
                 <div className="absolute bottom-1 right-0 text-xs text-gray-500 gap-2 leading-none">
                     <span>
-                        작성일:
+                        Posted:
                         <span className="bg-gray-100 px-0.5 py-0.5 text-gray-700">
                             {modDate ? formatDate(modDate) : "-"}
                         </span>

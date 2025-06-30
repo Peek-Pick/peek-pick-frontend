@@ -54,9 +54,9 @@ export const useMyPageEdit = () =>{
             // console.log("file:", profileImg);
 
             await Swal.fire({
-                title: "수정이 완료되었습니다",
+                title: "Profile updated successfully",
                 icon: "success",
-                confirmButtonText: "확인",
+                confirmButtonText: "OK",
                 customClass: {
                     popup: 'custom-popup',
                     title: 'custom-title',
@@ -72,9 +72,9 @@ export const useMyPageEdit = () =>{
             setError(e.response?.data?.message || "Failed to update profile.");
 
             Swal.fire({
-                title: "수정 중 오류가 발생했습니다",
+                title: "Failed to update profile",
                 icon: "warning",
-                confirmButtonText: "확인",
+                confirmButtonText: "OK",
                 customClass: {
                     popup: 'custom-popup',
                     title: 'custom-title',

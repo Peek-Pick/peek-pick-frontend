@@ -2,13 +2,15 @@ import { Links, Meta, Scripts, ScrollRestoration } from "react-router-dom";
 import { Outlet } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AdminAuthProvider } from "~/contexts/AdminAuthContext";
-import "./app.css";
 import { useEffect } from "react";
+import "./app.css";
+import "./i18n";
 
 const queryClient = new QueryClient();
 
 export function Document({ children }: { children: React.ReactNode }) {
     return (
+        // 하드코딩 - 수정 필요
         <html lang="ko">
         <head>
             <meta charSet="utf-8" />

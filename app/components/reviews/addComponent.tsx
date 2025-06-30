@@ -1,4 +1,4 @@
-import { useRef, useState, type FormEvent } from "react";
+import {useRef, useState, type FormEvent } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { addReview } from "~/api/reviews/reviewAPI";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +10,7 @@ import TextareaAutosize from "react-textarea-autosize";
 import Swal from "sweetalert2"
 import '~/util/swal/customSwal.css'
 import {BackButton} from "~/util/button/FloatingActionButtons";
+import { useTranslation } from 'react-i18next';
 
 interface AddProps {
     product?: ProductDetailDTO;
@@ -18,15 +19,8 @@ interface AddProps {
 }
 
 export default function AddComponent({ product, isLoading, isError }: AddProps) {
-    if (isLoading)
-        return <ReviewLoading />;
-    if (isError || !product) {
-        return (
-            <p className="text-center p-4 text-red-500 text-base sm:text-lg">
-                Failed to load product data.
-            </p>
-        );
-    }
+    // 국제화 적용
+    const { t } = useTranslation();
 
     const formRef = useRef<HTMLFormElement>(null);
     const [score, setScore] = useState(0);
@@ -43,7 +37,7 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
     const addMutation = useMutation({
         mutationFn: (formData: FormData) => {
             Swal.fire({
-                title: "Submitting review...",
+                title: t('submittingReview'),
                 allowOutsideClick: false,
                 allowEscapeKey: false,
                 didOpen: () => {
@@ -61,9 +55,9 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
         },
         onSuccess: () => {
             Swal.fire({
-                title: "Review submitted successfully",
+                title: t('submittingReviewSuccess'),
                 icon: "success",
-                confirmButtonText: "OK",
+                confirmButtonText: t('confirmOKButtonText'),
                 customClass: {
                     popup: 'custom-popup',
                     title: 'custom-title',
@@ -76,9 +70,9 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
         },
         onError: () => {
             Swal.fire({
-                title: "Failed to submit review",
+                title: t('submittingReviewFail'),
                 icon: "error",
-                confirmButtonText: "OK",
+                confirmButtonText: t('confirmOKButtonText'),
                 customClass: {
                     popup: 'custom-popup',
                     title: 'custom-title',
@@ -111,9 +105,9 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
         // 1) 코멘트 유효성 검사
         if (!commentValue) {
             Swal.fire({
-                title: "Please enter your review",
+                title: t('submittingReviewCheck'),
                 icon: "warning",
-                confirmButtonText: "OK",
+                confirmButtonText: t('confirmOKButtonText'),
                 customClass: {
                     popup: 'custom-popup',
                     title: 'custom-title',
@@ -148,6 +142,16 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
         addMutation.mutate(formData);
     };
 
+    if (isLoading)
+        return <ReviewLoading />;
+    if (isError || !product) {
+        return (
+            <p className="text-center p-4 text-red-500 text-base sm:text-lg">
+                {t('productLoadError')}
+            </p>
+        );
+    }
+
     return (
         <section className="py-12">
             <div className="max-w-3xl mx-auto px-4 sm:px-6 md:px-8">
@@ -166,7 +170,7 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
                 {/* 별점 선택 */}
                 <div className="text-center mb-8">
                     <h3 className="font-manrope font-bold text-lg sm:text-xl text-gray-700 mb-4">
-                        How did you like the product?
+                        {t('reviewAddGuide')}
                     </h3>
                     <div className="flex justify-center space-x-2">
                         {[1, 2, 3, 4, 5].map(i => (
@@ -197,21 +201,21 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
                             name="comment"
                             minRows={6}
                             maxRows={15}
-                            placeholder="Please leave an honest product review."
+                            placeholder={t('reviewCommentGuide')}
                             className="w-full border text-gray-600 border-gray-300 rounded-md p-3 text-sm sm:text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
                         />
 
                         {/* 태그 선택 */}
                         <div>
                             <p className="font-medium text-gray-800 mb-2 text-base sm:text-base">
-                                Select Tags
+                                {t('tagSelectGuide')}
                             </p>
                             <div className="space-y-4">
                                 {Object.entries(groupedTags).map(([category, tagList]) => (
                                     <div key={category} className="w-full">
                                         {/* 카테고리 제목 */}
                                         <p className="text-sm sm:text-base font-semibold text-gray-600 mb-2">
-                                            {category}
+                                            {t(`categories.${category}`)}
                                         </p>
                                         {/* 태그 버튼 리스트 */}
                                         <div className="flex overflow-x-auto no-scrollbar space-x-2 px-1 pb-1 -mx-1"
@@ -228,7 +232,7 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
                                                             : "bg-gray-100 text-gray-500 border-gray-400"
                                                     }`}
                                                 >
-                                                    {tag.tagName}
+                                                    {t(`tags.${tag.tagName}`)}
                                                 </button>
                                             ))}
                                         </div>
@@ -240,7 +244,7 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
                         {/* 이미지 업로드 & 미리보기 */}
                         <div>
                             <p className="text-base sm:text-base text-gray-800 mb-2">
-                                Add Photo
+                                {t('addPhotoGuide')}
                             </p>
                             {/* 파일 업로드 버튼 */}
                             <div className="w-full overflow-x-auto no-scrollbar flex space-x-2">
@@ -293,7 +297,7 @@ export default function AddComponent({ product, isLoading, isError }: AddProps) 
                                 : "bg-emerald-400 text-white hover:bg-emerald-600"}
                             `}
                         >
-                            {addMutation.isPending ? "Registering..." : "Submit Review"}
+                            {addMutation.isPending ? t('submittingReviewButtonPending') : t('submittingReviewButton')}
                         </button>
                     </form>
                 )}

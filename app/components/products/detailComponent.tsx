@@ -20,7 +20,7 @@ export default function DetailComponent({ product, isLoading, isError }: Props) 
     if (isError || !product) {
         return (
             <p className="text-center p-4 text-red-500 text-base sm:text-lg">
-                상품 정보를 불러오지 못했습니다.
+                Failed to load product information.
             </p>
         );
     }
@@ -28,7 +28,7 @@ export default function DetailComponent({ product, isLoading, isError }: Props) 
     if (product.isDelete) {
         return (
             <div className="p-4 text-center text-gray-500">
-                삭제된 상품입니다.
+                This product has been deleted.
             </div>
         );
     }
@@ -49,7 +49,7 @@ export default function DetailComponent({ product, isLoading, isError }: Props) 
             // 롤백
             setLiked(liked);
             setCount((prev) => (newLiked ? prev - 1 : prev + 1));
-            console.error("좋아요 요청 실패", error);
+            console.error("Failed to toggle like", error);
         }
     };
 
@@ -92,34 +92,34 @@ export default function DetailComponent({ product, isLoading, isError }: Props) 
 
             {/* 5. 상품 정보 */}
             <div className="border rounded-lg p-4 space-y-4 bg-white shadow-sm">
-                <h2 className="text-lg font-semibold">상품 정보</h2>
+                <h2 className="text-lg font-semibold">Product Information</h2>
                 <div className="space-y-3 text-gray-700">
                     <div>
-                        <p className="text-base font-bold">바코드</p>
+                        <p className="text-base font-bold">barcode</p>
                         <p className="text-sm">{product.barcode}</p>
                     </div>
                     <div>
-                        <p className="text-base font-bold">상세 설명</p>
+                        <p className="text-base font-bold">description</p>
                         <p className="text-sm">{product.description ?? "-"}</p>
                     </div>
                     <div>
-                        <p className="text-base font-bold">카테고리</p>
+                        <p className="text-base font-bold">category</p>
                         <p className="text-sm">{product.category ?? "-"}</p>
                     </div>
                     <div>
-                        <p className="text-base font-bold">용량</p>
+                        <p className="text-base font-bold">volume</p>
                         <p className="text-sm">{product.volume ?? "-"}</p>
                     </div>
                     <div>
-                        <p className="text-base font-bold">원재료</p>
+                        <p className="text-base font-bold">ingredients</p>
                         <p className="text-sm">{product.ingredients ?? "-"}</p>
                     </div>
                     <div>
-                        <p className="text-base font-bold">알레르기 정보</p>
+                        <p className="text-base font-bold">allergens</p>
                         <p className="text-sm">{product.allergens ?? "-"}</p>
                     </div>
                     <div>
-                        <p className="text-base font-bold">영양 성분</p>
+                        <p className="text-base font-bold">nutrition</p>
                         <p className="text-sm">{product.nutrition ?? "-"}</p>
                     </div>
                 </div>

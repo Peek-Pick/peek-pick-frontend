@@ -2,10 +2,11 @@ import {type FormEvent, useEffect, useState} from "react";
 import {getToken} from "~/api/auth/authAPI";
 import {Link, useNavigate} from "react-router-dom";
 import {FaGoogle} from "react-icons/fa";
-import LoadingComponent from "~/components/common/loadingComponent";
 import {getGoogleLoginLink} from "~/api/auth/googleAPI";
 import {useAdminAuth} from "~/contexts/AdminAuthContext";
 import {LoginLoading} from "~/util/loading/loginLoading";
+import Swal from "sweetalert2";
+import '~/util/swal/customSwal.css'
 
 const LoginComponent = () => {
     const navigate = useNavigate();
@@ -26,8 +27,18 @@ const LoginComponent = () => {
             logout();
             navigate('/main');
         } catch (error) {
-            console.error('로그인 실패', error);
-            alert('로그인에 실패했습니다. 이메일 또는 비밀번호를 확인하세요.');
+            console.error(error);
+            await Swal.fire({
+                title: "Login failed. Please check your email or password.",
+                icon: "error",
+                confirmButtonText: "OK",
+                customClass: {
+                    popup: "custom-popup",
+                    title: "custom-title",
+                    actions: "custom-actions",
+                    confirmButton: "custom-confirm-button",
+                },
+            });
         } finally {
             setIsLoading(false);
         }
