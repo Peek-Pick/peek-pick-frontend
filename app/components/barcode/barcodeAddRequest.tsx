@@ -2,6 +2,8 @@ import ConfirmModalComponent from "~/components/common/ConfirmModalComponent";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { createInquiry } from "~/api/inquiries/inquiriesAPI";
+import Swal from "sweetalert2";
+import '~/util/swal/customSwal.css'
 
 interface BarcodeAddRequestProps {
     barcode: string;
@@ -13,8 +15,9 @@ function BarcodeAddRequest({ barcode, onClose }: BarcodeAddRequestProps) {
     const [loading, setLoading] = useState(false);
 
     const handleConfirm = async () => {
-        console.log(`상품 요청 전송: ${barcode}`);
+        console.log(`Sending product request: ${barcode}`);
         setLoading(true);
+        onClose();
 
         const dto: InquiryRequestDTO = {
             content: `상품 추가 요청: ${barcode}`,
@@ -24,10 +27,30 @@ function BarcodeAddRequest({ barcode, onClose }: BarcodeAddRequestProps) {
 
         try {
             await createInquiry(dto); // 문의글 생성 API 호출
-            alert("상품 추가 요청이 정상적으로 전송되었습니다.");
+            await Swal.fire({
+                title: "Product addition request has been successfully submitted.",
+                icon: "success",
+                confirmButtonText: "OK",
+                customClass: {
+                    popup: "custom-popup",
+                    title: "custom-title",
+                    actions: "custom-actions",
+                    confirmButton: "custom-confirm-button",
+                },
+            });
         } catch (err) {
-            console.error("상품 추가 요청 중 오류:", err);
-            alert("상품 추가 요청에 실패했습니다.");
+            console.error("Error submitting product addition request:", err);
+            await Swal.fire({
+                title: "Failed to submit product addition request.",
+                icon: "error",
+                confirmButtonText: "OK",
+                customClass: {
+                    popup: "custom-popup",
+                    title: "custom-title",
+                    actions: "custom-actions",
+                    confirmButton: "custom-confirm-button",
+                },
+            });
         } finally {
             setLoading(false);
             onClose();
@@ -41,8 +64,8 @@ function BarcodeAddRequest({ barcode, onClose }: BarcodeAddRequestProps) {
 
     return (
         <ConfirmModalComponent
-            message={`바코드 번호: ${barcode}\n상품 정보가 없습니다.\n바코드 번호를 다시 한 번 확인해주세요!\n\n관리자에게 추가 요청하시겠습니까?`}
-            confirmText={loading ? "처리 중..." : "Yes"}
+            message={`Barcode: ${barcode}\nNo product information found.\n\nWould you like to request the product to be added?`}
+            confirmText={loading ? "Processing..." : "Yes"}
             cancelText="No"
             onConfirm={handleConfirm}
             onCancel={handleCancel}

@@ -22,7 +22,7 @@ export default function ConfirmModalComponent({
         .modal-content {
           width: 90%;
           max-width: 500px;
-          padding: 2rem 1.5rem;
+          padding: 3rem 2rem;
           border-radius: 1rem;
           box-shadow: 0 10px 25px rgba(0,0,0,0.2);
           background: white;
@@ -32,21 +32,21 @@ export default function ConfirmModalComponent({
         .modal-message {
          font-weight: 600;
          color: #2d3748;
-         line-height: 1.6;
-         font-size: 1.125rem;
-         white-space: pre-line; /* \\n을 줄바꿈으로 처리 */
+         line-height: 2;
+         font-size: 1.5rem;
+         white-space: pre-line;
        }
         .modal-buttons {
-          margin-top: 1.5rem;
+          margin-top: 2rem;
           display: flex;
           gap: 1rem;
         }
         .modal-button {
           flex: 1;
-          padding: 0.75rem 0;
-          border-radius: 0.5rem;
-          font-weight: 600;
-          font-size: 1rem;
+          padding: 1rem 0;
+          border-radius: 0.75rem;
+          font-weight: 700;
+          font-size: 1.25rem;
           cursor: pointer;
           border: none;
           transition: background-color 0.2s;
@@ -65,29 +65,30 @@ export default function ConfirmModalComponent({
         .cancel-button:hover {
           background-color: #dc2626;
         }
+
         @media (orientation: portrait) {
           .modal-content {
             max-width: 95vw;
-            padding: 1.5rem 1rem;
+            padding: 2.5rem 1.5rem;
           }
           .modal-message {
-            font-size: 0.9rem;
+            font-size: 1.2rem;
           }
           .modal-button {
-            font-size: 0.875rem;
-            padding: 0.5rem 0;
+            font-size: 1rem;
+            padding: 0.75rem 0;
           }
         }
       `}</style>
 
-            <div className="fixed inset-0 z-50 flex items-center justify-center modal-container" onClick={onCancel} >
-                <div className="modal-content" onClick={(e) => e.stopPropagation()} >
+            <div className="fixed inset-0 z-50 flex items-center justify-center modal-container" onClick={onCancel}>
+                <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                     <p className="modal-message">{message}</p>
                     <div className="modal-buttons">
-                        <button onClick={onConfirm} className="modal-button confirm-button" >
+                        <button onClick={onConfirm} className="modal-button confirm-button">
                             {confirmText}
                         </button>
-                        <button onClick={onCancel} className="modal-button cancel-button" >
+                        <button onClick={onCancel} className="modal-button cancel-button">
                             {cancelText}
                         </button>
                     </div>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { TagDTO } from "~/types/tag";
-import {getAllTags} from "~/api/tagsAPI";
+import {getAllTags} from "~/api/tags/tagsAPI";
 import {useNavigate} from "react-router";
 
 export function useGetAllTags() {

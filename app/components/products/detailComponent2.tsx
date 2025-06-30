@@ -20,7 +20,7 @@ export default function DetailComponent2({ product, isLoading, isError }: Props)
     if (isError || !product) {
         return (
             <p className="text-center p-4 text-red-500 text-base sm:text-lg">
-                상품 정보를 불러오지 못했습니다.
+                Failed to load product information.
             </p>
         );
     }
@@ -28,7 +28,7 @@ export default function DetailComponent2({ product, isLoading, isError }: Props)
     if (product.isDelete) {
         return (
             <div className="p-4 text-center text-gray-500">
-                삭제된 상품입니다.
+                This product has been deleted.
             </div>
         );
     }
@@ -49,7 +49,7 @@ export default function DetailComponent2({ product, isLoading, isError }: Props)
             // 롤백
             setLiked(liked);
             setCount((prev) => (newLiked ? prev - 1 : prev + 1));
-            console.error("좋아요 요청 실패", error);
+            console.error("Failed to toggle like", error);
         }
     };
 

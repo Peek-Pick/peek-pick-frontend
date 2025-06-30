@@ -5,28 +5,17 @@ import { Info } from "lucide-react";
 import Swal from "sweetalert2";
 import '~/util/swal/customAISwal.css';
 import { useState } from "react";
+import {useTranslation} from "react-i18next";
 
 interface Props {
     aiReview: aiReviewDTO;
 }
 
 export default function AISummarySection({ aiReview }: Props) {
-    const [isNegative, setIsNegative] = useState(false);
+    // 국제화 적용
+    const { t } = useTranslation();
 
-    const handleInfoClick = () => {
-        Swal.fire({
-            title: 'What is AI Review Summary?',
-            icon: 'info',
-            text: 'Ask GPT if you have any questions.',
-            confirmButtonText: "OK",
-            customClass: {
-                popup: 'custom-popup',
-                title: 'custom-title',
-                actions: 'custom-actions',
-                confirmButton: 'custom-confirm-button',
-            }
-        });
-    };
+    const [isNegative, setIsNegative] = useState(false);
 
     return (
         <div className="relative">
@@ -42,14 +31,7 @@ export default function AISummarySection({ aiReview }: Props) {
                         />
                     </span>
                     <p className="text-sm font-semibold text-gray-800 flex items-center gap-1">
-                        AI Summarized It!
-                        <button
-                            onClick={handleInfoClick}
-                            aria-label="View AI review summary information"
-                            className="text-gray-400 hover:text-gray-600 transition-colors text-lg leading-none select-none mt-0.5"
-                        >
-                            <Info className="w-4 h-4" />
-                        </button>
+                        {t('aiSummaryTitle')}
                     </p>
                 </div>
 
@@ -72,7 +54,7 @@ export default function AISummarySection({ aiReview }: Props) {
                         }`}
                         onClick={() => setIsNegative(false)}
                     >
-                        Positive Review
+                        {t('positiveReview')}
                     </button>
                     <button
                         className={`w-1/2 py-2 text-sm font-medium transition-colors ${
@@ -82,7 +64,7 @@ export default function AISummarySection({ aiReview }: Props) {
                         }`}
                         onClick={() => setIsNegative(true)}
                     >
-                        Negative Review
+                        {t('negativeReview')}
                     </button>
                 </div>
 

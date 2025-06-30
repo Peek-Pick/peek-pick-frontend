@@ -11,6 +11,7 @@ import HiddenOrNot from "~/components/reviews/effect/hiddenOrNot";
 import {TranslatingLoader} from "~/components/reviews/effect/animatedTypingText";
 import {translateReview} from "~/api/reviews/reviewTranslateAPI";
 import ImageModalComponent from "~/components/common/ImageModalComponent";
+import {useTranslation} from "react-i18next";
 
 interface PreviewProps {
     barcode: string;
@@ -18,6 +19,9 @@ interface PreviewProps {
 }
 
 export default function PreviewComponent({ barcode, reviewNum }: PreviewProps) {
+    // 국제화 적용
+    const { t } = useTranslation();
+
     const navigate = useNavigate()
 
     const [productId, setProductId] = useState<number | null>(null);
@@ -38,11 +42,11 @@ export default function PreviewComponent({ barcode, reviewNum }: PreviewProps) {
     });
 
     if (isLoading)
-        return <p className="text-center p-4 text-base sm:text-lg">Loading...</p>;
+        return <p className="text-center p-4 text-base sm:text-lg">{t('reviewLoading')}</p>;
     if (isError)
-        return<p className="text-center p-4 text-red-500 text-base sm:text-lg">Failed to load review data.</p>
+        return<p className="text-center p-4 text-red-500 text-base sm:text-lg">{t('reviewLoadError')}</p>
     if (!data || data.length === 0)
-        return <p className="text-center p-4 text-gray-500 text-base sm:text-lg">No reviews have been written yet.</p>;
+        return <p className="text-center p-4 text-gray-500 text-base sm:text-lg">{t('reviewEmptyError')}</p>;
 
     return (
         <div>
@@ -52,13 +56,13 @@ export default function PreviewComponent({ barcode, reviewNum }: PreviewProps) {
                         {/* 헤더: 타이틀 + 링크 */}
                         <div className="flex justify-between items-center border-t border-b border-gray-200 py-4 mb-2">
                            <span>
-                                Total Reviews: <span className="text-red-500 font-semibold">{reviewNum}</span>
+                                {t('totalReview')}: <span className="text-red-500 font-semibold">{reviewNum}</span>
                             </span>
                             <button
                                 onClick={() => navigate(`/reviews/product/${barcode}`)}
                                 className="text-sm sm:text-sm text-gray-500 hover:text-gray-700 hover:font-semibold transition"
                             >
-                                View All &gt;
+                                {t('viewAll')} &gt;
                             </button>
                         </div>
 
@@ -79,6 +83,9 @@ interface ReviewItemProps {
 }
 
 function ReviewItem({ review, productId }: ReviewItemProps) {
+    // 국제화 적용
+    const { t } = useTranslation();
+
     const queryClient = useQueryClient();
 
     // 리뷰 신고 모달
@@ -160,7 +167,7 @@ function ReviewItem({ review, productId }: ReviewItemProps) {
                         disabled={isLoadingTranslation}
                         className={`flex items-center gap-1 text-xs px-3 py-1.5 rounded-full transition-all shadow-sm bg-blue-50 text-blue-500 hover:bg-blue-100`}>
                         <span>{isTranslated ? "↩" : "🌐"}</span>
-                        <span>{isTranslated ? "Original" : "Translate"}</span>
+                        <span>{isTranslated ? t('translateOriginalButton') : t('translateButton')}</span>
                     </button>
                 </div>
             </div>
@@ -228,7 +235,7 @@ function ReviewItem({ review, productId }: ReviewItemProps) {
                             key={tag.tagId}
                             className="bg-emerald-50 text-emerald-500 border border-emerald-200 text-sm sm:text-sm px-3 py-1 rounded-full"
                         >
-                        #{tag.tagName}
+                        #{t(`tags.${tag.tagName}`)}
                     </span>
                     ))}
                 </div>
@@ -246,7 +253,7 @@ function ReviewItem({ review, productId }: ReviewItemProps) {
                         : "bg-gray-100 text-gray-500 border-gray-200"} 
                         hover:shadow-sm transition-colors duration-200`}
                     >
-                    {review.isLiked ? '❤️' : '🤍'} Like {review.recommendCnt}
+                    {review.isLiked ? '❤️' : '🤍'} {t('likeReview')} {review.recommendCnt}
                 </button>
 
                 {/* 신고하기 버튼 */}
@@ -254,7 +261,7 @@ function ReviewItem({ review, productId }: ReviewItemProps) {
                     onClick={openReportModal}
                     className="text-red-500 hover:text-red-600 transition text-sm sm:text-sm duration-200"
                 >
-                    Report
+                    {t('reportReview')}
                 </button>
 
                 {/* 하트 이펙트 - 반드시 relative 컨테이너 안에서 렌더 */}

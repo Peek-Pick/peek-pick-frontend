@@ -3,6 +3,7 @@ import { reportReview } from "~/api/reviews/reviewAPI";
 import { useState } from "react";
 import Swal from "sweetalert2"
 import '~/util/swal/customReportSwal.css'
+import {useTranslation} from "react-i18next";
 
 export enum ReportReason {
     POLITICS = "POLITICS",
@@ -11,20 +12,21 @@ export enum ReportReason {
     PROFANITY = "PROFANITY",
 }
 
-export const ReportReasonDescriptions: Record<ReportReason, string> = {
-    [ReportReason.POLITICS]: "Political content",
-    [ReportReason.HATE]: "Hate speech",
-    [ReportReason.DEFAMATION]: "Defamation",
-    [ReportReason.PROFANITY]: "Inappropriate language",
-};
-
 export function useReviewReport(reviewId: number) {
+    const { t } = useTranslation(); // ✅ useTranslation은 여기서 사용해야 함
     const [selectedReason, setSelectedReason] = useState<ReportReason | "">("");
+
+    const ReportReasonDescriptions: Record<ReportReason, string> = {
+        [ReportReason.POLITICS]: t("reportReasons.POLITICS"),
+        [ReportReason.HATE]: t("reportReasons.HATE"),
+        [ReportReason.DEFAMATION]: t("reportReasons.DEFAMATION"),
+        [ReportReason.PROFANITY]: t("reportReasons.PROFANITY"),
+    };
 
     const reportMutation = useMutation({
         mutationFn: () => {
             Swal.fire({
-                title: "Submitting report...",
+                title: t('submittingReport'),
                 allowOutsideClick: false,
                 allowEscapeKey: false,
                 didOpen: () => {
@@ -45,9 +47,9 @@ export function useReviewReport(reviewId: number) {
         },
         onSuccess: () => {
             Swal.fire({
-                title: "Report submitted successfully",
+                title: t('submittingReportSuccess'),
                 icon: "success",
-                confirmButtonText: "OK",
+                confirmButtonText: t('confirmOKButtonText'),
                 customClass: {
                     popup: 'custom-popup',
                     title: 'custom-title',
@@ -58,9 +60,9 @@ export function useReviewReport(reviewId: number) {
         },
         onError: () => {
             Swal.fire({
-                title: "You have already reported this review",
+                title: t('submittingReportFail'),
                 icon: "warning",
-                confirmButtonText: "OK",
+                confirmButtonText: t('confirmOKButtonText'),
                 customClass: {
                     popup: 'custom-popup',
                     title: 'custom-title',
@@ -80,13 +82,13 @@ export function useReviewReport(reviewId: number) {
         }, {});
 
         const { value: selected } = await Swal.fire({
-            title: "Select a reason for reporting",
+            title: t('selectReportReason'),
             input: "radio",
             inputOptions,
-            inputValidator: (v) => (v ? null : "Please select a reason."),
+            inputValidator: (v) => (v ? null : t('selectReportReasonConfirm')),
             showCancelButton: true,
-            confirmButtonText: "Submit Report",
-            cancelButtonText: "Cancel",
+            confirmButtonText: t('submittingReportButton'),
+            cancelButtonText: t('cancelButtonText'),
             customClass: {
                 popup: "custom-popup",
                 title: "custom-title",

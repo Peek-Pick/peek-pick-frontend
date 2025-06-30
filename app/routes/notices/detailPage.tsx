@@ -25,11 +25,11 @@ export default function NoticeDetailPage() {
     if (error)
         return (
             <div className="p-4 text-red-500">
-                조회 중 오류가 발생했습니다.
+                An error occurred while fetching the notice.
             </div>
         );
     if (!notice)
-        return <div className="p-4">존재하지 않는 공지사항입니다.</div>;
+        return <div className="p-4">The notice does not exist.</div>;
 
     return (
         <div className="bg-gray-50 flex justify-center pb-20">
@@ -40,9 +40,9 @@ export default function NoticeDetailPage() {
                 <div className="mt-10 flex justify-end">
                     <button
                         onClick={() => navigate(-1)}
-                        className="bg-white border border-gray-300 text-gray-700 text-sm px-4 py-2 rounded shadow-sm hover:bg-gray-100 transition"
+                        className="px-4 py-2 rounded-md bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-semibold shadow-sm border border-white transition"
                     >
-                        목록으로
+                        Back to List
                     </button>
                 </div>
             </div>
