@@ -50,8 +50,14 @@ function AdminUsersListPage() {
     // userStatus 핸들러
     const handleUserStatusChange = (value: string) => {
         setUserStatus(value);
-        setSearchParamsUrl({category, keyword, userStatus: value, social: social.toString(), page: "0"});
         setPage(0);
+        setSearchParamsUrl({
+            category,
+            keyword,
+            userStatus: value,
+            social: social.toString(),
+            page: "0"
+        });
     };
 
     // social 체크박스 핸들러
@@ -68,18 +74,20 @@ function AdminUsersListPage() {
         setPage(0);
     };
 
-    // 페이지 핸들링링
+    // 페이지 핸들링
     const handlePage = (page: number) => {
         setSearchParamsUrl({category, keyword, social: social.toString(), page: page.toString()})
         setPage(page);
     };
 
-    // 유저 불러오기기
+    // 유저 불러오기
     const { data, isLoading, isError } = useQuery<PagingResponse<UsersListDTO>>({
         queryKey: ["adminUserList", page, category, keyword, userStatus, social ],
         queryFn: () => getUserList(page, category, keyword, userStatus, social),
         // staleTime: 5 * 60 * 1000,
     });
+
+    console.log(data?.content)
 
     return (
         <div>

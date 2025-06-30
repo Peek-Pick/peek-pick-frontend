@@ -1,5 +1,6 @@
 import axios, { AxiosError, type AxiosRequestConfig, type AxiosResponse } from "axios";
 import { refreshAccessToken } from "~/api/auth/authAPI";
+import type { CustomAxiosRequestConfig } from "~/types/axios";
 
 // snake_case → camelCase 변환
 const toCamel = (s: string) =>
@@ -69,8 +70,15 @@ instance.interceptors.response.use(
                     .then(() => processQueue(null))
                     .catch((err) => {
                         processQueue(err);
-                        if (typeof window !== "undefined") {
-                            window.location.href = "/login";
+
+                        const originalRequest = error.config as CustomAxiosRequestConfig;
+
+                        // ✅ 예외로 지정된 요청은 로그인 리다이렉트 생략
+                        // ✅ 여기서는 originalRequest를 그대로 쓰면서 allowAnonymous 체크
+                        if (!originalRequest.meta?.allowAnonymous) {
+                            if (typeof window !== "undefined") {
+                                window.location.href = "/login";
+                            }
                         }
                     })
                     .finally(() => {
