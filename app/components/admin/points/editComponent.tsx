@@ -37,7 +37,7 @@ export default function EditComponent({ idNumber, data }: Props) {
     // 최초 로딩 시 판매 중단 상태 세팅
     useEffect(() => {
         if (!data) return;
-        setIsDeleted(Boolean(data.isHidden));  // isHidden이 true면 판매 중단 상태
+        setIsDeleted(Boolean(data.hidden));  // isHidden이 true면 판매 중단 상태
     }, [data]);
 
     // 삭제 뮤테이션
