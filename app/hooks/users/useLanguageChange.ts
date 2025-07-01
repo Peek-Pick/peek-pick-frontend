@@ -1,36 +1,33 @@
 import { useMutation } from "@tanstack/react-query";
 import Swal from "sweetalert2";
-import '~/util/swal/customSwal.css';
+import '~/util/swal/customReportSwal.css';
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export enum Language {
-    EN = "en",
-    KO = "ko",
-    ES = "es",
-    JP = "ja",
+    en = "en",
+    ko = "ko",
+    ja = "ja",
 }
 
 export function useLanguageChange() {
     const { i18n, t } = useTranslation();
     const [selectedLanguage, setSelectedLanguage] = useState<Language | "">("");
 
-    const LanguageDescriptions: Record<Language, string> = {
-        [Language.EN]: "English",
-        [Language.KO]: "한국어",
-        [Language.ES]: "Español",
-        [Language.JP]: "日本語",
+    const languageLabels: Record<Language, string> = {
+        [Language.ko]: "한국어 (KR)",
+        [Language.ja]: "日本語 (JP)",
+        [Language.en]: "English (US)",
     };
 
     const changeMutation = useMutation({
         mutationFn: async () => {
-            // 실제 서버로 언어 변경 요청이 있다면 여기에 추가
             await i18n.changeLanguage(selectedLanguage || "en");
         },
         onSuccess: () => {
             Swal.fire({
-                title: t("language.successTitle"),
-                text: t("language.successMessage"),
+                title: t('languageSelectGuide'),
+                text: t("languageChangeSuccess"),
                 icon: "success",
                 confirmButtonText: "OK",
                 customClass: {
@@ -40,45 +37,29 @@ export function useLanguageChange() {
                     confirmButton: 'custom-confirm-button',
                 },
             });
-        },
-        onError: () => {
-            Swal.fire({
-                title: t("language.errorTitle"),
-                text: t("language.errorMessage"),
-                icon: "error",
-                confirmButtonText: "OK",
-                customClass: {
-                    popup: 'custom-popup',
-                    title: 'custom-title',
-                    actions: 'custom-actions',
-                    confirmButton: 'custom-confirm-button',
-                },
-            });
-        },
+        }
     });
 
-    const openChangeModal = async () => {
-        const inputOptions = Object.entries(LanguageDescriptions).reduce<
-            Record<string, string>
-        >((acc, [key, value]) => {
-            acc[key] = value;
+    const openLanguageModal = async () => {
+        const inputOptions = Object.entries(languageLabels).reduce<Record<string, string>>((acc, [key, label]) => {
+            acc[key] = label;
             return acc;
         }, {});
 
         const { value: selected } = await Swal.fire({
-            title: t("language.selectTitle"),
+            title: t("languageSelectGuide"),
             input: "radio",
             inputOptions,
-            inputValidator: (v) => (v ? null : t("language.validation")),
+            inputValidator: (v) => v ? null : t("selectLanguageConfirm"),
             showCancelButton: true,
-            confirmButtonText: t("language.confirmButton"),
-            cancelButtonText: t("language.cancelButton"),
+            confirmButtonText: t("confirmOKButtonText"),
+            cancelButtonText: t("cancelButtonText"),
             customClass: {
-                popup: "custom-popup",
-                title: "custom-title",
-                actions: "custom-actions",
-                confirmButton: "custom-confirm-button",
-                cancelButton: "custom-cancel-button",
+                popup: 'custom-popup',
+                title: 'custom-title',
+                actions: 'custom-actions',
+                confirmButton: 'custom-confirm-button',
+                cancelButton: 'custom-cancel-button',
             },
             buttonsStyling: false,
         });
@@ -89,5 +70,5 @@ export function useLanguageChange() {
         }
     };
 
-    return { openChangeModal };
+    return { openLanguageModal };
 }

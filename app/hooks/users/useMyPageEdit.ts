@@ -3,8 +3,11 @@ import '~/util/swal/customSwal.css'
 import Swal from "sweetalert2";
 import { updateMyPage } from "~/api/users/myPageAPI";
 import { useQueryClient } from "@tanstack/react-query";
+import {useTranslation} from "react-i18next";
 
 export const useMyPageEdit = () =>{
+    // 국제화 적용
+    const { t } = useTranslation();
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -54,9 +57,9 @@ export const useMyPageEdit = () =>{
             // console.log("file:", profileImg);
 
             await Swal.fire({
-                title: "Profile updated successfully",
+                title: t('updatingProfileSuccess'),
                 icon: "success",
-                confirmButtonText: "OK",
+                confirmButtonText: t('confirmOKButtonText'),
                 customClass: {
                     popup: 'custom-popup',
                     title: 'custom-title',
@@ -72,9 +75,9 @@ export const useMyPageEdit = () =>{
             setError(e.response?.data?.message || "Failed to update profile.");
 
             Swal.fire({
-                title: "Failed to update profile",
+                title: t('updatingProfileFail'),
                 icon: "warning",
-                confirmButtonText: "OK",
+                confirmButtonText: t('confirmOKButtonText'),
                 customClass: {
                     popup: 'custom-popup',
                     title: 'custom-title',

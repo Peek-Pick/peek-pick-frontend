@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import  {ReportReason, ReportReasonDescriptions} from "~/hooks/reviews/useReviewReport";
+import  {ReportReason } from "~/hooks/reviews/useReviewReport";
 import LoadingComponent from "~/components/common/loadingComponent";
 
 export interface AdminReportListProps {

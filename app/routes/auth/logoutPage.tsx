@@ -2,9 +2,11 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '~/api/auth/authAPI';
 import {LogoutLoading} from "~/util/loading/logoutLoading";
+import {useTranslation} from "react-i18next";
 
 const LogoutPage = () => {
   const navigate = useNavigate();
+  const { i18n } = useTranslation();
 
   useEffect(() => {
     const doLogout = async () => {
@@ -17,6 +19,9 @@ const LogoutPage = () => {
           logout().catch((err) => console.error('서버 로그아웃 실패:', err)),
           delay
         ]);
+
+        // 언어 설정 초기화 (영어로)
+        i18n.changeLanguage("en");
       } finally {
         // 클라이언트 상태 초기화
         localStorage.removeItem('token');

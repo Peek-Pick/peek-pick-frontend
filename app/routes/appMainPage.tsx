@@ -8,23 +8,14 @@ import {MainLoading} from "~/util/loading/mainLoading";
 import {useAuthContext} from "~/hooks/auth/useAuthContext";
 import RecommendSkeleton from "~/components/main/RecommendSkeleton";
 import {useTranslation} from "react-i18next";
-import {useQuery} from "@tanstack/react-query";
-import {getMyPage, getMyPageEdit} from "~/api/users/myPageAPI";
 
 function appMainPage() {
-
     // 국제화 적용
     const { i18n } = useTranslation();
 
     const [showLoading, setShowLoading] = useState(true);
 
     const { isLoggedIn, isLoading:checkingLogged } = useAuthContext();
-
-    const { data: user} = useQuery({
-        queryKey: ['userNationality'],
-        queryFn: getMyPageEdit,
-        staleTime: 1000 * 60 * 5,
-    });
 
     // 세션 스토리지를 체크해서 최초 방문이면 스피너 보여주기
     useEffect(() => {
@@ -46,13 +37,6 @@ function appMainPage() {
             }
         }
     }, []);
-
-    // 사용자 언어 설정
-    // useEffect(() => {
-    //     if (user && user.nationality) {
-    //         i18n.changeLanguage(user.nationality);
-    //     }
-    // }, [user, i18n]);
 
     // 로딩 상태일 때 스피너 표시
     if (showLoading) {

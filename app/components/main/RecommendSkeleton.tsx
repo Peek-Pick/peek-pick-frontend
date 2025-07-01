@@ -1,10 +1,13 @@
 import { useNavigate } from "react-router-dom";
+import {useTranslation} from "react-i18next";
 
 interface headerProps {
     msg: string,
 }
 
 export default function RecommendSkeleton({msg}:headerProps) {
+    // 국제화 적용
+    const { t } = useTranslation();
 
     const navigate = useNavigate();
 
@@ -25,13 +28,13 @@ export default function RecommendSkeleton({msg}:headerProps) {
                     style={{ backgroundColor: "rgba(180, 180, 180, 0.3)" }}
                 >
                     <p className="text-gray-700 text-m mb-4">
-                        👋 Please log in to view.
+                        👋 {t('pleaseLoginToView')}
                     </p>
                     <button
                         onClick={() => navigate("/login")}
                         className="px-4 py-2 bg-amber-300 text-white rounded transition"
                     >
-                        Go to Login
+                        {t('goToLogin')}
                     </button>
                 </div>
 
