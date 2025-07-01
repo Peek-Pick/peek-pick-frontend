@@ -8,6 +8,7 @@ import { useNavigate } from "react-router";
 
 import type { MypageData } from "~/types/users";
 import {useAccountDelete} from "~/hooks/users/useAccountDelete";
+import {useLanguageChange} from "~/hooks/users/useLanguageChange";
 
 // 타입 정의
 interface MyPageProps {
@@ -21,6 +22,9 @@ export default function MyPageComponent({ myData }:MyPageProps) {
     // 삭제 모달 불러오기
     const { openDeleteModal } = useAccountDelete();
 
+    //  언어 바꾸기 모달 부르기
+    const { openChangeModal } = useLanguageChange();
+
     // 동적 quickStats
     const quickStats = [
         { icon: <FaHeart className="text-pink-500 text-2xl mb-2" />, label: 'Wishlist Items', value: myData.wishlistCount, to:'/mypage/favorites' },
@@ -30,7 +34,7 @@ export default function MyPageComponent({ myData }:MyPageProps) {
     ];
 
     const buttons = [
-        { icon: IoLanguage, label: 'Language Settings', to: '' },
+        { icon: IoLanguage, label: 'Language Settings', onClick: openChangeModal },
         { icon: FaQuestionCircle, label: 'Support', to: '/inquiries/list' },
         { icon: FaBell, label: 'Notifications', to: '' },
         { icon: FaUserShield, label: 'Privacy Policy', to: '' },

@@ -20,7 +20,7 @@ function AdminUsersListPage() {
     const initialCategory = searchParamsUrl.get("category") || "all";
     const initialKeyword = searchParamsUrl.get("keyword") || "";
     const initialPage = Number(searchParamsUrl.get("page") || "0");
-    const initialStatus = searchParamsUrl.get("status") || "";
+    const initialStatus = searchParamsUrl.get("userStatus") || "";
     const initialSocial = searchParamsUrl.get("social") === "true";
 
     // 상태 관리 (카테고리, 키워드, 페이지, userStatus, 소셜)
@@ -36,7 +36,7 @@ function AdminUsersListPage() {
         const newCategory = searchParamsUrl.get("category") || "all";
         const newKeyword = searchParamsUrl.get("keyword") || "";
         const newPage = Number(searchParamsUrl.get("page") || "0");
-        const newUserStatus = searchParamsUrl.get("status") || "";
+        const newUserStatus = searchParamsUrl.get("userStatus") || "";
         const newSocial = searchParamsUrl.get("social") === "true";
 
         setCategory(newCategory);
@@ -51,6 +51,7 @@ function AdminUsersListPage() {
     const handleUserStatusChange = (value: string) => {
         setUserStatus(value);
         setPage(0);
+        // 💡 여기서 기존 상태를 쓰는 대신, 직접 새 값으로 반영
         setSearchParamsUrl({
             category,
             keyword,
@@ -87,7 +88,9 @@ function AdminUsersListPage() {
         // staleTime: 5 * 60 * 1000,
     });
 
-    console.log(data?.content)
+    // console.log(data?.content)
+    // console.log("QueryKey =", page, category, keyword, userStatus, social);
+    console.log(userStatus)
 
     return (
         <div>
