@@ -48,11 +48,11 @@ function appMainPage() {
     }, []);
 
     // 사용자 언어 설정
-    useEffect(() => {
-        if (user && user.nationality) {
-            i18n.changeLanguage(user.nationality);
-        }
-    }, [user, i18n]);
+    // useEffect(() => {
+    //     if (user && user.nationality) {
+    //         i18n.changeLanguage(user.nationality);
+    //     }
+    // }, [user, i18n]);
 
     // 로딩 상태일 때 스피너 표시
     if (showLoading) {
@@ -61,12 +61,11 @@ function appMainPage() {
         );
     }
 
-    console.log(isLoggedIn)
+    // console.log(isLoggedIn)
     return (
         <div>
             <CarouselComponent/>
             <MenuGrid />
-
 
             {checkingLogged ? (
                 <>
