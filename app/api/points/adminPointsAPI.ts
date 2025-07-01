@@ -6,6 +6,7 @@ import axiosInstanceAdmin from "~/instance/axiosInstanceAdmin";
 // 쿠폰 단건 조회
 export async function readCoupon(pointstoreId: number | null): Promise<PointStoreDTO> {
     const response = await axiosInstanceAdmin.get(`/admin/points/${pointstoreId}`);
+
     return response.data;
 }
 
