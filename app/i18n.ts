@@ -4,10 +4,11 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 
 // 번역 리소스
 const resources = {
-    US: {
+    en: {
         translation: {
             // 공용
             "postedOn": "Posted on",
+            "moreButton": "More",
 
             //swal 공용
             "confirmOKButtonText": "OK",
@@ -115,13 +116,90 @@ const resources = {
                 "FLAVOR": "FLAVOR",
                 "OTHER": "OTHER",
                 "HEALTH": "HEALTH"
-            }
+            },
+
+            // 마이페이지
+            "myPagePointStore":"Point Store",
+            "myPageEditProfile": "Edit Profile",
+            "myPageWishlistItems": "Wishlist Items",
+            "myPageMyReviews": "My Reviews",
+            "myPageCoupons": "Coupons",
+            "myPageBarcodeHistory": "Barcode History",
+            "myPageLanguageSettings": "Language Settings",
+            "myPageSupport": "Support",
+            "myPageNotifications": "Notifications",
+            "myPagePrivacy Policy": "Privacy Policy",
+            "myPageTermsOfService": "Terms of Service",
+            "myPageLicenses": "Licenses",
+            "myPageDeleteAccount": "Delete Account",
+            "myPageLogout": "Logout",
+            "languageSelectGuide": "Language Select",
+            "selectLanguageConfirm": "Please select a language.",
+            "languageChangeSuccess": "Language changed successfully.",
+
+            // 마이페이지 수정
+            "myPageEdit": {
+                "account": "Account Information",
+                "profileInfo": "Profile Information",
+                "tags": "Interests / Tags",
+                "changePassword": "Change Password",
+                "allTags": "View All Tags",
+                "selectedTags": "Selected Tags",
+                "noTags": "No tags selected.",
+                "addTags": "Add Tags ▼",
+                "hideTags": "Hide Tags ▲"
+            },
+            "form": {
+                "email": "Email",
+                "currentPassword": "Current Password",
+                "newPassword": "New Password",
+                "checkPassword": "Confirm Password",
+                "ifSocial": "Password changes are not available for social accounts.",
+                "enterCurrentPassword": "Enter your current password",
+                "enterNewPassword": "Enter a new password",
+                "enterNewPasswordRe": "Re-enter your new password",
+                "passwordCheck": "Verify Password",
+                "passwordCheckSuccess": "Password verified successfully.",
+                "nickname": "Nickname",
+                "nicknameAvailable": "The nickname is available.",
+                "checking": "Checking...",
+                "gender": "Gender",
+                "nationality": "Nationality",
+                "birthDate": "Date of Birth",
+                "save": "Save"
+            },
+
+            // useMyPageEdit
+            "updatingProfileSuccess": "Profile updated successfully.",
+            "updatingProfileFail": "Failed to update profile.",
+
+            // useAccountDelete
+            "deletingUserSuccess": "Your account has been successfully deleted.",
+            "deletingUserFail": "Failed to delete account.",
+            "deletingUserConfirm": "Are You Sure You Want to Delete Your Account?",
+            "deletingUserWarning": "This action is permanent and cannot be undone.",
+
+            // 메인
+            "mainBarcode": "Barcode",
+            "mainWishList": "WishList",
+            "mainEvent": "Event",
+            "mainNearbyStores": "Nearby Stores",
+            "mainAIChatBot": "AI ChatBot",
+            "mainRanking": "Ranking",
+            "mainTopRanking": "Top Ranking",
+            "mainTopPicksForYou": "Top Picks For You",
+            "pleaseLoginToView": "Please log in to view.",
+            "goToLogin": "Go to Login",
+            "mainBottomHome": "HOME",
+            "mainBottomBarcode": "BARCODE",
+            "mainBottomSearch": "SEARCH",
         },
     },
-    KR: {
+    ko: {
         translation: {
             //공용
             "postedOn": "작성일",
+            "moreButton": "더보기",
 
             //swal 공용
             "confirmOKButtonText": "확인",
@@ -229,12 +307,89 @@ const resources = {
                 "FLAVOR": "풍미",
                 "OTHER": "기타",
                 "HEALTH": "건강"
-            }
+            },
+
+            // 마이페이지
+            "myPagePointStore":"포인트 상점",
+            "myPageEditProfile": "프로필 수정",
+            "myPageWishlistItems": "찜한 상품",
+            "myPageMyReviews": "내 리뷰",
+            "myPageCoupons": "쿠폰함",
+            "myPageBarcodeHistory": "바코드 내역",
+            "myPageLanguageSettings": "언어 설정",
+            "myPageSupport": "문의 사항",
+            "myPageNotifications": "알림",
+            "myPagePrivacyPolicy": "개인정보 처리방침",
+            "myPageTermsOfService": "이용 약관",
+            "myPageLicenses": "라이센스",
+            "myPageDeleteAccount": "계정 삭제",
+            "myPageLogout": "로그아웃",
+            "languageSelectGuide": "언어 설정",
+            "selectLanguageConfirm": "언어를 선택해 주세요.",
+            "languageChangeSuccess": "언어 설정 완료.",
+
+            // 마이페이지 수정
+            "myPageEdit": {
+                "account": "계정 정보",
+                "profileInfo": "프로필 정보",
+                "tags": "관심 태그",
+                "changePassword": "비밀번호 변경하기",
+                "allTags": "모든 태그 보기",
+                "selectedTags": "선택된 태그",
+                "noTags": "선택된 태그가 없습니다.",
+                "addTags": "태그 추가하기 ▼",
+                "hideTags": "태그 숨기기 ▲",
+            },
+            "form": {
+                "email": "이메일",
+                "currentPassword": "현재 비밀번호",
+                "newPassword": "새 비밀번호",
+                "checkPassword": "비밀번호 확인",
+                "ifSocial": "소셜 로그인은 비밀번호를 변경할 수 없습니다.",
+                "enterCurrentPassword": "현재 비밀번호를 입력하세요",
+                "enterNewPassword": "새 비밀번호를 입력하세요",
+                "enterNewPasswordRe": "새 비밀번호를 다시 입력하세요",
+                "passwordCheck": "비밀번호 확인하기",
+                "passwordCheckSuccess": "비밀번호가 확인되었습니다.",
+                "nickname": "닉네임",
+                "nicknameAvailable": "사용 가능한 닉네임입니다.",
+                "checking": "확인 중...",
+                "gender": "성별",
+                "nationality": "국적",
+                "birthDate": "생년월일",
+                "save": "저장하기"
+            },
+
+            // useMyPageEdit
+            "updatingProfileSuccess": "프로필 수정 완료.",
+            "updatingProfileFail": "프로필 수정 실패.",
+
+            // useAccountDelete
+            "deletingUserSuccess": "계정 삭제 완료.",
+            "deletingUserFail": "계정 삭제 실패.",
+            "deletingUserConfirm": "계정을 삭제하시겠습니까?",
+            "deletingUserWarning": "삭제하면 되돌릴 수 없습니다.",
+
+            // 메인
+            "mainBarcode": "바코드",
+            "mainWishList": "찜한 상품",
+            "mainEvent": "공지사항",
+            "mainNearbyStores": "편의점 찾기",
+            "mainAIChatBot": "AI 챗봇",
+            "mainRanking": "랭킹",
+            "mainTopRanking": "랭킹 상품",
+            "mainTopPicksForYou": "추천 상품",
+            "pleaseLoginToView": "로그인 후 확인 가능합니다.",
+            "goToLogin": "로그인하러 가기",
+            "mainBottomHome": "홈",
+            "mainBottomBarcode": "바코드",
+            "mainBottomSearch": "검색",
         },
     },
-    JP: {
+    ja: {
         translation: {
             "postedOn": "投稿日",
+            "moreButton": "もっと見る",
 
             "confirmOKButtonText": "確認",
             "confirmUpdateButtonText": "更新",
@@ -336,117 +491,86 @@ const resources = {
                 "FLAVOR": "風味",
                 "OTHER": "その他",
                 "HEALTH": "健康"
-            }
-        }
-    },
-    CN: {
-        translation: {
-            "postedOn": "发表于",
-
-            "confirmOKButtonText": "确认",
-            "confirmUpdateButtonText": "更新",
-            "confirmDeleteButtonText": "删除",
-            "cancelButtonText": "取消",
-
-            "reviewLoading": "加载中...",
-            "reviewLoadError": "加载评论数据失败。",
-            "reviewEmptyError": "尚未有评论。",
-            "submittingReview": "提交评论中...",
-            "submittingReviewSuccess": "评论提交成功。",
-            "submittingReviewFail": "评论提交失败。",
-            "submittingReviewCheck": "请输入评论内容。",
-            "reviewAddGuide": "您觉得这款产品怎么样？",
-            "reviewCommentGuide": "请留下真实的产品评价。",
-            "tagSelectGuide": "选择标签",
-            "addPhotoGuide": "添加照片",
-            "submittingReviewButton": "提交评论",
-            "submittingReviewButtonPending": "提交中...",
-            "updatingReview": "更新评论中...",
-            "updatingReviewSuccess": "评论更新成功。",
-            "updatingReviewFail": "评论更新失败。",
-            "updatingReviewConfirm": "确定要更新此评论吗？",
-            "updatingReviewWarning": "更新后无法恢复原内容。",
-            "deleteReviewConfirm": "确定要删除此评论吗？",
-            "deleteReviewWarning": "删除后无法恢复。",
-            "deletingReview": "删除评论中...",
-            "deletingReviewSuccess": "评论删除成功。",
-            "deletingReviewFail": "评论删除失败。",
-            "editPhotoGuide": "编辑照片",
-            "updateReviewButton": "更新评论",
-            "deleteReviewButton": "删除评论",
-            "detailReviewButton": "查看详情",
-            "totalReview": "总评论数",
-            "reportReview": "举报",
-            "viewAll": "查看全部",
-            "translateOriginalButton": "原文",
-            "translateButton": "翻译",
-            "translatingReview": "评论翻译中...",
-            "hiddenReviewGuide": "此评论已隐藏！",
-            "hiddenReviewShowButton": "仍要查看",
-            "sortReviewLatest": "最新",
-            "sortReviewLike": "点赞最多",
-
-            "aiSummaryTitle": "AI总结内容",
-            "positiveReview": "正面评论",
-            "negativeReview": "负面评论",
-
-            "reportReasons": {
-                "POLITICS": "政治内容",
-                "HATE": "仇恨言论",
-                "DEFAMATION": "诽谤",
-                "PROFANITY": "不当言论"
             },
-            "submittingReport": "提交举报中...",
-            "submittingReportSuccess": "举报提交成功。",
-            "submittingReportFail": "您已举报过此评论。",
-            "selectReportReason": "请选择举报原因",
-            "selectReportReasonConfirm": "请选择一个理由。",
-            "submittingReportButton": "提交举报",
-            "likeReview": "点赞",
-            "ratings": "评分",
 
-            "productLoadError": "加载商品数据失败。",
+            // 마이페이지
+            "myPagePointStore": "ストア",
+            "myPageEditProfile": "編集",
+            "myPageWishlistItems": "お気に入り",
+            "myPageMyReviews": "マイレビュー",
+            "myPageCoupons": "クーポン",
+            "myPageBarcodeHistory": "バーコード履歴",
+            "myPageLanguageSettings": "言語設定",
+            "myPageSupport": "お問い合わせ",
+            "myPageNotifications": "通知",
+            "myPagePrivacyPolicy": "プライバシーポリシー",
+            "myPageTermsOfService": "利用規約",
+            "myPageLicenses": "ライセンス",
+            "myPageDeleteAccount": "アカウント削除",
+            "myPageLogout": "ログアウト",
+            "languageSelectGuide": "言語設定",
+            "selectLanguageConfirm": "言語を選択してください。",
+            "languageChangeSuccess": "言語が変更されました。",
 
-            "tags": {
-                "SWEET": "甜",
-                "SAVORY": "鲜",
-                "SPICY": "辣",
-                "NUTTY": "坚果味",
-                "MILD": "清淡",
-                "BITTER": "苦",
-                "SOUR": "酸",
-                "CRISPY": "酥脆",
-                "CHEWY": "有嚼劲",
-                "MOIST": "湿润",
-                "SOFT": "柔软",
-                "TOUGH": "硬",
-                "DRY": "干燥",
-                "BUTTERY": "黄油味",
-                "CHEESY": "奶酪味",
-                "GARLICKY": "蒜香味",
-                "SMOKY": "烟熏味",
-                "RICH": "浓郁",
-                "CLEAN": "清爽",
-                "FILLING": "饱腹感",
-                "ADDICTIVE": "让人上瘾",
-                "GREASY": "油腻",
-                "LOW_CALORIE": "低热量",
-                "HIGH_PROTEIN": "高蛋白",
-                "LOW_SUGAR": "低糖",
-                "VEGETARIAN": "素食",
-                "VEGAN": "纯素",
-                "GLUTEN_FREE": "无麸质"
+
+            // 마이페이지 수정
+            "myPageEdit": {
+                "account": "アカウント情報",
+                "profileInfo": "プロフィール情報",
+                "tags": "興味・タグ",
+                "changePassword": "パスワードを変更する",
+                "allTags": "すべてのタグを見る",
+                "selectedTags": "選択されたタグ",
+                "noTags": "タグが選択されていません。",
+                "addTags": "タグを追加する ▼",
+                "hideTags": "タグを隠す ▲"
             },
-            "categories": {
-                "TASTE": "味道",
-                "TEXTURE": "口感",
-                "FLAVOR": "风味",
-                "OTHER": "其他",
-                "HEALTH": "健康"
-            }
+            "form": {
+                "email": "メールアドレス",
+                "currentPassword": "現在のパスワード",
+                "newPassword": "新しいパスワード",
+                "checkPassword": "パスワード確認",
+                "ifSocial": "ソーシャルログインではパスワードを変更できません。",
+                "enterCurrentPassword": "現在のパスワードを入力してください",
+                "enterNewPassword": "新しいパスワードを入力してください",
+                "enterNewPasswordRe": "新しいパスワードを再入力してください",
+                "passwordCheck": "パスワードを確認する",
+                "passwordCheckSuccess": "パスワードが確認されました。",
+                "nickname": "ニックネーム",
+                "nicknameAvailable": "使用可能なニックネームです。",
+                "checking": "確認中...",
+                "gender": "性別",
+                "nationality": "国籍",
+                "birthDate": "生年月日",
+                "save": "保存する"
+            },
+
+            // useMyPageEdit
+            "updatingProfileSuccess": "プロフィールを更新しました。",
+            "updatingProfileFail": "プロフィールの更新に失敗しました。",
+
+            // useAccountDelete
+            "deletingUserSuccess": "アカウントを削除しました。",
+            "deletingUserFail": "アカウントの削除に失敗しました。",
+            "deletingUserConfirm": "アカウントを削除しますか？",
+            "deletingUserWarning": "削除すると元に戻せません。",
+
+            // 메인
+            "mainBarcode": "コード",
+            "mainWishList": "お気に入り",
+            "mainEvent": "イベント",
+            "mainNearbyStores": "近く",
+            "mainAIChatBot": "AIチャット",
+            "mainRanking": "ランク",
+            "mainTopRanking": "人気商品",
+            "mainTopPicksForYou": "おすすめ商品",
+            "pleaseLoginToView": "ログイン後に表示されます.",
+            "goToLogin": "ログインページへ",
+            "mainBottomHome": "ホーム",
+            "mainBottomBarcode": "バーコード",
+            "mainBottomSearch": "検索"
         }
-    },
-    // ES, VN, TH, PH도 동일하게 `translation` 키를 채워주세요
+    }
 };
 
 i18n
@@ -454,7 +578,7 @@ i18n
     .use(initReactI18next)
     .init({
         resources,
-        fallbackLng: 'KR', // 기본 언어
+        fallbackLng: 'en', // 기본 언어
         interpolation: {
             escapeValue: false,
         },

@@ -5,6 +5,7 @@ import type { NoticeDetailDTO } from "~/types/notice";
 import NoticeDetailComponent from "~/components/notices/detailComponent";
 import LoadingComponent from "~/components/common/loadingComponent";
 import BottomNavComponent from "~/components/main/bottomNavComponent";
+import {NoticeLoading} from "~/util/loading/noticeLoading";
 
 export default function NoticeDetailPage() {
     const { id } = useParams<{ id: string }>();
@@ -21,7 +22,7 @@ export default function NoticeDetailPage() {
             .finally(() => setLoading(false));
     }, [id]);
 
-    if (loading) return <LoadingComponent isLoading />;
+    if (loading) return <NoticeLoading />;
     if (error)
         return (
             <div className="p-4 text-red-500">

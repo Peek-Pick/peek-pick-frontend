@@ -1,38 +1,41 @@
 import {useNavigate} from "react-router-dom";
+import {useTranslation} from "react-i18next";
 
 const MenuGrid: React.FC = () => {
+    // 국제화 적용
+    const { t } = useTranslation();
 
     const navigate = useNavigate();
 
     const menus = [
         {
             icon: '/icons/main_barcode.png',
-            label: 'Barcode',
+            label: t('mainBarcode'),
             to: '/barcode/scan',
         },
         {
             icon: '/icons/main_favorite.png',
-            label: 'WishList',
+            label: t('mainWishList'),
             to: '/mypage/favorites',
         },
         {
             icon: '/icons/main_event.png',
-            label: 'Event',
+            label: t('mainEvent'),
             to: '/notices/list',
         },
         {
             icon: '/icons/main_map.png',
-            label: 'Nearby Stores',
+            label: t('mainNearbyStores'),
             to: '/map',
         },
         {
             icon: '/icons/main_chatbot.png',
-            label: 'AI ChatBot',
+            label: t('mainAIChatBot'),
             to: '/chatbot',
         },
         {
             icon: '/icons/main_ranking.png',
-            label: 'Ranking',
+            label: t('mainRanking'),
             to: '/products/ranking',
         },
     ];

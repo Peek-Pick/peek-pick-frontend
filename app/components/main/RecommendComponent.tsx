@@ -4,8 +4,12 @@ import type { ProductListDTO, PageResponseCursor } from "~/types/products";
 import { getRecommendedProducts } from "~/api/products/productsAPI";
 import { Icon } from "@iconify/react";
 import {useEffect, useRef} from "react";
+import {useTranslation} from "react-i18next";
 
 export function RecommendComponent() {
+    // 국제화 적용
+    const { t } = useTranslation();
+
     const navigate = useNavigate();
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -44,12 +48,12 @@ export function RecommendComponent() {
     return (
         <section className="px-4 py-4 bg-white">
             <div className="flex justify-between items-center mb-3">
-                <h2 className="text-lg font-semibold">Top Picks for You</h2>
+                <h2 className="text-lg font-semibold">{t('mainTopPicksForYou')}</h2>
                 <button
                     onClick={() => navigate("/products/recommended")}
                     className="text-sm text-gray-800 hover:underline"
                 >
-                    More &gt;
+                    {t('moreButton')} &gt;
                 </button>
             </div>
 
