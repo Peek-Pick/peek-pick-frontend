@@ -19,6 +19,7 @@ import { TranslatingLoader } from "~/components/reviews/effect/animatedTypingTex
 import AISummarySection from "~/components/reviews/aiSummarySection";
 import AverageRatingSection from "~/components/reviews/averageRatingSection";
 import ImageModalComponent from "~/components/common/ImageModalComponent";
+import {useTranslation} from "react-i18next";
 
 export interface ReviewListComponentProps {
     aiReview?: aiReviewDTO;
@@ -39,15 +40,8 @@ export interface ReviewListComponentProps {
 
 export default function ProductListComponent({aiReview, productData, productId, reviewList, fetchNextPage, hasNextPage, isFetchingNextPage,
                                                  isLoading, isError, sortType, setSortType, productLoading, productError}: ReviewListComponentProps) {
-    if (isLoading || productLoading)
-        return <ReviewLoading />;
-    if (isError || productError|| !reviewList || !productData) {
-        return (
-            <p className="text-center p-4 text-red-500 text-base sm:text-lg">
-                Failed to load review data.
-            </p>
-        );
-    }
+    // 국제화 적용
+    const { t } = useTranslation();
 
     const queryClient = useQueryClient();
 
@@ -83,6 +77,16 @@ export default function ProductListComponent({aiReview, productData, productId, 
         }
     };
 
+    if (isLoading || productLoading)
+        return <ReviewLoading />;
+    if (isError || productError|| !reviewList || !productData) {
+        return (
+            <p className="text-center p-4 text-red-500 text-base sm:text-lg">
+                {t('reviewLoadError')}
+            </p>
+        );
+    }
+
     return (
         <div>
             <section className="relative">
@@ -117,7 +121,7 @@ export default function ProductListComponent({aiReview, productData, productId, 
                                     role="tab"
                                     aria-selected={sortType === "latest"}
                                 >
-                                    Latest
+                                    {t('sortReviewLatest')}
                                 </button>
                                 <button
                                     type="button"
@@ -128,7 +132,7 @@ export default function ProductListComponent({aiReview, productData, productId, 
                                     role="tab"
                                     aria-selected={sortType === "likes"}
                                 >
-                                    Most Liked
+                                    {t('sortReviewLike')}
                                 </button>
                             </nav>
                         </div>
@@ -160,6 +164,9 @@ interface ReviewItemProps {
 }
 
 function ReviewItem({review, productId}: ReviewItemProps) {
+    // 국제화 적용
+    const { t } = useTranslation();
+
     const queryClient = useQueryClient();
 
     // 숨김 리뷰 is_hidden
@@ -235,7 +242,7 @@ function ReviewItem({review, productId}: ReviewItemProps) {
                             disabled={isLoadingTranslation}
                             className={`flex items-center gap-1 text-xs px-3 py-1.5 rounded-full transition-all shadow-sm bg-blue-50 text-blue-500 hover:bg-blue-100`}>
                             <span>{isTranslated ? "↩" : "🌐"}</span>
-                            <span>{isTranslated ? "Original" : "Translate"}</span>
+                            <span>{isTranslated ? t('translateOriginalButton') : t('translateButton')}</span>
                         </button>
                     </div>
                 </div>
@@ -303,7 +310,7 @@ function ReviewItem({review, productId}: ReviewItemProps) {
                                 key={tag.tagId}
                                 className="bg-emerald-50 text-emerald-500 border border-emerald-200 text-sm sm:text-sm px-3 py-1 rounded-full"
                             >
-                        #{tag.tagName}
+                        #{t(`tags.${tag.tagName}`)}
                     </span>
                         ))}
                     </div>
@@ -321,7 +328,7 @@ function ReviewItem({review, productId}: ReviewItemProps) {
                             : "bg-gray-100 text-gray-500 border-gray-200"} 
                         hover:shadow-sm transition-colors duration-200`}
                     >
-                        {review.isLiked ? '❤️' : '🤍'} Like {review.recommendCnt}
+                        {review.isLiked ? '❤️' : '🤍'} {t('likeReview')} {review.recommendCnt}
                     </button>
 
                     {/* 신고하기 버튼 */}
@@ -329,7 +336,7 @@ function ReviewItem({review, productId}: ReviewItemProps) {
                         onClick={openReportModal}
                         className="text-red-500 hover:text-red-600 transition text-sm sm:text-sm duration-200"
                     >
-                        Report
+                        {t('reportReview')}
                     </button>
 
                     {/* 하트 이펙트 - 반드시 relative 컨테이너 안에서 렌더 */}

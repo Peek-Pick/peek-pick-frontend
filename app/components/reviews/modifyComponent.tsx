@@ -9,6 +9,7 @@ import TextareaAutosize from 'react-textarea-autosize';
 import { BackButton } from "~/util/button/FloatingActionButtons";
 import Swal from "sweetalert2"
 import '~/util/swal/customSwal.css'
+import {useTranslation} from "react-i18next";
 
 interface ModifyProps {
     review?: ReviewDetailDTO;
@@ -17,15 +18,8 @@ interface ModifyProps {
 }
 
 export default function ModifyComponent({ review, isLoading, isError }: ModifyProps ) {
-    if (isLoading)
-        return <ReviewLoading />;
-    if (isError || !review) {
-        return (
-            <p className="text-center p-4 text-red-500 text-base sm:text-lg">
-                Failed to load review data.
-            </p>
-        );
-    }
+    // 국제화 적용
+    const { t } = useTranslation();
 
     const formRef = useRef<HTMLFormElement>(null);
     const navigate = useNavigate();
@@ -94,7 +88,7 @@ export default function ModifyComponent({ review, isLoading, isError }: ModifyPr
     const updateMutation = useMutation({
         mutationFn: (formData: FormData) => {
             Swal.fire({
-                title: "Updating review...",
+                title: t('updatingReview'),
                 allowOutsideClick: false,
                 allowEscapeKey: false,
                 didOpen: () => {
@@ -112,9 +106,9 @@ export default function ModifyComponent({ review, isLoading, isError }: ModifyPr
         },
         onSuccess: () => {
             Swal.fire({
-                title: "Review updated successfully",
+                title: t('updatingReviewSuccess'),
                 icon: "success",
-                confirmButtonText: "OK",
+                confirmButtonText: t('confirmOKButtonText'),
                 customClass: {
                     popup: 'custom-popup',
                     title: 'custom-title',
@@ -127,9 +121,9 @@ export default function ModifyComponent({ review, isLoading, isError }: ModifyPr
         },
         onError: () => {
             Swal.fire({
-                title: "Failed to update review",
+                title: t('updatingReviewFail'),
                 icon: "error",
-                confirmButtonText: "OK",
+                confirmButtonText: t('confirmOKButtonText'),
                 customClass: {
                     popup: 'custom-popup',
                     title: 'custom-title',
@@ -150,9 +144,9 @@ export default function ModifyComponent({ review, isLoading, isError }: ModifyPr
         // 1) 코멘트 유효성 검사
         if (!commentValue) {
             Swal.fire({
-                title: "Please enter your review",
+                title: t('submittingReviewCheck'),
                 icon: "warning",
-                confirmButtonText: "OK",
+                confirmButtonText: t('confirmOKButtonText'),
                 customClass: {
                     popup: 'custom-popup',
                     title: 'custom-title',
@@ -182,12 +176,12 @@ export default function ModifyComponent({ review, isLoading, isError }: ModifyPr
 
         // 5) SweetAlert로 최종 확인 후 전송
         Swal.fire({
-            title: "Are you sure you want to update your review?",
-            text: "Once updated, the changes cannot be undone.",
+            title: t('updatingReviewConfirm'),
+            text: t('updatingReviewWarning'),
             icon: "warning",
             showCancelButton: true,
-            confirmButtonText: "Update",
-            cancelButtonText: "Cancel",
+            confirmButtonText: t('confirmUpdateButtonText'),
+            cancelButtonText: t('cancelButtonText'),
             customClass: {
                 popup: 'custom-popup',
                 title: 'custom-title',
@@ -205,12 +199,12 @@ export default function ModifyComponent({ review, isLoading, isError }: ModifyPr
     // 리뷰 삭제하기
     const handleDelete = async () => {
         const result =await Swal.fire({
-            title: "Are you sure you want to delete this review?",
-            text: "Once deleted, the changes cannot be undone.",
+            title: t('deleteReviewConfirm'),
+            text: t('deleteReviewWarning'),
             icon: "warning",
             showCancelButton: true,
-            confirmButtonText: "Delete",
-            cancelButtonText: "Cancel",
+            confirmButtonText: t('confirmDeleteButtonText'),
+            cancelButtonText: t('cancelButtonText'),
             customClass: {
                 popup: 'custom-popup',
                 title: 'custom-title',
@@ -224,7 +218,7 @@ export default function ModifyComponent({ review, isLoading, isError }: ModifyPr
 
         try {
             Swal.fire({
-                title: "Deleting review...",
+                title: t('deletingReview'),
                 allowOutsideClick: false,
                 allowEscapeKey: false,
                 didOpen: () => {
@@ -241,9 +235,9 @@ export default function ModifyComponent({ review, isLoading, isError }: ModifyPr
             await deleteReview(review.reviewId);
 
             await Swal.fire({
-                title: "Review deleted successfully",
+                title: t('deletingReviewSuccess'),
                 icon: "success",
-                confirmButtonText: "OK",
+                confirmButtonText: t('confirmOKButtonText'),
                 customClass: {
                     popup: 'custom-popup',
                     title: 'custom-title',
@@ -255,9 +249,9 @@ export default function ModifyComponent({ review, isLoading, isError }: ModifyPr
         } catch (error) {
             console.error(error);
             await Swal.fire({
-                title: "Failed to delete review",
+                title: t('deletingReviewFail'),
                 icon: "error",
-                confirmButtonText: "OK",
+                confirmButtonText: t('confirmOKButtonText'),
                 customClass: {
                     popup: 'custom-popup',
                     title: 'custom-title',
@@ -267,6 +261,16 @@ export default function ModifyComponent({ review, isLoading, isError }: ModifyPr
             });
         }
     };
+
+    if (isLoading)
+        return <ReviewLoading />;
+    if (isError || !review) {
+        return (
+            <p className="text-center p-4 text-red-500 text-base sm:text-lg">
+                {t('reviewLoadError')}
+            </p>
+        );
+    }
 
     return (
         <section className="py-12">
@@ -286,7 +290,7 @@ export default function ModifyComponent({ review, isLoading, isError }: ModifyPr
                 {/* 별점 선택 */}
                 <div className="text-center mb-8">
                     <h3 className="font-manrope font-bold text-lg sm:text-xl text-gray-700 mb-4">
-                        How did you like the product?
+                        {t('reviewAddGuide')}
                     </h3>
                     <div className="flex justify-center space-x-2">
                         {[1, 2, 3, 4, 5].map(i => (
@@ -310,21 +314,21 @@ export default function ModifyComponent({ review, isLoading, isError }: ModifyPr
                         maxRows={15}
                         value={comment}
                         onChange={e => setComment(e.target.value)}
-                        placeholder="Please leave an honest product review."
+                        placeholder={t('reviewCommentGuide')}
                         className="w-full border text-gray-600 border-gray-300 rounded-md p-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-gray-300"
                     />
 
                     {/* ----- 카테고리별 태그 ----- */}
                     <div>
                         <p className="font-medium text-gray-800 mb-2 text-base sm:text-base">
-                            Select Tags
+                            {t('tagSelectGuide')}
                         </p>
                         <div className="space-y-4">
                             {Object.entries(groupedTags).map(([category, tagList]) => (
                                 <div key={category} className="w-full">
                                     {/* 카테고리 제목 */}
                                     <p className="text-sm sm:text-base font-semibold text-gray-600 mb-2">
-                                        {category}
+                                        {t(`categories.${category}`)}
                                     </p>
                                     {/* 태그 버튼 리스트 */}
                                     <div className="flex overflow-x-auto no-scrollbar space-x-2 px-1 pb-1 -mx-1"
@@ -340,7 +344,7 @@ export default function ModifyComponent({ review, isLoading, isError }: ModifyPr
                                                     : "bg-gray-100 text-gray-500 border-gray-400"
                                                 }`}
                                             >
-                                                {tag.tagName}
+                                                {t(`tags.${tag.tagName}`)}
                                             </button>
                                         ))}
                                     </div>
@@ -352,7 +356,7 @@ export default function ModifyComponent({ review, isLoading, isError }: ModifyPr
                     {/* 이미지 관리 */}
                     <div>
                         <p className="text-base sm:text-base text-gray-800 mb-2">
-                            Edit Photo
+                            {t('editPhotoGuide')}
                         </p>
 
                         {/* 파일 업로드 버튼 */}
@@ -416,14 +420,14 @@ export default function ModifyComponent({ review, isLoading, isError }: ModifyPr
                             onClick={handleDelete}
                             className="w-full px-4 py-2 font-medium rounded-md text-sm sm:text-sm transition-colors bg-gray-400 text-white cursor-not-allowed"
                         >
-                            Delete
+                            {t('deleteReviewButton')}
                         </button>
                         <button
                             type="submit"
                             disabled={updateMutation.isPending}
                             className="w-full px-4 py-2 font-medium rounded-md text-sm sm:text-sm transition-colors bg-emerald-400 text-white hover:bg-emerald-600"
                         >
-                            Edit Review
+                            {t('updateReviewButton')}
                         </button>
                     </div>
                 </form>

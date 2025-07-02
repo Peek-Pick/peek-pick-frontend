@@ -2,15 +2,19 @@ import { useMutation } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import '~/util/swal/customSwal.css';
 import {softDeleteAccount} from "~/api/users/myPageAPI";
+import {useTranslation} from "react-i18next";
 
 export function useAccountDelete() {
+    // 국제화 적용
+    const { t } = useTranslation();
+
     const deleteMutation = useMutation({
         mutationFn: softDeleteAccount,
         onSuccess: () => {
             Swal.fire({
-                title: "Your account has been successfully deleted.",
+                title: t('deletingUserSuccess'),
                 icon: "success",
-                confirmButtonText: "OK",
+                confirmButtonText: t('confirmOKButtonText'),
                 customClass: {
                     popup: 'custom-popup',
                     title: 'custom-title',
@@ -23,9 +27,9 @@ export function useAccountDelete() {
         },
         onError: () => {
             Swal.fire({
-                title: "Account Deletion Failed",
+                title: t('deletingUserFail'),
                 icon: "error",
-                confirmButtonText: "OK",
+                confirmButtonText: t('confirmOKButtonText'),
                 customClass: {
                     popup: 'custom-popup',
                     title: 'custom-title',
@@ -39,12 +43,12 @@ export function useAccountDelete() {
     const openDeleteModal = () => {
 
         Swal.fire({
-            title: "Are You Sure You Want to Delete Your Account?",
-            text: "This action is permanent and cannot be undone.",
+            title: t('deletingUserConfirm'),
+            text: t('deletingUserWarning'),
             icon: "warning",
             showCancelButton: true,
-            confirmButtonText: "Delete Account",
-            cancelButtonText: "Cancel",
+            confirmButtonText: t('confirmDeleteButtonText'),
+            cancelButtonText: t('cancelButtonText'),
             customClass: {
                 popup: "custom-popup",
                 title: "custom-title",

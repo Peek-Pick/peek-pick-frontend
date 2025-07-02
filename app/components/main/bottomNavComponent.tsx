@@ -1,14 +1,18 @@
 // src/components/BottomNav.tsx
 import { Home, Search, ScanBarcode } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
-
-const navItems = [
-    { label: "HOME", icon: Home, path: "/main" },
-    { label: "BARCODE", icon: ScanBarcode, path: "/barcode/scan" },
-    { label: "SEARCH", icon: Search, path: "/products/search" },
-];
+import {useTranslation} from "react-i18next";
 
 export default function BottomNavComponent() {
+    // 국제화 적용
+    const { t } = useTranslation();
+
+    const navItems = [
+        { label: t('mainBottomHome'), icon: Home, path: "/main" },
+        { label: t('mainBottomBarcode'), icon: ScanBarcode, path: "/barcode/scan" },
+        { label: t('mainBottomSearch'), icon: Search, path: "/products/search" },
+    ];
+
     const navigate = useNavigate();
     const { pathname } = useLocation();
 

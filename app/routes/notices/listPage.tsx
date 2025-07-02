@@ -6,6 +6,8 @@ import NoticeListComponent from "~/components/notices/listComponent";
 import PaginationComponent from "~/components/common/PaginationComponent";
 import LoadingComponent from "~/components/common/loadingComponent";
 import { BackButton } from "~/util/button/FloatingActionButtons";
+import {ReviewLoading} from "~/util/loading/reviewLoading";
+import {NoticeLoading} from "~/util/loading/noticeLoading";
 
 export default function NoticeListPage() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -25,11 +27,12 @@ export default function NoticeListPage() {
         setSearchParams(params);
     };
 
-    if (isLoading) return <LoadingComponent isLoading />;
+    if (isLoading) return <NoticeLoading />;
+
     if (isError || !data)
         return (
             <div className="p-4 text-red-500">
-                공지사항을 불러오는 중 오류가 발생했습니다.
+                An error occurred while fetching the notices.
             </div>
         );
 

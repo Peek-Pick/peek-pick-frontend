@@ -8,12 +8,15 @@ import { useNicknameChecker } from '~/hooks/users/useNicknameChecker';
 import { useMyPageEdit } from '~/hooks/users/useMyPageEdit';
 import {getCountryName} from "~/util/countryUtils";
 import type {ProfileReadDTO} from "~/types/users";
+import {useTranslation} from "react-i18next";
 
 interface EditProps {
     profile: ProfileReadDTO;
 }
 
 export default function MyPageEditComponent({profile}: EditProps) {
+    // 국제화 적용
+    const { t } = useTranslation();
 
     const { selectedTags, toggleTag, groupedTags } = useTagSelector(profile.tagIdList);
     const passwordChange = usePasswordChange();
@@ -57,11 +60,11 @@ export default function MyPageEditComponent({profile}: EditProps) {
                 {/* 계정 정보 */}
                 <div className="rounded-xl shadow-sm overflow-hidden mb-6">
                     <h4 className="text-lg font-semibold bg-emerald-400 px-3 py-2 text-white">
-                        Account
+                        {t('myPageEdit.account')}
                     </h4>
                     <div className="p-6 bg-white space-y-4">
                         <div>
-                            <label className="text-sm font-medium text-gray-600">Email</label>
+                            <label className="text-sm font-medium text-gray-600">{t('form.email')}</label>
                             <input
                                 type="email"
                                 value={profile.email}
@@ -75,7 +78,7 @@ export default function MyPageEditComponent({profile}: EditProps) {
                                 onClick={() => setShowPasswordChange(true)}
                                 className="text-sm text-emerald-600 hover:underline"
                             >
-                                Change Your Password &gt;
+                                {t('myPageEdit.changePassword')} &gt;
                             </button>
                         ) : (
                             < PasswordChangeSection {...passwordChange} isSocial={isSocial} />
@@ -86,11 +89,11 @@ export default function MyPageEditComponent({profile}: EditProps) {
                 {/* 프로필 정보 */}
                 <div className="rounded-xl shadow-sm overflow-hidden mb-6">
                     <h4 className="text-lg font-semibold bg-emerald-400 px-3 py-2 text-white">
-                        Profile Information
+                        {t('myPageEdit.profileInfo')}
                     </h4>
                     <div className="p-6 bg-white space-y-4">
                         <div>
-                            <label className="text-sm font-medium text-gray-600">Nickname</label>
+                            <label className="text-sm font-medium text-gray-600">{t('form.nickname')}</label>
                             <input
                                 type="text"
                                 defaultValue={newNickname || profile.nickname}
@@ -101,13 +104,13 @@ export default function MyPageEditComponent({profile}: EditProps) {
                                 {newNickname !== profile.nickname && (
                                     <>
                                         {isChecking && (
-                                            <p className="text-gray-500 text-sm mt-1">Checking...</p>
+                                            <p className="text-gray-500 text-sm mt-1">{t('form.checking')}</p>
                                         )}
                                         {nicknameError && (
                                             <p className="text-red-500 text-sm mt-1 ml-1">{nicknameError}</p>
                                         )}
                                         {isAvailable && !nicknameError && (
-                                            <p className="text-green-500 text-sm mt-1 ml-1">The nickname is available.</p>
+                                            <p className="text-green-500 text-sm mt-1 ml-1">{t('form.nicknameAvailable')}</p>
                                         )}
                                     </>
                                 )}
@@ -115,7 +118,7 @@ export default function MyPageEditComponent({profile}: EditProps) {
                         </div>
 
                         <div>
-                            <label className="text-sm font-medium text-gray-600">Gender</label>
+                            <label className="text-sm font-medium text-gray-600">{t('form.gender')}</label>
                             <input
                                 type="text"
                                 value={profile.gender}
@@ -124,7 +127,7 @@ export default function MyPageEditComponent({profile}: EditProps) {
                             />
                         </div>
                         <div>
-                            <label className="text-sm font-medium text-gray-600">Nationality</label>
+                            <label className="text-sm font-medium text-gray-600">{t('form.nationality')}</label>
                             <input
                                 type="text"
                                 value={getCountryName(profile.nationality)}
@@ -133,7 +136,7 @@ export default function MyPageEditComponent({profile}: EditProps) {
                             />
                         </div>
                         <div>
-                            <label className="text-sm font-medium text-gray-600">Date of Birth</label>
+                            <label className="text-sm font-medium text-gray-600">{t('form.birthDate')}</label>
                             <input
                                 type="date"
                                 value={profile.birthDate}
@@ -147,11 +150,11 @@ export default function MyPageEditComponent({profile}: EditProps) {
                 {/* 태그 섹션 */}
                 <div className="rounded-xl shadow-sm overflow-hidden mb-6">
                     <h4 className="text-lg font-semibold bg-emerald-400 px-3 py-2 text-white">
-                        Interests / Tags
+                        {t('myPageEdit.tags')}
                     </h4>
                     <div className="p-6 bg-white">
                         {/* 선택된 태그 */}
-                        <p className="font-medium text-gray-700 mb-2 text-sm sm:text-base">Selected Tags</p>
+                        <p className="font-medium text-gray-700 mb-2 text-sm sm:text-base">{t('myPageEdit.selectedTags')}</p>
                         <div className="flex flex-wrap gap-2 mb-4">
                             {selectedTags.length > 0 ? (
                                 selectedTags.map(tagId => {
@@ -163,12 +166,12 @@ export default function MyPageEditComponent({profile}: EditProps) {
                                             onClick={() => toggleTag(tagId)}
                                             className="px-3 py-1 rounded-full text-sm bg-emerald-100 text-emerald-700 border border-emerald-300"
                                         >
-                                            {tag.tagName} &times;
+                                            {t(`tags.${tag.tagName}`)} &times;
                                         </button>
                                     );
                                 })
                             ) : (
-                                <p className="text-sm text-gray-500">No tags selected.</p>
+                                <p className="text-sm text-gray-500">{t('myPageEdit.noTags')}</p>
                             )}
                         </div>
 
@@ -177,7 +180,7 @@ export default function MyPageEditComponent({profile}: EditProps) {
                             onClick={() => setShowAllTags(prev => !prev)}
                             className="text-sm text-emerald-600 hover:underline mb-4 mt-4"
                         >
-                            {showAllTags ? "Hide Tags ▲" : "Add Tags ▼"}
+                            {showAllTags ? t('myPageEdit.hideTags') : t('myPageEdit.addTags')}
                         </button>
 
                         {/* 전체 태그 목록 */}
@@ -185,7 +188,9 @@ export default function MyPageEditComponent({profile}: EditProps) {
                             <div className="space-y-4 max-h-60 overflow-y-auto border-t pt-4">
                                 {Object.entries(groupedTags).map(([category, tagList]) => (
                                     <div key={category}>
-                                        <p className="text-sm font-semibold text-gray-600 mb-2">{category}</p>
+                                        <p className="text-sm font-semibold text-gray-600 mb-2">
+                                            {t(`categories.${category}`)}
+                                        </p>
                                         <div className="flex flex-wrap gap-2">
                                             {tagList.map(tag => (
                                                 <button
@@ -197,7 +202,7 @@ export default function MyPageEditComponent({profile}: EditProps) {
                                                             : "bg-white text-gray-600 border-gray-300"
                                                     }`}
                                                 >
-                                                    {tag.tagName}
+                                                    {t(`tags.${tag.tagName}`)}
                                                 </button>
                                             ))}
                                         </div>
@@ -218,7 +223,7 @@ export default function MyPageEditComponent({profile}: EditProps) {
                             file
                             )}
                         className="w-full bg-emerald-400 text-white py-2 rounded-lg hover:bg-emerald-500">
-                        SAVE
+                        {t('form.save')}
                     </button>
                 </div>
             </div>

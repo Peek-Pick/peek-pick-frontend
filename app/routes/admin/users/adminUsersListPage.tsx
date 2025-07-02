@@ -20,7 +20,7 @@ function AdminUsersListPage() {
     const initialCategory = searchParamsUrl.get("category") || "all";
     const initialKeyword = searchParamsUrl.get("keyword") || "";
     const initialPage = Number(searchParamsUrl.get("page") || "0");
-    const initialStatus = searchParamsUrl.get("status") || "";
+    const initialStatus = searchParamsUrl.get("userStatus") || "";
     const initialSocial = searchParamsUrl.get("social") === "true";
 
     // 상태 관리 (카테고리, 키워드, 페이지, userStatus, 소셜)
@@ -36,7 +36,7 @@ function AdminUsersListPage() {
         const newCategory = searchParamsUrl.get("category") || "all";
         const newKeyword = searchParamsUrl.get("keyword") || "";
         const newPage = Number(searchParamsUrl.get("page") || "0");
-        const newUserStatus = searchParamsUrl.get("status") || "";
+        const newUserStatus = searchParamsUrl.get("userStatus") || "";
         const newSocial = searchParamsUrl.get("social") === "true";
 
         setCategory(newCategory);
@@ -50,8 +50,15 @@ function AdminUsersListPage() {
     // userStatus 핸들러
     const handleUserStatusChange = (value: string) => {
         setUserStatus(value);
-        setSearchParamsUrl({category, keyword, userStatus: value, social: social.toString(), page: "0"});
         setPage(0);
+        // 💡 여기서 기존 상태를 쓰는 대신, 직접 새 값으로 반영
+        setSearchParamsUrl({
+            category,
+            keyword,
+            userStatus: value,
+            social: social.toString(),
+            page: "0"
+        });
     };
 
     // social 체크박스 핸들러
@@ -68,18 +75,22 @@ function AdminUsersListPage() {
         setPage(0);
     };
 
-    // 페이지 핸들링링
+    // 페이지 핸들링
     const handlePage = (page: number) => {
         setSearchParamsUrl({category, keyword, social: social.toString(), page: page.toString()})
         setPage(page);
     };
 
-    // 유저 불러오기기
+    // 유저 불러오기
     const { data, isLoading, isError } = useQuery<PagingResponse<UsersListDTO>>({
         queryKey: ["adminUserList", page, category, keyword, userStatus, social ],
         queryFn: () => getUserList(page, category, keyword, userStatus, social),
         // staleTime: 5 * 60 * 1000,
     });
+
+    // console.log(data?.content)
+    // console.log("QueryKey =", page, category, keyword, userStatus, social);
+    console.log(userStatus)
 
     return (
         <div>

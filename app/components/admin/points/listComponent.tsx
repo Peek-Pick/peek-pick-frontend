@@ -50,7 +50,7 @@ export default function ListComponent({ products, page, category, keyword, hidde
                                     <td className="px-6 py-4">{product.pointstoreId}</td>
                                     <td className="px-6 py-4">
                                         <img
-                                            src={`http://localhost/${product.imgUrl}`}
+                                            src={`http://localhost/points/${product.imgUrl}`}
                                             alt={product.item}
                                             className="w-28 h-20 object-cover rounded-lg"
                                         />

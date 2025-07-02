@@ -1,15 +1,16 @@
 import {useEffect, useState} from "react";
 import { useQuery } from "@tanstack/react-query";
-import {listCoupon, readCoupon, redeemCoupon} from "~/api/points/pointsAPI";
+import {getUserPointAmount, listCoupon, readCoupon, redeemCoupon} from "~/api/points/pointsAPI";
 import StoreListComponent from "~/components/points/storeListComponent";
 import CouponModal from "~/components/points/couponModal";
 import type { PointStoreDTO, PointStoreListDTO } from "~/types/points";
 import { PointProductType } from "~/enums/points/points";
 import PaginationComponent from "~/components/common/PaginationComponent";
 import type {PagingResponse} from "~/types/common";
-import {BackButton} from "~/util/button/FloatingActionButtons";
+import {BackButton, FloatingActionButtons} from "~/util/button/FloatingActionButtons";
 import { ShoppingBag} from "lucide-react";
 import PointsLoading from "~/util/loading/pointsLoading";
+import type {int} from "@zxing/library/es2015/customTypings";
 
 
 function StoreListPage() {
@@ -40,11 +41,17 @@ function StoreListPage() {
             selectedProductId !== null ? readCoupon(selectedProductId) : Promise.reject(),
         enabled: selectedProductId !== null,
     });
+    
+    // 사용자 포인트양 정보 볼러오기
+    const { data: amountData } = useQuery<number>({
+        queryKey: ["pointAmount"],
+        queryFn: () => getUserPointAmount(),
+    });
 
     // 최소 1.6초 동안 로딩 스피너 표시
     const [fakeLoading, setFakeLoading] = useState(true);
     useEffect(() => {
-        const timer = setTimeout(() => setFakeLoading(false), 1600);
+        const timer = setTimeout(() => setFakeLoading(false), 1300);
         return () => clearTimeout(timer);
     }, []);
 
@@ -72,6 +79,11 @@ function StoreListPage() {
 
     return (
         <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow px-4 pt-4 pb-6 relative space-y-4">
+
+            <div className="absolute top-4 right-4 text-gray-600 font-semibold px-3 py-1 select-none text-sm">
+                🪙<span className="font-bold">{amountData ?? 0}p</span>
+            </div>
+
             <div className="flex justify-between items-center mb-4 mt-1.5">
                 <h2 className="flex items-center gap-1 text-xl font-bold text-yellow-500 select-none leading-none">
                     <ShoppingBag className="w-6 h-6 leading-none ml-1.5" />
@@ -81,19 +93,12 @@ function StoreListPage() {
 
             {/*필터링버튼*/}
             <div className="border-b border-gray-300 mb-6 px-4 sm:px-0">
-                <nav className="flex justify-start sm:justify-center space-x-3 sm:space-x-6 overflow-x-auto no-scrollbar px-5 sm:px-0">
-                    {(["ALL", "CU", "GS25", "SEVEN_ELEVEN", "EMART24", "OTHERS"] as (
-                        | keyof typeof PointProductType
-                        | "ALL"
-                        )[]).map((type) => {
-                        const labels = {
-                            ALL: "ALL",
-                            CU: "CU",
-                            GS25: "GS25",
-                            SEVEN_ELEVEN: "SEVEN-ELEVEN",
-                            EMART24: "EMART24",
-                            OTHERS: "OTHERS",
-                        };
+                <nav
+                    className="flex justify-start sm:justify-center space-x-3 sm:space-x-6 overflow-x-auto no-scrollbar px-5 sm:px-0"
+                    style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+                >
+                    {(["ALL", ...Object.keys(PointProductType)] as (keyof typeof PointProductType | "ALL")[]).map((type) => {
+                        const label = type === "ALL" ? "ALL" : PointProductType[type as keyof typeof PointProductType];
                         const isActive = filter === type;
                         return (
                             <button
@@ -102,15 +107,15 @@ function StoreListPage() {
                                     setFilter(type);
                                     setPage(0);
                                 }}
-                                className={`relative pb-2 transition-colors duration-300 text-xs sm:text-sm whitespace-nowrap ${
+                                className={`relative pb-2 transition-colors duration-300 text-sm sm:text-sm whitespace-nowrap ${
                                     isActive
                                         ? "font-bold text-yellow-400 border-b-2 border-yellow-400"
                                         : "font-normal text-gray-500 hover:text-yellow-400"
                                 }`}
                             >
-                                {labels[type]}
+                                {label}
                                 {isActive && (
-                                    <span className="absolute -bottom-0 left-0 right-0 h-0.5 bg-yellow-400 "></span>
+                                    <span className="absolute -bottom-0 left-0 right-0 h-0.5 bg-yellow-400"></span>
                                 )}
                             </button>
                         );
@@ -149,6 +154,8 @@ function StoreListPage() {
             </div>
             {/*<BottomNavComponent />*/}
             <BackButton />
+
+            <FloatingActionButtons />
         </div>
     );
 }

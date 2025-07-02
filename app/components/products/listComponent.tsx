@@ -60,7 +60,7 @@ export default function ListComponent({
     if (isError) {
         return (
             <p className="p-4 text-center text-red-500 text-base sm:text-lg">
-                상품 정보를 불러오지 못했습니다.
+                Failed to load product information.
             </p>
         );
     }
@@ -68,7 +68,7 @@ export default function ListComponent({
     if (limitedProducts.length === 0) {
         return (
             <p className="p-4 text-center text-gray-500">
-                상품이 없습니다.
+                No products available.
             </p>
         );
     }
@@ -134,7 +134,7 @@ export default function ListComponent({
             {/* 랭킹일 경우에만 제한 메시지 출력 */}
             {isRanking && limitedProducts.length >= 100 && (
                 <p className="col-span-full text-center py-2 text-sm text-gray-400">
-                    마지막 상품입니다.
+                    This is the last product.
                 </p>
             )}
 

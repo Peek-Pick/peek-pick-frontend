@@ -1,3 +1,4 @@
+import {useTranslation} from "react-i18next";
 
 type PasswordChangeSectionProps = {
     isSocial: boolean;
@@ -24,19 +25,22 @@ export function PasswordChangeSection({ isSocial,
                                    error,
                                    checkCurrentPassword,
                                    }: PasswordChangeSectionProps) {
+    // 국제화 적용
+    const { t } = useTranslation();
+
     if (isSocial) {
         return <p className="text-sm text-gray-500">
-            Password changes are not available for social accounts.
+            {t('form.ifSocial')}
         </p>;
     }
 
     return (
         <>
             <div>
-                <label className="text-sm font-medium text-gray-600">Current Password</label>
+                <label className="text-sm font-medium text-gray-600">{t('form.currentPassword')}</label>
                 <input
                     type="password"
-                    placeholder="Enter current password"
+                    placeholder={t('form.enterCurrentPassword')}
                     className="w-full border rounded px-4 py-2"
                     value={currentPassword}
                     onChange={ (e) => setCurrentPassword(e.target.value)}
@@ -48,10 +52,10 @@ export function PasswordChangeSection({ isSocial,
                         onClick={checkCurrentPassword}
                         className="text-sm text-emerald-600 hover:underline"
                     >
-                        Verify current password &gt;
+                        {t('form.passwordCheck')} &gt;
                     </button>
                     {checkStatus === "success" && (
-                        <p className="text-sm text-emerald-600">Verified successfully!</p>
+                        <p className="text-sm text-emerald-600"> {t('form.passwordCheckSuccess')}</p>
                     )}
                     {checkStatus === "fail" && error && (
                         <p className="text-sm text-red-500">{error}</p>
@@ -60,10 +64,10 @@ export function PasswordChangeSection({ isSocial,
             </div>
 
             <div>
-                <label className="text-sm font-medium text-gray-600">New Password</label>
+                <label className="text-sm font-medium text-gray-600">{t('form.newPassword')}</label>
                 <input
                     type="password"
-                    placeholder="Enter new password"
+                    placeholder={t('form.enterNewPassword')}
                     className="w-full border rounded px-4 py-2"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
@@ -71,10 +75,10 @@ export function PasswordChangeSection({ isSocial,
             </div>
 
             <div>
-                <label className="text-sm font-medium text-gray-600">Confirm New Password</label>
+                <label className="text-sm font-medium text-gray-600">{t('form.checkPassword')}</label>
                 <input
                     type="password"
-                    placeholder="Re-enter new password"
+                    placeholder={t('form.enterNewPasswordRe')}
                     className="w-full border rounded px-4 py-2"
                     value={confirmPassword}
                     onChange={(e)=>setConfirmPassword(e.target.value)}

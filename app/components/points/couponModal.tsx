@@ -1,8 +1,7 @@
 import type {PointStoreDTO} from "~/types/points";
 import Swal from "sweetalert2";
 import {useNavigate} from "react-router-dom";
-import PointsLoading from "~/util/loading/pointsLoading";
-import {ErrorComponent} from "~/util/loading/errorComponent";
+import '~/util/swal/customSwal.css'
 
 
 interface Props {
@@ -42,8 +41,8 @@ export default function CouponModal({ product, onClose, onBuy }: Props) {
                 {/* 정보 박스 */}
                 <div className="bg-gray-50 rounded-xl p-4 shadow-inner border border-gray-200 space-y-3">
                     <div className="flex items-center gap-2">
-                        <p className="text-gray-700 font-bold text-lg">{product.price.toLocaleString()} Points</p>
-                        <span className="inline-block bg-yellow-100 text-gray-500 text-xs font-semibold px-2 py-0.5 rounded-full tracking-wide whitespace-nowrap select-none">
+                        <p className="text-gray-700 font-bold text-lg">{product.price.toLocaleString()} pt</p>
+                        <span className="inline-block bg-gray-200 text-gray-500 text-xs font-semibold px-2 py-0.5 rounded-full tracking-wide whitespace-nowrap select-none">
                           {product.productType}
                         </span>
                     </div>
@@ -77,7 +76,7 @@ export default function CouponModal({ product, onClose, onBuy }: Props) {
 
                                 if (result.success) {
                                     await Swal.fire({
-                                        title: "Purchase completed",
+                                        title: "Purchase completed.",
                                         icon: "success",
                                         confirmButtonText: "OK",
                                         customClass: {
@@ -92,7 +91,7 @@ export default function CouponModal({ product, onClose, onBuy }: Props) {
                                     });
                                 } else {
                                     await Swal.fire({
-                                        title: "Purchase failed",
+                                        title: "Purchase failed.",
                                         html: `<p style="font-size: 0.9rem; color: #f43f5e; margin-top: 8px;">Insufficient balance.</p>`,
                                         icon: "error",
                                         confirmButtonText: "OK",
@@ -106,8 +105,8 @@ export default function CouponModal({ product, onClose, onBuy }: Props) {
                                 }
                             } catch {
                                 await Swal.fire({
-                                    title: "Error",
-                                    icon: "warning",
+                                    title: "An error occurred during the purchase.",
+                                    icon: "error",
                                     confirmButtonText: "OK",
                                     customClass: {
                                         popup: "custom-popup",
@@ -118,7 +117,7 @@ export default function CouponModal({ product, onClose, onBuy }: Props) {
                                 });
                             }
                         }}
-                        className="flex items-center gap-1 rounded-md border border-blue-600 bg-white px-3 py-1 text-sm font-medium text-blue-600 shadow-sm hover:bg-blue-100 hover:text-blue-800 transition"
+                        className="flex items-center gap-1 rounded-md border border-yellow-500 bg-white px-3 py-1 text-sm font-medium text-yellow-500 shadow-sm hover:bg-blue-100 hover:text-blue-800 transition"
                     >
                         Buy
                     </button>

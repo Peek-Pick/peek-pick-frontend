@@ -13,22 +13,27 @@ interface Props {
 }
 
 export default function DetailComponent2({ product, isLoading, isError }: Props) {
-    if (isLoading) return <ProductLoading />;
+    // 1) 초기 로딩
+    if (isLoading) {
+        return <ProductLoading />;
+    }
+    // 2) 에러 또는 데이터 없음
     if (isError || !product) {
         return (
             <p className="text-center p-4 text-red-500 text-base sm:text-lg">
-                상품 정보를 불러오지 못했습니다.
+                Failed to load product information.
             </p>
         );
     }
+    // 3) 삭제된 상품
     if (product.isDelete) {
         return (
             <div className="p-4 text-center text-gray-500">
-                삭제된 상품입니다.
+                This product has been deleted.
             </div>
         );
     }
-
+    // 4) 정상 렌더링
     const queryClient = useQueryClient();
     const [liked, setLiked] = useState(product.isLiked);
     const [count, setCount] = useState(product.likeCount ?? 0);
@@ -116,7 +121,7 @@ export default function DetailComponent2({ product, isLoading, isError }: Props)
                 queryClient.invalidateQueries({ queryKey });
             });
 
-            console.error("좋아요 요청 실패", error);
+            console.error("Failed to toggle like", error);
         },
     });
 
@@ -146,8 +151,10 @@ export default function DetailComponent2({ product, isLoading, isError }: Props)
                                 </p>
 
                                 <div className="flex justify-between items-center text-sm sm:text-base mt-3">
+                                    {/* 좋아요 버튼 */}
                                     <button
                                         onClick={handleToggleLike}
+                                        // disabled={toggleLikeMutation.isPending}
                                         className={`flex items-center gap-1 px-2 py-1 rounded-full border font-medium text-xs sm:text-xs
                                             ${liked
                                             ? "bg-red-50 text-red-500 border-red-200"
@@ -158,8 +165,7 @@ export default function DetailComponent2({ product, isLoading, isError }: Props)
                                     </button>
                                     <button
                                         onClick={() => setShowModal(true)}
-                                        className="text-red-500 hover:text-red-600 transition text-sm sm:text-sm duration-200"
-                                    >
+                                        className="text-red-500 hover:text-red-600 transition text-sm sm:text-sm duration-200">
                                         Read More
                                     </button>
                                 </div>

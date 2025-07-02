@@ -6,6 +6,7 @@ import { ReviewLoading } from "~/util/loading/reviewLoading";
 import { useLikeClick } from "~/hooks/reviews/useLikeClick";
 import FloatingHearts from "~/components/reviews/effect/floatingHearts";
 import {BackButton } from "~/util/button/FloatingActionButtons";
+import {useTranslation} from "react-i18next";
 
 export interface ReviewProps {
     review?: ReviewDetailDTO;
@@ -14,21 +15,14 @@ export interface ReviewProps {
 }
 
 export default function DetailComponent({review, isLoading, isError }: ReviewProps) {
-    if (isLoading)
-        return <ReviewLoading />;
-    if (isError || !review) {
-        return (
-            <p className="text-center p-4 text-red-500 text-base sm:text-lg">
-                Failed to load review data.
-            </p>
-        );
-    }
+    // 국제화 적용
+    const { t } = useTranslation();
 
     // 쿼리 클라이언트
     const queryClient = useQueryClient();
 
     // 리뷰 신고 모달
-    const { openReportModal } = useReviewReport(review.reviewId);
+    const { openReportModal } = useReviewReport(review?.reviewId);
 
     // 리뷰 좋아요
     const toggleLikeMutation = useMutation({
@@ -43,6 +37,16 @@ export default function DetailComponent({review, isLoading, isError }: ReviewPro
 
     const {handleLikeClick, containerRef, hearts} = useLikeClick(toggleLikeMutation.mutate, review);
 
+    if (isLoading)
+        return <ReviewLoading />;
+    if (isError || !review) {
+        return (
+            <p className="text-center p-4 text-red-500 text-base sm:text-lg">
+                {t('reviewLoadError')}
+            </p>
+        );
+    }
+
     return (
         <div>
             <section className="relative" ref={containerRef}>
@@ -56,7 +60,7 @@ export default function DetailComponent({review, isLoading, isError }: ReviewPro
                                          className="w-14 h-14 rounded-full object-cover" alt="profile image"/>
                                     <h6 className="font-semibold text-md sm:text-base leading-2 text-gray-600">{review.nickname ?? "User"}</h6>
                                 </div>
-                                <p className="font-normal text-sm sm:text-sm leading-8 text-gray-400">Posted on {new Date(review.regDate).toLocaleDateString()}</p>
+                                <p className="font-normal text-sm sm:text-sm leading-8 text-gray-400">{t('postedOn')} {new Date(review.regDate).toLocaleDateString()}</p>
                             </div>
 
                             {/* 별점 */}
@@ -98,7 +102,7 @@ export default function DetailComponent({review, isLoading, isError }: ReviewPro
                                             key={tag.tagId}
                                             className="bg-emerald-50 text-emerald-500 border border-emerald-200 text-sm sm:text-sm px-3 py-1 rounded-full"
                                         >
-                                            #{tag.tagName}
+                                            #{t(`tags.${tag.tagName}`)}
                                         </span>
                                     ))}
                                 </div>
@@ -116,7 +120,7 @@ export default function DetailComponent({review, isLoading, isError }: ReviewPro
                                         : "bg-gray-100 text-gray-500 border-gray-200"} 
                                         hover:shadow-sm transition-colors duration-200`}
                                     >
-                                    {review.isLiked ? '❤️' : '🤍'} Like {review.recommendCnt}
+                                    {review.isLiked ? '❤️' : '🤍'} {t('likeReview')} {review.recommendCnt}
                                 </button>
 
                                 {/* 신고하기 버튼 */}
@@ -124,7 +128,7 @@ export default function DetailComponent({review, isLoading, isError }: ReviewPro
                                     onClick={openReportModal}
                                     className="text-red-500 hover:text-red-600 transition text-sm sm:text-sm duration-200"
                                 >
-                                    Report
+                                    {t('reportReview')}
                                 </button>
                             </div>
                         </div>

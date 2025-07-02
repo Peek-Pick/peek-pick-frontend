@@ -38,7 +38,7 @@ function AuDetailReviewsComponent({ reviewCount, reviewList, isLoading, isError 
                         {/* 상품 정보 */}
                         <div className="flex sm:items-center flex-col min-[400px]:flex-row justify-between gap-5 mb-3">
                             <div className="flex items-center gap-3">
-                                <img src={review.imageUrl || "/example.jpg"}
+                                <img src={`http://localhost${review.imageThumbUrl}`}
                                      className="w-20 h-20 rounded-lg object-cover border-2 border-gray-100" alt={"상품정보"}/>
                                 <h6 className="font-semibold text-md leading-8 text-gray-600">{review.name}</h6>
                             </div>

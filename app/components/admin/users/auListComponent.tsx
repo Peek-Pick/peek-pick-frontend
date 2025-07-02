@@ -32,7 +32,7 @@ export default function AuListComponent({ users, isLoading, isError, page, categ
     }, [users]);
 
     const goDetail = (uid: number) => {
-        const from = `from=userList&page=${page}&keyword=${keyword}&category=${category}&status=${userStatus}&social=${social}`;
+        const from = `from=userList&page=${page}&keyword=${keyword}&category=${category}&userStatus=${userStatus}&social=${social}`;
         navigate(`/admin/users/${uid}?${from}`);
     };
 
@@ -46,13 +46,13 @@ export default function AuListComponent({ users, isLoading, isError, page, categ
         setSelectedUserId(null);
     };
 
-    const handleStatusChange = async (status: "ACTIVE" | "DELETED" | "BANNED", banUntil?: string) => {
+    const handleStatusChange = async (userStatus: "ACTIVE" | "DELETED" | "BANNED", banUntil?: string) => {
         if (selectedUserId === null) return;
 
         const result = await updateStatus({
             userId: selectedUserId,
             updateStatus: {
-                status,
+                status:userStatus,
                 banUntil,
             },
         });

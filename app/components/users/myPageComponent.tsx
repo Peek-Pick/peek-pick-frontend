@@ -8,6 +8,8 @@ import { useNavigate } from "react-router";
 
 import type { MypageData } from "~/types/users";
 import {useAccountDelete} from "~/hooks/users/useAccountDelete";
+import {useLanguageChange} from "~/hooks/users/useLanguageChange";
+import {useTranslation} from "react-i18next";
 
 // 타입 정의
 interface MyPageProps {
@@ -15,29 +17,34 @@ interface MyPageProps {
 }
 
 export default function MyPageComponent({ myData }:MyPageProps) {
+    // 국제화 적용
+    const { t } = useTranslation();
 
     const navigate = useNavigate();
 
     // 삭제 모달 불러오기
     const { openDeleteModal } = useAccountDelete();
 
+    //  언어 바꾸기 모달 부르기
+    const { openLanguageModal } = useLanguageChange();
+
     // 동적 quickStats
     const quickStats = [
-        { icon: <FaHeart className="text-pink-500 text-2xl mb-2" />, label: 'Wishlist Items', value: myData.wishlistCount, to:'/mypage/favorites' },
-        { icon: <FaPen className="text-blue-500 text-2xl mb-2" />, label: 'My Reviews', value: myData.reviewCount, to:'/reviews/user' },
-        { icon: <FaTicketAlt className="text-yellow-500 text-2xl mb-2" />, label: 'Coupons', value: myData.couponCount, to:'/mypage/coupons' },
-        { icon: <FaBarcode className="text-green-500 text-2xl mb-2" />, label: 'Barcode History', value: myData.barcodeHistoryCount, to:'/barcode/history' },
+        { icon: <FaHeart className="text-pink-500 text-2xl mb-2" />, label: t('myPageWishlistItems'), value: myData.wishlistCount, to:'/mypage/favorites' },
+        { icon: <FaPen className="text-blue-500 text-2xl mb-2" />, label: t('myPageMyReviews'), value: myData.reviewCount, to:'/reviews/user' },
+        { icon: <FaTicketAlt className="text-yellow-500 text-2xl mb-2" />, label: t('myPageCoupons'), value: myData.couponCount, to:'/mypage/coupons' },
+        { icon: <FaBarcode className="text-green-500 text-2xl mb-2" />, label: t('myPageBarcodeHistory'), value: myData.barcodeHistoryCount, to:'/barcode/history' },
     ];
 
     const buttons = [
-        { icon: IoLanguage, label: 'Language Settings', to: '' },
-        { icon: FaQuestionCircle, label: 'Support', to: '/inquiries/list' },
-        { icon: FaBell, label: 'Notifications', to: '' },
-        { icon: FaUserShield, label: 'Privacy Policy', to: '' },
-        { icon: FaFileContract, label: 'Terms of Service', to: '' },
-        { icon: FaIdBadge, label: 'Licenses', to: '' },
-        { icon: FaUserAltSlash, label: 'Delete Account', onClick: openDeleteModal },
-        { icon: IoLogOutOutline, label: 'Logout', to: '/logout' },
+        { icon: IoLanguage, label: t('myPageLanguageSettings'), onClick: openLanguageModal },
+        { icon: FaQuestionCircle, label: t('myPageSupport'), to: '/inquiries/list' },
+        { icon: FaBell, label: t('myPageNotifications'), to: '' },
+        { icon: FaUserShield, label: t('myPagePrivacyPolicy'), to: '' },
+        { icon: FaFileContract, label: t('myPageTermsOfService'), to: '' },
+        { icon: FaIdBadge, label: t('myPageLicenses'), to: '' },
+        { icon: FaUserAltSlash, label: t('myPageDeleteAccount'), onClick: openDeleteModal },
+        { icon: IoLogOutOutline, label: t('myPageLogout'), to: '/logout' },
     ];
 
     return (
@@ -67,12 +74,12 @@ export default function MyPageComponent({ myData }:MyPageProps) {
                         <button
                             onClick={ ()=> navigate('/points/store/list')}
                             className="border border-amber-300 text-amber-300 px-4 py-1 flex items-center hover:bg-gray-100">
-                            <FaStore className="mr-2" /> Point Store
+                            <FaStore className="mr-2" /> {t('myPagePointStore')}
                         </button>
                         <button
                             onClick={ ()=> navigate('/mypage/edit')}
                             className="bg-amber-300 hover:bg-amber-400 active:bg-amber-200 text-white px-4 py-1 rounded flex items-center">
-                            <FaUserCog className="mr-2" /> Edit Profile
+                            <FaUserCog className="mr-2" /> {t('myPageEditProfile')}
                         </button>
                     </div>
                 </div>

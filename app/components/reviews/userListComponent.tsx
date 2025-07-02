@@ -5,6 +5,7 @@ import { Rating20 } from "~/components/reviews/rating/rating"
 import { ReviewLoading, ReviewInfiniteLoading } from "~/util/loading/reviewLoading";
 import { BackParamButton, FloatingActionButtons } from "~/util/button/FloatingActionButtons";
 import { Star } from "lucide-react";
+import {useTranslation} from "react-i18next";
 
 export interface ReviewListComponentProps {
     reviewCount: number;
@@ -18,10 +19,8 @@ export interface ReviewListComponentProps {
 
 export default function UserListComponent({reviewCount, reviewList, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError}
                                           : ReviewListComponentProps) {
-    if (isLoading)
-        return <ReviewLoading />;
-    if (isError)
-        return <p className="text-center p-4 text-red-500 text-base sm:text-lg">Failed to load review data.</p>;
+    // 국제화 적용
+    const { t } = useTranslation();
 
     const navigate = useNavigate()
 
@@ -49,6 +48,11 @@ export default function UserListComponent({reviewCount, reviewList, fetchNextPag
         return () => observer.disconnect();
     }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
+    if (isLoading)
+        return <ReviewLoading />;
+    if (isError)
+        return <p className="text-center p-4 text-red-500 text-base sm:text-lg">{t('reviewLoadError')}</p>;
+
     return (
         <div>
             <section className="relative">
@@ -57,7 +61,7 @@ export default function UserListComponent({reviewCount, reviewList, fetchNextPag
                         {/* 정렬 탭 */}
                         <div className="flex justify-between items-center mb-4 mt-1.5">
                             <h2 className="flex items-center gap-1 text-xl font-bold  select-none leading-none">
-                                <span className="leading-none text-black ml-1.5">Total Reviews: </span>
+                                <span className="leading-none text-black ml-1.5">{t('totalReview')}: </span>
                                 <span className="text-yellow-500 font-normal ml-2">{reviewCount}</span>
                             </h2>
                         </div>
@@ -100,14 +104,14 @@ export default function UserListComponent({reviewCount, reviewList, fetchNextPag
                                     <button type="button" onClick={() => navigate(`/reviews/modify/${review.reviewId}`)}
                                             className="w-full sm:flex-1 px-4 py-2 text-sm sm:text-sm rounded-lg bg-emerald-50 text-emerald-600 cursor-pointer font-medium text-center transition-all duration-300 hover:bg-emerald-100 hover:text-emerald-700 min-w-0"
                                     >
-                                        Edit Review
+                                        {t('updateReviewButton')}
                                     </button>
 
                                     {/* 리뷰 상세보기 버튼 */}
                                     <button type="button"  onClick={() => navigate(`/reviews/${review.reviewId}`)}
                                             className="w-full sm:flex-1 px-4 py-2 text-sm sm:text-sm rounded-lg bg-emerald-50 text-emerald-600 cursor-pointer font-medium text-center transition-all duration-300 hover:bg-emerald-100 hover:text-emerald-700 min-w-0"
                                     >
-                                        View Details
+                                        {t('detailReviewButton')}
                                     </button>
                                 </div>
                             </div>
