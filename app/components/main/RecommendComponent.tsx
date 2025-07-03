@@ -13,7 +13,7 @@ export function RecommendComponent() {
     const navigate = useNavigate();
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const size = 12;
+    const size = 10;
 
     const { data, isLoading, isError } = useQuery<PageResponseCursor<ProductListDTO>>({
         queryKey: ["productsRecommend", size],

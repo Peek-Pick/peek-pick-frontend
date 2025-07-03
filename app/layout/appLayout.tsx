@@ -6,11 +6,13 @@ import { useEffect, useState } from "react";
 // ① 상품 상세 정보를 가져오는 API 함수 import
 import type { ProductDetailDTO } from "~/types/products";
 import { getProductDetail } from "~/api/products/productsAPI";
+import {useTranslation} from "react-i18next";
 
 export default function AppLayout() {
     const location = useLocation();
     const navigate = useNavigate();
 
+    const { t } = useTranslation();
     // ② 상품명을 담을 로컬 상태
     const [dynamicTitle, setDynamicTitle] = useState<string>("");
 
@@ -21,9 +23,9 @@ export default function AppLayout() {
         "/mypage/edit": "Edit Profile",
         "/mypage/favorites": "WishList",
         "/reviews/user": "My Reviews",
-        "/products/ranking": "Product Ranking",
-        "/products/search": "Product Search",
-        "/products/recommended": "Recommended Products",
+        "/products/ranking": t("productRanking"),
+        "/products/search": t("productSearch"),
+        "/products/recommended": t("recommendedProduct"),
         "/notices/list": "Announcements",
         "/inquiries/list": "Support History",
         "/inquiries/add": "Submit an Inquiry",

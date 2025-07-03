@@ -3,9 +3,10 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { Icon } from "@iconify/react";
 import { useNavigate, useSearchParams, useNavigationType } from "react-router-dom";
 import ListComponent from "~/components/products/listComponent";
-import { listProducts } from "~/api/products/productsAPI";
+import { getRanking } from "~/api/products/productsAPI";
 import type { PageResponseCursor, ProductListDTO } from "~/types/products";
-import {BackButton, BackParamButton, FloatingActionButtons} from "~/util/button/FloatingActionButtons";
+import { BackParamButton, FloatingActionButtons } from "~/util/button/FloatingActionButtons";
+import { useTranslation } from "react-i18next";
 
 const STORAGE_KEY = "rankingPageScrollY";
 
@@ -16,13 +17,35 @@ function isPageReload(): boolean {
     return performance.navigation?.type === 1;
 }
 
+// 카테고리 ID와 emoji만 포함
+const CATEGORY_LIST = [
+    { id: 0, emoji: "🔥" }, // 전체
+    { id: 1, emoji: "🍪" },
+    { id: 2, emoji: "🍙" },
+    { id: 3, emoji: "🍜" },
+    { id: 4, emoji: "🥐" },
+    { id: 5, emoji: "🍦" },
+    { id: 6, emoji: "🍬" },
+    { id: 7, emoji: "🥤" },
+    { id: 8, emoji: "🥪" },
+    { id: 9, emoji: "🍱" },
+    { id: 10, emoji: "🍎" },
+    { id: 11, emoji: "😡" },
+    { id: 12, emoji: "🍲" },
+    { id: 13, emoji: "🧂" },
+    { id: 14, emoji: "💪" },
+    { id: 15, emoji: "📦" },
+] as const;
+
+type CategoryId = typeof CATEGORY_LIST[number]["id"];
+
 export default function RankingPage() {
+    const { t } = useTranslation();
     const size = 12;
     const navigate = useNavigate();
     const navigationType = useNavigationType();
     const [searchParams, setSearchParams] = useSearchParams();
 
-    // const scrollYRef = useRef<number>(0);
     const isRestoredRef = useRef(false);
     const initialLoadRef = useRef(true);
 
@@ -52,53 +75,18 @@ export default function RankingPage() {
         }
     }, [navigationType]);
 
-    const categories = [
-        { label: "전체", emoji: "🔥" },
-        { label: "과자류", emoji: "🍪" },
-        { label: "삼각김밥/김밥", emoji: "🍙" },
-        { label: "면류", emoji: "🍜" },
-        { label: "빵/디저트", emoji: "🥐" },
-        { label: "아이스크림", emoji: "🍦" },
-        { label: "캔디/껌", emoji: "🍬" },
-        { label: "음료", emoji: "🥤" },
-        { label: "샌드위치/햄버거", emoji: "🥪" },
-        { label: "도시락", emoji: "🍱" },
-        { label: "과일/샐러드", emoji: "🍎" },
-        { label: "즉석섭취식품", emoji: "😡" },
-        { label: "즉석조리식품", emoji: "🍲" },
-        { label: "식재료", emoji: "🧂" },
-        { label: "건강식품", emoji: "💪" },
-    ] as const;
-
-    type CategoryType = typeof categories[number]["label"] | "카테고리";
-    const [categoryLabel, setCategoryLabel] = useState<CategoryType>(
-        (searchParams.get("category") as CategoryType) ?? "카테고리"
-    );
-
-    // const [showCategoryMenu, setShowCategoryMenu] = useState(false);
+    const initialCategoryId = Number(searchParams.get("category") || "0") as CategoryId;
+    const [categoryId, setCategoryId] = useState<CategoryId>(initialCategoryId);
 
     const sortOptions = [
-        { label: "Rated", icon: "ri:star-fill", param: "score,DESC", color: "text-yellow-400" },
-        { label: "Likes", icon: "ri:heart-fill", param: "likeCount,DESC", color: "text-red-500" },
-        // { label: "Match", icon: "ri:sparkling-2-fill", param: "productId,DESC", color: "text-green-500" },
+        { label: t("sortProductScore"), icon: "ri:star-fill", param: "score,DESC", color: "text-yellow-400" },
+        { label: t("sortProductLike"), icon: "ri:heart-fill", param: "likeCount,DESC", color: "text-red-500" },
     ] as const;
 
-    // type SortLabelType = typeof sortOptions[number]["label"];
     type SortParamType = typeof sortOptions[number]["param"];
-
     const [sortParam, setSortParam] = useState<SortParamType>(
         (searchParams.get("sort") as SortParamType) ?? "score,DESC"
     );
-
-    // const sortLabel: SortLabelType = sortOptions.find((s) => s.param === sortParam)?.label ?? "좋아요 순";
-    // const [showSortMenu, setShowSortMenu] = useState(false);
-
-    // const displayCategoryLabel =
-    //     categoryLabel === "카테고리"
-    //         ? "카테고리"
-    //         : `${categories.find((c) => c.label === categoryLabel)?.emoji} ${categoryLabel}`;
-
-    const categoryForQuery = categoryLabel === "카테고리" || categoryLabel === "전체" ? undefined : categoryLabel;
 
     const [showFilters, setShowFilters] = useState(true);
     const lastScrollY = useRef(0);
@@ -114,6 +102,7 @@ export default function RankingPage() {
     }, []);
 
     const sortKey = sortParam.split(",")[0];
+    const categoryForQuery = categoryId === 0 ? undefined : t(`productCategory.${categoryId}`);
 
     const {
         data,
@@ -126,7 +115,7 @@ export default function RankingPage() {
         queryKey: ["productsRanking", size, sortParam, categoryForQuery],
         queryFn: async ({ pageParam }) => {
             const last = pageParam as { lastValue?: number; lastProductId?: number } | undefined;
-            return await listProducts(
+            return await getRanking(
                 size,
                 last?.lastValue,
                 last?.lastProductId,
@@ -172,29 +161,32 @@ export default function RankingPage() {
 
     return (
         <div className="min-h-screen bg-gray-50">
+            {/* 상단 필터 */}
             <div className={`sticky top-[3.625rem] z-40 transition-transform duration-300 ease-in-out ${showFilters ? "translate-y-0" : "-translate-y-full"}`}>
                 <div className="px-4 py-2 bg-transparent">
                     <div className="flex flex-nowrap gap-2 items-center">
 
-                        {/* 셀렉트 박스 */}
-                        <div className="relative ">
+                        {/* 카테고리 드롭다운 */}
+                        <div className="relative">
                             <select
-                                value={categoryLabel}
+                                value={categoryId}
                                 onChange={(e) => {
-                                    const label = e.target.value;
-                                    setCategoryLabel(label as CategoryType);
+                                    const newId = Number(e.target.value) as CategoryId;
+                                    setCategoryId(newId);
                                     const newParams: Record<string, string> = {
                                         sort: sortParam,
                                     };
-                                    if (label !== "전체") newParams.category = label;
+                                    if (newId !== 0) {
+                                        newParams.category = String(newId);
+                                    }
                                     setSearchParams(newParams);
                                     window.scrollTo(0, 0);
                                 }}
                                 className="w-12 h-10 pl-2 pr-5 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none"
                             >
-                                {categories.map(({ label, emoji }) => (
-                                    <option key={label} value={label}>
-                                        {emoji} {label}
+                                {CATEGORY_LIST.map(({ id, emoji }) => (
+                                    <option key={id} value={id}>
+                                        {emoji} {t(`productCategory.${id}`)}
                                     </option>
                                 ))}
                             </select>
@@ -205,7 +197,7 @@ export default function RankingPage() {
                             </div>
                         </div>
 
-                        {/* 필터링 버튼 */}
+                        {/* 정렬 필터 버튼 */}
                         <div className="h-10 shadow-sm rounded-lg border border-gray-300">
                             {sortOptions.map(({ label, param, icon, color }, index) => {
                                 const isSelected = sortParam === param;
@@ -214,18 +206,20 @@ export default function RankingPage() {
                                         key={param}
                                         onClick={() => {
                                             setSortParam(param);
-                                            setSearchParams({
-                                                ...(categoryLabel !== "카테고리" ? { category: categoryLabel } : {}),
-                                                sort: param,
-                                            });
+                                            const newParams: Record<string, string> = {};
+                                            if (categoryId !== 0) {
+                                                newParams.category = String(categoryId);
+                                            }
+                                            newParams.sort = param;
+                                            setSearchParams(newParams);
                                             window.scrollTo(0, 0);
                                         }}
                                         className={`
-                                                    py-2 px-4 inline-flex justify-center items-center gap-1 text-sm font-medium transition
-                                                    ${isSelected ? "h-10 text-gray-900 ring-2 ring-amber-400 ring-inset bg-white" : "bg-white text-gray-900 hover:bg-gray-50"}
-                                                    ${index === 0 ? "rounded-l-lg" : ""}
-                                                    ${index === sortOptions.length - 1 ? "rounded-r-lg border-r-0" : "border-r border-gray-300"}
-                                                  `}
+                                            py-2 px-4 inline-flex justify-center items-center gap-1 text-sm font-medium transition
+                                            ${isSelected ? "h-10 text-gray-900 ring-2 ring-amber-400 ring-inset bg-white" : "bg-white text-gray-900 hover:bg-gray-50"}
+                                            ${index === 0 ? "rounded-l-lg" : ""}
+                                            ${index === sortOptions.length - 1 ? "rounded-r-lg border-r-0" : "border-r border-gray-300"}
+                                        `}
                                     >
                                         <Icon icon={icon} className={`w-4 h-4 ${color}`} />
                                         {label}
@@ -238,7 +232,7 @@ export default function RankingPage() {
                 </div>
             </div>
 
-
+            {/* 상품 목록 */}
             <ListComponent
                 products={
                     data
@@ -260,9 +254,8 @@ export default function RankingPage() {
                 isRanking={true}
             />
 
-            {/*<BottomNavComponent />*/}
+            {/* 뒤로가기 버튼 & FAB */}
             <BackParamButton where="/main" />
-
             <FloatingActionButtons />
         </div>
     );

@@ -11,7 +11,7 @@ const host = "http://localhost:8080/api/v1/products";
  * @param category 카테고리 필터
  * @param sortParam 정렬 기준 문자열 ("likeCount,DESC" 등)
  */
-export async function listProducts(
+export async function getRanking(
     size: number,
     lastValue?: number,
     lastProductId?: number,
@@ -62,7 +62,7 @@ export async function searchProducts(
     lastProductId?: number,
     category?: string,
     keyword: string = "",
-    sortParam: string = "likeCount,DESC"
+    sortParam: string = "score,DESC"
 ): Promise<PageResponseCursor<ProductListDTO>> {
     const sortKey = sortParam.split(",")[0];
 
@@ -80,11 +80,34 @@ export async function searchProducts(
 }
 
 /**
+ * ✅ 정확도(_score) 정렬 전용 OFFSET 기반 검색
+ */
+export async function searchProductsByScore(
+    size: number,
+    page: number,//내부적으로 pageParam으로 관리
+    category?: string,
+    keyword: string = ""
+): Promise<ProductListDTO[]> {
+    const params: Record<string, any> = {
+        size,
+        page,
+        sort: "_score",
+        keyword,
+        ...(category && { category }),
+    };
+
+    const res = await axiosInstance.get<PageResponseCursor<ProductListDTO>>(`${host}/search`, {
+        params,
+    });
+
+    return res.data.content;
+}
+
+/**
  * 추천 상품 목록 조회 (커서 기반)
  * @param size 페이지 크기
  * @param lastValue 정렬 기준 값 (likeCount 또는 score)
  * @param lastProductId 보조 커서
- * @param sortParam 정렬 기준 ("likeCount,DESC" 등)
  */
 export async function getRecommendedProducts(
     size: number,
@@ -112,3 +135,4 @@ export const getWishlistCount = async (): Promise<number> => {
     const response = await axiosInstance.get(`${host}/wishCount`);
     return response.data;
 };
+

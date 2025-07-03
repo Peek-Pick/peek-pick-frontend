@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import type { ProductListDTO, PageResponseCursor } from "~/types/products";
-import { listProducts } from "~/api/products/productsAPI";
+import { getRanking } from "~/api/products/productsAPI";
 import { Icon } from "@iconify/react";
 import { useEffect, useRef } from "react";
 import {useTranslation} from "react-i18next";
@@ -18,7 +18,7 @@ export function RankingComponent() {
 
     const { data, isLoading, isError } = useQuery<PageResponseCursor<ProductListDTO>>({
         queryKey: ["productsRanking", size, sortKey],
-        queryFn: () => listProducts(size, undefined, undefined, undefined, sortKey),
+        queryFn: () => getRanking(size, undefined, undefined, undefined, sortKey),
         staleTime: 1000 * 60 * 5,
     });
 

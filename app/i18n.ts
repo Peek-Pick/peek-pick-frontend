@@ -79,6 +79,36 @@ const resources = {
             // 상품
             "productLoadError": "Failed to load product data.",
 
+            "productRanking":"Product Ranking",
+            "productSearch":"Product Search",
+            "recommendedProduct":"Recommended Products",
+
+            "sortProductLike": "Liked",
+            "sortProductScore": "Rated",
+            "sortProductMatch": "Match",
+            "searchBarPlaceholder": "Search product name",
+
+            "productCategory": {
+                "0": "All",
+                "1": "Snacks",
+                "2": "Kimbap/Onigiri",
+                "3": "Noodles",
+                "4": "Bread/Dessert",
+                "5": "Ice Cream",
+                "6": "Candy/Gum",
+                "7": "Drinks",
+                "8": "Sandwich/Burger",
+                "9": "Lunch Box",
+                "10": "Fruit/Salad",
+                "11": "Ready-to-Eat",
+                "12": "Instant to Cook",
+                "13": "Ingredients",
+                "14": "Health Food",
+                "15": "Other"
+            },
+
+
+
             //태그
             "tags": {
                 "SWEET": "SWEET",
@@ -270,6 +300,33 @@ const resources = {
             // 상품
             "productLoadError": "상품 정보를 가져오지 못했습니다.",
 
+            "productRanking":"상품 랭킹",
+            "productSearch":"상품 검색",
+            "recommendedProduct":"추천 상품",
+
+            "searchBarPlaceholder": "상품명 검색",
+            "sortProductLike": "좋아요 순",
+            "sortProductScore": "별점 순",
+            "sortProductMatch": "정확도 순",
+
+            "productCategory": {
+                "0": "전체",
+                "1": "과자류",
+                "2": "삼각김밥/김밥",
+                "3": "면류",
+                "4": "빵/디저트",
+                "5": "아이스크림",
+                "6": "캔디/껌",
+                "7": "음료",
+                "8": "샌드위치/햄버거",
+                "9": "도시락",
+                "10": "과일/샐러드",
+                "11": "즉석섭취식품",
+                "12": "즉석조리식품",
+                "13": "식재료",
+                "14": "건강식품",
+                "15": "기타"
+            },
             //태그
             "tags": {
                 "SWEET": "달콤한",
@@ -454,6 +511,35 @@ const resources = {
             "ratings": "評価",
 
             "productLoadError": "商品の読み込みに失敗しました。",
+
+            "productRanking": "商品ランキング",
+            "productSearch": "商品検索",
+            "recommendedProduct": "おすすめ商品",
+
+            "searchBarPlaceholder": "商品名を検索",
+            "sortProductLike": "人気順",
+            "sortProductScore": "評価順",
+            "sortProductMatch": "関連順",
+
+            "productCategory": {
+                "0": "すべて",
+                "1": "スナック",
+                "2": "キンパ/おにぎり",
+                "3": "麺類",
+                "4": "パン/デザート",
+                "5": "アイスクリーム",
+                "6": "キャンディ/ガム",
+                "7": "飲料",
+                "8": "サンドイッチ/ハンバーガー",
+                "9": "弁当",
+                "10": "フルーツ/サラダ",
+                "11": "すぐに食べられる",
+                "12": "簡単な調理が必要",
+                "13": "材料",
+                "14": "健康食品",
+                "15": "その他"
+            },
+
 
             "tags": {
                 "SWEET": "甘い",
