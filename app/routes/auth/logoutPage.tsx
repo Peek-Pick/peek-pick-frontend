@@ -3,10 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { logout } from '~/api/auth/authAPI';
 import {LogoutLoading} from "~/util/loading/logoutLoading";
 import {useTranslation} from "react-i18next";
+import {useQueryClient} from "@tanstack/react-query";
 
 const LogoutPage = () => {
   const navigate = useNavigate();
   const { i18n } = useTranslation();
+  const queryClient = useQueryClient();
+
 
   useEffect(() => {
     const doLogout = async () => {
@@ -26,7 +29,7 @@ const LogoutPage = () => {
         // 클라이언트 상태 초기화
         localStorage.removeItem('token');
         sessionStorage.clear();
-
+        queryClient.clear();
         // 로그아웃 완료 후 이동
         navigate('/login');
       }

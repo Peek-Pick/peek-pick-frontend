@@ -1,9 +1,9 @@
-import ConfirmModalComponent from "~/components/common/ConfirmModalComponent";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 import { createInquiry } from "~/api/inquiries/inquiriesAPI";
 import Swal from "sweetalert2";
-import '~/util/swal/customSwal.css'
+import "~/util/swal/customSwal.css";
+import { useTranslation } from "react-i18next";
 
 interface BarcodeAddRequestProps {
     barcode: string;
@@ -11,66 +11,75 @@ interface BarcodeAddRequestProps {
 }
 
 function BarcodeAddRequest({ barcode, onClose }: BarcodeAddRequestProps) {
+    // 국제화
+    const { t } = useTranslation();
     const navigate = useNavigate();
-    const [loading, setLoading] = useState(false);
 
-    const handleConfirm = async () => {
-        console.log(`Sending product request: ${barcode}`);
-        setLoading(true);
-        onClose();
+    useEffect(() => {
+        const showConfirmModal = async () => {
+            const result = await Swal.fire({
+                title: `${t("barcodeAddModalTitle")} ${barcode}`,
+                html: `${t("barcodeAddModalBody")}`,
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonText: t("confirmRequestButtonText"),
+                cancelButtonText: t("cancelButtonText"),
+                customClass: {
+                    popup: "custom-popup",
+                    title: "custom-title",
+                    htmlContainer: "custom-html",
+                    actions: "custom-actions",
+                    confirmButton: "custom-confirm-button",
+                    cancelButton: "custom-cancel-button",
+                },
+            });
 
-        const dto: InquiryRequestDTO = {
-            content: `상품 추가 요청: ${barcode}`,
-            type: "PRODUCT_ADD",
-            imgUrls: [],
+            if (result.isConfirmed) {
+                try {
+                    const dto = {
+                        content: `상품 추가 요청: ${barcode}`,
+                        type: "PRODUCT_ADD" as InquiryType,
+                        imgUrls: [],
+                    };
+
+                    await createInquiry(dto);
+
+                    await Swal.fire({
+                        icon: "success",
+                        title: t("barcodeAddSuccess"),
+                        confirmButtonText: t("confirmOKButtonText"),
+                        customClass: {
+                            popup: "custom-popup",
+                            title: "custom-title",
+                            confirmButton: "custom-confirm-button",
+                        },
+                    });
+                } catch (err) {
+                    console.error("상품 요청 실패:", err);
+                    await Swal.fire({
+                        icon: "error",
+                        title: t("barcodeAddError"),
+                        confirmButtonText: t("confirmOKButtonText"),
+                        customClass: {
+                            popup: "custom-popup",
+                            title: "custom-title",
+                            confirmButton: "custom-confirm-button",
+                        },
+                    });
+                } finally {
+                    onClose();
+                    navigate(-1);
+                }
+            } else {
+                onClose();
+                navigate(-1);
+            }
         };
 
-        try {
-            await createInquiry(dto); // 문의글 생성 API 호출
-            await Swal.fire({
-                title: "Product addition request has been successfully submitted.",
-                icon: "success",
-                confirmButtonText: "OK",
-                customClass: {
-                    popup: "custom-popup",
-                    title: "custom-title",
-                    actions: "custom-actions",
-                    confirmButton: "custom-confirm-button",
-                },
-            });
-        } catch (err) {
-            console.error("Error submitting product addition request:", err);
-            await Swal.fire({
-                title: "Failed to submit product addition request.",
-                icon: "error",
-                confirmButtonText: "OK",
-                customClass: {
-                    popup: "custom-popup",
-                    title: "custom-title",
-                    actions: "custom-actions",
-                    confirmButton: "custom-confirm-button",
-                },
-            });
-        } finally {
-            setLoading(false);
-            onClose();
-            navigate(-1);
-        }
-    };
+        showConfirmModal();
+    }, [barcode, navigate, onClose, t]);
 
-    const handleCancel = () => {
-        navigate(-1); // No 클릭 시 이전 페이지로 이동
-    };
-
-    return (
-        <ConfirmModalComponent
-            message={`Barcode: ${barcode}\nNo product information found.\n\nWould you like to request the product to be added?`}
-            confirmText={loading ? "Processing..." : "Yes"}
-            cancelText="No"
-            onConfirm={handleConfirm}
-            onCancel={handleCancel}
-        />
-    );
+    return null;
 }
 
 export default BarcodeAddRequest;

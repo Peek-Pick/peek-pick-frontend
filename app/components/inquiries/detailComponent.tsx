@@ -3,10 +3,11 @@ import { useNavigate } from "react-router-dom";
 import ImageModalComponent from "~/components/common/ImageModalComponent";
 import { Edit, MoreVertical, Trash, Check, Hourglass } from "lucide-react";
 import { useDeleteInquiry } from "~/hooks/inquiries/useInquiryMutation";
-import { INQUIRY_TYPES } from "~/enums/inquiries/inquiry";
+import { INQUIRY_TYPES, INQUIRY_STATUS_LABELS } from "~/enums/inquiries/inquiry";
 import { InquiryLoading } from "~/util/loading/inquiryLoading";
 import Swal from "sweetalert2";
-import '~/util/swal/customSwal.css'
+import '~/util/swal/customSwal.css';
+import { useTranslation } from "react-i18next";
 
 const API_URL = import.meta.env.VITE_API_URL?.replace("/api/v1", "") ?? "http://localhost";
 
@@ -17,68 +18,13 @@ interface Props {
 }
 
 function DetailComponent({ inquiry, navigate: navigateProp, isLoading }: Props) {
-    if (isLoading) return <InquiryLoading />;
-    if (!inquiry)
-        return (
-            <p className="text-center p-4 text-red-500 text-base sm:text-lg">
-                Failed to load inquiry data.
-            </p>
-        );
+    const { t } = useTranslation();
 
     const [modalImage, setModalImage] = useState<string | null>(null);
     const [menuOpen, setMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
     const deleteInquiryMutation = useDeleteInquiry();
     const navigate = useNavigate();
-
-    const handleDelete = async () => {
-        const result =
-            await Swal.fire({
-                title: "Are you sure you want to delete your inquiry?",
-                text: "Once deleted, the changes cannot be undone.",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonText: "Delete",
-                cancelButtonText: "Cancel",
-                    customClass: {
-                        popup: "custom-popup",
-                        title: "custom-title",
-                        actions: "custom-actions",
-                        confirmButton: "custom-confirm-button",
-                    },
-            });
-
-        if (!result.isConfirmed) return;
-
-        try {
-            await deleteInquiryMutation.mutateAsync(inquiry.inquiryId);
-            await Swal.fire({
-                title: "Inquiry deleted successfully.",
-                icon: "success",
-                confirmButtonText: "OK",
-                customClass: {
-                    popup: 'custom-popup',
-                    title: 'custom-title',
-                    actions: 'custom-actions',
-                    confirmButton: 'custom-confirm-button',
-                },
-            });
-            navigate("/inquiries/list");
-        } catch (error) {
-            console.error("Delete failed:", error);
-            await Swal.fire({
-                title: "Failed to delete inquiry.",
-                icon: "error",
-                confirmButtonText: "OK",
-                customClass: {
-                    popup: 'custom-popup',
-                    title: 'custom-title',
-                    actions: 'custom-actions',
-                    confirmButton: 'custom-confirm-button',
-                },
-            });
-        }
-    };
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -90,32 +36,72 @@ function DetailComponent({ inquiry, navigate: navigateProp, isLoading }: Props) 
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    const typeLabel = INQUIRY_TYPES.find((t) => t.value === inquiry.type)?.label ?? inquiry.type;
+    if (isLoading) return <InquiryLoading />;
+    if (!inquiry)
+        return (
+            <p className="text-center p-4 text-red-500 text-base sm:text-lg">
+                {t("inquiry.loadFail", "Failed to load inquiry data.")}
+            </p>
+        );
 
-    const formatDate = (iso: string) => {
-        const d = new Date(iso);
-        const now = new Date();
-        const pad = (n: number) => n.toString().padStart(2, "0");
+    const handleDelete = async () => {
+        const result = await Swal.fire({
+            title: t("inquiry.delete.confirmTitle", "Are you sure you want to delete your inquiry?"),
+            text: t("inquiry.delete.confirmText", "Once deleted, the changes cannot be undone."),
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: t("inquiry.delete.confirmButton", "Delete"),
+            cancelButtonText: t("inquiry.delete.cancelButton", "Cancel"),
+            customClass: {
+                popup: "custom-popup",
+                title: "custom-title",
+                actions: "custom-actions",
+                confirmButton: "custom-confirm-button",
+            },
+        });
 
-        const isToday =
-            d.getFullYear() === now.getFullYear() &&
-            d.getMonth() === now.getMonth() &&
-            d.getDate() === now.getDate();
+        if (!result.isConfirmed) return;
 
-        return isToday
-            ? `${pad(d.getHours())}:${pad(d.getMinutes())}`
-            : `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+        try {
+            await deleteInquiryMutation.mutateAsync(inquiry.inquiryId);
+            await Swal.fire({
+                title: t("inquiry.delete.success", "Inquiry deleted successfully."),
+                icon: "success",
+                confirmButtonText: t("confirm", "OK"),
+                customClass: {
+                    popup: 'custom-popup',
+                    title: 'custom-title',
+                    actions: 'custom-actions',
+                    confirmButton: 'custom-confirm-button',
+                },
+            });
+            navigate("/inquiries/list");
+        } catch (error) {
+            console.error("Delete failed:", error);
+            await Swal.fire({
+                title: t("inquiry.delete.fail", "Failed to delete inquiry."),
+                icon: "error",
+                confirmButtonText: t("confirm", "OK"),
+                customClass: {
+                    popup: 'custom-popup',
+                    title: 'custom-title',
+                    actions: 'custom-actions',
+                    confirmButton: 'custom-confirm-button',
+                },
+            });
+        }
     };
 
+    const typeLabel = t(`inquiry.types.${inquiry.type}`, INQUIRY_TYPES.find((t) => t.value === inquiry.type)?.label ?? inquiry.type);
     const isAnswered = inquiry.status === "ANSWERED";
-    const statusLabel = isAnswered ? "Answered" : "Waiting";
+    const statusLabel = t(`inquiry.status.${inquiry.status}`, INQUIRY_STATUS_LABELS[inquiry.status]);
 
     return (
         <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow px-4 pt-4 pb-6 space-y-4 relative">
             {modalImage && (
-                <ImageModalComponent src={modalImage} alt="Attached Image" onClose={() => setModalImage(null)} />
+                <ImageModalComponent src={modalImage} alt={t("inquiry.imageAlt", "Attached Image")} onClose={() => setModalImage(null)} />
             )}
-            {/* Top Navigation */}
+
             <div className="flex items-center justify-between text-gray-600">
                 <button
                     onClick={() => {
@@ -123,17 +109,13 @@ function DetailComponent({ inquiry, navigate: navigateProp, isLoading }: Props) 
                         else navigate("/inquiries/list");
                     }}
                     className="text-yellow-500 hover:text-yellow-600 p-1"
-                    aria-label="Back"
+                    aria-label={t("back", "Back")}
                 >
                     <svg className="w-6 h-6 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                     </svg>
                 </button>
-
-                {/* Center: Inquiry Type */}
                 <div className="flex-1 text-center text-sm text-yellow-500 font-semibold truncate py-0.5">{typeLabel}</div>
-
-                {/* Right: More Menu */}
                 <div className="relative" ref={menuRef}>
                     <button
                         onClick={() => setMenuOpen((prev) => !prev)}
@@ -149,21 +131,20 @@ function DetailComponent({ inquiry, navigate: navigateProp, isLoading }: Props) 
                                 onClick={() => navigate(`/inquiries/${inquiry.inquiryId}/edit`)}
                             >
                                 <Edit className="w-4 h-4" />
-                                Modify
+                                {t("inquiry.edit.label", "Edit")}
                             </button>
                             <button
                                 className="w-full px-3 py-2 text-left hover:bg-gray-100 text-red-600 flex items-center gap-2"
                                 onClick={handleDelete}
                             >
                                 <Trash className="w-4 h-4" />
-                                Delete
+                                {t("inquiry.delete.title", "Delete")}
                             </button>
                         </div>
                     )}
                 </div>
             </div>
 
-            {/* Profile, Nickname & Status */}
             <div className="flex justify-between items-center mb-1.5">
                 <div className="flex items-center gap-2">
                     <img
@@ -185,24 +166,21 @@ function DetailComponent({ inquiry, navigate: navigateProp, isLoading }: Props) 
                 </span>
             </div>
 
-            {/* Created and Modified Dates */}
             <div className="flex flex-col items-end text-xs text-gray-500 mb-2.5 gap-1 leading-none">
                 <span>
-                    Posted on: <span className="bg-gray-100 px-0.5 py-0.5 text-gray-700">{inquiry.regDate.slice(0, 16).replace("T", " ").replace(/-/g, ".")}</span>
+                    {t("inquiry.postedOn", "Posted on")}: <span className="bg-gray-100 px-0.5 py-0.5 text-gray-700">{inquiry.regDate.slice(0, 16).replace("T", " ").replace(/-/g, ".")}</span>
                 </span>
                 {inquiry.modDate !== inquiry.regDate && (
                     <span>
-                        Updated on: <span className="bg-gray-100 px-0.5 py-0.5 text-gray-700">{inquiry.modDate.slice(0, 16).replace("T", " ").replace(/-/g, ".")}</span>
+                        {t("inquiry.updatedOn", "Updated on")}: <span className="bg-gray-100 px-0.5 py-0.5 text-gray-700">{inquiry.modDate.slice(0, 16).replace("T", " ").replace(/-/g, ".")}</span>
                     </span>
                 )}
             </div>
 
             <hr className="border-t border-gray-200" />
 
-            {/* Content */}
             <div className="text-gray-800 whitespace-pre-line leading-relaxed mt-4">{inquiry.content}</div>
 
-            {/* Images */}
             {inquiry.imgUrls?.length > 0 && (
                 <>
                     <hr className="border-t border-dashed border-gray-300 my-4" />
@@ -217,7 +195,7 @@ function DetailComponent({ inquiry, navigate: navigateProp, isLoading }: Props) 
                                 >
                                     <img
                                         src={src}
-                                        alt="Attached Image"
+                                        alt={t("inquiry.imageAlt", "Attached Image")}
                                         className="w-full h-full object-cover"
                                         onError={(e) => {
                                             e.currentTarget.src = "";

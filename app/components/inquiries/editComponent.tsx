@@ -5,6 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { INQUIRY_TYPES } from "~/enums/inquiries/inquiry";
 import { InquiryLoading } from "~/util/loading/inquiryLoading";
 import Swal from "sweetalert2";
+import { useTranslation } from "react-i18next";
 
 interface EditComponentProps {
     initialData: InquiryResponseDTO;
@@ -13,8 +14,8 @@ interface EditComponentProps {
 }
 
 function EditComponent({ initialData, onSubmit, isLoading }: EditComponentProps) {
-    if (isLoading) return <InquiryLoading />;
-
+    // 국제화
+    const { t } = useTranslation();
     const queryClient = useQueryClient();
 
     const [content, setContent] = useState(initialData.content);
@@ -42,9 +43,9 @@ function EditComponent({ initialData, onSubmit, isLoading }: EditComponentProps)
         } catch (err) {
             console.error("Failed to delete image:", err);
             await Swal.fire({
-                title: "Failed to delete image.",
+                title: t("inquiry.deleteImageFail"),
                 icon: "error",
-                confirmButtonText: "OK",
+                confirmButtonText: t("confirm"),
             });
         }
     };
@@ -54,9 +55,9 @@ function EditComponent({ initialData, onSubmit, isLoading }: EditComponentProps)
 
         if (!agree) {
             await Swal.fire({
-                title: "Please agree to the privacy policy.",
+                title: t("inquiry.privacyRequired"),
                 icon: "warning",
-                confirmButtonText: "OK",
+                confirmButtonText: t("confirm"),
             });
             return;
         }
@@ -72,19 +73,21 @@ function EditComponent({ initialData, onSubmit, isLoading }: EditComponentProps)
         } catch (err) {
             console.error("Failed to update inquiry:", err);
             await Swal.fire({
-                title: "Failed to update inquiry.",
+                title: t("inquiry.editFail"),
                 icon: "error",
-                confirmButtonText: "OK",
+                confirmButtonText: t("confirm"),
             });
         }
     };
+
+    if (isLoading) return <InquiryLoading />;
 
     return (
         <div className="w-full max-w-2xl mx-auto px-4 bg-white rounded-2xl shadow pt-4 pb-6 relative space-y-4">
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="flex items-center space-x-2 mb-4 mt-1.5">
                     <Edit2 className="text-yellow-500" />
-                    <h2 className="text-xl font-semibold text-gray-800">Edit Inquiry</h2>
+                    <h2 className="text-xl font-semibold text-gray-800">{t("inquiry.editTitle")}</h2>
                 </div>
 
                 <div className="bg-white border rounded-2xl shadow-md px-4 py-6 space-y-4 w-full sm:min-h-[50vh]">
@@ -95,7 +98,7 @@ function EditComponent({ initialData, onSubmit, isLoading }: EditComponentProps)
                     >
                         {INQUIRY_TYPES.map((opt) => (
                             <option key={opt.value} value={opt.value}>
-                                {opt.label}
+                                {t(`inquiry.types.${opt.value}`)}
                             </option>
                         ))}
                     </select>
@@ -104,7 +107,7 @@ function EditComponent({ initialData, onSubmit, isLoading }: EditComponentProps)
                         ref={textareaRef}
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
-                        placeholder="Write your inquiry here"
+                        placeholder={t("inquiry.editPlaceholder")}
                         className="w-full border border-gray-300 p-3 rounded resize-none focus:outline-none focus:ring-2 focus:ring-yellow-400 overflow-hidden leading-relaxed"
                         rows={1}
                         style={{ minHeight: "300px" }}
@@ -119,7 +122,7 @@ function EditComponent({ initialData, onSubmit, isLoading }: EditComponentProps)
                                     <div key={url} className="relative w-24 h-24 rounded overflow-hidden border border-gray-300 shadow-sm">
                                         <img
                                             src={imgSrc}
-                                            alt="Attached image"
+                                            alt={t("inquiry.imageAlt")}
                                             className="w-full h-full object-cover"
                                             onError={(e) => {
                                                 e.currentTarget.src = "";
@@ -139,7 +142,7 @@ function EditComponent({ initialData, onSubmit, isLoading }: EditComponentProps)
                     )}
 
                     <div>
-                        <label className="text-sm text-gray-600 mb-1 block">Add new images</label>
+                        <label className="text-sm text-gray-600 mb-1 block">{t("inquiry.addNewImages")}</label>
                         <input
                             type="file"
                             multiple
@@ -160,16 +163,14 @@ function EditComponent({ initialData, onSubmit, isLoading }: EditComponentProps)
                             className="rounded border-gray-300 text-yellow-500 focus:ring-yellow-400"
                             required
                         />
-                        <span>Agree to the privacy policy (required)</span>
+                        <span>{t("inquiry.privacyAgree")}</span>
                     </label>
 
                     <div
                         className="mt-2 w-full p-3 border border-gray-300 rounded bg-gray-100 text-gray-600 text-xs font-sans leading-relaxed whitespace-pre-line select-none"
                         style={{ userSelect: "none", pointerEvents: "none", boxShadow: "none" }}
                     >
-                        To process your inquiry, we collect your email and any personal information included in your message.
-                        This data is retained for 3 years and then discarded in accordance with our privacy policy.
-                        You may choose not to agree, but in that case, you will not be able to submit an inquiry.
+                        {t("inquiry.privacyNotice")}
                     </div>
                 </div>
 
@@ -180,7 +181,7 @@ function EditComponent({ initialData, onSubmit, isLoading }: EditComponentProps)
                         className={`w-full px-8 py-3 rounded-full font-semibold text-white transition 
                             ${agree ? "bg-yellow-500 hover:bg-yellow-600 cursor-pointer" : "bg-gray-300 cursor-not-allowed"}`}
                     >
-                        Submit Edit
+                        {t("inquiry.editSubmit")}
                     </button>
                 </div>
             </form>

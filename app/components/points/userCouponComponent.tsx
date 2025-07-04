@@ -1,5 +1,5 @@
-import type { UserCouponDTO } from "~/types/points";
-import { CouponStatus } from "~/enums/points/points";
+import type {UserCouponDTO} from "~/types/points";
+import {CouponStatus} from "~/enums/points/points";
 
 interface Props {
     coupons: UserCouponDTO[];
@@ -11,7 +11,7 @@ export default function UserCouponComponent({ coupons, header }: Props) {
     console.log(coupons);
 
     return (
-        <div className="bg-gray-50 py-6 px-3 sm:px-6">
+        <div className="max-w-3xl mx-auto bg-gray-50 py-6 px-3 sm:px-6 rounded-2xl shadow relative space-y-4">
             {header && <div className="mb-5">{header}</div>}
 
             {coupons.length === 0 ? (

@@ -2,16 +2,15 @@ import { Links, Meta, Scripts, ScrollRestoration } from "react-router-dom";
 import { Outlet } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AdminAuthProvider } from "~/contexts/AdminAuthContext";
-import { useEffect } from "react";
 import "./app.css";
 import "./i18n";
+import "./settingFCM";
 
 const queryClient = new QueryClient();
 
 export function Document({ children }: { children: React.ReactNode }) {
     return (
-        // 하드코딩 - 수정 필요
-        <html lang="ko">
+        <html>
         <head>
             <meta charSet="utf-8" />
             <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -31,28 +30,6 @@ export function Document({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-    useEffect(() => {
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js', { scope: '/' })
-                .then(reg => {
-                    console.log('[SW] Registered:', reg.scope);
-
-                    reg.addEventListener('updatefound', () => {
-                        const newWorker = reg.installing;
-                        if (newWorker) {
-                            newWorker.addEventListener('statechange', () => {
-                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                    console.log('[SW] New content is available; please refresh.');
-                                }
-                            });
-                        }
-                    });
-                })
-                .catch(err => {
-                    console.error('[SW] Registration failed:', err);
-                });
-        }
-    }, []);
 
     return (
         <QueryClientProvider client={queryClient}>
