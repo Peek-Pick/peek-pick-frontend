@@ -199,6 +199,27 @@ const resources = {
                 "save": "Save"
             },
 
+            // 바코드 스캔
+            "barcodeScanner": {
+                "cameraPermissionRequired": "Camera access permission is required.",
+                "cameraPermissionTitle": "Camera Permission Required",
+                "cameraPermissionText": "Please allow camera access to scan barcodes in Peek&Pick.",
+                "cameraAccessFailedTitle": "Camera Access Failed",
+                "cameraAccessFailedText": "Camera permission is required.",
+                "barcodeProcessFailedTitle": "Barcode Processing Failed",
+                "barcodeProcessFailedText": "There was a problem processing the barcode.",
+                "confirmButton": "OK"
+            },
+
+            // 바코드 히스토리
+            "barcodeHistory": {
+                "title": "Recent Barcode History",
+                "noHistory": "No barcode history found.",
+                "reviewAlready": "Review already submitted",
+                "writeReview": "Write a Review",
+                "footerNote": "Your recent barcode scans are automatically stored in history, with a maximum of 20 items saved."
+            },
+
             // useMyPageEdit
             "updatingProfileSuccess": "Profile updated successfully.",
             "updatingProfileFail": "Failed to update profile.",
@@ -208,6 +229,13 @@ const resources = {
             "deletingUserFail": "Failed to delete account.",
             "deletingUserConfirm": "Are You Sure You Want to Delete Your Account?",
             "deletingUserWarning": "This action is permanent and cannot be undone.",
+
+            // BarcodeAddRequest
+            "barcodeAddModalTitle": "Barcode:",
+            "barcodeAddModalBody": "Product information does not exist.<br/><strong>Would you like to request an addition?</strong>",
+            "confirmRequestButtonText": "Request",
+            "barcodeAddSuccess": "Product addition request has been completed.",
+            "barcodeAddError": "An error occurred while processing your request.",
 
             // 메인
             "mainBarcode": "Barcode",
@@ -230,6 +258,93 @@ const resources = {
             "loginButton": "Login",
             "signupGuid": "Don’t have an account?",
             "signupButton": "Sign up here",
+            "loginWelcome1": "Log In to",
+            "loginWithGoogle": "Login with Google",
+            "loginFailTitle": "Login failed. Please check your email or password.",
+            "confirm": "OK",
+            "bannedTitle": "Access Restricted",
+            "bannedMessage": "You are banned from logging in until {{date}}.",
+
+            // 문의사항
+            "inquiry": {
+                "title": "Submit Inquiry",
+                "placeholder": "Please enter your inquiry.",
+                "attachImages": "Attach Images",
+                "emailLabel": "User Email",
+                "privacyAgreement": "Agree to the privacy policy (required)",
+                "privacyNotice": "To process your inquiry, we collect your email and any personal information included in your message.\nThis data is retained for 3 years and then discarded in accordance with our privacy policy.\nYou may choose not to agree, but in that case, you will not be able to submit an inquiry.",
+                "agreeAlertTitle": "Please agree to the collection and use of personal information.",
+                "submit": "Submit Inquiry",
+                "types": {
+                    "ACCOUNT": "Account Issue",
+                    "PRODUCT_ADD": "Product Information",
+                    "POINT_REVIEW": "Review Related",
+                    "HOW_TO_USE": "How To Use",
+                    "BUG": "Bug",
+                    "ETC": "Other"
+                },
+                "loadFail": "Failed to load inquiry data.",
+                "delete": {
+                    "title": "Delete",
+                    "confirmTitle": "Are you sure you want to delete your inquiry?",
+                    "confirmText": "Once deleted, the changes cannot be undone.",
+                    "confirmButton": "Delete",
+                    "cancelButton": "Cancel",
+                    "success": "Inquiry deleted successfully.",
+                    "fail": "Failed to delete inquiry."
+                },
+                "postedOn": "Posted on",
+                "updatedOn": "Updated on",
+                "status": {
+                    "ANSWERED": "Answered",
+                    "PENDING": "Waiting"
+                },
+                "imageAlt": "Attached Image",
+                "editTitle": "Edit Inquiry",
+                "editPlaceholder": "Write your inquiry here",
+                "editSubmit": "Submit Edit",
+                "editFail": "Failed to update inquiry.",
+                "deleteImageFail": "Failed to delete image.",
+                "privacyAgree": "Agree to the privacy policy (required)",
+                "privacyRequired": "Please agree to the privacy policy.",
+                "addNewImages": "Add new images",
+                "listTitle": "Q&A",
+                "new": "New Inquiry",
+                "empty": "You have not submitted any inquiries yet.",
+                "answer": {
+                    "admin": "Admin",
+                    "posted": "Posted:",
+                    "loadFail": "Failed to load answer."
+                },
+                "submitting": "Submitting inquiry...",
+                "submitSuccess": "Inquiry submitted successfully",
+                "submitFail": "Failed to submit inquiry",
+                "edit": {
+                    "updating": "Updating inquiry...",
+                    "updateSuccess": "Inquiry updated successfully!",
+                    "updateFail": "Failed to update inquiry",
+                    "label": "Edit"
+                },
+                "updating": "Updating inquiry...",
+                "updateSuccess": "Inquiry updated successfully!",
+                "updateFail": "Failed to update inquiry"
+            },
+            "accessDenied": "Access denied.",
+            "back": "Back",
+            "menu": "Menu",
+
+            // 푸시 알람
+            "push": {
+                "permissionDeniedTitle": "Notification permission is blocked.",
+                "permissionDeniedText": "Please allow notification permission again in your browser settings.",
+                "manageNotificationSettings": "Manage Notification Settings",
+                "alertDescription": "Get alerts about new reviews and updates. You can always change this later.",
+                "settingsPrefix": "Settings available under My Page Notifications",
+                "update": "Update"
+            },
+            "cancel": "Close"
+
+            //-----------------------------------------영어
         },
     },
     ko: {
@@ -424,6 +539,27 @@ const resources = {
                 "save": "저장하기"
             },
 
+            // 바코드 스캔
+            "barcodeScanner": {
+                "cameraPermissionRequired": "카메라 권한이 필요합니다.",
+                "cameraPermissionTitle": "카메라 권한이 필요합니다.",
+                "cameraPermissionText": "Peek&Pick의 바코드 인식을 위해 카메라 권한을 허용해주세요.",
+                "cameraAccessFailedTitle": "카메라 접근 실패",
+                "cameraAccessFailedText": "카메라 권한이 필요합니다.",
+                "barcodeProcessFailedTitle": "바코드 처리 실패",
+                "barcodeProcessFailedText": "바코드 인식 중 문제가 발생했습니다.",
+                "confirmButton": "확인"
+            },
+
+            // 바코드 히스토리
+            "barcodeHistory": {
+                "title": "최근 바코드 내역",
+                "noHistory": "바코드 기록이 없습니다.",
+                "reviewAlready": "이미 리뷰가 작성되었습니다.",
+                "writeReview": "리뷰 작성하기",
+                "footerNote": "최근에 스캔한 바코드 기록은 최대 20개까지 자동 저장됩니다."
+            },
+
             // useMyPageEdit
             "updatingProfileSuccess": "프로필 수정 완료.",
             "updatingProfileFail": "프로필 수정 실패.",
@@ -433,6 +569,13 @@ const resources = {
             "deletingUserFail": "계정 삭제 실패.",
             "deletingUserConfirm": "계정을 삭제하시겠습니까?",
             "deletingUserWarning": "삭제하면 되돌릴 수 없습니다.",
+
+            // BarcodeAddRequest
+            "barcodeAddModalTitle": "바코드:",
+            "barcodeAddModalBody": "상품 정보가 존재하지 않습니다.<br/><strong>상품 추가 요청</strong>을 하시겠습니까?",
+            "confirmRequestButtonText": "요청하기",
+            "barcodeAddSuccess": "상품 추가 요청이 완료되었습니다.",
+            "barcodeAddError": "요청 처리 중 오류가 발생했습니다.",
 
             // 메인
             "mainBarcode": "바코드",
@@ -455,7 +598,93 @@ const resources = {
             "loginButton": "로그인",
             "signupGuid": "아직 회원이 아니신가요?",
             "signupButton": "가입하기",
-            "loginWithGoogle": "Google로 계속하기"
+            "loginWithGoogle": "Google로 계속하기",
+            "loginWelcome1": "로그인",
+            "loginFailTitle": "로그인 실패. 이메일 또는 비밀번호를 확인해주세요.",
+            "confirm": "확인",
+            "bannedTitle": "접근 제한",
+            "bannedMessage": "{{date}}까지 로그인할 수 없습니다.",
+
+            // 문의사항
+            "inquiry": {
+                "title": "문의 등록",
+                "placeholder": "문의 내용을 입력해주세요.",
+                "attachImages": "이미지 첨부",
+                "emailLabel": "사용자 이메일",
+                "privacyAgreement": "개인정보 수집 및 이용에 동의합니다. (필수)",
+                "privacyNotice": "문의 접수를 위해 이메일 및 문의 내용 내 포함된 개인정보를 수집합니다.\n해당 정보는 3년간 보관 후 폐기됩니다.\n동의하지 않으면 문의 등록이 불가합니다.",
+                "agreeAlertTitle": "개인정보 수집 및 이용에 동의해주세요.",
+                "submit": "문의 등록",
+                "types": {
+                    "ACCOUNT": "계정 관련",
+                    "PRODUCT_ADD": "상품 정보",
+                    "POINT_REVIEW": "리뷰 관련",
+                    "HOW_TO_USE": "사용 방법",
+                    "BUG": "버그",
+                    "ETC": "기타"
+                },
+                "loadFail": "문의 데이터를 불러오지 못했습니다.",
+                "delete": {
+                    "title": "삭제",
+                    "confirmTitle": "정말 삭제하시겠습니까?",
+                    "confirmText": "삭제하면 되돌릴 수 없습니다.",
+                    "confirmButton": "삭제",
+                    "cancelButton": "취소",
+                    "success": "문의가 삭제되었습니다.",
+                    "fail": "문의 삭제에 실패했습니다."
+                },
+                "postedOn": "작성일",
+                "updatedOn": "수정일",
+                "status": {
+                    "PENDING": "답변 완료",
+                    "ANSWERED": "답변 대기"
+                },
+                "imageAlt": "첨부 이미지",
+                "editTitle": "문의 수정",
+                "editPlaceholder": "문의 내용을 입력해주세요.",
+                "editSubmit": "수정 완료",
+                "editFail": "문의 수정에 실패했습니다.",
+                "deleteImageFail": "이미지 삭제에 실패했습니다.",
+                "privacyAgree": "개인정보 수집 및 이용에 동의합니다 (필수)",
+                "privacyRequired": "개인정보 수집 및 이용에 동의해주세요.",
+                "addNewImages": "새 이미지 추가",
+                "listTitle": "Q&A",
+                "new": "문의하기",
+                "empty": "아직 작성한 문의가 없습니다.",
+                "answer": {
+                    "admin": "관리자",
+                    "posted": "작성일:",
+                    "loadFail": "답변을 불러오지 못했습니다."
+                },
+                "submitting": "문의 등록 중...",
+                "submitSuccess": "문의가 성공적으로 등록되었습니다",
+                "submitFail": "문의 등록에 실패했습니다",
+                "edit": {
+                    "updating": "문의사항을 수정 중입니다...",
+                    "updateSuccess": "문의사항이 성공적으로 수정되었습니다!",
+                    "updateFail": "문의사항 수정에 실패했습니다",
+                    "label": "수정"
+                },
+                "updating": "문의 수정 중...",
+                "updateSuccess": "문의가 성공적으로 수정되었습니다!",
+                "updateFail": "문의 수정에 실패했습니다."
+            },
+            "back": "뒤로가기",
+            "menu": "메뉴",
+            "accessDenied": "접근이 거부되었습니다.",
+
+            // 푸시 알람
+            "push": {
+                "permissionDeniedTitle": "알림 권한이 차단되어 있어요.",
+                "permissionDeniedText": "브라우저 설정에서 알림 권한을 다시 허용해주세요.",
+                "manageNotificationSettings": "알림 설정 관리",
+                "alertDescription": "새로운 리뷰 및 업데이트 알림을 받아보세요. 언제든지 설정을 변경할 수 있습니다.",
+                "settingsPrefix": "설정은 내 페이지 알림에서 변경할 수 있습니다",
+                "update": "업데이트"
+            },
+            "cancel": "닫기"
+
+            //-----------------------------------------한국어
         },
     },
     ja: {
@@ -646,6 +875,27 @@ const resources = {
                 "save": "保存する"
             },
 
+            // 바코드 스캔
+            "barcodeScanner": {
+                "cameraPermissionRequired": "カメラの許可が必要です。",
+                "cameraPermissionTitle": "カメラの許可が必要です",
+                "cameraPermissionText": "Peek&Pickでバーコードをスキャンするには、カメラのアクセスを許可してください。",
+                "cameraAccessFailedTitle": "カメラアクセス失敗",
+                "cameraAccessFailedText": "カメラの権限が必要です。",
+                "barcodeProcessFailedTitle": "バーコード処理失敗",
+                "barcodeProcessFailedText": "バーコードの処理中に問題が発生しました。",
+                "confirmButton": "確認"
+            },
+
+            // 바코드 히스토리
+            "barcodeHistory": {
+                "title": "最近のバーコード履歴",
+                "noHistory": "バーコード履歴が見つかりません。",
+                "reviewAlready": "レビューはすでに送信されました",
+                "writeReview": "レビューを書く",
+                "footerNote": "最近スキャンしたバーコードは最大20件まで自動的に保存されます。"
+            },
+
             // useMyPageEdit
             "updatingProfileSuccess": "プロフィールを更新しました。",
             "updatingProfileFail": "プロフィールの更新に失敗しました。",
@@ -655,6 +905,13 @@ const resources = {
             "deletingUserFail": "アカウントの削除に失敗しました。",
             "deletingUserConfirm": "アカウントを削除しますか？",
             "deletingUserWarning": "削除すると元に戻せません。",
+
+            // BarcodeAddRequest
+            "barcodeAddModalTitle": "バーコード：",
+            "barcodeAddModalBody": "商品情報が存在しません。<br/><strong>商品追加リクエスト</strong>を送信しますか？",
+            "confirmRequestButtonText": "リクエストする",
+            "barcodeAddSuccess": "商品追加リクエストが完了しました。",
+            "barcodeAddError": "リクエストの処理中にエラーが発生しました。",
 
             // 메인
             "mainBarcode": "コード",
@@ -677,7 +934,94 @@ const resources = {
             "loginButton": "ログイン",
             "signupGuid": "新規登録はこちら",
             "signupButton": "新規登録",
-            "loginWithGoogle": "Googleで続行"
+            "loginWithGoogle": "Googleで続行",
+            "loginWelcome1": "ログイン",
+            "loginFailTitle": "ログインに失敗しました。メールまたはパスワードを確認してください。",
+            "confirm": "確認",
+            "bannedTitle": "アクセス制限",
+            "bannedMessage": "{{date}}までログインできません。",
+
+            // 문의사항
+            "inquiry": {
+                "title": "お問い合わせ",
+                "placeholder": "お問い合わせ内容を入力してください。",
+                "attachImages": "画像を添付",
+                "emailLabel": "ユーザーのメールアドレス",
+                "privacyAgreement": "個人情報の収集と利用に同意します（必須）",
+                "privacyNotice": "お問い合わせ対応のため、メールアドレスおよびメッセージに含まれる個人情報を収集します。\nこの情報は3年間保管され、その後削除されます。\n同意しない場合、お問い合わせを送信できません。",
+                "agreeAlertTitle": "個人情報の収集と利用への同意が必要です。",
+                "submit": "送信する",
+                "types": {
+                    "ACCOUNT": "アカウントに関する問題",
+                    "PRODUCT_ADD": "商品情報",
+                    "POINT_REVIEW": "レビュー関連",
+                    "HOW_TO_USE": "使い方",
+                    "BUG": "バグ",
+                    "ETC": "その他"
+                },
+                "loadFail": "お問い合わせデータの読み込みに失敗しました。",
+                "delete": {
+                    "title": "削除",
+                    "confirmTitle": "お問い合わせを削除しますか？",
+                    "confirmText": "一度削除すると元に戻せません。",
+                    "confirmButton": "削除する",
+                    "cancelButton": "キャンセル",
+                    "success": "お問い合わせが削除されました。",
+                    "fail": "お問い合わせの削除に失敗しました。"
+                },
+                "postedOn": "作成日",
+                "updatedOn": "更新日",
+                "status": {
+                    "ANSWERED": "回答済み",
+                    "PENDING": "未回答"
+                },
+                "imageAlt": "添付画像",
+                "editTitle": "お問い合わせ編集",
+                "editPlaceholder": "お問い合わせ内容をご記入ください。",
+                "editSubmit": "編集を送信",
+                "editFail": "お問い合わせの編集に失敗しました。",
+                "deleteImageFail": "画像の削除に失敗しました。",
+                "privacyAgree": "プライバシーポリシーに同意します（必須）",
+                "privacyRequired": "プライバシーポリシーに同意してください。",
+                "addNewImages": "新しい画像を追加",
+                "listTitle": "Q&A",
+                "new": "新規問い合わせ",
+                "empty": "まだ問い合わせを送信していません。",
+                "answer": {
+                    "admin": "管理者",
+                    "posted": "投稿日:",
+                    "loadFail": "回答の読み込みに失敗しました。"
+                },
+                "submitting": "お問い合わせを送信中...",
+                "submitSuccess": "お問い合わせが正常に送信されました",
+                "submitFail": "お問い合わせの送信に失敗しました",
+                "edit": {
+                    "updating": "お問い合わせを更新中...",
+                    "updateSuccess": "お問い合わせが正常に更新されました！",
+                    "updateFail": "お問い合わせの更新に失敗しました",
+                    "label": "編集"
+                },
+                "updating": "お問い合わせを更新中...",
+                "updateSuccess": "お問い合わせが正常に更新されました！",
+                "updateFail": "お問い合わせの更新に失敗しました。"
+            },
+            "back": "戻る",
+            "menu": "メニュー",
+            "accessDenied": "アクセスが拒否されました。",
+
+            // 푸시 알람
+            "push": {
+                "permissionDeniedTitle": "通知の権限がブロックされています。",
+                "permissionDeniedText": "ブラウザの設定で通知の権限を再度許可してください。",
+                "manageNotificationSettings": "通知設定の管理",
+                "alertDescription": "新しいレビューや更新の通知を受け取れます。設定はいつでも変更可能です。",
+                "settingsPrefix": "設定はマイページ 通知から変更できます",
+                "update": "更新"
+            },
+            "cancel": "閉じる"
+
+
+            //-----------------------------------------일본어
         }
     }
 };

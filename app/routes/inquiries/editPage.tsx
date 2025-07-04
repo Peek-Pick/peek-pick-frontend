@@ -3,12 +3,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import { fetchInquiry, uploadImages } from "~/api/inquiries/inquiriesAPI";
 import EditComponent from "~/components/inquiries/editComponent";
 import ModalComponent from "~/components/common/modalComponent";
-import {useUpdateInquiry} from "~/hooks/inquiries/useInquiryMutation";
-import {BackButton, FloatingActionButtons} from "~/util/button/FloatingActionButtons";
+import { useUpdateInquiry } from "~/hooks/inquiries/useInquiryMutation";
+import { BackButton, FloatingActionButtons } from "~/util/button/FloatingActionButtons";
 import Swal from "sweetalert2";
+import { useTranslation } from "react-i18next";
 import '~/util/swal/customSwal.css'
 
 function EditPage() {
+    const { t } = useTranslation();
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const [data, setData] = useState<InquiryResponseDTO | null>(null);
@@ -35,7 +37,7 @@ function EditPage() {
         setLoading(true);
 
         Swal.fire({
-            title: "Updating inquiry...",
+            title: t("inquiry.updating", "Updating inquiry..."),
             allowOutsideClick: false,
             allowEscapeKey: false,
             didOpen: () => {
@@ -50,19 +52,16 @@ function EditPage() {
         });
 
         try {
-            // 1. 텍스트 등록
             await updateInquiryMutation.mutateAsync({ id: +id, data: dto });
 
-            // 2. 이미지 업로드
             if (files && files.length > 0) {
                 await uploadImages(+id, files);
             }
 
-            // 3. 완료 후 알림
             await Swal.fire({
-                title: "Inquiry updated successfully!",
+                title: t("inquiry.updateSuccess", "Inquiry updated successfully!"),
                 icon: "success",
-                confirmButtonText: "OK",
+                confirmButtonText: t("confirmOKButtonText", "OK"),
                 customClass: {
                     popup: 'custom-popup',
                     title: 'custom-title',
@@ -70,7 +69,6 @@ function EditPage() {
                     confirmButton: 'custom-confirm-button',
                 }
             });
-
             navigate(`/inquiries/${id}`);
 
         } catch (err: any) {
@@ -79,9 +77,9 @@ function EditPage() {
             } else {
                 console.error("Failed to update inquiry");
                 await Swal.fire({
-                    title: "Failed to update inquiry",
+                    title: t("inquiry.updateFail", "Failed to update inquiry"),
                     icon: "error",
-                    confirmButtonText: "OK",
+                    confirmButtonText: t("confirmOKButtonText", "OK"),
                     customClass: {
                         popup: 'custom-popup',
                         title: 'custom-title',
@@ -90,7 +88,6 @@ function EditPage() {
                     }
                 });
             }
-
         } finally {
             setLoading(false);
         }
@@ -105,14 +102,13 @@ function EditPage() {
         <div>
             {showAuthModal && (
                 <ModalComponent
-                    message={"Access denied."}
+                    message={t("accessDenied", "Access denied.")}
                     onClose={handleModalClose}
                 />
             )}
-
             <BackButton />
             <FloatingActionButtons />
-            {data && <EditComponent initialData={data} onSubmit={handleSubmit} isLoading={loading}/>}
+            {data && <EditComponent initialData={data} onSubmit={handleSubmit} isLoading={loading} />}
             <div className="h-15" />
         </div>
     );

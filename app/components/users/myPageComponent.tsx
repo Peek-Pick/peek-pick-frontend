@@ -10,6 +10,7 @@ import type { MypageData } from "~/types/users";
 import {useAccountDelete} from "~/hooks/users/useAccountDelete";
 import {useLanguageChange} from "~/hooks/users/useLanguageChange";
 import {useTranslation} from "react-i18next";
+import {usePushPermissionModal} from "~/hooks/push/usePushPermissionModal";
 
 // 타입 정의
 interface MyPageProps {
@@ -28,6 +29,9 @@ export default function MyPageComponent({ myData }:MyPageProps) {
     //  언어 바꾸기 모달 부르기
     const { openLanguageModal } = useLanguageChange();
 
+    //  알림 권한 모달 부르기
+    const { openModal, ChangePermissionModal } = usePushPermissionModal();
+
     // 동적 quickStats
     const quickStats = [
         { icon: <FaHeart className="text-pink-500 text-2xl mb-2" />, label: t('myPageWishlistItems'), value: myData.wishlistCount, to:'/mypage/favorites' },
@@ -37,14 +41,14 @@ export default function MyPageComponent({ myData }:MyPageProps) {
     ];
 
     const buttons = [
-        { icon: IoLanguage, label: t('myPageLanguageSettings'), onClick: openLanguageModal },
-        { icon: FaQuestionCircle, label: t('myPageSupport'), to: '/inquiries/list' },
-        { icon: FaBell, label: t('myPageNotifications'), to: '' },
-        { icon: FaUserShield, label: t('myPagePrivacyPolicy'), to: '' },
-        { icon: FaFileContract, label: t('myPageTermsOfService'), to: '' },
-        { icon: FaIdBadge, label: t('myPageLicenses'), to: '' },
-        { icon: FaUserAltSlash, label: t('myPageDeleteAccount'), onClick: openDeleteModal },
-        { icon: IoLogOutOutline, label: t('myPageLogout'), to: '/logout' },
+        { icon: IoLanguage, label: t('Language settings'), onClick: openLanguageModal },
+        { icon: FaQuestionCircle, label: t('Support'), to: '/inquiries/list' },
+        { icon: FaBell, label: t('Notification'), onClick: openModal },
+        { icon: FaUserShield, label: t('Privacy policy'), to: '' },
+        { icon: FaFileContract, label: t('Terms of service'), to: '' },
+        { icon: FaIdBadge, label: t('Licenses'), to: '' },
+        { icon: FaUserAltSlash, label: t('Delete account'), onClick: openDeleteModal },
+        { icon: IoLogOutOutline, label: t('Logout'), to: '/logout' },
     ];
 
     return (
@@ -109,11 +113,14 @@ export default function MyPageComponent({ myData }:MyPageProps) {
                         }}
                         className="w-full flex items-center px-4 py-3 rounded-lg hover:bg-gray-100 text-gray-600 text-base"
                     >
-                    <Icon className="mr-2" />
-                    <span>{label}</span>
+                        <Icon className="mr-2" />
+                        <span>{label}</span>
                     </button>
                 ))}
             </div>
+
+            {/* 알림 권한 요청 모달 렌더링 */}
+            <ChangePermissionModal />
         </>
     );
 }

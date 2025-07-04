@@ -44,7 +44,7 @@ function MyPagePage() {
         return <ErrorComponent />;
 
     return (
-        <div>
+        <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow relative space-y-4">
             <MyPageComponent myData={myData}/>
             <BottomNavComponent/>
         </div>

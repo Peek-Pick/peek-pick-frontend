@@ -4,12 +4,14 @@ import { getBarcodeHistory } from "~/api/barcode/barcodeAPI";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ReceiptText } from "lucide-react";
 import { BarcodeLoading } from "~/util/loading/barcodeLoading";
+import { useTranslation } from "react-i18next";
 
 function BarcodeHistoryComponent() {
     const [history, setHistory] = useState<ViewHistoryResponseDTO[]>([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
     const location = useLocation();
+    const { t, i18n } = useTranslation();
 
     const from = location.state?.from;
 
@@ -42,21 +44,27 @@ function BarcodeHistoryComponent() {
     }
 
     if (history.length === 0) {
-        return <div className="p-4 text-center text-gray-400 text-sm">No barcode history found.</div>;
+        return (
+            <div className="p-4 text-center text-gray-400 text-sm">
+                {t("barcodeHistory.noHistory")}
+            </div>
+        );
     }
 
     const total = history.length;
 
     const formatDateTime = (dateStr: string) => {
         const date = new Date(dateStr);
-        return date.toLocaleString("en-GB", {
+        return date.toLocaleString(i18n.language === "ko" ? "ko-KR" : i18n.language === "ja" ? "ja-JP" : "en-GB", {
             year: "numeric",
             month: "2-digit",
             day: "2-digit",
             hour: "2-digit",
             minute: "2-digit",
             hour12: false,
-        }).replace(/\. /g, ".").replace(".", ". ");
+        })
+            .replace(/\. /g, ".")
+            .replace(".", ". ");
     };
 
     return (
@@ -64,7 +72,7 @@ function BarcodeHistoryComponent() {
             {/* Title & Icon */}
             <div className="flex items-center gap-2">
                 <ReceiptText className="w-6 h-6 text-yellow-500" />
-                <h2 className="text-xl font-semibold">Recent Barcode History</h2>
+                <h2 className="text-xl font-semibold">{t("barcodeHistory.title")}</h2>
             </div>
 
             <ul className="space-y-4">
@@ -94,7 +102,9 @@ function BarcodeHistoryComponent() {
                                     />
                                     <div className="flex-1 min-w-0">
                                         <p className="text-sm text-black font-bold truncate">{item.productName}</p>
-                                        <p className="text-xs text-gray-600">{formatDateTime(item.regDate)}</p>
+                                        <p className="text-xs text-gray-600">
+                                            {formatDateTime(item.regDate)}
+                                        </p>
                                     </div>
                                 </div>
 
@@ -103,14 +113,14 @@ function BarcodeHistoryComponent() {
                                         className="bg-gray-200 text-gray-600 px-4 py-2 rounded w-full text-sm font-semibold border border-gray-200 cursor-not-allowed"
                                         disabled
                                     >
-                                        Review already submitted
+                                        {t("barcodeHistory.reviewAlready")}
                                     </button>
                                 ) : (
                                     <button
                                         className="bg-yellow-400 text-gray-800 hover:bg-yellow-400 px-4 py-2 rounded w-full text-sm font-semibold border border-white"
                                         onClick={() => handleReview(item.barcode)}
                                     >
-                                        Write a Review
+                                        {t("barcodeHistory.writeReview")}
                                     </button>
                                 )}
                             </div>
@@ -121,7 +131,7 @@ function BarcodeHistoryComponent() {
 
             {/* Footer Note */}
             <div className="mt-3 px-3 py-3 bg-gray-100 text-gray-600 rounded text-xs leading-tight text-left">
-                Your recent barcode scans are automatically stored in history, with a maximum of 20 items saved.
+                {t("barcodeHistory.footerNote")}
             </div>
         </div>
     );
