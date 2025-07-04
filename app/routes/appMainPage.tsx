@@ -42,7 +42,6 @@ function AppMainPage() {
         if (!storedToken) {
             console.log("[FCM] 저장된 토큰 없음, 새 토큰 생성 시도");
 
-            // 새 토큰 요청 및 저장 시도
             requestAndSaveToken()
                 .then((token) => {
                     if (token) {
@@ -58,12 +57,24 @@ function AppMainPage() {
             return;
         }
 
-        // 기존 토큰 유효성 검증 로직
+        // 기존 토큰 유효성 검증 후, 유효하지 않으면 재발급 시도
         getFCMTokenValidity(storedToken)
             .then((isValid) => {
                 if (!isValid) {
-                    console.log("[FCM] 토큰이 유효하지 않음");
-                    // 유효하지 않을 경우 토큰 재발급 등 별도 처리 원하면 여기 추가
+                    console.log("[FCM] 토큰이 유효하지 않음, 재발급 시도");
+
+                    requestAndSaveToken()
+                        .then((token) => {
+                            if (token) {
+                                localStorage.setItem("fcmToken", token);
+                                console.log("[FCM] 재발급된 새 토큰 저장 완료:", token);
+                            } else {
+                                console.log("[FCM] 재발급된 토큰 발급 실패");
+                            }
+                        })
+                        .catch((err) => {
+                            console.error("[FCM] 재발급 요청 중 오류:", err);
+                        });
                 } else {
                     console.log("[FCM] 토큰 유효 확인 완료");
                 }
