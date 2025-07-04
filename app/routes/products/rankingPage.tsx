@@ -3,7 +3,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { Icon } from "@iconify/react";
 import { useNavigate, useSearchParams, useNavigationType } from "react-router-dom";
 import ListComponent from "~/components/products/listComponent";
-import { listProducts } from "~/api/products/productsAPI";
+import { getRanking } from "~/api/products/productsAPI";
 import type { PageResponseCursor, ProductListDTO } from "~/types/products";
 import { BackButton, FloatingActionButtons } from "~/util/button/FloatingActionButtons";
 
@@ -121,7 +121,7 @@ export default function RankingPage() {
         queryKey: ["productsRanking", size, sortParam, categoryForQuery],
         queryFn: async ({ pageParam }) => {
             const last = pageParam as { lastValue?: number; lastProductId?: number } | undefined;
-            return await listProducts(
+            return await getRanking(
                 size,
                 last?.lastValue,
                 last?.lastProductId,

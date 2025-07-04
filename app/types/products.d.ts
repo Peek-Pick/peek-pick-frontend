@@ -8,6 +8,7 @@ export interface ProductListDTO {
     category?: string | null;
     imgThumbUrl?: string | null;
     likeCount?: number | null;
+    isLiked?: boolean; // 👈 실제 사용하지 않아도 타입만 선언 (TS 오류 방지용)
     reviewCount?: number | null;
     score?: number | null;
     /** soft-delete 여부 */
