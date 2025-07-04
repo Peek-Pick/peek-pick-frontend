@@ -1,8 +1,8 @@
 {
   "name": "Peek&Pick - Korean Product Barcode Reader",
   "short_name": "Peek&Pick",
-  "start_url": "/index.html",
-  "scope": "/index.html",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "theme_color": "#fac002",
   "background_color": "#ffffff",

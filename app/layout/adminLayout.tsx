@@ -1,21 +1,25 @@
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { useAdminAuth } from "~/contexts/AdminAuthContext"; // ✅ 추가
+import { useAdminAuth } from "~/contexts/AdminAuthContext";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
     faHome, faBox, faUsers, faStar, faQuestionCircle,
     faFlag, faBullhorn, faCartShopping, faChevronRight,
     faChevronLeft, faRightFromBracket, faRightToBracket
 } from '@fortawesome/free-solid-svg-icons'
+import {useQueryClient} from "@tanstack/react-query";
 
 export default function AdminLayout() {
     const [collapsed, setCollapsed] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
-    const { isLoggedIn, logout } = useAdminAuth(); // ✅ 변경
+    const { isLoggedIn, logout } = useAdminAuth();
+    const queryClient = useQueryClient();
+
 
     const handleLogout = () => {
-        logout(); // ✅ AuthContext 사용
+        queryClient.clear();
+        logout();
         navigate("/admin/logout");
     };
 

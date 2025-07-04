@@ -1,54 +1,83 @@
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useAuthContext } from "~/hooks/auth/useAuthContext";
 import BottomNavComponent from "~/components/main/bottomNavComponent";
 import CarouselComponent from "~/components/main/carouselComponent";
 import MenuGrid from "~/components/main/menuGridComponent";
-import {RankingComponent} from "~/components/main/RankingComponent";
-import {RecommendComponent} from "~/components/main/RecommendComponent";
-import {useEffect, useState} from "react";
-import {MainLoading} from "~/util/loading/mainLoading";
-import {useAuthContext} from "~/hooks/auth/useAuthContext";
+import { RankingComponent } from "~/components/main/RankingComponent";
+import { RecommendComponent } from "~/components/main/RecommendComponent";
 import RecommendSkeleton from "~/components/main/RecommendSkeleton";
-import {useTranslation} from "react-i18next";
+import { MainLoading } from "~/util/loading/mainLoading";
+import { usePushPermissionModal } from "~/hooks/push/usePushPermissionModal";
+import {getFCMTokenValidity} from "~/api/push/pushAPI";
+import {requestAndSaveToken} from "~/hooks/push/useFCM";
 
-function appMainPage() {
-    // 국제화 적용
-    const { i18n } = useTranslation();
-
+function AppMainPage() {
     const [showLoading, setShowLoading] = useState(true);
+    const { isLoggedIn, isLoading: checkingLogged } = useAuthContext();
+    const { openModal, ChangePermissionModal } = usePushPermissionModal();
 
-    const { isLoggedIn, isLoading:checkingLogged } = useAuthContext();
-
-    // 세션 스토리지를 체크해서 최초 방문이면 스피너 보여주기
     useEffect(() => {
-        // window가 존재하는지 확인
-        // SSR 환경에서는 window가 undefined일 수 있어서 확인 필요
-        if (typeof window !== "undefined") {
+        if (checkingLogged) return;
 
-            const hasVisited = sessionStorage.getItem("hasVisitedMain");
+        const hasVisited = sessionStorage.getItem("hasVisitedMain");
+        if (!hasVisited) {
+            sessionStorage.setItem("hasVisitedMain", "true");
 
-            if (hasVisited) {
-                setShowLoading(false);
-            } else {
-                // 최초 방문이면 스피너를 보여주고, 이후엔 다시 안 보이도록 세션스토리지에 기록
-                sessionStorage.setItem("hasVisitedMain", "true");
-
-                const timer = setTimeout(() => setShowLoading(false), 3000);
-
-                return () => clearTimeout(timer);
+            if (isLoggedIn && Notification.permission !== "granted") {
+                openModal(); // 첫 방문 시 모달 오픈
             }
+
+            const timer = setTimeout(() => setShowLoading(false), 3000);
+            return () => clearTimeout(timer);
+        } else {
+            setShowLoading(false);
         }
-    }, []);
+    }, [checkingLogged, isLoggedIn]);
 
-    // 로딩 상태일 때 스피너 표시
-    if (showLoading) {
-        return (
-            <MainLoading />
-        );
-    }
+    useEffect(() => {
+        if (!isLoggedIn) return;
 
-    // console.log(isLoggedIn)
+        const storedToken = localStorage.getItem("fcmToken");
+        if (!storedToken) {
+            console.log("[FCM] 저장된 토큰 없음, 새 토큰 생성 시도");
+
+            // 새 토큰 요청 및 저장 시도
+            requestAndSaveToken()
+                .then((token) => {
+                    if (token) {
+                        localStorage.setItem("fcmToken", token);
+                        console.log("[FCM] 새 토큰 발급 및 저장 완료:", token);
+                    } else {
+                        console.log("[FCM] 새 토큰 발급 실패");
+                    }
+                })
+                .catch((err) => {
+                    console.error("[FCM] 새 토큰 요청 중 오류:", err);
+                });
+            return;
+        }
+
+        // 기존 토큰 유효성 검증 로직
+        getFCMTokenValidity(storedToken)
+            .then((isValid) => {
+                if (!isValid) {
+                    console.log("[FCM] 토큰이 유효하지 않음");
+                    // 유효하지 않을 경우 토큰 재발급 등 별도 처리 원하면 여기 추가
+                } else {
+                    console.log("[FCM] 토큰 유효 확인 완료");
+                }
+            })
+            .catch((err) => {
+                console.error("[FCM] 토큰 유효성 검증 중 오류:", err);
+            });
+    }, [isLoggedIn]);
+
+    if (showLoading) return <MainLoading />;
+
     return (
-        <div>
-            <CarouselComponent/>
+        <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow relative space-y-4">
+            <CarouselComponent />
             <MenuGrid />
 
             {checkingLogged ? (
@@ -58,18 +87,20 @@ function appMainPage() {
                 </>
             ) : isLoggedIn ? (
                 <>
-                <RankingComponent />
-                <RecommendComponent />
+                    <RankingComponent />
+                    <RecommendComponent />
                 </>
             ) : (
                 <>
-                <RecommendSkeleton msg={"Top Ranking"} />
-                <RecommendSkeleton msg={"Top Picks for you"} />
+                    <RecommendSkeleton msg={"Top Ranking"} />
+                    <RecommendSkeleton msg={"Top Picks for you"} />
                 </>
             )}
-            <BottomNavComponent/>
+
+            <ChangePermissionModal />
+            <BottomNavComponent />
         </div>
     );
 }
 
-export default appMainPage;
+export default AppMainPage;
