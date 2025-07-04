@@ -223,6 +223,13 @@ const resources = {
             "mainBottomHome": "HOME",
             "mainBottomBarcode": "BARCODE",
             "mainBottomSearch": "SEARCH",
+
+            // 로그인
+            "loginFormEmail": "Email",
+            "loginFormPassword": "Password",
+            "loginButton": "Login",
+            "signupGuid": "Don’t have an account?",
+            "signupButton": "Sign up here",
         },
     },
     ko: {
@@ -375,7 +382,7 @@ const resources = {
             "myPageBarcodeHistory": "바코드 내역",
             "myPageLanguageSettings": "언어 설정",
             "myPageSupport": "문의 사항",
-            "myPageNotifications": "알림",
+            "myPageNotifications": "공지 사항",
             "myPagePrivacyPolicy": "개인정보 처리방침",
             "myPageTermsOfService": "이용 약관",
             "myPageLicenses": "라이센스",
@@ -441,6 +448,14 @@ const resources = {
             "mainBottomHome": "홈",
             "mainBottomBarcode": "바코드",
             "mainBottomSearch": "검색",
+
+            // 로그인
+            "loginFormEmail": "이메일",
+            "loginFormPassword": "비밀번호",
+            "loginButton": "로그인",
+            "signupGuid": "아직 회원이 아니신가요?",
+            "signupButton": "가입하기",
+            "loginWithGoogle": "Google로 계속하기"
         },
     },
     ja: {
@@ -448,9 +463,9 @@ const resources = {
             "postedOn": "投稿日",
             "moreButton": "もっと見る",
 
-            "confirmOKButtonText": "確認",
-            "confirmUpdateButtonText": "更新",
-            "confirmDeleteButtonText": "削除",
+            "confirmOKButtonText": "かくにん",
+            "confirmUpdateButtonText": "こうしん",
+            "confirmDeleteButtonText": "さくじょ",
             "cancelButtonText": "キャンセル",
 
             "reviewLoading": "読み込み中...",
@@ -588,7 +603,7 @@ const resources = {
             "myPageBarcodeHistory": "バーコード履歴",
             "myPageLanguageSettings": "言語設定",
             "myPageSupport": "お問い合わせ",
-            "myPageNotifications": "通知",
+            "myPageNotifications": "お知らせ",
             "myPagePrivacyPolicy": "プライバシーポリシー",
             "myPageTermsOfService": "利用規約",
             "myPageLicenses": "ライセンス",
@@ -654,7 +669,15 @@ const resources = {
             "goToLogin": "ログインページへ",
             "mainBottomHome": "ホーム",
             "mainBottomBarcode": "バーコード",
-            "mainBottomSearch": "検索"
+            "mainBottomSearch": "検索",
+
+            // 로그인
+            "loginFormEmail": "メールアドレス",
+            "loginFormPassword": "パスワード",
+            "loginButton": "ログイン",
+            "signupGuid": "新規登録はこちら",
+            "signupButton": "新規登録",
+            "loginWithGoogle": "Googleで続行"
         }
     }
 };
