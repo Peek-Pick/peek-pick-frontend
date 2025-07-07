@@ -9,12 +9,14 @@ import DetailComponent2 from "~/components/products/detailComponent2";
 import {getReviewSummary} from "~/api/reviews/reviewAPI";
 import AISummarySection from "~/components/reviews/aiSummarySection";
 import AverageRatingSection from "~/components/reviews/averageRatingSection";
+import {useTranslation} from "react-i18next";
 
 const SCROLL_KEY = "rankingPageScrollY";
 
 export default function DetailPage() {
     const { barcode } = useParams<{ barcode: string }>();
-
+    const { t, i18n } = useTranslation();
+    const lang = i18n.language; // "en" | "ko" | "ja"
     // 🚩 빈 배열로 마운트 시 무조건 실행 → F5 리로드 감지하여 스크롤 세션 삭제
     useLayoutEffect(() => {
         const entries = performance.getEntriesByType("navigation") as PerformanceNavigationTiming[];
@@ -29,7 +31,7 @@ export default function DetailPage() {
         isError,
     } = useQuery<ProductDetailDTO, Error>({
         queryKey: ["productDetail", barcode],
-        queryFn: () => getProductDetail(barcode!),
+        queryFn: () => getProductDetail(barcode!, lang),
         enabled: Boolean(barcode),
         staleTime: 5 * 60 * 1000,
     });
@@ -37,7 +39,7 @@ export default function DetailPage() {
     // AI 요약 리뷰 가져오기
     const { data: aiReview, isLoading: aiReviewLoading, isError: aiReviewError } = useQuery<aiReviewDTO>({
         queryKey: ["reviewSummary", data?.productId],
-        queryFn: () => getReviewSummary(data?.productId!), // productId는 null 체크 후 실행됨
+        queryFn: () => getReviewSummary(data?.productId!, lang), // productId는 null 체크 후 실행됨
         enabled: data?.productId !== null && data?.productId !== undefined,
     });
 

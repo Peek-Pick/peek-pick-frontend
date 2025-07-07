@@ -1,8 +1,12 @@
 import UserListComponent from "~/components/reviews/userListComponent";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { getUserReviews, getUserReviewsCount } from "~/api/reviews/reviewAPI";
+import {useTranslation} from "react-i18next";
 
 function UserListPage() {
+
+    const { i18n } = useTranslation();
+    const lang = i18n.language;
     // 유저 리뷰 개수 받아오기
     const { data: reviewCount } = useQuery({
         queryKey: ["userReviewCount"],
@@ -19,7 +23,7 @@ function UserListPage() {
         isError,
     } = useInfiniteQuery({
         queryKey: ["userReviews"],
-        queryFn: ({ pageParam}) => getUserReviews(pageParam),
+        queryFn: ({ pageParam}) => getUserReviews(pageParam, lang),
         initialPageParam: 0,
         getNextPageParam: (lastPage) => {
             const currentPage = lastPage.data.pageable.pageNumber;

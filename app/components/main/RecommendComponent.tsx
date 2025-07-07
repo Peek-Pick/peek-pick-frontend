@@ -8,7 +8,8 @@ import {useTranslation} from "react-i18next";
 
 export function RecommendComponent() {
     // 국제화 적용
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+    const lang = i18n.language; // "ko" | "en" | "ja" 등
 
     const navigate = useNavigate();
     const containerRef = useRef<HTMLDivElement>(null);
@@ -17,7 +18,7 @@ export function RecommendComponent() {
 
     const { data, isLoading, isError } = useQuery<PageResponseCursor<ProductListDTO>>({
         queryKey: ["productsRecommend", size],
-        queryFn: () => getRecommendedProducts(size, undefined),
+        queryFn: () => getRecommendedProducts(size, undefined, undefined, lang),
         staleTime: 1000 * 60 * 5,
     });
 

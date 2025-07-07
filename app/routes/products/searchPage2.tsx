@@ -26,7 +26,7 @@ export default function SearchPage2() {
     const navigationType = useNavigationType();
     const [searchParams, setSearchParams] = useSearchParams();
     const { t, i18n } = useTranslation();
-
+    const lang = i18n.language;
     const isRestoredRef = useRef(false);
     const initialLoadRef = useRef(true);
     const lastScrollY = useRef(0);
@@ -62,14 +62,14 @@ export default function SearchPage2() {
         isLoading,
         isError,
     } = useInfiniteQuery({
-        queryKey: ["productsSearch", size, sortParam, categoryForQuery, keyword],
+        queryKey: ["productsSearch", size, sortParam, categoryForQuery, keyword, lang],
         queryFn: async ({ pageParam = 0 }) => {
             if (sortKey === "_score") {
                 const page = pageParam as number;
-                return await searchProductsByScore(size, page, categoryForQuery, keyword);
+                return await searchProductsByScore(size, page, categoryForQuery, keyword, lang);
             } else {
                 const cursor = pageParam as { lastValue?: number; lastProductId?: number } | undefined;
-                return (await searchProducts(size, cursor?.lastValue, cursor?.lastProductId, categoryForQuery, keyword, sortParam)).content;
+                return (await searchProducts(size, cursor?.lastValue, cursor?.lastProductId, categoryForQuery, keyword, sortParam, lang)).content;
             }
         },
         getNextPageParam: (lastPage, allPages) => {
