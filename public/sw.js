@@ -25,77 +25,96 @@ const STATIC_ASSETS = [
     '/',
     '/login',
     '/signup',
+    '/main',
+    '/barcode/scan',
+    '/products/search'
 ];
 
+// ✅ Install: Pre-cache static assets
 self.addEventListener('install', (event) => {
     event.waitUntil(
-        caches.open(CACHE_NAME).then(cache => cache.addAll(STATIC_ASSETS))
+        (async () => {
+            const cache = await caches.open(CACHE_NAME);
+            for (const asset of STATIC_ASSETS) {
+                try {
+                    await cache.add(asset);
+                } catch (e) {
+                    console.warn(`❌ Failed to cache: ${asset}`, e);
+                }
+            }
+        })()
     );
     self.skipWaiting();
 });
 
+// ✅ Activate: Delete old caches
 self.addEventListener('activate', (event) => {
     event.waitUntil(
-        caches.keys().then(keys =>
-            Promise.all(
-                keys.filter(key => key !== CACHE_NAME)
-                    .map(key => caches.delete(key))
-            )
+        caches.keys().then((keys) =>
+            Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key)))
         )
     );
     self.clients.claim();
 });
 
+// ✅ Fetch Strategy
 self.addEventListener('fetch', (event) => {
-    const url = new URL(event.request.url);
+    const request = event.request;
+    const url = new URL(request.url);
 
-    if (url.protocol.startsWith('ws') || event.request.method !== 'GET') return;
-
-    const isStaticAsset = STATIC_ASSETS.includes(url.pathname);
-    const isHTMLRequest =
-        event.request.mode === 'navigate' ||
-        event.request.headers.get('accept')?.includes('text/html');
-    const isImageRequest = event.request.destination === 'image';
+    if (url.protocol.startsWith('ws') || request.method !== 'GET') return;
 
     const isSameOrigin = url.origin === self.location.origin;
+    const acceptHeader = request.headers.get('accept') || '';
 
-    // 백엔드 API 도메인 예외 처리 (개발 환경에 맞게 변경)
+    // JSON 요청 여부 판단 보완 (application/json 혹은 API 경로 포함)
+    const isJsonRequest =
+        acceptHeader.includes('application/json') ||
+        url.pathname.startsWith('/api/') ||
+        url.pathname.startsWith('/_data') || // Remix 데이터 경로 등
+        url.pathname.startsWith('/resources') ||
+        url.pathname.startsWith('/__remix') ||
+        url.pathname.includes('?_data');
+
+    const isHTMLRequest =
+        request.mode === 'navigate' ||
+        acceptHeader.includes('text/html');
+
+    const isImageRequest = request.destination === 'image';
+
+    // 정적 자산 매칭 (경로 완전 일치 혹은 엄격 체크 권장)
+    const isStaticAsset = STATIC_ASSETS.some((path) => {
+        if (path === '/') return url.pathname === '/';
+        return url.pathname.startsWith(path);
+    });
+
+    // 백엔드 API (네트워크만 처리, 캐시 제외)
     const isBackendAPI = url.origin === 'http://localhost:8080';
-    if (isBackendAPI) {
-        // SW에서 캐싱하지 않고 네트워크 통과
-        return;
-    }
 
-    const isRouteManifest = ['/routes-manifest', '/_routes', '/_app']
-        .some(path => url.pathname.startsWith(path));
-    if (isRouteManifest) return;
+    if (isBackendAPI) return;
 
-    // HTML 요청: Network First
-    if (isHTMLRequest) {
+    // 1. JSON 요청 (API, Remix 내부 데이터) → 네트워크 우선, 실패 시 JSON fallback
+    if (isJsonRequest) {
         event.respondWith(
-            fetch(event.request)
-                .then(async (res) => {
-                    const cache = await caches.open(CACHE_NAME);
-                    cache.put(event.request, res.clone());
-                    return res;
+            fetch(request).catch(() =>
+                new Response(JSON.stringify({ error: 'offline' }), {
+                    status: 503,
+                    headers: { 'Content-Type': 'application/json' },
                 })
-                .catch(async () => {
-                    const cache = await caches.open(CACHE_NAME);
-                    return (await cache.match(event.request)) || (await cache.match('/offline.html'));
-                })
+            )
         );
         return;
     }
 
-    // 정적 자원: Cache First
+    // 2. 정적 자산 → 캐시 우선 전략
     if (isStaticAsset) {
         event.respondWith(
-            caches.match(event.request).then((cached) => {
+            caches.match(request).then((cached) => {
                 if (cached) return cached;
-                return fetch(event.request)
+                return fetch(request)
                     .then(async (res) => {
                         const cache = await caches.open(CACHE_NAME);
-                        cache.put(event.request, res.clone());
+                        cache.put(request, res.clone());
                         return res;
                     })
                     .catch(() => {
@@ -107,35 +126,40 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // API 및 기타 요청: Network First
+    // 3. HTML 페이지 → 네트워크 우선, 실패 시 캐시된 offline.html 혹은 요청된 페이지 캐시
+    if (isHTMLRequest) {
+        event.respondWith(
+            fetch(request)
+                .then(async (res) => {
+                    const cache = await caches.open(CACHE_NAME);
+                    cache.put(request, res.clone());
+                    return res;
+                })
+                .catch(async () => {
+                    const cache = await caches.open(CACHE_NAME);
+                    return (await cache.match(request)) || (await cache.match('/offline.html'));
+                })
+        );
+        return;
+    }
+
+    // 4. 기타 요청 → 네트워크 우선, 실패 시 이미지/HTML 캐시 fallback 또는 빈 응답
     event.respondWith(
         (async () => {
             try {
-                const requestClone = new Request(event.request.url, {
-                    method: event.request.method,
-                    headers: event.request.headers,
-                    mode: event.request.mode,
-                    credentials: isSameOrigin ? "include" : "omit",
-                    redirect: event.request.redirect,
-                    referrer: event.request.referrer,
-                    referrerPolicy: event.request.referrerPolicy,
-                    body: ['GET', 'HEAD'].includes(event.request.method)
-                        ? undefined
-                        : await event.request.clone().blob(),
-                });
-
-                return await fetch(requestClone);
-            } catch (e) {
+                return await fetch(request);
+            } catch {
                 if (isImageRequest) return caches.match('/default.png');
                 if (isHTMLRequest) return caches.match('/offline.html');
-                return new Response('', { status: 200, statusText: 'OK' });
+                return new Response('', { status: 200 });
             }
         })()
     );
 });
 
+// ✅ Push Notifications
 self.addEventListener('push', (event) => {
-    const data = event.data?.json().notification;
+    const data = event.data?.json().notification || {};
     const title = data.title || 'Peek&Pick';
     const options = {
         body: data.body || '새로운 알림이 있습니다.',
@@ -145,11 +169,10 @@ self.addEventListener('push', (event) => {
             url: data.url || '/',
         },
     };
-    event.waitUntil(
-        self.registration.showNotification(title, options)
-    );
+    event.waitUntil(self.registration.showNotification(title, options));
 });
 
+// ✅ Notification Click
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
     event.waitUntil(
