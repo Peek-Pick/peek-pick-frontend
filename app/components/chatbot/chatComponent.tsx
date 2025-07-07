@@ -1,7 +1,7 @@
 import {useState, useEffect, useRef } from 'react';
 import type { JSX } from 'react';
 import { FiSend } from 'react-icons/fi';
-import { question } from "~/api/chatbot/chatbotAPI";
+import {question, resetMemory} from "~/api/chatbot/chatbotAPI";
 import WelcomeComponent from "~/components/chatbot/welcomeComponent";
 import ProductRecommendComponent from "~/components/chatbot/productRecommendComponent";
 
@@ -60,6 +60,22 @@ export default function ChatComponent() {
         }
     }, [isTyping, messages]);
 
+
+    // 페이지 진입 시 메모리 초기화
+    useEffect(() => {
+        resetMemory();
+        console.log("ChatPage 마운트됨");
+    }, []);
+
+    // 에러시 언어 감지
+    const detectLanguage = (text: string) => {
+        if (/^[a-zA-Z\s.,!?']+$/.test(text)) return 'en';
+        if (/[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(text)) return 'ko';
+        if (/[ぁ-んァ-ン]/.test(text)) return 'ja';
+        if (/[一-龥]/.test(text)) return 'zh';
+        return 'en'; // fallback
+    };
+
     // 사용자 질문(메세지) 전송 및 응답 처리 함수
     const handleSendMessage = async (customInput?: string) => {
         const trimmed = (customInput ?? inputValue).trim();
@@ -91,7 +107,22 @@ export default function ChatComponent() {
             setIsTyping(true);
         } catch (error) {
             console.error('챗봇 오류:', error);
-            setMessages((prev) => [...prev, { content: '오류가 발생했습니다. 다시 시도해 주세요.', isFromChatbot: true }]);
+
+            // 마지막 사용자 언어 감지해서, 오류 메시지 해당언어로 반환
+            const lastUserMessageRaw = messages.filter(m => !m.isFromChatbot).pop()?.content ?? "";
+            const lastUserMessage = typeof lastUserMessageRaw === "string" ? lastUserMessageRaw : "";
+            const userLang = detectLanguage(lastUserMessage);
+            const errorMessages = {
+                en: "💡 The system is busy now. Please try again in a moment!",
+                ko: "💡 지금 요청이 몰려 잠시 대답이 어려워요. 잠시 후 다시 시도해 주세요!",
+                ja: "💡 現在リクエストが集中しており、少し後で再試行してください！",
+                zh: "💡 当前请求过多，请稍后再试！"
+            };
+            const errorMessage = errorMessages[userLang];
+
+            setMessages((prev) =>
+                [...prev, { content: errorMessage, isFromChatbot: true }]
+            );
         } finally {
             setIsWaitingForReply(false);
         }

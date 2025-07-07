@@ -20,3 +20,15 @@ export const question = async (userMessage: string) => {
         return response.data; // JSON 아니면 그냥 문자열 반환
     }
 };
+
+// Chat 메모리 초기화 - 페이지 진입 시 호출
+export const resetMemory = async () => {
+
+    try {
+        const response = await axiosInstance.post('chatbot/reset', null, { withCredentials: true });
+        console.log("✅ 메모리 생성");
+        return response.data;
+    } catch (error) {
+        console.error("❌ resetMemory 요청 실패:", error);
+    }
+};

@@ -24,7 +24,7 @@ export default function ProductRecommendComponent({ product }) {
                 to={`/products/${product.barcode}`}
                 className="inline-block px-5 py-2 rounded-full border border-gray-300 bg-white text-gray-800 text-sm hover:bg-gray-100 hover:shadow-md transition-all duration-200 font-medium"
             >
-                상품 보러가기
+                View Products
             </Link>
         </div>
 
