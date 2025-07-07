@@ -14,9 +14,11 @@ export async function scanBarcode(barcode: string): Promise<string | null> {
     }
 }
 
-export async function getBarcodeHistory(): Promise<ViewHistoryResponseDTO[]> {
-    const res = await axiosInstance.get("/barcode/history");
-    console.log(res.data);
+export async function getBarcodeHistory(lang: string): Promise<ViewHistoryResponseDTO[]> {
+    const res = await axiosInstance.get<ViewHistoryResponseDTO[]>(
+        `/barcode/history`,
+        { params: { lang } }
+    );
     return res.data;
 }
 

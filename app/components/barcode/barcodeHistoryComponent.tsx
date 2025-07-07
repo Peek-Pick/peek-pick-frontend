@@ -10,16 +10,16 @@ function BarcodeHistoryComponent() {
     const [history, setHistory] = useState<ViewHistoryResponseDTO[]>([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
-    const location = useLocation();
     const { t, i18n } = useTranslation();
-
+    const location = useLocation();
+    const lang = i18n.language;
     const from = location.state?.from;
 
     useEffect(() => {
         async function fetchHistory() {
             setLoading(true);
             try {
-                const response = await getBarcodeHistory();
+                const response = await getBarcodeHistory(lang);
                 setHistory(response);
             } catch (error) {
                 console.error("Failed to load barcode history:", error);
@@ -29,7 +29,7 @@ function BarcodeHistoryComponent() {
         }
 
         fetchHistory();
-    }, []);
+    }, [lang]);
 
     const handleDetail = (id: number) => {
         navigate(`/products/${id}`);

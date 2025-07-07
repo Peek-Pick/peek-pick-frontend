@@ -12,7 +12,8 @@ export default function AppLayout() {
     const location = useLocation();
     const navigate = useNavigate();
 
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+    const lang = i18n.language; // "en" | "ko" | "ja"
     // ② 상품명을 담을 로컬 상태
     const [dynamicTitle, setDynamicTitle] = useState<string>("");
 
@@ -83,7 +84,7 @@ export default function AppLayout() {
             // API 호출하여 상품명을 가져와 dynamicTitle에 저장
             (async () => {
                 try {
-                    const data: ProductDetailDTO = await getProductDetail(barcode);
+                    const data: ProductDetailDTO = await getProductDetail(barcode, lang);
                     setDynamicTitle(data.name);
                 } catch (error) {
                     console.error("상품명 조회 실패:", error);
