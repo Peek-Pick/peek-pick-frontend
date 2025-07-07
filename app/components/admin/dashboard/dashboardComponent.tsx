@@ -66,7 +66,7 @@ export default function DashboardComponent() {
     const percents = statusData ? statusData[1] : [];
 
     // 이번달 목표값 - 상품, 사용자, 리뷰
-    const goals = [1000, 5000, 10000];
+    const goals = [50, 50, 60];
 
     // 요청사항 리스트 -  타입 유추
     const { data: requestData, isLoading: requestLoading, isError: requestError } = useQuery<PagingResponse<AdminDashInquiryDTO | AdminDashReportDTO>>({

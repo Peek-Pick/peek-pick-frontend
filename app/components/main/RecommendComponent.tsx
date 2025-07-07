@@ -111,6 +111,10 @@ export function RecommendComponent() {
                     {recommend.length % 2 !== 0 && (
                         <div className="min-w-[320px] flex-shrink-0 bg-transparent" />
                     )}
+                    {/* 짝수일 경우 placeholder 추가 */}
+                    {recommend.length % 2 == 0 && (
+                        <div className="min-w-[160px] flex-shrink-0 bg-transparent" />
+                    )}
                 </div>
 
             </div>
