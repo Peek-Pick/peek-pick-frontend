@@ -27,8 +27,6 @@ const STATIC_ASSETS = [
     '/signup',
 ];
 
-// 캐싱 및 오프라인 처리
-// Install: Precache
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then(cache => cache.addAll(STATIC_ASSETS))
@@ -36,7 +34,6 @@ self.addEventListener('install', (event) => {
     self.skipWaiting();
 });
 
-// Activate: Clean old caches
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then(keys =>
@@ -49,7 +46,6 @@ self.addEventListener('activate', (event) => {
     self.clients.claim();
 });
 
-// Fetch: Cache Strategy
 self.addEventListener('fetch', (event) => {
     const url = new URL(event.request.url);
 
@@ -61,12 +57,20 @@ self.addEventListener('fetch', (event) => {
         event.request.headers.get('accept')?.includes('text/html');
     const isImageRequest = event.request.destination === 'image';
 
+    const isSameOrigin = url.origin === self.location.origin;
+
+    // 백엔드 API 도메인 예외 처리 (개발 환경에 맞게 변경)
+    const isBackendAPI = url.origin === 'http://localhost:8080';
+    if (isBackendAPI) {
+        // SW에서 캐싱하지 않고 네트워크 통과
+        return;
+    }
+
     const isRouteManifest = ['/routes-manifest', '/_routes', '/_app']
         .some(path => url.pathname.startsWith(path));
-
     if (isRouteManifest) return;
 
-    // HTML: Network First
+    // HTML 요청: Network First
     if (isHTMLRequest) {
         event.respondWith(
             fetch(event.request)
@@ -83,7 +87,7 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // Static Asset: Cache First
+    // 정적 자원: Cache First
     if (isStaticAsset) {
         event.respondWith(
             caches.match(event.request).then((cached) => {
@@ -103,17 +107,33 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // API or Others: Network First with fallback
+    // API 및 기타 요청: Network First
     event.respondWith(
-        fetch(event.request, { credentials: 'include' }).catch(() => {
-            if (isImageRequest) return caches.match('/default.png');
-            if (isHTMLRequest) return caches.match('/offline.html');
-            return new Response('', { status: 200, statusText: 'OK' });
-        })
+        (async () => {
+            try {
+                const requestClone = new Request(event.request.url, {
+                    method: event.request.method,
+                    headers: event.request.headers,
+                    mode: event.request.mode,
+                    credentials: isSameOrigin ? "include" : "omit",
+                    redirect: event.request.redirect,
+                    referrer: event.request.referrer,
+                    referrerPolicy: event.request.referrerPolicy,
+                    body: ['GET', 'HEAD'].includes(event.request.method)
+                        ? undefined
+                        : await event.request.clone().blob(),
+                });
+
+                return await fetch(requestClone);
+            } catch (e) {
+                if (isImageRequest) return caches.match('/default.png');
+                if (isHTMLRequest) return caches.match('/offline.html');
+                return new Response('', { status: 200, statusText: 'OK' });
+            }
+        })()
     );
 });
 
-// 웹 푸시 (push 이벤트)
 self.addEventListener('push', (event) => {
     const data = event.data?.json().notification;
     const title = data.title || 'Peek&Pick';
@@ -130,7 +150,6 @@ self.addEventListener('push', (event) => {
     );
 });
 
-// 알림 클릭 처리
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
     event.waitUntil(
