@@ -27,7 +27,7 @@ export default function AppLayout() {
         "/products/search": t("productSearch"),
         "/products/recommended": t("recommendedProduct"),
         "/notices/list": "Announcements",
-        "/inquiries/list": "Support History",
+        "/inquiries/list": "Support",
         "/inquiries/add": "Submit an Inquiry",
         "/barcode/history": "Barcode History",
         "/login": "Login",
@@ -72,7 +72,7 @@ export default function AppLayout() {
 
         // /inquiries/:id/edit 패턴 확인
         if (/^\/inquiries\/\d+\/edit$/.test(location.pathname)) {
-            setDynamicTitle("Notice");
+            setDynamicTitle("Edit Inquiry");
             return;
         }
 
