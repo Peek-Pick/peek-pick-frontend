@@ -5,10 +5,13 @@ import ListComponent from "~/components/products/listComponent";
 import { getRecommendedProducts } from "~/api/products/productsAPI";
 import type { PageResponseCursor, ProductListDTO } from "~/types/products";
 import { BackButton, FloatingActionButtons } from "~/util/button/FloatingActionButtons";
+import {useTranslation} from "react-i18next";
 
 const STORAGE_KEY = "recommendedPageScrollY";
 
 export default function RecommendedPage() {
+    const { i18n } = useTranslation();
+    const lang = i18n.language; // "ko" | "en" | "ja" 등
     const size = 12;
     const navigate = useNavigate();
     const navigationType = useNavigationType();
@@ -57,7 +60,8 @@ export default function RecommendedPage() {
             return await getRecommendedProducts(
                 size,
                 last?.lastValue,
-                last?.lastProductId
+                last?.lastProductId,
+                lang
             );
         },
         getNextPageParam: (lastPage) => {

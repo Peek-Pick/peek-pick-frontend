@@ -20,8 +20,8 @@ interface PreviewProps {
 
 export default function PreviewComponent({ barcode, reviewNum }: PreviewProps) {
     // 국제화 적용
-    const { t } = useTranslation();
-
+    const { t, i18n } = useTranslation();
+    const lang = i18n.language;
     const navigate = useNavigate()
 
     const [productId, setProductId] = useState<number | null>(null);
@@ -37,7 +37,7 @@ export default function PreviewComponent({ barcode, reviewNum }: PreviewProps) {
     // 상품별 리뷰 3개 받아오기
     const { data, isLoading, isError } = useQuery<ReviewDetailDTO[]>({
         queryKey: ["previews", productId],
-        queryFn: () => getProductPreviews(productId!),
+        queryFn: () => getProductPreviews(productId!, lang),
         enabled: Boolean(productId)
     });
 

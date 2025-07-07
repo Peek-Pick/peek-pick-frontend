@@ -26,7 +26,12 @@ const BarcodeScannerComponent = () => {
 
     useEffect(() => {
         (async () => {
-            await nullBarcode();
+            try {
+                const data = await nullBarcode();
+                // data 처리 (필요 시)
+            } catch (e) {
+                console.error("nullBarcode 호출 중 오류:", e);
+            }
         })();
     }, []);
 

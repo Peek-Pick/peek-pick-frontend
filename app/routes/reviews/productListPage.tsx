@@ -4,10 +4,12 @@ import { useParams } from "react-router-dom";
 import { getProductDetail } from "~/api/products/productsAPI"
 import {getProductReviews, getProductIdByBarcode, getReviewSummary} from "~/api/reviews/reviewAPI";
 import { useState, useEffect } from "react";
+import {useTranslation} from "react-i18next";
 
 function ProductListPage() {
     const {barcode} = useParams();
-
+    const { t, i18n } = useTranslation();
+    const lang = i18n.language;
     // barcode로 productId 받아오기
     const [productId, setProductId] = useState<number | null>(null);
 
@@ -35,9 +37,9 @@ function ProductListPage() {
         queryKey: ["productReviews", productId, sortType],
         queryFn: ({ pageParam = 0 }) => {
             if (sortType === "latest") {
-                return getProductReviews(productId, pageParam, "regDate");
+                return getProductReviews(productId, pageParam, "regDate", lang);
             } else {
-                return getProductReviews(productId, pageParam, "recommendCnt");
+                return getProductReviews(productId, pageParam, "recommendCnt", lang);
             }
         },
         initialPageParam: 0,
@@ -54,13 +56,13 @@ function ProductListPage() {
     // 상품 정보 productDetail 가져오기
     const {data: productData, isLoading: productLoading, isError: productError} = useQuery({
         queryKey: ["productData", barcode],
-        queryFn: () => getProductDetail(barcode!)
+        queryFn: () => getProductDetail(barcode!, lang)
     });
 
     // AI 요약 리뷰 가져오기
     const { data: aiReview, isLoading: aiReviewLoading, isError: aiReviewError } = useQuery<aiReviewDTO>({
         queryKey: ["reviewSummary", productId],
-        queryFn: () => getReviewSummary(productId!), // productId는 null 체크 후 실행됨
+        queryFn: () => getReviewSummary(productId!, lang), // productId는 null 체크 후 실행됨
         enabled: productId !== null,
     });
 

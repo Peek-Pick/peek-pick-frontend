@@ -40,7 +40,8 @@ const CATEGORY_LIST = [
 type CategoryId = typeof CATEGORY_LIST[number]["id"];
 
 export default function RankingPage() {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+    const lang = i18n.language; // "en" | "ko" | "ja"
     const size = 12;
     const navigate = useNavigate();
     const navigationType = useNavigationType();
@@ -112,7 +113,7 @@ export default function RankingPage() {
         isLoading,
         isError,
     } = useInfiniteQuery<PageResponseCursor<ProductListDTO>, Error>({
-        queryKey: ["productsRanking", size, sortParam, categoryForQuery],
+        queryKey: ["productsRanking", size, sortParam, categoryForQuery, lang],
         queryFn: async ({ pageParam }) => {
             const last = pageParam as { lastValue?: number; lastProductId?: number } | undefined;
             return await getRanking(
@@ -120,7 +121,8 @@ export default function RankingPage() {
                 last?.lastValue,
                 last?.lastProductId,
                 categoryForQuery,
-                sortParam
+                sortParam,
+                lang
             );
         },
         getNextPageParam: (lastPage) => {

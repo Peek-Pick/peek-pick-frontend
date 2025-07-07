@@ -8,7 +8,8 @@ import {useTranslation} from "react-i18next";
 
 export function RankingComponent() {
     // 국제화 적용
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+    const lang = i18n.language; // "en" | "ko" | "ja"
 
     const navigate = useNavigate();
     const containerRef = useRef<HTMLDivElement>(null);
@@ -18,7 +19,7 @@ export function RankingComponent() {
 
     const { data, isLoading, isError } = useQuery<PageResponseCursor<ProductListDTO>>({
         queryKey: ["productsRanking", size, sortKey],
-        queryFn: () => getRanking(size, undefined, undefined, undefined, sortKey),
+        queryFn: () => getRanking(size, undefined, undefined, undefined, sortKey, lang),
         staleTime: 1000 * 60 * 5,
     });
 
