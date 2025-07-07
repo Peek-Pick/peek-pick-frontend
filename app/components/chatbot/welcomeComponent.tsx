@@ -10,7 +10,7 @@ export default function WelcomeComponent({ handleSendMessage }: WelcomeProps) {
 
     const [nickname, setNickname] = useState<string>("User");
 
-    /*useEffect(() => {
+    useEffect(() => {
         const fetchNickname = async () => {
             try {
                 const data = await getMyPage();
@@ -21,7 +21,7 @@ export default function WelcomeComponent({ handleSendMessage }: WelcomeProps) {
         };
 
         fetchNickname();
-    }, []);*/
+    }, []);
 
 
     // 웰컴 카드
