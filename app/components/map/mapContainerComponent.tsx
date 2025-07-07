@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { GoogleMap, Marker, useLoadScript} from '@react-google-maps/api';
+import { GoogleMap, Marker } from '@react-google-maps/api';
 import StoreSearchComponent from "~/components/map/storeSearchComponent";
 import { EyeSlashIcon, BuildingStorefrontIcon } from '@heroicons/react/24/outline';
 import StoreInfoWindowComponent from "~/components/map/storeInfoWindowComponent";
@@ -7,11 +7,9 @@ import MapLoadingComponent from "~/util/loading/mapLoadingComponent";
 import usePolyline from "~/hooks/map/usePolyline";
 import {getDirections} from "~/api/map/mapAPI";
 import {useMapSearch} from "~/hooks/map/useMapSearch";
-import {ErrorComponent} from "~/util/loading/errorComponent";
+import Swal from "sweetalert2";
+import '~/util/swal/customSwal.css'
 
-
-// 사용할 라이브러리
-const libraries = ['places'];
 
 const MapContainerComponent: React.FC = () => {
 
@@ -29,13 +27,6 @@ const MapContainerComponent: React.FC = () => {
     usePolyline(mapRef, path); // path가 변경시 실행됨
 
     const { handleSearch } = useMapSearch(mapRef, currentPosition, setStoreMarkers);
-
-    // 구글 맵 API 스크립트 로드
-    const { isLoaded, loadError } = useLoadScript({
-        googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string,
-        language:"en", // 언어 설정 (현재 영어)
-        libraries: libraries as any,
-    });
 
     // 현재 위치 가져오기
     useEffect(() => {
@@ -110,7 +101,17 @@ const MapContainerComponent: React.FC = () => {
             bounds.extend(result[result.length - 1]); // 도착지
             mapRef?.fitBounds(bounds);
         } else {
-            alert("Unable to retrieve the directions.");
+            await Swal.fire({
+                title: "Unable to find the route.",
+                icon: "error",
+                confirmButtonText: "OK",
+                customClass: {
+                    popup: "custom-popup",
+                    title: "custom-title",
+                    actions: "custom-actions",
+                    confirmButton: "custom-confirm-button",
+                },
+            });
         }
     };
 
@@ -157,10 +158,8 @@ const MapContainerComponent: React.FC = () => {
         };
     }, []);
 
-    // 로드 에러 또는 로딩 중인 경우 처리
-    if (loadError) return <ErrorComponent />;
 
-    if (!isLoaded || !currentPosition) {
+    if (!currentPosition) {
         return (
             <MapLoadingComponent/>
         );
