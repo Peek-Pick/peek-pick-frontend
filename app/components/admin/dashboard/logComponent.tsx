@@ -64,10 +64,6 @@ export default function LogComponent({data, category, setCategory, setPage}: Log
                 <h4 className="text-lg font-bold text-gray-800 border-b-2 border-gray-300 pb-1">
                     📬 요청 사항
                 </h4>
-                <button className="flex items-center gap-1 px-3 py-1.5 border rounded text-sm hover:bg-gray-100">
-                    <FontAwesomeIcon icon={faDownload} style={{ width: '15px', height: '15px' }} />
-                    Export
-                </button>
             </div>
 
             {/* 토글 필터 */}
