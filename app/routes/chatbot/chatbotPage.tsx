@@ -33,9 +33,9 @@ export default function ChatbotPage() {
                 <div>Ai ChatBot</div>
                 <button
                     onClick={() => navigate(-1)}
-                    className="text-base text-white text-semibold border-2 border-white px-2 py-1 rounded-2xl"
+                    className="text-base text-white text-semibold border-2 border-white px-3 py-1 rounded-2xl"
                 >
-                    나가기
+                     Exit
                 </button>
             </header>
 
