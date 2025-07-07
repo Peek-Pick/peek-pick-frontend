@@ -1,10 +1,29 @@
 import { motion } from "framer-motion";
+import {useEffect, useState} from "react";
+import {getMyPage} from "~/api/users/myPageAPI";
 
 interface WelcomeProps {
     handleSendMessage: (message: string) => Promise<void>;
 }
 
 export default function WelcomeComponent({ handleSendMessage }: WelcomeProps) {
+
+    const [nickname, setNickname] = useState<string>("User");
+
+    /*useEffect(() => {
+        const fetchNickname = async () => {
+            try {
+                const data = await getMyPage();
+                setNickname(data.nickname);
+            } catch (error) {
+                console.error("닉네임 불러오기 실패:", error);
+            }
+        };
+
+        fetchNickname();
+    }, []);*/
+
+
     // 웰컴 카드
     const faqSlides = [
         {
@@ -35,8 +54,8 @@ export default function WelcomeComponent({ handleSendMessage }: WelcomeProps) {
                     className="flex justify-between items-start px-6 pt-10 pb-6"
                 >
                     <div className="leading-loose text-xl">
-                        <p>Hello, <span className="text-yellow-600 font-bold">포빙빙</span>!</p>
-                        <p className="text-sm font-semibold">I am Peek&Pick chatbot.</p>
+                        <p>Hello, <span className="text-yellow-600 font-bold">{nickname}</span>!</p>
+                        <p className="text-base font-semibold">I am Peek&Pick chatbot.</p>
                         <p className="text-sm text-gray-600">How can I assist you today?</p>
                     </div>
 
