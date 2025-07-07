@@ -6,7 +6,7 @@ const host = "http://localhost:8080/api/v1";
 
 // 일반 로그인
 export async function getToken(email: string, password: string) {
-    return await fetch(`${host}/auth/login`, {
+    const res = await fetch(`${host}/auth/login`, {
         method: "POST",
         credentials: "include", // 쿠키 포함 필수
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -14,9 +14,17 @@ export async function getToken(email: string, password: string) {
             uem: email,
             upw: password,
         }),
-    }).then((res) => {
-        if (!res.ok) throw new Error("로그인 실패");
     });
+
+    if (!res.ok) {
+        // 403인 경우 벤 처리 → banUntil 반환
+        if (res.status === 403) {
+            const data = await res.json();
+            throw { type: "banned", banUntil: data.banUntil };
+        }
+
+        throw new Error("로그인 실패");
+    }
 }
 
 export const logout = async () => {

@@ -1,8 +1,7 @@
-import { useRef, useLayoutEffect, useEffect, useState } from "react";
+import { useRef, useLayoutEffect, useEffect } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useNavigate, useNavigationType } from "react-router-dom";
 import ListComponent from "~/components/products/listComponent";
-import BottomNavComponent from "~/components/main/bottomNavComponent";
 import { getRecommendedProducts } from "~/api/products/productsAPI";
 import type { PageResponseCursor, ProductListDTO } from "~/types/products";
 import { BackButton, FloatingActionButtons } from "~/util/button/FloatingActionButtons";
@@ -15,9 +14,6 @@ export default function RecommendedPage() {
     const navigationType = useNavigationType();
     const isRestoredRef = useRef(false);
     const initialLoadRef = useRef(true);
-
-    const [sortParam] = useState("likeCount,DESC");
-    const sortKey = sortParam.split(",")[0];
 
     useLayoutEffect(() => {
         if ("scrollRestoration" in window.history) {
@@ -55,34 +51,27 @@ export default function RecommendedPage() {
         isLoading,
         isError,
     } = useInfiniteQuery<PageResponseCursor<ProductListDTO>, Error>({
-        queryKey: ["recommended", size, sortParam],
+        queryKey: ["recommended", size],
         queryFn: async ({ pageParam }) => {
             const last = pageParam as { lastValue?: number; lastProductId?: number } | undefined;
             return await getRecommendedProducts(
                 size,
                 last?.lastValue,
-                last?.lastProductId,
-                sortParam
+                last?.lastProductId
             );
         },
         getNextPageParam: (lastPage) => {
             const last = lastPage.content.at(-1);
             if (!last || !lastPage.hasNext) return undefined;
 
-            const lastValue = sortKey === "score"
-                ? last.score
-                : last.likeCount ?? 0;
-
             return {
-                lastValue,
+                lastValue: last.score ?? 0,
                 lastProductId: last.productId,
             };
         },
         initialPageParam: undefined,
         staleTime: 5 * 60 * 1000,
     });
-
-    console.log(data)
 
     const handleItemClick = (barcode: string) => {
         sessionStorage.setItem(
@@ -91,7 +80,8 @@ export default function RecommendedPage() {
         );
         navigate(`/products/${barcode}`, { state: { fromDetail: true } });
     };
-
+    
+    //무한스크롤 유지 관련 코드
     useEffect(() => {
         if (navigationType === "POP" && data && !isRestoredRef.current) {
             const raw = sessionStorage.getItem(STORAGE_KEY);
@@ -118,7 +108,6 @@ export default function RecommendedPage() {
                 isError={isError}
                 onItemClick={handleItemClick}
             />
-            {/*<BottomNavComponent />*/}
             <BackButton />
             <FloatingActionButtons />
         </>

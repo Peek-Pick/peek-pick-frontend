@@ -24,3 +24,7 @@ export async function getBarcodeHistoryCount(): Promise<number> {
     const res = await axiosInstance.get<number>("/barcode/history/count");
     return res.data;
 }
+
+export async function nullBarcode(){
+    const res = axiosInstance.get<number>("/barcode");
+}

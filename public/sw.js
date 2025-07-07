@@ -27,7 +27,8 @@ const STATIC_ASSETS = [
     '/signup',
 ];
 
-// Install - Precache
+// 캐싱 및 오프라인 처리
+// Install: Precache
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then(cache => cache.addAll(STATIC_ASSETS))
@@ -35,7 +36,7 @@ self.addEventListener('install', (event) => {
     self.skipWaiting();
 });
 
-// Activate - Delete old caches
+// Activate: Clean old caches
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then(keys =>
@@ -48,29 +49,28 @@ self.addEventListener('activate', (event) => {
     self.clients.claim();
 });
 
-// Fetch handler
+// Fetch: Cache Strategy
 self.addEventListener('fetch', (event) => {
     const url = new URL(event.request.url);
 
     if (url.protocol.startsWith('ws') || event.request.method !== 'GET') return;
 
     const isStaticAsset = STATIC_ASSETS.includes(url.pathname);
-    const isHTMLRequest = event.request.mode === 'navigate' || event.request.headers.get('accept')?.includes('text/html');
+    const isHTMLRequest =
+        event.request.mode === 'navigate' ||
+        event.request.headers.get('accept')?.includes('text/html');
     const isImageRequest = event.request.destination === 'image';
 
     const isRouteManifest = ['/routes-manifest', '/_routes', '/_app']
         .some(path => url.pathname.startsWith(path));
 
-    // 라우트 매니페스트는 서비스워커가 무시 (네트워크만 사용)
-    if (isRouteManifest) {
-        return;
-    }
+    if (isRouteManifest) return;
 
-    // HTML 요청: 네트워크 우선, 실패 시 offline.html
+    // HTML: Network First
     if (isHTMLRequest) {
         event.respondWith(
             fetch(event.request)
-                .then(async res => {
+                .then(async (res) => {
                     const cache = await caches.open(CACHE_NAME);
                     cache.put(event.request, res.clone());
                     return res;
@@ -83,13 +83,13 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // 정적 에셋: 캐시 우선
+    // Static Asset: Cache First
     if (isStaticAsset) {
         event.respondWith(
-            caches.match(event.request).then(cached => {
+            caches.match(event.request).then((cached) => {
                 if (cached) return cached;
                 return fetch(event.request)
-                    .then(async res => {
+                    .then(async (res) => {
                         const cache = await caches.open(CACHE_NAME);
                         cache.put(event.request, res.clone());
                         return res;
@@ -103,12 +103,46 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // API나 기타 요청: 네트워크 우선, 실패시 빈 응답
+    // API or Others: Network First with fallback
     event.respondWith(
-        fetch(event.request).catch(() => {
+        fetch(event.request, { credentials: 'include' }).catch(() => {
             if (isImageRequest) return caches.match('/default.png');
             if (isHTMLRequest) return caches.match('/offline.html');
             return new Response('', { status: 200, statusText: 'OK' });
+        })
+    );
+});
+
+// 웹 푸시 (push 이벤트)
+self.addEventListener('push', (event) => {
+    const data = event.data?.json().notification;
+    const title = data.title || 'Peek&Pick';
+    const options = {
+        body: data.body || '새로운 알림이 있습니다.',
+        icon: '/icons/icon-192.png',
+        badge: '/icons/icon-192.png',
+        data: {
+            url: data.url || '/',
+        },
+    };
+    event.waitUntil(
+        self.registration.showNotification(title, options)
+    );
+});
+
+// 알림 클릭 처리
+self.addEventListener('notificationclick', (event) => {
+    event.notification.close();
+    event.waitUntil(
+        clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+            for (const client of clientList) {
+                if (client.url === event.notification.data.url && 'focus' in client) {
+                    return client.focus();
+                }
+            }
+            if (clients.openWindow) {
+                return clients.openWindow(event.notification.data.url);
+            }
         })
     );
 });

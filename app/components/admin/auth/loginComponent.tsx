@@ -3,6 +3,7 @@ import { type FormEvent, useState } from "react";
 import LoadingComponent from "~/components/common/loadingComponent";
 import {getAdminToken} from "~/api/auth/authAPI";
 import { useAdminAuth } from "~/contexts/AdminAuthContext";
+import {useQueryClient} from "@tanstack/react-query";
 
 function LoginComponent() {
     const navigate = useNavigate();
@@ -10,6 +11,8 @@ function LoginComponent() {
     const [apw, setApw] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const { login, logout } = useAdminAuth();
+    const queryClient = useQueryClient();
+
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -17,6 +20,7 @@ function LoginComponent() {
 
         try {
             await getAdminToken(aid, apw);
+            queryClient.clear();
             logout();
             login();
             navigate('/admin/dashboard');

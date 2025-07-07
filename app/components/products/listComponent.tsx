@@ -114,7 +114,7 @@ export default function ListComponent({
                         </span>
                         <span className="flex items-center">
                             <Icon icon="ri:star-fill" className="w-4 h-4 text-[#FFC43F] mr-1" />
-                            {p.score?.toFixed(1) ?? "0.0"} ({p.reviewCount ?? 0})
+                            {p.score.toFixed(1) ?? 0} ({p.reviewCount ?? 0})
                         </span>
                     </div>
 

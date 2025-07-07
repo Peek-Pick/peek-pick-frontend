@@ -33,7 +33,7 @@ export default function MyPageEditComponent({profile}: EditProps) {
     const { file, handleFileChange, previewUrl} = useProfileImageUpload(`/${profile.profileImgUrl}`);
 
     return (
-        <div className="relative mb-8 max-w-2xl mx-auto">
+        <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow relative space-y-4">
             {/* 배경 헤더 */}
             <div className="bg-gradient-to-r from-yellow-200 to-green-300 h-40 rounded-xl" />
 
