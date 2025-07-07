@@ -25,6 +25,12 @@ export async function getBarcodeHistoryCount(): Promise<number> {
     return res.data;
 }
 
-export async function nullBarcode(){
-    const res = axiosInstance.get<number>("/barcode");
+export async function nullBarcode() {
+    try {
+        const res = await axiosInstance.get<number>("/barcode");
+        return res.data; // 응답 데이터 반환
+    } catch (error) {
+        console.error("nullBarcode API 호출 실패:", error);
+        throw error;  // 필요하면 호출한 쪽에서 에러 처리
+    }
 }
