@@ -148,7 +148,7 @@ function DetailComponent({ inquiry, navigate: navigateProp, isLoading }: Props) 
             <div className="flex justify-between items-center mb-1.5">
                 <div className="flex items-center gap-2">
                     <img
-                        src={`http://localhost/${inquiry.userProfileImgUrl}`}
+                        src={`http://localhost/users/${inquiry.userProfileImgUrl}`}
                         alt="Profile"
                         className="w-11 h-11 rounded-full object-cover border border-gray-300"
                     />

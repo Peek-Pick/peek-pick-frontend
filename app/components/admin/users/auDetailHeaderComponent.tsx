@@ -30,7 +30,7 @@ const AuDetailHeaderComponent: React.FC<HeaderProps> = ({
             >
                 <div className="flex flex-col md:flex-row items-center text-center md:text-left w-full">
                     <img
-                        src={`http://localhost/${avatarImage}`}
+                        src={`http://localhost/users/${avatarImage}`}
                         alt="Avatar"
                         className="w-[80px] h-[80px] rounded-[15px] md:mr-[22px]"
                     />

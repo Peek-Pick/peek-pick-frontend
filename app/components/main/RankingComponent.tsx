@@ -80,7 +80,7 @@ export function RankingComponent() {
                                     <div className="text-gray-300 text-sm">No Image</div>
                                 )}
                             </div>
-                            <h3 className="text-sm font-semibold text-gray-800 line-clamp-2 mb-1">{item.name}</h3>
+                            <h3 className="text-sm font-semibold text-gray-800 line-clamp-2 mb-1 truncate w-35">{item.name}</h3>
                             <div className="flex items-center text-xs text-gray-600 space-x-3 mb-1">
                                 <span className="flex items-center">
                                     <Icon icon="ri:heart-fill" className="text-red-500 w-4 h-4 mr-1" />

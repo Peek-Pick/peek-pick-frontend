@@ -42,7 +42,7 @@ export default function MyPageEditComponent({profile}: EditProps) {
                 <div className="relative inline-block -mt-16">
                     <img
                         src={previewUrl.startsWith('blob:') ? 
-                                previewUrl : `http://localhost/${previewUrl}`}
+                                previewUrl : `http://localhost/users/${previewUrl}`}
                         alt="Profile"
                         className="w-28 h-28 rounded-full border-4 border-white bg-white"
                     />
