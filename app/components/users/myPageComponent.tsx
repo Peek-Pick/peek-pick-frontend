@@ -59,7 +59,7 @@ export default function MyPageComponent({ myData }:MyPageProps) {
                 <div className="text-center">
                     <div className="relative inline-block -mt-16">
                         <img
-                            src={`http://localhost/${myData.profileImgUrl}`}
+                            src={`http://localhost/users/${myData.profileImgUrl}`}
                             alt="Profile"
                             className="w-28 h-28 rounded-full border-4 border-white bg-white object-cover"
                         />

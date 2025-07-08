@@ -19,6 +19,10 @@ function AppMainPage() {
 
     useEffect(() => {
         if (checkingLogged) return;
+        if (!isLoggedIn) {
+            setShowLoading(false);
+            return;
+        }
 
         const hasVisited = sessionStorage.getItem("hasVisitedMain");
         if (!hasVisited) {

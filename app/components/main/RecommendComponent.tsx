@@ -83,18 +83,18 @@ export function RecommendComponent() {
                                     <div className="text-gray-300 text-sm">No Image</div>
                                 )}
                             </div>
-                            <h3 className="text-sm font-semibold text-gray-800 line-clamp-2 mb-1">
+                            <h3 className="text-sm font-semibold text-gray-800 line-clamp-2 mb-1 truncate w-35 ">
                                 {item.name}
                             </h3>
                             <div className="flex items-center text-xs text-gray-600 space-x-3 mb-1">
-        <span className="flex items-center">
-          <Icon icon="ri:heart-fill" className="text-red-500 w-4 h-4 mr-1" />
-            {item.likeCount ?? 0}
-        </span>
                                 <span className="flex items-center">
-          <Icon icon="ri:star-fill" className="text-yellow-400 w-4 h-4 mr-1" />
+                                  <Icon icon="ri:heart-fill" className="text-red-500 w-4 h-4 mr-1" />
+                                    {item.likeCount ?? 0}
+                                </span>
+                                <span className="flex items-center">
+                                    <Icon icon="ri:star-fill" className="text-yellow-400 w-4 h-4 mr-1" />
                                     {item.score?.toFixed(1) ?? "0.0"}
-        </span>
+                                </span>
                             </div>
                             <div className="text-[12px] text-gray-400 mb-1">
                                 {item.reviewCount ?? 0} reviews
@@ -113,7 +113,7 @@ export function RecommendComponent() {
                     )}
                     {/* 짝수일 경우 placeholder 추가 */}
                     {recommend.length % 2 == 0 && (
-                        <div className="min-w-[160px] flex-shrink-0 bg-transparent" />
+                        <div className="min-w-[320px] flex-shrink-0 bg-transparent" />
                     )}
                 </div>
 

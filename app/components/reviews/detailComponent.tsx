@@ -56,7 +56,7 @@ export default function DetailComponent({review, isLoading, isError }: ReviewPro
                             {/* 작성자 정보와 작성일*/}
                             <div className="flex sm:items-center flex-col min-[400px]:flex-row justify-between gap-4 mb-2">
                                 <div className="flex items-center gap-3">
-                                    <img src={`http://localhost/${review.profileImageUrl}`}
+                                    <img src={`http://localhost/users/${review.profileImageUrl}`}
                                          className="w-14 h-14 rounded-full object-cover" alt="profile image"/>
                                     <h6 className="font-semibold text-md sm:text-base leading-2 text-gray-600">{review.nickname ?? "User"}</h6>
                                 </div>

@@ -152,7 +152,7 @@ function ReviewItem({ review, productId }: ReviewItemProps) {
                     {/* 왼쪽: 프로필 이미지 + 닉네임 */}
                     <div className="flex items-center gap-3">
                         <img
-                            src={`http://localhost/${review.profileImageUrl}`}
+                            src={`http://localhost/users/${review.profileImageUrl}`}
                             alt="profile image"
                             className="w-14 h-14 rounded-full object-cover"
                         />
