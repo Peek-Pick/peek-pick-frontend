@@ -6,10 +6,13 @@ import BottomNavComponent from "~/components/main/bottomNavComponent";
 import { getMyPageFavorite } from "~/api/users/myPageAPI";
 import type { PageResponseCursor, ProductListDTO } from "~/types/products";
 import { BackButton, FloatingActionButtons } from "~/util/button/FloatingActionButtons";
+import {useTranslation} from "react-i18next";
 
 const STORAGE_KEY = "favoritesPageScrollY";
 
 export default function FavoritesPage() {
+    const { t, i18n } = useTranslation();
+    const lang = i18n.language; // "en" | "ko" | "ja"
     const size = 12;
     const navigate = useNavigate();
     const navigationType = useNavigationType();
@@ -58,7 +61,8 @@ export default function FavoritesPage() {
             return await getMyPageFavorite(
                 size,
                 last?.lastModDate,
-                last?.lastProductId
+                last?.lastProductId,
+                lang
             );
         },
         getNextPageParam: (lastPage) => {

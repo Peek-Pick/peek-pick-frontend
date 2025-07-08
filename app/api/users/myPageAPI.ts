@@ -25,7 +25,8 @@ export const updateMyPage = async (formData: FormData) => {
 export async function getMyPageFavorite(
     size: number,
     lastModDate?: string,
-    lastProductId?: number
+    lastProductId?: number,
+    lang: string = "en"
 ): Promise<PageResponseCursor<ProductListDTO>> {
     const res = await axiosInstance.get<PageResponseCursor<ProductListDTO>>(
         `${host}/favorites`,
@@ -34,6 +35,7 @@ export async function getMyPageFavorite(
                 size,
                 ...(lastModDate && { lastModDate }),
                 ...(lastProductId !== undefined && { lastProductId }),
+                lang
             },
             withCredentials: true,
         }
