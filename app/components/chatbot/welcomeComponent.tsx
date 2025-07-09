@@ -41,6 +41,22 @@ export default function WelcomeComponent({ handleSendMessage }: WelcomeProps) {
             subtitle: 'Chatbot, Map, Account management',
             items: ['How to use the AI chatbot', 'Find nearby convenience stores', 'Sign up and withdraw account'],
         },
+        /*{
+            title: '바코드 & 상품',
+            subtitle: '상품 정보 확인 및 등록 요청',
+            items: ['바코드로 상품 정보 확인', '상품 등록 요청', '바코드 인식 오류 해결']
+        },
+        {
+            title: '리뷰 & 포인트',
+            subtitle: '포인트 적립 및 리뷰 관리',
+            items: ['리뷰 작성 방법', '리뷰로 포인트 적립', '리뷰 신고하기']
+        },
+        {
+            title: '편의 기능',
+            subtitle: '챗봇, 지도, 계정 관리',
+            items: ['AI 챗봇 사용 방법', '주변 편의점 찾기', '회원가입 및 탈퇴']
+        },*/
+
     ];
 
     return (
@@ -58,6 +74,11 @@ export default function WelcomeComponent({ handleSendMessage }: WelcomeProps) {
                         <p className="text-base font-semibold">I am Peek&Pick chatbot.</p>
                         <p className="text-sm text-gray-600">How can I assist you today?</p>
                     </div>
+                    {/*<div className="leading-loose text-xl">
+                        <p>안녕하세요, <span className="text-yellow-600 font-bold">12345</span>님!</p>
+                        <p className="mb-4">Peek&Pick 챗봇입니다.</p>
+                        <p className="text-sm text-gray-600">어떤 도움이 필요하신가요?</p>
+                    </div>*/}
 
                     {/* 마스코트 자리 */}
                     <motion.img

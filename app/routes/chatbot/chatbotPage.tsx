@@ -35,7 +35,7 @@ export default function ChatbotPage() {
                     onClick={() => navigate(-1)}
                     className="text-base text-white text-semibold border-2 border-white px-3 py-1 rounded-2xl"
                 >
-                     Exit
+                     Exit{/*나가기*/}
                 </button>
             </header>
 
