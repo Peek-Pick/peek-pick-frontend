@@ -153,7 +153,7 @@ export default function ChatComponent() {
                                         <img src="/mascot.png" alt="AI"
                                              className="w-9 h-9 rounded-full border"
                                         />
-                                        <span className="font-semibold text-gray-700">김비서</span>
+                                        <span className="font-semibold text-gray-700">Kim Assistant</span>
                                         <span>{messageTime}</span>
                                     </>
                                 ) : (
@@ -183,7 +183,7 @@ export default function ChatComponent() {
                 {/* 챗봇 답변 대기 */}
                 {isWaitingForReply && (
                     <div className="max-w-[85%] self-start bg-white text-gray-600 inline-flex items-center px-5 py-3 rounded-2xl rounded-tl-none shadow-lg animate-pulse">
-                        <span style={{ fontSize: '1rem' }}>생각중...</span>
+                        <span style={{ fontSize: '1rem' }}>Loading...</span>
                     </div>
                 )}
             </main>
@@ -193,7 +193,7 @@ export default function ChatComponent() {
                 <input
                     className="flex-1 border border-gray-300 rounded-full px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300"
                     type="text"
-                    placeholder="궁금한 내용을 입력해 주세요."
+                    placeholder="Please enter your question."
                     value={inputValue}
                     onChange={(e) => {
                         setInputValue(e.target.value);
