@@ -158,11 +158,11 @@ SNS에서는 한국 제품을 소개하는 콘텐츠가 화제가 되고 있지�
 <br><br>
 
 ## <a id="documents"></a>📂 프로젝트 자료 (Documents)
-- [🗣️ 발표 자료](https://github.com/Peek-Pick/peek-pick-backend/blob/main/docs/3%EC%A1%B0_Peek%26Pick_%EB%B0%9C%ED%91%9C%EC%9E%90%EB%A3%8C(pdf).pdf)
-- [🧾 화면 설계서](https://github.com/Peek-Pick/peek-pick-backend/blob/main/docs/3%EC%A1%B0_%EC%82%91%EA%B7%B8%EB%A6%AC%EA%B3%A0%EB%8B%A4%EC%9D%8C_%ED%99%94%EB%A9%B4%EC%84%A4%EA%B3%84%EC%84%9C.pdf)
-- [📄 요구사항 정의서](https://github.com/Peek-Pick/peek-pick-backend/blob/main/docs/3%EC%A1%B0_%EC%82%91%EA%B7%B8%EB%A6%AC%EA%B3%A0%EB%8B%A4%EC%9D%8C_%EC%9A%94%EA%B5%AC%EC%82%AC%ED%95%AD%EC%A0%95%EC%9D%98%EC%84%9C.pdf)
-- [📋 API 명세서](https://github.com/Peek-Pick/peek-pick-backend/blob/main/docs/3%EC%A1%B0_%EC%82%91%EA%B7%B8%EB%A6%AC%EA%B3%A0%EB%8B%A4%EC%9D%8C_API%EB%AA%85%EC%84%B8%EC%84%9C.pdf)
-- [📂 메뉴 트리](https://github.com/Peek-Pick/peek-pick-backend/blob/main/docs/3%EC%A1%B0_%EC%82%91%EA%B7%B8%EB%A6%AC%EA%B3%A0%EB%8B%A4%EC%9D%8C_%EB%A9%94%EB%89%B4%ED%8A%B8%EB%A6%AC.pdf)
+- [🗣️ 발표 자료](https://github.com/Peek-Pick/peek-pick-frontend/blob/master/docs/3%E1%84%8C%E1%85%A9_Peek%26Pick_%E1%84%87%E1%85%A1%E1%86%AF%E1%84%91%E1%85%AD%E1%84%8C%E1%85%A1%E1%84%85%E1%85%AD(pdf).pdf)
+- [🧾 화면 설계서](https://github.com/Peek-Pick/peek-pick-frontend/blob/master/docs/3%E1%84%8C%E1%85%A9_%E1%84%88%E1%85%B5%E1%86%A8%E1%84%80%E1%85%B3%E1%84%85%E1%85%B5%E1%84%80%E1%85%A9%E1%84%83%E1%85%A1%E1%84%8B%E1%85%B3%E1%86%B7_%E1%84%92%E1%85%AA%E1%84%86%E1%85%A7%E1%86%AB%E1%84%89%E1%85%A5%E1%86%AF%E1%84%80%E1%85%A8%E1%84%89%E1%85%A5.pdf)
+- [📄 요구사항 정의서](https://github.com/Peek-Pick/peek-pick-frontend/blob/master/docs/3%E1%84%8C%E1%85%A9_%E1%84%88%E1%85%B5%E1%86%A8%E1%84%80%E1%85%B3%E1%84%85%E1%85%B5%E1%84%80%E1%85%A9%E1%84%83%E1%85%A1%E1%84%8B%E1%85%B3%E1%86%B7_%E1%84%92%E1%85%AA%E1%84%86%E1%85%A7%E1%86%AB%E1%84%89%E1%85%A5%E1%86%AF%E1%84%80%E1%85%A8%E1%84%89%E1%85%A5.pdf)
+- [📋 API 명세서](https://github.com/Peek-Pick/peek-pick-frontend/blob/master/docs/3%E1%84%8C%E1%85%A9_%E1%84%88%E1%85%B5%E1%86%A8%E1%84%80%E1%85%B3%E1%84%85%E1%85%B5%E1%84%80%E1%85%A9%E1%84%83%E1%85%A1%E1%84%8B%E1%85%B3%E1%86%B7_%E1%84%92%E1%85%AA%E1%84%86%E1%85%A7%E1%86%AB%E1%84%89%E1%85%A5%E1%86%AF%E1%84%80%E1%85%A8%E1%84%89%E1%85%A5.pdf)
+- [📂 메뉴 트리](https://github.com/Peek-Pick/peek-pick-frontend/blob/master/docs/3%E1%84%8C%E1%85%A9_%E1%84%88%E1%85%B5%E1%86%A8%E1%84%80%E1%85%B3%E1%84%85%E1%85%B5%E1%84%80%E1%85%A9%E1%84%83%E1%85%A1%E1%84%8B%E1%85%B3%E1%86%B7_%E1%84%86%E1%85%A6%E1%84%82%E1%85%B2%E1%84%90%E1%85%B3%E1%84%85%E1%85%B5.pdf)
 
 <br><br>
 <h5 align="right"><a href="#top">⬆️ TOP</a></h5>
